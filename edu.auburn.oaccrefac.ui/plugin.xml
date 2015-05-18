@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="edu.auburn.oaccrefac.ui.actionSet"
+            label="Sample Action Set"
+            visible="true">
+         <menu
+               id="sampleMenu"
+               label="Sample &amp;Menu">
+            <separator
+                  name="sampleGroup">
+            </separator>
+         </menu>
+         <!--action
+               definitionId="org.eclipse.cdt.ui.refactor.oacc"
+               label="Introduce OpenACC Parallel"
+               menubarPath="org.eclipse.jdt.ui.refactoring.menu/codingGroup"
+               id="org.eclipse.cdt.ui.actions.IntroOpenACCParallel"
+               retarget="true">
+         </action-->
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.SampleAction"
+               id="edu.auburn.oaccrefac.internal.ui.actions.SampleAction"
+               label="&amp;Sample Action"
+               menubarPath="sampleMenu/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Hello, Eclipse world">
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>
