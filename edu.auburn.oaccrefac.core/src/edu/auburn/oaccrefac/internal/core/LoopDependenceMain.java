@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 
 public class LoopDependenceMain {
     public static void main(String[] args) throws CoreException {
+    	//System.out.println(System.getProperty("user.dir"));
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForFile("src-dependence-examples/example.cpp");
 
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
@@ -16,7 +17,7 @@ public class LoopDependenceMain {
                 dependence.addForLoop((CPPASTForStatement) child);
                 Matrix A = dependence.generateInequalities();
 
-                System.out.println(A.toString());
+                System.out.println(A.toString() + "\n");
                 System.out.println("dependence? " + new FourierMotzkinEliminator().eliminateForRealSolutions(A));
             }
         }
