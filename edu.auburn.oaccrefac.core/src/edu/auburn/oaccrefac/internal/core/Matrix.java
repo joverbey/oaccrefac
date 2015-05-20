@@ -71,6 +71,9 @@ public final class Matrix {
         this(aMatrix.getRows(), aMatrix.getNumColumns());
     }
 
+    /** numColumns field setter
+     * @param numColumnsIn
+     */
     public void setNumColumns(int numColumnsIn) {
     	this.numColumns = numColumnsIn;
     }
