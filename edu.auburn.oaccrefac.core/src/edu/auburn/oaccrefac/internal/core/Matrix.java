@@ -71,13 +71,17 @@ public final class Matrix {
         this(aMatrix.getRows(), aMatrix.getNumColumns());
     }
 
+    public void setNumColumns(int numColumnsIn) {
+    	this.numColumns = numColumnsIn;
+    }
+    
     /**
      * setter for the member variable rows
      * 
      * @param rowsIn
      *            rows for the matrix
      */
-    public void setRows(List<double[]> rowsIn) {
+    private void setRows(List<double[]> rowsIn) {
         this.rows = new ArrayList<double[]>();
         for (int i = 0; i < rowsIn.size(); i++)
             this.rows.add(rowsIn.get(i).clone());
@@ -85,12 +89,13 @@ public final class Matrix {
         trimRowsToSize();
     }
 
+    // TODO should not be public - should be called internally whenever changes are made
     public void trimRowsToSize() {
         this.rows.trimToSize();
     }
 
     /**
-     * sets a single row (given by rowIndex) to be rowIn replaces the element at
+     * sets a single row (given by rowIndex) to be rowIn and replaces the element at
      * rowIndex with rowIn.
      * 
      * @param rowIndex
@@ -116,27 +121,15 @@ public final class Matrix {
 
         this.rows.set(rowIndex, rowIn.clone());
     }
-
-    /**
-     * setter for the member variable numColumns
-     * 
-     * @param numOfCol
-     *            number of columns
-     */
-    public void setNumColumns(int numOfCol) {
-        if (numOfCol < 0)
-            throw new IndexOutOfBoundsException("setNumColumns - numOfCol must be greater than 0");
-        this.numColumns = numOfCol;
-    }
-
-    /**
+    
+    /**TODO remove? unused, opens up implementation details
      * @return the rows for this matrix
      */
     public List<double[]> getRows() {
         return this.rows;
     }
 
-    /**
+    /**TODO heavily used, but might open implementation details? rename?
      * Returns the row, at rowIndex, of the matrix
      * 
      * @param rowIndex

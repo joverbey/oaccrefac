@@ -21,6 +21,13 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
+/**
+ * Container for perfectly nested for statements that are candidates 
+ * for Fourier-Motzkin elimination
+ *
+ * 
+ *
+ */
 public class ForLoopDependence {
 
     private Map<String, InductionVariable> inductionVariables;
@@ -33,6 +40,8 @@ public class ForLoopDependence {
 
     public void addForLoop(CPPASTForStatement statement) {
         findInductionVariables(statement);
+        
+        // check for imperfect loop nesting
         boolean hasForChild = false;
         boolean hasNonForChild = false;
         for (IASTNode child : statement.getBody().getChildren()) {
@@ -129,7 +138,7 @@ public class ForLoopDependence {
                 continue;
             }
 
-            // For now, only expressions where both sides are subscripts are
+            // TODO For now, only expressions where both sides are subscripts are
             // considered. In the future, it would probably be useful to also
             // handle transitive references (e.g. x = A[i]; ... A[i+1] = x;)
             if (!(binExpr.getOperand1() instanceof IASTArraySubscriptExpression)
