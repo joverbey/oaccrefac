@@ -13,7 +13,6 @@ package edu.auburn.oaccrefac.internal.ui.handlers;
 
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.IWorkingCopy;
-import org.eclipse.cdt.internal.ui.refactoring.IntroOpenACCParallelRefactoring;
 import org.eclipse.cdt.internal.ui.refactoring.RefactoringRunner;
 import org.eclipse.cdt.internal.ui.refactoring.RefactoringSaveHelper;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -26,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
+
+import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
 
 /**
  * Launches an Extract Local Variable refactoring.

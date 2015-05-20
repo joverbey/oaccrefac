@@ -6,13 +6,13 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="edu.auburn.oaccrefac.ui.actionSet"
-            label="Sample Action Set"
+            label="OpenACC Refactoring"
             visible="true">
          <menu
-               id="sampleMenu"
-               label="Sample &amp;Menu">
+               id="oaccrefac_menu"
+               label="OpenAcc &amp;Refactoring">
             <separator
-                  name="sampleGroup">
+                  name="oaccrefac_group">
             </separator>
          </menu>
          <!--action
@@ -23,12 +23,12 @@
                retarget="true">
          </action-->
          <action
-               class="edu.auburn.oaccrefac.internal.ui.actions.SampleAction"
-               id="edu.auburn.oaccrefac.internal.ui.actions.SampleAction"
-               label="&amp;Sample Action"
-               menubarPath="sampleMenu/sampleGroup"
-               toolbarPath="sampleGroup"
-               tooltip="Hello, Eclipse world">
+               class="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCParallelDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCParallelDelegate"
+               label="&amp;Simple Pragma"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="">
          </action>
       </actionSet>
    </extension>
