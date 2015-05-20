@@ -1,7 +1,13 @@
 package edu.auburn.oaccrefac.internal.ui.actions;
 
+import org.eclipse.cdt.core.model.ICElement;
+import org.eclipse.cdt.core.model.IWorkingCopy;
+import org.eclipse.cdt.internal.ui.editor.CEditor;
+import org.eclipse.cdt.internal.ui.refactoring.RefactoringRunner;
+import org.eclipse.cdt.internal.ui.refactoring.RefactoringSaveHelper;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
@@ -10,6 +16,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
@@ -38,19 +45,29 @@ public class IntroOpenACCParallelDelegate implements IWorkbenchWindowActionDeleg
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	public void run(IAction action) {
-		/*IntroOpenACCParallelAction introAction = new IntroOpenACCParallelAction();
-		introAction.setEditor(PlatformUI.getWorkbench()
-						  .getActiveWorkbenchWindow()
-						  .getActivePage()
-						  .getActiveEditor());
-		introAction.run();*/
-		
-		System.out.println(action.getId());
-		
-		/*IntroOpenACCParallelRefactoring refactoring = 
-				new IntroOpenACCParallelRefactoring();
-		run(new Wizard(refactoring), refactoring, RefactoringSaveHelper.SAVE_NOTHING);*/
+		//Get the CEditor in order to get the project
+		CEditor editor = (CEditor) PlatformUI.getWorkbench()
+				  .getActiveWorkbenchWindow()
+				  .getActivePage()
+				  .getActiveEditor();
+
+		final IWorkingCopy wc = CUIPlugin.getDefault()
+				.getWorkingCopyManager()
+				.getWorkingCopy(editor.getEditorInput());
+					
+		if (wc != null) {
+			new RefactoringRunner((ICElement)wc, m_selection, editor.getSite(), wc.getCProject()) {
+				@Override
+				public void run() {
+					IntroOpenACCParallelRefactoring refactoring = 
+							new IntroOpenACCParallelRefactoring(wc, (ITextSelection)m_selection, project);
+					run(new Wizard(refactoring), refactoring, RefactoringSaveHelper.SAVE_NOTHING);
+				}
+			}.run();
+		}
 	}
+	
+	
 
 	/**
 	 * Selection in the workbench has been changed. We 
