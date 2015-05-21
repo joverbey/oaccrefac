@@ -29,6 +29,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefacto
  * delegated to it.
  * @see IWorkbenchWindowActionDelegate
  */
+@SuppressWarnings("restriction")
 public class IntroOpenACCParallelDelegate implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow m_window;
 	private ISelection m_selection;
@@ -50,20 +51,22 @@ public class IntroOpenACCParallelDelegate implements IWorkbenchWindowActionDeleg
 				  .getActiveWorkbenchWindow()
 				  .getActivePage()
 				  .getActiveEditor();
-
-		final IWorkingCopy wc = CUIPlugin.getDefault()
-				.getWorkingCopyManager()
-				.getWorkingCopy(editor.getEditorInput());
+		
+		if (editor != null) {
+			final IWorkingCopy wc = CUIPlugin.getDefault()
+					.getWorkingCopyManager()
+					.getWorkingCopy(editor.getEditorInput());
 					
-		if (wc != null) {
-			new RefactoringRunner((ICElement)wc, m_selection, editor.getSite(), wc.getCProject()) {
-				@Override
-				public void run() {
-					IntroOpenACCParallelRefactoring refactoring = 
-							new IntroOpenACCParallelRefactoring(wc, (ITextSelection)m_selection, project);
-					run(new Wizard(refactoring), refactoring, RefactoringSaveHelper.SAVE_NOTHING);
-				}
-			}.run();
+			if (wc != null) {
+				new RefactoringRunner((ICElement)wc, m_selection, editor.getSite(), wc.getCProject()) {
+					@Override
+					public void run() {
+						IntroOpenACCParallelRefactoring refactoring = 
+								new IntroOpenACCParallelRefactoring(wc, (ITextSelection)m_selection, project);
+						run(new Wizard(refactoring), refactoring, RefactoringSaveHelper.SAVE_NOTHING);
+					}
+				}.run();
+			}
 		}
 	}
 	
@@ -96,6 +99,11 @@ public class IntroOpenACCParallelDelegate implements IWorkbenchWindowActionDeleg
 	 */
 	public void init(IWorkbenchWindow window) {
 		this.m_window = window;
+	}
+	
+	public IWorkbenchWindow getWindow() {return m_window;}
+	public void setWindow(IWorkbenchWindow w) {
+		m_window = w;
 	}
 	
     private static class Wizard extends RefactoringWizard {
