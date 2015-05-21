@@ -15,20 +15,21 @@
                   name="oaccrefac_group">
             </separator>
          </menu>
-         <!--action
-               definitionId="org.eclipse.cdt.ui.refactor.oacc"
-               label="Introduce OpenACC Parallel"
-               menubarPath="org.eclipse.jdt.ui.refactoring.menu/codingGroup"
-               id="org.eclipse.cdt.ui.actions.IntroOpenACCParallel"
-               retarget="true">
-         </action-->
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCParallelDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCParallelDelegate"
                label="&amp;Simple Pragma"
                menubarPath="oaccrefac_menu/oaccrefac_group"
                toolbarPath="oaccrefac_group"
-               tooltip="">
+               tooltip="Adds a simple parallel pragma before a for-loop">
+         </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.LoopUnrollingDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.LoopUnrollingDelegate"
+               label="&amp;Unrolling"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="Unrolls a selected for-loop for efficiency">
          </action>
       </actionSet>
    </extension>
