@@ -181,7 +181,7 @@ public class FourierMotzkinEliminator {
             return false;
     }
 
-    /**
+    /** implements one iteration of the main loop of the FM elim algorithm
      * @param matrixIn
      *            the matrix being projected on
      * @param eliminatingVar

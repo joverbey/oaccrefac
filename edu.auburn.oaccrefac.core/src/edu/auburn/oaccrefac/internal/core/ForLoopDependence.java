@@ -38,6 +38,12 @@ public class ForLoopDependence {
         this.equalities = new HashSet<Pair<IndexExpression, IndexExpression>>();
     }
 
+    /** Verifies that a for loop is perfectly nested then calls findEqualties to
+     *  turn all of the assignment statements to index expressions and
+     *  add them to this instance's set of equalities 
+     *  
+     * @param statement the for statement being added
+     */
     public void addForLoop(CPPASTForStatement statement) {
         findInductionVariables(statement);
         
@@ -129,6 +135,11 @@ public class ForLoopDependence {
         return A;
     }
 
+    
+    /**
+     * turns all of the assignment statements in the loop body 
+     * to index expressions and adds them to this instance's set of equalities 
+     */
     private void findEqualities(IASTStatement body) {
         List<IASTBinaryExpression> binExprs = ASTUtil.find(body, IASTBinaryExpression.class);
         for (IASTBinaryExpression binExpr : binExprs) {
