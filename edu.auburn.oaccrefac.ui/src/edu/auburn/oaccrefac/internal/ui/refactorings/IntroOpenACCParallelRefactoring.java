@@ -97,8 +97,19 @@ public class IntroOpenACCParallelRefactoring extends CRefactoring {
 			@Override
 			public int visit(IASTStatement statement) {
 				if (statement instanceof CASTForStatement) {
-					loop = (CASTForStatement)statement;
-					return PROCESS_ABORT;
+					CASTForStatement for_stmt = (CASTForStatement) statement;
+					//Make sure we are getting the correct loop by checking the statement's 
+					//offset with the selected text's region in the project.
+					int begin_offset = selectedRegion.getOffset();
+					int end_offset = selectedRegion.getOffset() + selectedRegion.getLength();
+					if (for_stmt.getOffset() >= begin_offset
+						&& (for_stmt.getOffset() < end_offset)) {
+						loop = for_stmt;
+						return PROCESS_ABORT;
+					} else {
+						//Otherwise skip this statement
+						return PROCESS_CONTINUE;
+					}
 				}
 				return PROCESS_CONTINUE;
 			}
