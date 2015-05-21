@@ -22,7 +22,7 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
 
 /**
- * Our sample action implements workbench action delegate.
+ * Our action implements workbench action delegate.
  * The action proxy will be created by the workbench and
  * shown in the UI. When the user tries to use the action,
  * this delegate will be created and execution will be 
