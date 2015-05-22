@@ -22,7 +22,7 @@ import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.text.edits.TextEditGroup;
 
@@ -34,7 +34,7 @@ import org.eclipse.text.edits.TextEditGroup;
 @SuppressWarnings("restriction")
 public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 	
-	public IntroOpenACCParallelRefactoring(ICElement element, ITextSelection selection, ICProject project) {
+	public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {
 		super(element, selection, project);
 		if (selection == null || tu.getResource() == null || project == null)
 			initStatus.addFatalError("Invalid selection");
