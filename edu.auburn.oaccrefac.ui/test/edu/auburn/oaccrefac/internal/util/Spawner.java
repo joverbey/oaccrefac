@@ -19,147 +19,138 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Utility class with static methods to run a command line program and return
- * its output.
- *
+ * Utility class with static methods to run a command line program and return its output.
+ * 
  * @author Jeff Overbey
- *
+ * 
  * @since 1.0
  */
 public final class Spawner {
-	/**
-	 * If the spawner exits with an error status, this determines whether the
-	 * output will be dumped to standard error before an exception is thrown.
-	 * 
-	 * @since 3.0
-	 */
-	public static boolean SHOW_OUTPUT_ON_ERROR = true;
+    /**
+     * If the spawner exits with an error status, this determines whether the output will be dumped to standard error
+     * before an exception is thrown.
+     * 
+     * @since 3.0
+     */
+    public static boolean SHOW_OUTPUT_ON_ERROR = true;
 
-	private Spawner() {
-	}
+    private Spawner() {
+    }
 
-	/**
-	 * Attempts to run the given operating system program+arguments in the
-	 * current working directory.
-	 * 
-	 * @return the process's combined output to standard output and standard
-	 *         error
-	 * @throws Exception
-	 *             if the process exits with a nonzero exit code
-	 */
-	public static String run(String... args) throws Exception {
-		return run(null, Arrays.asList(args));
-	}
+    /**
+     * Attempts to run the given operating system program+arguments in the current working directory.
+     * 
+     * @return the process's combined output to standard output and standard error
+     * @throws Exception
+     *             if the process exits with a nonzero exit code
+     */
+    public static String run(String... args) throws Exception {
+        return run(null, Arrays.asList(args));
+    }
 
-	/**
-	 * Attempts to run the given operating system program+arguments in the
-	 * current working directory.
-	 * 
-	 * @return the process's combined output to standard output and standard
-	 *         error
-	 * @throws Exception
-	 *             if the process exits with a nonzero exit code
-	 */
-	public static String run(List<String> args) throws Exception {
-		return run(null, args);
-	}
+    /**
+     * Attempts to run the given operating system program+arguments in the current working directory.
+     * 
+     * @return the process's combined output to standard output and standard error
+     * @throws Exception
+     *             if the process exits with a nonzero exit code
+     */
+    public static String run(List<String> args) throws Exception {
+        return run(null, args);
+    }
 
-	/**
-	 * Attempts to run the given operating system program+arguments in the given
-	 * working directory.
-	 * 
-	 * @return the process's combined output to standard output and standard
-	 *         error
-	 * @throws Exception
-	 *             if the process exits with a nonzero exit code
-	 */
-	public static String run(File workingDirectory, String... args) throws Exception {
-		return run(workingDirectory, Arrays.asList(args));
-	}
+    /**
+     * Attempts to run the given operating system program+arguments in the given working directory.
+     * 
+     * @return the process's combined output to standard output and standard error
+     * @throws Exception
+     *             if the process exits with a nonzero exit code
+     */
+    public static String run(File workingDirectory, String... args) throws Exception {
+        return run(workingDirectory, Arrays.asList(args));
+    }
 
-	/**
-	 * Attempts to run the given operating system program+arguments in the given
-	 * working directory.
-	 * 
-	 * @return the process's combined output to standard output and standard
-	 *         error
-	 * @throws Exception
-	 *             if the process exits with a nonzero exit code
-	 */
-	public static String run(File workingDirectory, List<String> args) throws Exception {
-		if (workingDirectory == null) {
-			workingDirectory = new File(".");
-		}
-		ProcessBuilder builder = new ProcessBuilder(args);
-		builder.directory(workingDirectory);
-		builder.redirectErrorStream(true);
-		Process process = builder.start();
-		ConcurrentReader output = new ConcurrentReader(process.getInputStream());
-		synchronized (output) {
-			output.start();
-			process.getOutputStream().close();
-			int exitCode = process.waitFor();
-			if (exitCode != 0) {
-				if (SHOW_OUTPUT_ON_ERROR) {
-					System.err.println("(Working directory is " + workingDirectory.getAbsolutePath() + ")");
-					for (String arg : args) {
-						System.err.print(arg);
-						System.err.print(' ');
-					}
-					System.err.println();
-					System.err.println(output.toString());
-				}
-				throw new Exception(
-						String.format("Process exited abnormally with exit code %s\n%s", exitCode, output.toString()));
-			}
-			waitFor(output);
-		}
-		return output.toString();
-	}
+    /**
+     * Attempts to run the given operating system program+arguments in the given working directory.
+     * 
+     * @return the process's combined output to standard output and standard error
+     * @throws Exception
+     *             if the process exits with a nonzero exit code
+     */
+    public static String run(File workingDirectory, List<String> args) throws Exception {
+        if (workingDirectory == null) {
+            workingDirectory = new File(".");
+        }
+        ProcessBuilder builder = new ProcessBuilder(args);
+        builder.directory(workingDirectory);
+        builder.redirectErrorStream(true);
+        Process process = builder.start();
+        ConcurrentReader output = new ConcurrentReader(process.getInputStream());
+        synchronized (output) {
+            output.start();
+            process.getOutputStream().close();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                if (SHOW_OUTPUT_ON_ERROR) {
+                    System.err.println("(Working directory is " + workingDirectory.getAbsolutePath() + ")");
+                    for (String arg : args) {
+                        System.err.print(arg);
+                        System.err.print(' ');
+                    }
+                    System.err.println();
+                    System.err.println(output.toString());
+                }
+                throw new Exception(String.format("Process exited abnormally with exit code %s\n%s", exitCode,
+                        output.toString()));
+            }
+            waitFor(output);
+        }
+        return output.toString();
+    }
 
-	private static void waitFor(ConcurrentReader output) {
-		try {
-			output.wait();
-		} catch (InterruptedException e) {
-		}
-	}
+    private static void waitFor(ConcurrentReader output) {
+        try {
+            output.wait();
+        } catch (InterruptedException e) {
+        }
+    }
 
-	private static class ConcurrentReader extends Thread {
-		private InputStream stdout;
-		private StringBuilder sb;
+    private static class ConcurrentReader extends Thread {
+        private InputStream stdout;
+        private StringBuilder sb;
 
-		public ConcurrentReader(InputStream stdout) {
-			this.stdout = stdout;
-			this.sb = new StringBuilder();
-		}
+        public ConcurrentReader(InputStream stdout) {
+            this.stdout = stdout;
+            this.sb = new StringBuilder();
+        }
 
-		@Override
-		public void run() {
-			BufferedReader in = new BufferedReader(new InputStreamReader(stdout));
-			try {
-				for (String line = in.readLine(); line != null; line = in.readLine()) {
-					sb.append(line);
-					sb.append('\n');
-				}
-				done();
-			} catch (IOException e) {
-				sb.append(e.toString());
-			} finally {
-				try {
-					in.close();
-				} catch (IOException e) {
-					sb.append(e.toString());
-				}
-			}
-		}
+        @Override
+        public void run() {
+            BufferedReader in = new BufferedReader(new InputStreamReader(stdout));
+            try {
+                for (String line = in.readLine(); line != null; line = in.readLine()) {
+                    sb.append(line);
+                    sb.append('\n');
+                }
+                done();
+            } catch (IOException e) {
+                sb.append(e.toString());
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    sb.append(e.toString());
+                }
+            }
+        }
 
-		private synchronized void done() {
-			notifyAll();
-		}
+        private synchronized void done() {
+            notifyAll();
+        }
 
-		@Override
-		public String toString() {
-			return sb.toString();
-		}
-	}
+        @Override
+        public String toString() {
+            return sb.toString();
+        }
+    }
 }

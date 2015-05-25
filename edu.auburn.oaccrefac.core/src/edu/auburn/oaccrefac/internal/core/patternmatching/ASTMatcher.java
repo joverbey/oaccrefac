@@ -42,246 +42,240 @@ import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
  */
 public final class ASTMatcher {
 
-	private Map<String, String> nameMapping = new TreeMap<String, String>();
+    private Map<String, String> nameMapping = new TreeMap<String, String>();
 
-	/**
-	 * Receives an AST representing a pattern for a C statement or expressions,
-	 * and matches the given tree against that pattern, returning
-	 * <code>null</code> if the tree does not match the pattern and a Map
-	 * otherwise.
-	 * <p>
-	 * Identifiers in the pattern and the matched tree may differ, as long as
-	 * there is a 1-1 mapping between identifiers in the two trees. The returned
-	 * map describes the mapping from identifiers in the pattern tree to those
-	 * in the given tree. For example, the pattern
-	 * <code>for (i = 0; i < n; i++) ;</code> matches the tree for
-	 * <code>for (eye = 0; eye < enn; eye++) ;</code> with the map
-	 * <code>{i=eye, n=enn}</code> returned.
-	 * <p>
-	 * The pattern may contain {@link ArbitraryStatement},
-	 * {@link ArbitraryExpression}, and {@link ArbitraryIntegerConstant} nodes,
-	 * which match arbitrary statements, expressions, and integer constants,
-	 * respectively.
-	 * 
-	 * @param pattern
-	 * @param tree
-	 * @return Map
-	 */
-	public static Map<String, String> unify(IASTNode pattern, IASTNode tree) {
-		ASTMatcher matcher = new ASTMatcher();
-		if (matcher.genericMatch(pattern, tree))
-			return matcher.nameMapping;
-		else
-			return null;
-	}
+    /**
+     * Receives an AST representing a pattern for a C statement or expressions, and matches the given tree against that
+     * pattern, returning <code>null</code> if the tree does not match the pattern and a Map otherwise.
+     * <p>
+     * Identifiers in the pattern and the matched tree may differ, as long as there is a 1-1 mapping between identifiers
+     * in the two trees. The returned map describes the mapping from identifiers in the pattern tree to those in the
+     * given tree. For example, the pattern <code>for (i = 0; i < n; i++) ;</code> matches the tree for
+     * <code>for (eye = 0; eye < enn; eye++) ;</code> with the map <code>{i=eye, n=enn}</code> returned.
+     * <p>
+     * The pattern may contain {@link ArbitraryStatement}, {@link ArbitraryExpression}, and
+     * {@link ArbitraryIntegerConstant} nodes, which match arbitrary statements, expressions, and integer constants,
+     * respectively.
+     * 
+     * @param pattern
+     * @param tree
+     * @return Map
+     */
+    public static Map<String, String> unify(IASTNode pattern, IASTNode tree) {
+        ASTMatcher matcher = new ASTMatcher();
+        if (matcher.genericMatch(pattern, tree))
+            return matcher.nameMapping;
+        else
+            return null;
+    }
 
-	private boolean genericMatch(IASTNode pattern, IASTNode node) {
-		if (pattern == null && node == null)
-			return true;
-		else if (pattern == null || node == null)
-			return false;
+    private boolean genericMatch(IASTNode pattern, IASTNode node) {
+        if (pattern == null && node == null)
+            return true;
+        else if (pattern == null || node == null)
+            return false;
 
-		if (pattern instanceof ArbitraryIntegerConstant && node instanceof IASTLiteralExpression)
-			return ((IASTLiteralExpression) node).getKind() == IASTLiteralExpression.lk_integer_constant;
-		if (pattern instanceof ArbitraryExpression && node instanceof IASTExpression)
-			return true;
-		if (pattern instanceof ArbitraryStatement && node instanceof IASTStatement)
-			return true;
-		if (!pattern.getClass().equals(node.getClass()))
-			return false;
+        if (pattern instanceof ArbitraryIntegerConstant && node instanceof IASTLiteralExpression)
+            return ((IASTLiteralExpression) node).getKind() == IASTLiteralExpression.lk_integer_constant;
+        if (pattern instanceof ArbitraryExpression && node instanceof IASTExpression)
+            return true;
+        if (pattern instanceof ArbitraryStatement && node instanceof IASTStatement)
+            return true;
+        if (!pattern.getClass().equals(node.getClass()))
+            return false;
 
-		if (pattern instanceof IASTBreakStatement) {
-			return match((IASTBreakStatement) pattern, (IASTBreakStatement) node);
-		} else if (pattern instanceof IASTCaseStatement) {
-			return match((IASTCaseStatement) pattern, (IASTCaseStatement) node);
-		} else if (pattern instanceof IASTCompoundStatement) {
-			return match((IASTCompoundStatement) pattern, (IASTCompoundStatement) node);
-		} else if (pattern instanceof IASTContinueStatement) {
-			return match((IASTContinueStatement) pattern, (IASTContinueStatement) node);
-		} else if (pattern instanceof IASTDeclarationStatement) {
-			return match((IASTDeclarationStatement) pattern, (IASTDeclarationStatement) node);
-		} else if (pattern instanceof IASTDefaultStatement) {
-			return match((IASTDefaultStatement) pattern, (IASTDefaultStatement) node);
-		} else if (pattern instanceof IASTDoStatement) {
-			return match((IASTDoStatement) pattern, (IASTDoStatement) node);
-		} else if (pattern instanceof IASTExpressionStatement) {
-			return match((IASTExpressionStatement) pattern, (IASTExpressionStatement) node);
-		} else if (pattern instanceof IASTForStatement) {
-			return match((IASTForStatement) pattern, (IASTForStatement) node);
-		} else if (pattern instanceof IASTGotoStatement) {
-			return match((IASTGotoStatement) pattern, (IASTGotoStatement) node);
-		} else if (pattern instanceof IASTIfStatement) {
-			return match((IASTIfStatement) pattern, (IASTIfStatement) node);
-		} else if (pattern instanceof IASTLabelStatement) {
-			return match((IASTLabelStatement) pattern, (IASTLabelStatement) node);
-		} else if (pattern instanceof IASTNullStatement) {
-			return match((IASTNullStatement) pattern, (IASTNullStatement) node);
-		} else if (pattern instanceof IASTReturnStatement) {
-			return match((IASTReturnStatement) pattern, (IASTReturnStatement) node);
-		} else if (pattern instanceof IASTSwitchStatement) {
-			return match((IASTSwitchStatement) pattern, (IASTSwitchStatement) node);
-		} else if (pattern instanceof IASTWhileStatement) {
-			return match((IASTWhileStatement) pattern, (IASTWhileStatement) node);
-		} else if (pattern instanceof IASTBinaryExpression) {
-			return match((IASTBinaryExpression) pattern, (IASTBinaryExpression) node);
-		} else if (pattern instanceof IASTIdExpression) {
-			return match((IASTIdExpression) pattern, (IASTIdExpression) node);
-		} else if (pattern instanceof IASTLiteralExpression) {
-			return match((IASTLiteralExpression) pattern, (IASTLiteralExpression) node);
-		} else if (pattern instanceof IASTUnaryExpression) {
-			return match((IASTUnaryExpression) pattern, (IASTUnaryExpression) node);
-		} else if (pattern instanceof IASTCastExpression) {
-			return match((IASTCastExpression) pattern, (IASTCastExpression) node);
-		} else if (pattern instanceof IASTConditionalExpression) {
-			return match((IASTConditionalExpression) pattern, (IASTConditionalExpression) node);
-		} else if (pattern instanceof IASTArraySubscriptExpression) {
-			return match((IASTArraySubscriptExpression) pattern, (IASTArraySubscriptExpression) node);
-		} else if (pattern instanceof IASTFieldReference) {
-			return match((IASTFieldReference) pattern, (IASTFieldReference) node);
-		} else if (pattern instanceof IASTFunctionCallExpression) {
-			return match((IASTFunctionCallExpression) pattern, (IASTFunctionCallExpression) node);
-		} else if (pattern instanceof IASTExpressionList) {
-			return match((IASTExpressionList) pattern, (IASTExpressionList) node);
-		} else if (pattern instanceof IASTTypeIdExpression) {
-			return match((IASTTypeIdExpression) pattern, (IASTTypeIdExpression) node);
-		} else {
-			return unsupported(pattern);
-		}
-	}
+        if (pattern instanceof IASTBreakStatement) {
+            return match((IASTBreakStatement) pattern, (IASTBreakStatement) node);
+        } else if (pattern instanceof IASTCaseStatement) {
+            return match((IASTCaseStatement) pattern, (IASTCaseStatement) node);
+        } else if (pattern instanceof IASTCompoundStatement) {
+            return match((IASTCompoundStatement) pattern, (IASTCompoundStatement) node);
+        } else if (pattern instanceof IASTContinueStatement) {
+            return match((IASTContinueStatement) pattern, (IASTContinueStatement) node);
+        } else if (pattern instanceof IASTDeclarationStatement) {
+            return match((IASTDeclarationStatement) pattern, (IASTDeclarationStatement) node);
+        } else if (pattern instanceof IASTDefaultStatement) {
+            return match((IASTDefaultStatement) pattern, (IASTDefaultStatement) node);
+        } else if (pattern instanceof IASTDoStatement) {
+            return match((IASTDoStatement) pattern, (IASTDoStatement) node);
+        } else if (pattern instanceof IASTExpressionStatement) {
+            return match((IASTExpressionStatement) pattern, (IASTExpressionStatement) node);
+        } else if (pattern instanceof IASTForStatement) {
+            return match((IASTForStatement) pattern, (IASTForStatement) node);
+        } else if (pattern instanceof IASTGotoStatement) {
+            return match((IASTGotoStatement) pattern, (IASTGotoStatement) node);
+        } else if (pattern instanceof IASTIfStatement) {
+            return match((IASTIfStatement) pattern, (IASTIfStatement) node);
+        } else if (pattern instanceof IASTLabelStatement) {
+            return match((IASTLabelStatement) pattern, (IASTLabelStatement) node);
+        } else if (pattern instanceof IASTNullStatement) {
+            return match((IASTNullStatement) pattern, (IASTNullStatement) node);
+        } else if (pattern instanceof IASTReturnStatement) {
+            return match((IASTReturnStatement) pattern, (IASTReturnStatement) node);
+        } else if (pattern instanceof IASTSwitchStatement) {
+            return match((IASTSwitchStatement) pattern, (IASTSwitchStatement) node);
+        } else if (pattern instanceof IASTWhileStatement) {
+            return match((IASTWhileStatement) pattern, (IASTWhileStatement) node);
+        } else if (pattern instanceof IASTBinaryExpression) {
+            return match((IASTBinaryExpression) pattern, (IASTBinaryExpression) node);
+        } else if (pattern instanceof IASTIdExpression) {
+            return match((IASTIdExpression) pattern, (IASTIdExpression) node);
+        } else if (pattern instanceof IASTLiteralExpression) {
+            return match((IASTLiteralExpression) pattern, (IASTLiteralExpression) node);
+        } else if (pattern instanceof IASTUnaryExpression) {
+            return match((IASTUnaryExpression) pattern, (IASTUnaryExpression) node);
+        } else if (pattern instanceof IASTCastExpression) {
+            return match((IASTCastExpression) pattern, (IASTCastExpression) node);
+        } else if (pattern instanceof IASTConditionalExpression) {
+            return match((IASTConditionalExpression) pattern, (IASTConditionalExpression) node);
+        } else if (pattern instanceof IASTArraySubscriptExpression) {
+            return match((IASTArraySubscriptExpression) pattern, (IASTArraySubscriptExpression) node);
+        } else if (pattern instanceof IASTFieldReference) {
+            return match((IASTFieldReference) pattern, (IASTFieldReference) node);
+        } else if (pattern instanceof IASTFunctionCallExpression) {
+            return match((IASTFunctionCallExpression) pattern, (IASTFunctionCallExpression) node);
+        } else if (pattern instanceof IASTExpressionList) {
+            return match((IASTExpressionList) pattern, (IASTExpressionList) node);
+        } else if (pattern instanceof IASTTypeIdExpression) {
+            return match((IASTTypeIdExpression) pattern, (IASTTypeIdExpression) node);
+        } else {
+            return unsupported(pattern);
+        }
+    }
 
-	private boolean unsupported(IASTNode pattern) {
-		throw new UnsupportedOperationException(
-				"Pattern matching not implemented for " + pattern.getClass().getSimpleName());
-	}
+    private boolean unsupported(IASTNode pattern) {
+        throw new UnsupportedOperationException("Pattern matching not implemented for "
+                + pattern.getClass().getSimpleName());
+    }
 
-	public boolean match(IASTBreakStatement pattern, IASTBreakStatement node) {
-		return true;
-	}
+    public boolean match(IASTBreakStatement pattern, IASTBreakStatement node) {
+        return true;
+    }
 
-	public boolean match(IASTCaseStatement pattern, IASTCaseStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTCaseStatement pattern, IASTCaseStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTDefaultStatement pattern, IASTDefaultStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTDefaultStatement pattern, IASTDefaultStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTCompoundStatement pattern, IASTCompoundStatement node) {
-		IASTStatement[] patternStmts = pattern.getStatements();
-		IASTStatement[] nodeStmts = node.getStatements();
-		int len = patternStmts.length;
-		if (nodeStmts.length != len)
-			return false;
-		for (int i = 0; i < len; i++) {
-			if (!genericMatch(patternStmts[i], nodeStmts[i])) {
-				return false;
-			}
-		}
-		return true;
-	}
+    public boolean match(IASTCompoundStatement pattern, IASTCompoundStatement node) {
+        IASTStatement[] patternStmts = pattern.getStatements();
+        IASTStatement[] nodeStmts = node.getStatements();
+        int len = patternStmts.length;
+        if (nodeStmts.length != len)
+            return false;
+        for (int i = 0; i < len; i++) {
+            if (!genericMatch(patternStmts[i], nodeStmts[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public boolean match(IASTContinueStatement pattern, IASTContinueStatement node) {
-		return true;
-	}
+    public boolean match(IASTContinueStatement pattern, IASTContinueStatement node) {
+        return true;
+    }
 
-	public boolean match(IASTDeclarationStatement pattern, IASTDeclarationStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTDeclarationStatement pattern, IASTDeclarationStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTDoStatement pattern, IASTDoStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTDoStatement pattern, IASTDoStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTExpressionStatement pattern, IASTExpressionStatement node) {
-		return genericMatch(pattern.getExpression(), node.getExpression());
-	}
+    public boolean match(IASTExpressionStatement pattern, IASTExpressionStatement node) {
+        return genericMatch(pattern.getExpression(), node.getExpression());
+    }
 
-	public boolean match(IASTForStatement pattern, IASTForStatement node) {
-		return genericMatch(pattern.getInitializerStatement(), node.getInitializerStatement())
-				&& genericMatch(pattern.getConditionExpression(), node.getConditionExpression())
-				&& genericMatch(pattern.getIterationExpression(), node.getIterationExpression())
-				&& genericMatch(pattern.getBody(), node.getBody());
-	}
+    public boolean match(IASTForStatement pattern, IASTForStatement node) {
+        return genericMatch(pattern.getInitializerStatement(), node.getInitializerStatement())
+                && genericMatch(pattern.getConditionExpression(), node.getConditionExpression())
+                && genericMatch(pattern.getIterationExpression(), node.getIterationExpression())
+                && genericMatch(pattern.getBody(), node.getBody());
+    }
 
-	public boolean match(IASTGotoStatement pattern, IASTGotoStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTGotoStatement pattern, IASTGotoStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTIfStatement pattern, IASTIfStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTIfStatement pattern, IASTIfStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTLabelStatement pattern, IASTLabelStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTLabelStatement pattern, IASTLabelStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTNullStatement pattern, IASTNullStatement node) {
-		return true;
-	}
+    public boolean match(IASTNullStatement pattern, IASTNullStatement node) {
+        return true;
+    }
 
-	public boolean match(IASTReturnStatement pattern, IASTReturnStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTReturnStatement pattern, IASTReturnStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTSwitchStatement pattern, IASTSwitchStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTSwitchStatement pattern, IASTSwitchStatement node) {
+        return unsupported(pattern);
+    }
 
-	public boolean match(IASTWhileStatement pattern, IASTWhileStatement node) {
-		return unsupported(pattern);
-	}
+    public boolean match(IASTWhileStatement pattern, IASTWhileStatement node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTBinaryExpression pattern, IASTBinaryExpression node) {
-		return pattern.getOperator() == node.getOperator() //
-				&& genericMatch(pattern.getOperand1(), node.getOperand1()) //
-				&& genericMatch(pattern.getOperand2(), node.getOperand2());
-	}
+    private boolean match(IASTBinaryExpression pattern, IASTBinaryExpression node) {
+        return pattern.getOperator() == node.getOperator() //
+                && genericMatch(pattern.getOperand1(), node.getOperand1()) //
+                && genericMatch(pattern.getOperand2(), node.getOperand2());
+    }
 
-	private boolean match(IASTIdExpression pattern, IASTIdExpression node) {
-		String patternName = pattern.getName().toString();
-		String nodeName = node.getName().toString();
-		if (!nameMapping.containsKey(patternName))
-			nameMapping.put(patternName, nodeName);
-		return nodeName.equals(nameMapping.get(patternName));
-	}
+    private boolean match(IASTIdExpression pattern, IASTIdExpression node) {
+        String patternName = pattern.getName().toString();
+        String nodeName = node.getName().toString();
+        if (!nameMapping.containsKey(patternName))
+            nameMapping.put(patternName, nodeName);
+        return nodeName.equals(nameMapping.get(patternName));
+    }
 
-	private boolean match(IASTLiteralExpression pattern, IASTLiteralExpression node) {
-		return pattern.getKind() == node.getKind() && Arrays.equals(pattern.getValue(), node.getValue());
-	}
+    private boolean match(IASTLiteralExpression pattern, IASTLiteralExpression node) {
+        return pattern.getKind() == node.getKind() && Arrays.equals(pattern.getValue(), node.getValue());
+    }
 
-	private boolean match(IASTUnaryExpression pattern, IASTUnaryExpression node) {
-		return pattern.getOperator() == node.getOperator() && genericMatch(pattern.getOperand(), node.getOperand());
-	}
+    private boolean match(IASTUnaryExpression pattern, IASTUnaryExpression node) {
+        return pattern.getOperator() == node.getOperator() && genericMatch(pattern.getOperand(), node.getOperand());
+    }
 
-	private boolean match(IASTCastExpression pattern, IASTCastExpression node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTCastExpression pattern, IASTCastExpression node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTConditionalExpression pattern, IASTConditionalExpression node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTConditionalExpression pattern, IASTConditionalExpression node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTArraySubscriptExpression pattern, IASTArraySubscriptExpression node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTArraySubscriptExpression pattern, IASTArraySubscriptExpression node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTFieldReference pattern, IASTFieldReference node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTFieldReference pattern, IASTFieldReference node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTFunctionCallExpression pattern, IASTFunctionCallExpression node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTFunctionCallExpression pattern, IASTFunctionCallExpression node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTExpressionList pattern, IASTExpressionList node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTExpressionList pattern, IASTExpressionList node) {
+        return unsupported(pattern);
+    }
 
-	private boolean match(IASTTypeIdExpression pattern, IASTTypeIdExpression node) {
-		return unsupported(pattern);
-	}
+    private boolean match(IASTTypeIdExpression pattern, IASTTypeIdExpression node) {
+        return unsupported(pattern);
+    }
 
-	private ASTMatcher() {
-		;
-	}
+    private ASTMatcher() {
+        ;
+    }
 }

@@ -19,142 +19,134 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * A {@link TestSuite} containing a test for each <i>marker</i> found in the
- * files in a particular directory. A <i>marker</i> is an arbitrary string (such
- * as /*&lt;&lt;&lt;&lt;&lt; starting a C comment) followed by arbitrary text
- * that continues to the end of the line or the next marker, whichever appears
- * first.
+ * A {@link TestSuite} containing a test for each <i>marker</i> found in the files in a particular directory. A
+ * <i>marker</i> is an arbitrary string (such as /*&lt;&lt;&lt;&lt;&lt; starting a C comment) followed by arbitrary text
+ * that continues to the end of the line or the next marker, whichever appears first.
  * <p>
  * Subclasses must override {@link #createTestFor(File, int, String)}.
  * 
  * @author Jeff Overbey
  */
 public abstract class GeneralTestSuiteFromMarkers extends TestSuite {
-	protected final String description;
-	protected final String marker;
-	protected final String markerEnd;
+    protected final String description;
+    protected final String marker;
+    protected final String markerEnd;
 
-	/**
-	 * Constructor. Creates this {@link TestSuite} and populates it with test
-	 * cases.
-	 * 
-	 * @param description
-	 * @param marker
-	 * @param fileOrDirectory
-	 * @param filenameFilter
-	 * @param initializationData
-	 *            these arguments (if any) will be passed directly to
-	 *            {@link #initialize(Object...)} before adding tests to the test
-	 *            suite
-	 * @throws Exception
-	 */
-	public GeneralTestSuiteFromMarkers(String description, String marker, File fileOrDirectory,
-			FilenameFilter filenameFilter, Object... initializationData) throws Exception {
-		this(description, marker, "\n", fileOrDirectory, filenameFilter, initializationData); //$NON-NLS-1$
-	}
+    /**
+     * Constructor. Creates this {@link TestSuite} and populates it with test cases.
+     * 
+     * @param description
+     * @param marker
+     * @param fileOrDirectory
+     * @param filenameFilter
+     * @param initializationData
+     *            these arguments (if any) will be passed directly to {@link #initialize(Object...)} before adding tests
+     *            to the test suite
+     * @throws Exception
+     */
+    public GeneralTestSuiteFromMarkers(String description, String marker, File fileOrDirectory,
+            FilenameFilter filenameFilter, Object... initializationData) throws Exception {
+        this(description, marker, "\n", fileOrDirectory, filenameFilter, initializationData); //$NON-NLS-1$
+    }
 
-	/**
-	 * Constructor. Creates this {@link TestSuite} and populates it with test
-	 * cases.
-	 * 
-	 * @param description
-	 * @param marker
-	 * @param markerEnd
-	 * @param fileOrDirectory
-	 * @param filenameFilter
-	 * @param initializationData
-	 *            these arguments (if any) will be passed directly to
-	 *            {@link #initialize(Object...)} before adding tests to the test
-	 *            suite
-	 * @throws Exception
-	 */
-	public GeneralTestSuiteFromMarkers(String description, String marker, String markerEnd, File fileOrDirectory,
-			FilenameFilter filenameFilter, Object... initializationData) throws Exception {
-		this.description = description;
-		this.marker = marker;
-		this.markerEnd = markerEnd;
-		setName(getDescription(fileOrDirectory));
+    /**
+     * Constructor. Creates this {@link TestSuite} and populates it with test cases.
+     * 
+     * @param description
+     * @param marker
+     * @param markerEnd
+     * @param fileOrDirectory
+     * @param filenameFilter
+     * @param initializationData
+     *            these arguments (if any) will be passed directly to {@link #initialize(Object...)} before adding tests
+     *            to the test suite
+     * @throws Exception
+     */
+    public GeneralTestSuiteFromMarkers(String description, String marker, String markerEnd, File fileOrDirectory,
+            FilenameFilter filenameFilter, Object... initializationData) throws Exception {
+        this.description = description;
+        this.marker = marker;
+        this.markerEnd = markerEnd;
+        setName(getDescription(fileOrDirectory));
 
-		initialize(initializationData);
+        initialize(initializationData);
 
-		addTestsForFileOrDirectory(fileOrDirectory, filenameFilter);
+        addTestsForFileOrDirectory(fileOrDirectory, filenameFilter);
 
-		if (countTestCases() == 0)
-			throw new Exception(
-					String.format("No markers of the form %s found in %s", marker, fileOrDirectory.getName()));
-	}
+        if (countTestCases() == 0)
+            throw new Exception(String.format("No markers of the form %s found in %s", marker,
+                    fileOrDirectory.getName()));
+    }
 
-	/**
-	 * Callback method which is invoked before adding tests to this test suite.
-	 * <p>
-	 * This may be overridden to configure the object (e.g., set field values)
-	 * before tests are added.
-	 * 
-	 * @param initializationData
-	 *            the <code>initializationData</code> argument(s) passed to the
-	 *            constructor
-	 */
-	protected void initialize(Object... initializationData) {
-	}
+    /**
+     * Callback method which is invoked before adding tests to this test suite.
+     * <p>
+     * This may be overridden to configure the object (e.g., set field values) before tests are added.
+     * 
+     * @param initializationData
+     *            the <code>initializationData</code> argument(s) passed to the constructor
+     */
+    protected void initialize(Object... initializationData) {
+    }
 
-	public GeneralTestSuiteFromMarkers(String description, String marker, File fileOrDirectory,
-			final String filenameExtension) throws Exception {
-		this(description, marker, fileOrDirectory, new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(filenameExtension);
-			}
-		});
-	}
+    public GeneralTestSuiteFromMarkers(String description, String marker, File fileOrDirectory,
+            final String filenameExtension) throws Exception {
+        this(description, marker, fileOrDirectory, new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(filenameExtension);
+            }
+        });
+    }
 
-	private void addTestsForFileOrDirectory(File fileOrDirectory, FilenameFilter filenameFilter) throws Exception {
-		if (!fileOrDirectory.exists())
-			throw new FileNotFoundException(String.format("%s not found", fileOrDirectory.getAbsolutePath()));
-		if (!fileOrDirectory.canRead())
-			throw new IOException(String.format("%s cannot be read", fileOrDirectory.getAbsolutePath()));
+    private void addTestsForFileOrDirectory(File fileOrDirectory, FilenameFilter filenameFilter) throws Exception {
+        if (!fileOrDirectory.exists())
+            throw new FileNotFoundException(String.format("%s not found", fileOrDirectory.getAbsolutePath()));
+        if (!fileOrDirectory.canRead())
+            throw new IOException(String.format("%s cannot be read", fileOrDirectory.getAbsolutePath()));
 
-		if (fileOrDirectory.isDirectory())
-			for (File file : fileOrDirectory.listFiles(filenameFilter))
-				addTestsForFileOrDirectory(file, filenameFilter);
-		else
-			addTestForFile(fileOrDirectory);
-	}
+        if (fileOrDirectory.isDirectory())
+            for (File file : fileOrDirectory.listFiles(filenameFilter))
+                addTestsForFileOrDirectory(file, filenameFilter);
+        else
+            addTestForFile(fileOrDirectory);
+    }
 
-	private void addTestForFile(File file) throws IOException, Exception {
-		String fileContents = IOUtil.read(file);
-		for (int index = fileContents.indexOf(marker); index >= 0; index = fileContents.indexOf(marker, index + 1)) {
-			int endOfLine = fileContents.indexOf(markerEnd, index);
-			if (endOfLine < 0)
-				endOfLine = fileContents.length();
+    private void addTestForFile(File file) throws IOException, Exception {
+        String fileContents = IOUtil.read(file);
+        for (int index = fileContents.indexOf(marker); index >= 0; index = fileContents.indexOf(marker, index + 1)) {
+            int endOfLine = fileContents.indexOf(markerEnd, index);
+            if (endOfLine < 0)
+                endOfLine = fileContents.length();
 
-			int nextMarker = fileContents.indexOf(marker, index + 1);
-			if (nextMarker < 0)
-				nextMarker = fileContents.length();
+            int nextMarker = fileContents.indexOf(marker, index + 1);
+            if (nextMarker < 0)
+                nextMarker = fileContents.length();
 
-			int markerEnd = Math.min(endOfLine, nextMarker);
+            int markerEnd = Math.min(endOfLine, nextMarker);
 
-			this.addTest(createTestFor(file, index, fileContents.substring(index + marker.length(), markerEnd).trim()));
-		}
-	}
+            this.addTest(createTestFor(file, index, fileContents.substring(index + marker.length(), markerEnd).trim()));
+        }
+    }
 
-	protected String getDescription(File fileOrDirectory) {
-		StringBuffer sb = new StringBuffer(256);
-		sb.append(description);
-		sb.append(' ');
-		sb.append(fileOrDirectory.getName());
-		String message = sb.toString();
+    protected String getDescription(File fileOrDirectory) {
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(description);
+        sb.append(' ');
+        sb.append(fileOrDirectory.getName());
+        String message = sb.toString();
 
-		if (!fileOrDirectory.exists()) {
-			message = String.format("NOTE: Some optional test files are not present: directory %s does not exist",
-					fileOrDirectory);
-		}
+        if (!fileOrDirectory.exists()) {
+            message = String.format("NOTE: Some optional test files are not present: directory %s does not exist",
+                    fileOrDirectory);
+        }
 
-		return message;
-	}
+        return message;
+    }
 
-	public void test() {
-	} // to keep JUnit quiet
+    public void test() {
+    } // to keep JUnit quiet
 
-	protected abstract Test createTestFor(File fileContainingMarker, int markerOffset, String markerText)
-			throws Exception;
+    protected abstract Test createTestFor(File fileContainingMarker, int markerOffset, String markerText)
+            throws Exception;
 }

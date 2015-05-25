@@ -20,18 +20,18 @@ import edu.auburn.oaccrefac.internal.util.RefactoringTestSuite;
 import junit.framework.Test;
 
 public class IntroOpenACCParallelRefactoringTests extends RefactoringTestSuite<IntroOpenACCParallelRefactoring> {
-	public static Test suite() throws Exception {
-		return new IntroOpenACCParallelRefactoringTests();
-	}
+    public static Test suite() throws Exception {
+        return new IntroOpenACCParallelRefactoringTests();
+    }
 
-	public IntroOpenACCParallelRefactoringTests() throws Exception {
-		super(IntroOpenACCParallelRefactoring.class, "testcode/IntroOpenACCParallel");
-	}
+    public IntroOpenACCParallelRefactoringTests() throws Exception {
+        super(IntroOpenACCParallelRefactoring.class, "testcode/IntroOpenACCParallel");
+    }
 
-	@Override
-	protected void configureRefactoring(IntroOpenACCParallelRefactoring refactoring, IFile file,
-			TextSelection selection, LinkedList<String> markerFields) {
-		// String vectorLength = markerFields.removeFirst();
-		// refactoring.setMaxVectorLength(vectorLength);
-	}
+    @Override
+    protected void configureRefactoring(IntroOpenACCParallelRefactoring refactoring, IFile file,
+            TextSelection selection, LinkedList<String> markerFields) {
+        // String vectorLength = markerFields.removeFirst();
+        // refactoring.setMaxVectorLength(vectorLength);
+    }
 }

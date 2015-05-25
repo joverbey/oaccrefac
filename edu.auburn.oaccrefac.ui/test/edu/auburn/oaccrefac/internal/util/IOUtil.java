@@ -25,24 +25,24 @@ import java.io.Reader;
  * @author Jeff Overbey
  */
 public class IOUtil {
-	private IOUtil() {
-		;
-	}
+    private IOUtil() {
+        ;
+    }
 
-	public static String read(Reader in) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		for (int ch = in.read(); ch >= 0; ch = in.read()) {
-			sb.append((char) ch);
-		}
-		in.close();
-		return sb.toString();
-	}
+    public static String read(Reader in) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (int ch = in.read(); ch >= 0; ch = in.read()) {
+            sb.append((char) ch);
+        }
+        in.close();
+        return sb.toString();
+    }
 
-	public static String read(InputStream in) throws IOException {
-		return read(new InputStreamReader(in));
-	}
+    public static String read(InputStream in) throws IOException {
+        return read(new InputStreamReader(in));
+    }
 
-	public static String read(File file) throws IOException {
-		return read(new BufferedReader(new FileReader(file)));
-	}
+    public static String read(File file) throws IOException {
+        return read(new BufferedReader(new FileReader(file)));
+    }
 }
