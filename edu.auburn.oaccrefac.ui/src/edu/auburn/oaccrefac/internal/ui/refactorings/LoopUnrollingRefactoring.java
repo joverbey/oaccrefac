@@ -32,6 +32,11 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 		// TODO Auto-generated constructor stub
 	}
 
+    public void setUnrollFactor(int parseInt) {
+        // TODO Auto-generated method stub
+        
+    }
+
 	@Override
 	protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
 			throws CoreException, OperationCanceledException {

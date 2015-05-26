@@ -27,10 +27,10 @@ public final class ArbitraryStatement extends ASTAttributeOwner implements IASTS
             }
         }
 
-        if (!acceptByAttributes(action))
+        //if (!acceptByAttributes(action))
+        //    return false;
+        if (!acceptByAttributeSpecifiers(action))
             return false;
-        // if (!acceptByAttributeSpecifiers(action))
-        // return false;
 
         if (action.shouldVisitStatements) {
             switch (action.leave(this)) {

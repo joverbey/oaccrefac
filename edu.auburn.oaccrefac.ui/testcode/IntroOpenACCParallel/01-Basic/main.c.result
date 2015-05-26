@@ -1,5 +1,6 @@
 int main() {
-    #pragma acc parallel loop
-    for (int i = 0; i < 100; i++) /*<<<<< 2,5,3,10,pass*/
+ #pragma acc parallel loop private(n)
+	for (int i = 0; i < 100; i++)
+		/*<<<<< 2,5,3,10,pass*/
         ;
 }
