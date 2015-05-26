@@ -15,25 +15,28 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
  * 
  * ORIGINAL:				REFACTORED:
  * int x;					|  int x;
- * for (x=0; x<100; x++)	|  for (x=0; x<100; x+=5) {
- *   delete(x);				|    delete(x);
- *   						|    delete(x+1);
- *   						|	 delete(x+2);
- *   						|	 delete(x+3);
- *  						|	 delete(x+4);
+ * for (x=0; x<100; x++)	|  for (x=0; x<100; x++) {
+ *   delete(a[x]);			|    delete(a[x]); x++;
+ *   						|    delete(a[x]); x++;
+ *   						|	 delete(a[x]); x++;
+ *   						|	 delete(a[x]); x++;
+ *  						|	 delete(a[x]);
  *  						|  }
  * (Example taken from Wikipedia's webpage on loop unrolling)
  */
 @SuppressWarnings("restriction")
 public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
+    private int m_unrollFactor;
+    
 	public LoopUnrollingRefactoring(ICElement element, ISelection selection, ICProject project) {
-		super(element, selection, project);
-		// TODO Auto-generated constructor stub
+        super(element, selection, project);
+        if (selection == null || tu.getResource() == null || project == null)
+            initStatus.addFatalError("Invalid selection");
 	}
 
-    public void setUnrollFactor(int parseInt) {
-        // TODO Auto-generated method stub
+    public void setUnrollFactor(int toSet) {
+        m_unrollFactor = toSet;
         
     }
 
