@@ -1,7 +1,9 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
 import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,15 +38,23 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	}
 
     public void setUnrollFactor(int toSet) {
-        m_unrollFactor = toSet;
-        
+        if (toSet >= 0) {
+            m_unrollFactor = toSet;
+        } else {
+            throw new IllegalArgumentException("Unroll factor <= 0");
+        }
     }
 
 	@Override
 	protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
 			throws CoreException, OperationCanceledException {
-		// TODO Auto-generated method stub
-
+	    
+	    ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
+	    CASTForStatement loop = getLoop();
+	    
+	    
+//	    getLoopUpperBound(loop);
+	      
 	}
 
 	@Override

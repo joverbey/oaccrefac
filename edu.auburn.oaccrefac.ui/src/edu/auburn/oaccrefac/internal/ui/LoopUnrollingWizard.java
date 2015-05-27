@@ -1,7 +1,6 @@
 package edu.auburn.oaccrefac.internal.ui;
 
 import org.eclipse.cdt.ui.CUIPlugin;
-import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
@@ -18,14 +17,10 @@ public class LoopUnrollingWizard extends RefactoringWizard {
 
     LoopUnrollingRefactoring m_refactoring;
     
-    public LoopUnrollingWizard(Refactoring refactoring) {
+    public LoopUnrollingWizard(LoopUnrollingRefactoring refactoring) {
         super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-        
-        if (!(refactoring instanceof LoopUnrollingRefactoring))
-            throw new ClassCastException("LoopUnrollingWizard: "
-                    + "Refactoring not compatible for this wizard.");
-        
-        m_refactoring = (LoopUnrollingRefactoring)refactoring;
+
+        m_refactoring = refactoring;
         setDefaultPageTitle("Introduce OpenACC Parallel");
         setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
     }

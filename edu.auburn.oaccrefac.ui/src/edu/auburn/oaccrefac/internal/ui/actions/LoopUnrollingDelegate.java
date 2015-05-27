@@ -29,6 +29,8 @@ public class LoopUnrollingDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopUnrollingWizard(refactoring);
+        if (!(refactoring instanceof LoopUnrollingRefactoring))
+            throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
+        return new LoopUnrollingWizard((LoopUnrollingRefactoring) refactoring);
     }
 }

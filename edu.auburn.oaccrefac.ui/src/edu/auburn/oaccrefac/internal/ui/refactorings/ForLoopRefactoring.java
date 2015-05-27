@@ -2,6 +2,7 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.index.IIndexManager;
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -30,6 +32,10 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 @SuppressWarnings("restriction")
 public abstract class ForLoopRefactoring extends CRefactoring {
 
+    private SubMonitor m_progress;
+    private IASTTranslationUnit m_ast;
+    private IASTForStatement m_forloop;
+    
 	public ForLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
 		super(element, selection, project);
 		//Just pass up to super...
@@ -45,6 +51,11 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		pm.subTask("Waiting for indexer...");
 		prepareIndexer(pm);
 		pm.subTask("Analyzing selection...");
+		
+		m_progress = SubMonitor.convert(pm, 10);
+        m_ast = getAST(tu, m_progress.newChild(9));
+        m_forloop = findLoop(m_ast);
+		
 		return initStatus;
 	}
 
@@ -58,6 +69,24 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		if (!im.isProjectIndexed(project))
 			throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
 	}	
+	
+	/**
+	 * Since the loop is found via 'findLoop', we are already
+	 * assured that the loop is of type CASTForStatement, so
+	 * we don't have to check every time.
+	 * @return The selected for-loop for refactoring
+	 */
+	protected CASTForStatement getLoop() {
+	    return (CASTForStatement) m_forloop;
+	}
+	
+	protected SubMonitor getProgress() {
+	    return m_progress;
+	}
+	
+	protected IASTTranslationUnit getAST() {
+	    return m_ast;
+	}
 	
 	/**
 	 * This function finds the first CASTForStatement (for-loop) within a
