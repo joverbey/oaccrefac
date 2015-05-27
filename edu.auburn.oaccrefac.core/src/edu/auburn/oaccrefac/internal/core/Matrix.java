@@ -300,4 +300,23 @@ public final class Matrix {
         return builder.toString();
     }
 
+    @Override
+    public boolean equals(Object m) {
+    	if(!(m instanceof Matrix)) {
+    		return false;
+    	}
+    	Matrix mat = (Matrix) m;
+    	if(this.numColumns != mat.getNumColumns()) {
+    		return false;
+    	}
+    	for(int i = 0; i < getNumRows(); i++) {
+    		for(int j = 0; j < getNumColumns(); j++) {
+    			if(this.getValueAtMatrixIndex(i, j) != mat.getValueAtMatrixIndex(i, j)) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+    
 }

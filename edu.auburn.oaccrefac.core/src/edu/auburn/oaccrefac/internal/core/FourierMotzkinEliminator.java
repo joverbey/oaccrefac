@@ -847,6 +847,7 @@ public class FourierMotzkinEliminator {
      */
     public Matrix deleteRowsOfAllZeroes(Matrix matrixIn) {
         int numDeleted = 0;
+        //ArrayList<Integer> rowsToDelete = new ArrayList<Integer>();
         for (int i = 0; i < matrixIn.getNumRows(); i++) {
             if (matrixIn.isRowFullOfZeroes(matrixIn.getSingleRow(i))) {
                 matrixIn.deleteRow(i - numDeleted);
