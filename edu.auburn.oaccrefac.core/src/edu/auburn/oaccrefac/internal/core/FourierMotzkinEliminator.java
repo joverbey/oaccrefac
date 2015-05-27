@@ -604,7 +604,7 @@ public class FourierMotzkinEliminator {
     public double gcd(double a, double b) {
         while (b > 0) {
             double temp = b;
-            b = a % b; // % is remainder
+            b = a % b; 
             a = temp;
         }
         return a;
@@ -615,10 +615,12 @@ public class FourierMotzkinEliminator {
      * @return the gcd of all the elements in input
      */
     public double gcd(double[] input) {
-        double result = Math.abs(input[0]);
-        for (int i = 1; i < input.length - 1; i++)
-            result = gcd(result, Math.abs(input[i]));
-        return Math.abs(result);
+        double gcd = 1;
+        for(int i = 0; i < input.length - 1; i++) {
+            gcd = gcd(input[i], input[i+1]);
+            //System.out.println("" + gcd + ": " + input[i] + ", " + input[i+1]);
+        }
+        return gcd;
     }
 
     /**
