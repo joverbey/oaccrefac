@@ -2,9 +2,16 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -21,6 +28,11 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
+import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryIntegerConstant;
+import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
+
 /**
  * Class is meant to be an abstract base class for all ForLoop
  * transformation refactorings. It includes all methods that would
@@ -36,9 +48,27 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     private IASTTranslationUnit m_ast;
     private IASTForStatement m_forloop;
     
+    private static String[] patterns = {
+            "for (i = 0; i < 1; i++) ;",
+            "for (int i = 0; i < 1; i++) ;",
+            "for (i = 0; i <= 1; i++) ;",
+            "for (int i = 0; i <= 1; i++) ;",
+            "for (i = 0; i < 1; i+=1) ;",
+            "for (int i = 0; i < 1; i+=1) ;",
+            "for (i = 0; i <= 1; i+=1) ;",
+            "for (int i = 0; i <= 1; i+=1) ;",
+            "for (i = 0; i < 1; i=i+1) ;",
+            "for (int i = 0; i < 1; i=i+1) ;",
+            "for (i = 0; i <= 1; i=i+1) ;",
+            "for (int i = 0; i <= 1; i=i+1) ;",
+    };
+
+    
 	public ForLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
 		super(element, selection, project);
-		//Just pass up to super...
+		
+		if (selection == null || tu.getResource() == null || project == null)
+            initStatus.addFatalError("Invalid selection");
 	}
 
 	@Override
@@ -56,6 +86,10 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         m_ast = getAST(tu, m_progress.newChild(9));
         m_forloop = findLoop(m_ast);
 		
+        if (!supportedPattern(m_forloop)) {
+            initStatus.addFatalError("Loop form not supported!");
+        }
+        
 		return initStatus;
 	}
 
@@ -86,6 +120,20 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	
 	protected IASTTranslationUnit getAST() {
 	    return m_ast;
+	}
+	
+	protected IASTLiteralExpression getUpperBound() {
+        IASTExpression cond = m_forloop.getConditionExpression();
+        if (cond instanceof IASTBinaryExpression) {
+            IASTBinaryExpression binary_cond = (IASTBinaryExpression) cond;
+            return (IASTLiteralExpression) (binary_cond.getChildren()[1]);
+        } else {
+            return null;
+        }
+    }
+	
+	protected int getUpperBoundValue() {
+	    return Integer.parseInt(new String(getUpperBound().getValue()));
 	}
 	
 	/**
@@ -129,5 +177,52 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		Visitor v = new Visitor();
 		ast.accept(v);
 		return v.loop;
+	}
+
+    protected IASTName findFirstName(IASTNode tree) {
+        class Visitor extends ASTVisitor {
+            private IASTName varname = null;
+            
+            public Visitor() {
+                shouldVisitNames = true;
+            }
+            
+            @Override
+            public int visit(IASTName visitor) {
+                varname = visitor;
+                return PROCESS_ABORT;
+            }
+        }
+        Visitor v = new Visitor();
+        tree.accept(v);
+        return v.varname;
+    }
+	
+	protected boolean supportedPattern(IASTForStatement matchee) throws CoreException {
+	    
+	    for (String pattern : patterns) {
+	        IASTForStatement forLoop = (IASTForStatement) ASTUtil.parseStatement(pattern);
+	        IASTForStatement pattern_ast = forLoop.copy(CopyStyle.withoutLocations);
+	        ((IASTBinaryExpression)((IASTExpressionStatement)pattern_ast.getInitializerStatement()).getExpression()).setOperand2(new ArbitraryIntegerConstant());
+	        ((IASTBinaryExpression)pattern_ast.getConditionExpression()).setOperand2(new ArbitraryIntegerConstant());
+	        
+	        //change iteration constant to arbitrary in cases of:
+	        //     i+=<constant> and i=i+<constant>
+	        if (pattern_ast.getIterationExpression() instanceof IASTBinaryExpression) {
+    	        IASTBinaryExpression bin = (IASTBinaryExpression)pattern_ast.getIterationExpression();
+    	        if (bin.getOperand2() instanceof IASTLiteralExpression) {
+    	            //case: i+=<constant>
+    	            bin.setOperand2(new ArbitraryIntegerConstant());
+    	        } else {
+    	            //case: i=i+<constant>
+    	            IASTBinaryExpression plus = (IASTBinaryExpression)bin.getOperand2();
+    	            plus.setOperand2(new ArbitraryIntegerConstant());
+    	        }
+	        }
+	        pattern_ast.setBody(new ArbitraryStatement());
+	        if (ASTMatcher.unify(pattern_ast, matchee) != null)
+	            return true;
+	    }
+	    return false;
 	}
 }

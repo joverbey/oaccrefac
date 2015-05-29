@@ -36,17 +36,13 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 	
 	public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {
 		super(element, selection, project);
-		if (selection == null || tu.getResource() == null || project == null)
-			initStatus.addFatalError("Invalid selection");
 	}
 
 	@Override
 	protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
 			throws CoreException {
 		pm.subTask("Calculating modifications...");
-		
-		//SubMonitor progress = SubMonitor.convert(pm, 10);
-		//IASTTranslationUnit ast = getAST(tu, progress.newChild(9));
+
 		ASTRewrite rewriter = collector.rewriterForTranslationUnit(this.getAST());
 		CASTForStatement loop = getLoop();
 		IASTNode pragma = rewriter.createLiteralNode("	#pragma acc parallel loop private(n)\n");
