@@ -4,17 +4,16 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
-import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
 import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
 import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
@@ -27,11 +26,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryIntegerConstant;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
 /**
  * Class is meant to be an abstract base class for all ForLoop
@@ -199,11 +193,22 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     }
 	
 	protected boolean supportedPattern(IASTForStatement matchee) throws CoreException {
-	    
+	   /* 
 	    for (String pattern : patterns) {
 	        IASTForStatement forLoop = (IASTForStatement) ASTUtil.parseStatement(pattern);
 	        IASTForStatement pattern_ast = forLoop.copy(CopyStyle.withoutLocations);
-	        ((IASTBinaryExpression)((IASTExpressionStatement)pattern_ast.getInitializerStatement()).getExpression()).setOperand2(new ArbitraryIntegerConstant());
+	        
+	        if (pattern_ast.getInitializerStatement() instanceof IASTExpressionStatement)
+	            ((IASTBinaryExpression)((IASTExpressionStatement)pattern_ast.getInitializerStatement()).getExpression()).setOperand2(new ArbitraryIntegerConstant());
+	        else if (pattern_ast.getInitializerStatement() instanceof IASTDeclarationStatement) {
+	            IASTDeclaration d = ((IASTDeclarationStatement)pattern_ast.getInitializerStatement()).getDeclaration();
+	            IASTSimpleDeclaration sd = (IASTSimpleDeclaration)d;
+	            IASTDeclarator decl = sd.getDeclarators()[0];
+	            //This is really tedious...I know...thanks, CDT.
+	            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+	            decl.setInitializer(factory.newEqualsInitializer(new ArbitraryIntegerConstant()));
+	            
+	        }
 	        ((IASTBinaryExpression)pattern_ast.getConditionExpression()).setOperand2(new ArbitraryIntegerConstant());
 	        
 	        //change iteration constant to arbitrary in cases of:
@@ -224,5 +229,17 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	            return true;
 	    }
 	    return false;
+	    */
+	    return true;
+	} 
+	
+	protected IASTNode getNextSibling(IASTNode n) {
+	    IASTNode[] chilluns = n.getParent().getChildren();
+	    for (int i = 0; i < chilluns.length; i++) {
+	        if (n == chilluns[i] && i < (chilluns.length-1)) {
+	            return chilluns[i+1];
+	        }
+	    }
+	    return null;
 	}
 }

@@ -1,12 +1,15 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import java.util.ArrayList;
+
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.INodeFactory;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
@@ -65,7 +68,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    //factor.
 	    int extras = upper % m_unrollFactor;
 	    if (extras != 0) { //not divisible...
-	        //addTrailer(extras, rewriter);
+	        addTrailer(upper, extras, rewriter);
 	        
 	        //re-adjust upper because now we
 	        //will treat the actual loop as if
@@ -126,17 +129,111 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    //We will use this as the name to replace in corresponding accesses
 	    IASTName var_name = findFirstName(getLoop().getInitializerStatement());
 	    	    
+	    //Get the body of the loop in order to copy after loop
 	    IASTStatement braced_stmt = getLoop().getBody();
-	    for (IASTNode child : braced_stmt.getChildren()) {
-	        IASTNode newInsert = child.copy();
-	        //findNameReplaceLiteral(newInsert, var_name, )
+	    //Get the insertion locations
+	    IASTNode insert_parent = getLoop().getParent();
+	    IASTNode insert_before = getNextSibling(getLoop());
+	    
+	    
+	    /*
+	     * The trailer consists of a number of extra loop iterations after 
+	     * the loop to make up for the non-divisibility of the loop body
+	     * bounds in accordance with the given loop factor. We must copy
+	     * each individual statement of the body to the location right before
+	     * the next sibling of the loop.
+	     */
+	    for (int i = 0; i < extras; i++) {
+	        for (IASTNode child : braced_stmt.getChildren())  {
+	            IASTNode newInsert = child.copy();
+	            int replace_const = (upperBound-(extras-i));
+	            ASTRewrite newRewriter = rewriter.insertBefore(insert_parent, insert_before, newInsert, null);
+	            findNameReplaceWithLiteral(var_name, newInsert, replace_const, newRewriter);
+	        }
 	    }
 
 	}
 	
+	private void findNameReplaceWithLiteral(IASTName find, IASTNode tree, int replacement, ASTRewrite rewriter) {
+	    
+	    /**
+	     * The NameVisitor visits all names within a tree. In this
+	     * context, it is used by the AccessVisitor class in order
+	     * to find all names within an array subscript. For example,
+	     * a[i] = 0; -- it would find 'i' as an IASTName object and
+	     * add it to the 'name_list'. After completion, the name_list
+	     * will be filled with IASTName objects to be replaced.
+	     */
+	    class NameVisitor extends ASTVisitor {
+            private ArrayList<IASTName> name_list = null;
+            
+            public NameVisitor() {
+                name_list = new ArrayList<IASTName>();
+                //want to find names within access expressions
+                shouldVisitNames = true;
+            }
+            
+            @Override
+            public int visit(IASTName visitor) {
+                name_list.add(visitor);
+                return PROCESS_CONTINUE;
+            }
+        }
+	    
+	    /**
+	     * The AccessVisitor visits all expressions and specifically
+	     * looks for IASTArraySubscriptExpression objects within a tree.
+	     * From there, the subscript expression does another search within
+	     * its own tree to look for any IASTName objects.
+	     */
+	    class AccessVisitor extends ASTVisitor {
+            private IASTArraySubscriptExpression access = null;
+            private NameVisitor name_visitor = null;
+            
+            public AccessVisitor() {
+                name_visitor = new NameVisitor();
+                //want to find array access expressions
+                shouldVisitExpressions = true;
+            }
+            
+            @Override
+            public int visit(IASTExpression visitor) {
+                if (visitor instanceof IASTArraySubscriptExpression) {
+                    access = (IASTArraySubscriptExpression) visitor;
+                    access.accept(name_visitor);
+                }
+                return PROCESS_CONTINUE; //we want to visit all possibilities
+            }
+        }
+	    
+	    //Create a visitor and process on all instances of array subscript
+	    //expressions. This way we can create a list of all names we need
+	    //to replace within this tree.
+        AccessVisitor v = new AccessVisitor();
+        tree.accept(v);
+        
+        //Create our new literal node containing our constant
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTLiteralExpression const_replace = factory.newLiteralExpression(
+                IASTLiteralExpression.lk_integer_constant, 
+                replacement+"");
+        
+        //Iterate through list of names, replacing all matching
+        //names with the literal constant nodes.
+        //NOTE: The names IASTName are all children of IASTIdExpression,
+        //therefore, we must replace the parent instead. We should probably
+        //have a list of IdExpressions instead and compare them...but oh well?
+        for (IASTName name : v.name_visitor.name_list) {
+            String left = new String(name.getSimpleID());
+            String right = new String(find.getSimpleID());
+            if (left.compareTo(right) == 0) {
+                rewriter.replace(name.getParent(), const_replace, null);
+            }
+        }
+    }
+	
 	@Override
 	protected RefactoringDescriptor getRefactoringDescriptor() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
