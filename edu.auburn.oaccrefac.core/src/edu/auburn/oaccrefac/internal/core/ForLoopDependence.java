@@ -21,13 +21,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
-/**
- * Container for perfectly nested for statements that are candidates 
- * for Fourier-Motzkin elimination
- *
- * 
- *
- */
+
 public class ForLoopDependence {
 
     private Map<String, InductionVariable> inductionVariables;

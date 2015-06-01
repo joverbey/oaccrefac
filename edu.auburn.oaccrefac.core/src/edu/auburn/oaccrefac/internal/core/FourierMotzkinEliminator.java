@@ -17,7 +17,11 @@ import java.util.List;
  */
 
 public class FourierMotzkinEliminator {
-
+    
+    private void p(Object o) {
+        System.out.println(o);
+    }
+    
     public FourierMotzkinEliminator() {
     }
 
@@ -32,28 +36,32 @@ public class FourierMotzkinEliminator {
     public boolean eliminateForRealSolutions(Matrix matrixIn) {
         if (matrixIn.getNumRows() == 0)
             throw new IndexOutOfBoundsException("eliminateForRealSolutions - matrixIn is empty");
-
+        
         Matrix unconstrainedMatrix = new Matrix();
         while (unconstrainedMatrix.getNumRows() != matrixIn.getNumRows()) {
             unconstrainedMatrix = matrixIn.cloneMatrix();
             matrixIn = deleteAllUnconstrainedVariables(matrixIn);
-            if (matrixIn.getNumRows() == 0)
+            if (matrixIn.getNumRows() == 0) {
                 return true;
+            }
         }
 
         unconstrainedMatrix = null;
+        
 
         matrixIn = deleteAllUnconstrainedVariables(matrixIn);
         matrixIn = deleteRowsOfAllZeroes(matrixIn);
-        if (matrixIn.getNumRows() == 0)
+        
+        if (matrixIn.getNumRows() == 0) {
             return true;
-        if (containsInconsistentInequalities(matrixIn))
+        }
+        if (containsInconsistentInequalities(matrixIn)) {
             return false;
+        }
 
         // if 4 columns, eliminatedVar is 3 (subtract 1)
         // but Matrix index starts at 0, so subtract 2 to get correct index
         int eliminatedVar = matrixIn.getNumColumns() - 2;
-
         // Continue until we have eliminated every variable
         // or we have eliminated every row
         while (eliminatedVar >= 0 && matrixIn.getNumRows() > 0) {
@@ -68,6 +76,7 @@ public class FourierMotzkinEliminator {
         if (matrixIn.getNumRows() == 0) {
             return true;
         }
+        
 
         // simple inequalities exist - all coefficients should be 0
         else {
@@ -110,7 +119,8 @@ public class FourierMotzkinEliminator {
         }
 
         while ((eliminatedVar < (matrixIn.getNumColumns() - 1)) && matrixIn.getNumRows() > 0) {
-
+            //p("eliminatedVar: " + eliminatedVar);
+            //p("matrixIn: " + matrixIn);
             while (unconstrainedMatrix.getNumRows() != matrixIn.getNumRows()) {
                 unconstrainedMatrix = matrixIn.cloneMatrix();
                 matrixIn = deleteAllUnconstrainedVariables(matrixIn);
@@ -120,6 +130,9 @@ public class FourierMotzkinEliminator {
 
             matrixIn = deleteRedundantInequalities(matrixIn);
             matrixIn = deleteRowsOfAllZeroes(matrixIn);
+            
+            //p("matrix after redundant deletion: " + matrixIn);
+            
             if (matrixIn.getNumRows() == 0)
                 return true;
             if (containsInconsistentInequalities(matrixIn))
@@ -127,30 +140,35 @@ public class FourierMotzkinEliminator {
 
             if (isInexactProjection(matrixIn, eliminatedVar))
                 inexact = true;
-
+            //p("inexact projection: " + inexact);
             unconstrainedMatrix = matrixIn.cloneMatrix();
 
             // will use this for next round if !inexact or darkEmpty
             matrixIn = inexactIntegerProjection(matrixIn, eliminatedVar);
-
+            //p("inexactProj: " + matrixIn);
             if (inexact && !darkEmpty) {
+                //p("proj is inexact and dark shadow is nonempty");
                 // will use this for next round
                 // don't want to change unconstrainedMatrix here -- would mess
                 // up check in next round
                 matrixIn = darkShadowIntegerProjection(unconstrainedMatrix.cloneMatrix(), eliminatedVar);
-
+                //p("dark shadow proj: " + matrixIn);
                 if (eliminatedVar + 1 < (matrixIn.getNumColumns() - 1)) {
-                    if (isSolutionSetEmpty(getRowsWithCertainVariable(matrixIn, eliminatedVar + 1), eliminatedVar + 1))
+                    if (isSolutionSetEmpty(getRowsWithCertainVariable(matrixIn, eliminatedVar + 1), eliminatedVar + 1)) {
+                        //p("dark shadow is empty");
                         darkEmpty = true;
+                    }
                     else { // solution may exist...unlikely to get here
-                        if (eliminatedVar + 1 == matrixIn.getNumColumns() - 2)
+                        if (eliminatedVar + 1 == matrixIn.getNumColumns() - 2) {
+                            //p("nonempty dark shadow - solution exists");
                             return true;
+                        }
                     }
                 }
             }
             eliminatedVar++;
         }
-
+        //p("matrixIn after projs: " + matrixIn);
         // all variables have been eliminated - a solution exists
         if (matrixIn.getNumRows() == 0) {
             return true;
@@ -171,14 +189,20 @@ public class FourierMotzkinEliminator {
         }
 
         // Otherwise, there are values to check for a solution
-        if (isSolutionSetEmpty(matrixIn, eliminatedVar - 1))
+        if (isSolutionSetEmpty(matrixIn, eliminatedVar - 1)) {
             return false;
+        }
 
         // dark shadow is nonempty so an integer solution exists
-        if (darkEmpty == false)
+        if (darkEmpty == false) {
+            //p("dark proj is empty");
             return true;
-        else
+        }
+        // TODO: this line is wrong? - the dark shadow being empty is not sufficient to know
+        // that there is no integer solution
+        else {
             return false;
+        }
     }
 
     /** implements one iteration of the main loop of the FM elim algorithm
@@ -209,18 +233,18 @@ public class FourierMotzkinEliminator {
         for (int i = 0; i < lowerBoundSet.size(); i++) {
             matrixIn.divideRowByColIndex(lowerBoundSet.get(i), eliminatingVar);
         }
-
+        
         for (int i = 0; i < upperBoundSet.size(); i++) {
             matrixIn.divideRowByColIndex(upperBoundSet.get(i), eliminatingVar);
         }
-
+        
         // compare bounds to derive a new inequality that no longer
         // contains the variable being eliminated - (this variable should become
         // 0.0)
         for (int i = 0; i < lowerBoundSet.size(); i++) {
             for (int k = 0; k < upperBoundSet.size(); k++) {
-                double[] newRow = matrixIn.addTwoRowsToCreateNewRow(matrixIn.getSingleRow(lowerBoundSet.get(i)),
-                        matrixIn.getSingleRow(upperBoundSet.get(k)));
+                double[] newRow = matrixIn.addTwoRowsToCreateNewRow(matrixIn.getRow(lowerBoundSet.get(i)),
+                        matrixIn.getRow(upperBoundSet.get(k)));
                 matrixIn.addRowAtIndex(matrixIn.getNumRows(), newRow);
 
             }
@@ -260,11 +284,11 @@ public class FourierMotzkinEliminator {
         // the absolute value of that row's eliminating variable's value
         // i.e. divide row A_i by |a_ij|
         for (int i = 0; i < lowerBoundSet.size(); i++) {
-            double gcd = gcd(matrixIn.getSingleRow(lowerBoundSet.get(i)));
+            double gcd = gcd(matrixIn.getRow(lowerBoundSet.get(i)));
             matrixIn = divideRowForIntegerProjection(matrixIn, lowerBoundSet.get(i), gcd);
         }
         for (int i = 0; i < upperBoundSet.size(); i++) {
-            double gcd = gcd(matrixIn.getSingleRow(upperBoundSet.get(i)));
+            double gcd = gcd(matrixIn.getRow(upperBoundSet.get(i)));
             matrixIn = divideRowForIntegerProjection(matrixIn, upperBoundSet.get(i), gcd);
         }
 
@@ -280,10 +304,10 @@ public class FourierMotzkinEliminator {
         for (int i = 0; i < lowerBoundSet.size(); i++) {
             for (int k = 0; k < upperBoundSet.size(); k++) {
 
-                akj = (matrixIn.getSingleRow(upperBoundSet.get(k)))[eliminatingVar];
-                aij = (matrixIn.getSingleRow(lowerBoundSet.get(i)))[eliminatingVar];
-                akjAi = multiplyArrayByNumber(matrixIn.getSingleRow(lowerBoundSet.get(i)), akj);
-                aijAk = multiplyArrayByNumber(matrixIn.getSingleRow(upperBoundSet.get(k)), aij);
+                akj = (matrixIn.getRow(upperBoundSet.get(k)))[eliminatingVar];
+                aij = (matrixIn.getRow(lowerBoundSet.get(i)))[eliminatingVar];
+                akjAi = multiplyArrayByNumber(matrixIn.getRow(lowerBoundSet.get(i)), akj);
+                aijAk = multiplyArrayByNumber(matrixIn.getRow(upperBoundSet.get(k)), aij);
 
                 newRow = arraySubtraction(akjAi, aijAk);
                 matrixIn.addRowAtIndex(matrixIn.getNumRows(), newRow);
@@ -311,7 +335,7 @@ public class FourierMotzkinEliminator {
         // sets contain the row numbers of the matrix
         List<Integer> lowerBoundSet = calculateLowerBoundSet(matrixIn, eliminatingVar);
         List<Integer> upperBoundSet = calculateUpperBoundSet(matrixIn, eliminatingVar);
-
+        
         // if either bounding set is empty, delete anything with the variable
         // being eliminated and start eliminating a new variable
         // i.e., this variable is unconstrained so eliminate another
@@ -324,11 +348,11 @@ public class FourierMotzkinEliminator {
         // the absolute value of that row's eliminating variable's value
         // i.e. divide row A_i by |a_ij|
         for (int i = 0; i < lowerBoundSet.size(); i++) {
-            double gcd = gcd(matrixIn.getSingleRow(lowerBoundSet.get(i)));
+            double gcd = gcd(matrixIn.getRow(lowerBoundSet.get(i)));
             matrixIn = divideRowForIntegerProjection(matrixIn, lowerBoundSet.get(i), gcd);
         }
         for (int i = 0; i < upperBoundSet.size(); i++) {
-            double gcd = gcd(matrixIn.getSingleRow(upperBoundSet.get(i)));
+            double gcd = gcd(matrixIn.getRow(upperBoundSet.get(i)));
             matrixIn = divideRowForIntegerProjection(matrixIn, upperBoundSet.get(i), gcd);
         }
 
@@ -361,7 +385,7 @@ public class FourierMotzkinEliminator {
         List<Integer> redundants = new ArrayList<Integer>();
         for (int i = 0; i < matrixIn.getNumRows(); i++) {
             for (int k = i + 1; k < matrixIn.getNumRows(); k++) {
-                if (Arrays.equals(matrixIn.getSingleRow(i), matrixIn.getSingleRow(k)) && !redundants.contains(k)) {
+                if (Arrays.equals(matrixIn.getRow(i), matrixIn.getRow(k)) && !redundants.contains(k)) {
                     redundants.add(k);
                 }
             }
@@ -380,7 +404,7 @@ public class FourierMotzkinEliminator {
         List<Integer> inconsistent = new ArrayList<Integer>();
         for (int i = 0; i < matrixIn.getNumRows(); i++) {
             for (int k = i + 1; k < matrixIn.getNumRows(); k++) {
-                if (isInconsistentInequality(matrixIn.getSingleRow(i), matrixIn.getSingleRow(k))
+                if (isInconsistentInequality(matrixIn.getRow(i), matrixIn.getRow(k))
                         && !inconsistent.contains(i) && !inconsistent.contains(k)) {
                     inconsistent.add(i);
                     inconsistent.add(k);
@@ -401,7 +425,7 @@ public class FourierMotzkinEliminator {
         boolean inconsistent = false;
         for (int i = 0; i < matrixIn.getNumRows(); i++) {
             for (int k = i + 1; k < matrixIn.getNumRows(); k++) {
-                if (isInconsistentInequality(matrixIn.getSingleRow(i), matrixIn.getSingleRow(k))) {
+                if (isInconsistentInequality(matrixIn.getRow(i), matrixIn.getRow(k))) {
                     return true;
                 }
             }
@@ -458,26 +482,26 @@ public class FourierMotzkinEliminator {
      * @param upperBoundSet
      * @return the sorted matrix
      */
-    public Matrix sortMatrixByBoundingSetContents(Matrix matrixIn, List<Integer> lowerBoundSet,
-            List<Integer> upperBoundSet) {
-        if (matrixIn.getNumRows() == 0)
-            throw new IndexOutOfBoundsException("sortMatrixByBoundingSetContents - matrixIn is empty");
-
-        Matrix sortedMatrix = new Matrix();
-        for (Integer i = 0; i < matrixIn.getNumRows(); i++) {
-            // if the bounding sets contain the value, put it at the top of the
-            // matrix
-            // and push every row down
-            if (lowerBoundSet.contains(i) || upperBoundSet.contains(i)) {
-                // will push every other entry down
-                sortedMatrix.addRowAtIndex(0, matrixIn.getSingleRow(i));
-            }
-            // otherwise, put it at the bottom of the matrix
-            else
-                sortedMatrix.addRowAtIndex(sortedMatrix.getNumRows(), matrixIn.getSingleRow(i));
-        }
-        return sortedMatrix;
-    }
+//    public Matrix sortMatrixByBoundingSetContents(Matrix matrixIn, List<Integer> lowerBoundSet,
+//            List<Integer> upperBoundSet) {
+//        if (matrixIn.getNumRows() == 0)
+//            throw new IndexOutOfBoundsException("sortMatrixByBoundingSetContents - matrixIn is empty");
+//
+//        Matrix sortedMatrix = new Matrix();
+//        for (Integer i = 0; i < matrixIn.getNumRows(); i++) {
+//            // if the bounding sets contain the value, put it at the top of the
+//            // matrix
+//            // and push every row down
+//            if (lowerBoundSet.contains(i) || upperBoundSet.contains(i)) {
+//                // will push every other entry down
+//                sortedMatrix.addRowAtIndex(0, matrixIn.getRow(i));
+//            }
+//            // otherwise, put it at the bottom of the matrix
+//            else
+//                sortedMatrix.addRowAtIndex(sortedMatrix.getNumRows(), matrixIn.getRow(i));
+//        }
+//        return sortedMatrix;
+//    }
 
     /**
      * TODO don't need Deletes n=size rows from the top of the matrix. Use this
@@ -489,19 +513,19 @@ public class FourierMotzkinEliminator {
      * @return this matrix minus the top n=size rows
      * @throws IndexOutOfBoundsException
      */
-    public Matrix deleteRowsFromSortedMatrix(Matrix matrixIn, int size) throws IndexOutOfBoundsException {
-        if (matrixIn.getNumRows() == 0)
-            throw new IndexOutOfBoundsException("deleteRowsFromSortedMatrix - matrixIn is empty");
-
-        if (size > matrixIn.getNumRows() || size < 0)
-            throw new IndexOutOfBoundsException("deleteRowsFromSortedMatrix - size invalid");
-
-        // delete rows from the top of the matrix
-        for (int i = 0; i < size; i++) {
-            matrixIn.deleteRow(0);
-        }
-        return matrixIn;
-    }
+//    public Matrix deleteRowsFromSortedMatrix(Matrix matrixIn, int size) throws IndexOutOfBoundsException {
+//        if (matrixIn.getNumRows() == 0)
+//            throw new IndexOutOfBoundsException("deleteRowsFromSortedMatrix - matrixIn is empty");
+//
+//        if (size > matrixIn.getNumRows() || size < 0)
+//            throw new IndexOutOfBoundsException("deleteRowsFromSortedMatrix - size invalid");
+//
+//        // delete rows from the top of the matrix
+//        for (int i = 0; i < size; i++) {
+//            matrixIn.deleteRow(0);
+//        }
+//        return matrixIn;
+//    }
 
     /**
      * @param matrixIn
@@ -607,18 +631,17 @@ public class FourierMotzkinEliminator {
             b = a % b; 
             a = temp;
         }
-        return a;
+        return Math.abs(a);
     }
 
     /**
-     * @param input
+     * @param values
      * @return the gcd of all the elements in input
      */
-    public double gcd(double[] input) {
-        double gcd = 1;
-        for(int i = 0; i < input.length - 1; i++) {
-            gcd = gcd(input[i], input[i+1]);
-            //System.out.println("" + gcd + ": " + input[i] + ", " + input[i+1]);
+    public double gcd(double[] values) {
+        double gcd = Math.abs(values[0]);
+        for(int i = 0; i < values.length - 1; i++) {
+            gcd = gcd(gcd, Math.abs(values[i+1]));
         }
         return gcd;
     }
@@ -678,7 +701,7 @@ public class FourierMotzkinEliminator {
         double[] equation;
         double lastNum = 0.0;
         for (int i = 0; i < numberOfEquations; i++) {
-            equation = solutionSpace.getSingleRow(i);
+            equation = solutionSpace.getRow(i);
             lastNum = equation[equation.length - 1]; // last number in equation
             if (multipleNonZeroValuesExistInArrayExcludingLastPlace(equation))
                 return false;
@@ -734,8 +757,8 @@ public class FourierMotzkinEliminator {
     private Matrix getRowsWithCertainVariable(Matrix matrixIn, int colNum) {
         Matrix rowsWithVar = new Matrix();
         for (int i = 0; i < matrixIn.getNumRows() - 1; i++) {
-            if (matrixIn.getSingleRow(i)[colNum] != 0)
-                rowsWithVar.addRowAtIndex(rowsWithVar.getNumRows(), matrixIn.getSingleRow(i));
+            if (matrixIn.getRow(i)[colNum] != 0)
+                rowsWithVar.addRowAtIndex(rowsWithVar.getNumRows(), matrixIn.getRow(i));
         }
         return rowsWithVar;
     }
@@ -750,7 +773,7 @@ public class FourierMotzkinEliminator {
         double inexactCond = 0;
         for (int i = 0; i < matrixIn.getNumRows() - 1; i++) {
             for (int k = i + 1; k < matrixIn.getNumRows() - 1; k++) {
-                inexactCond = matrixIn.getSingleRow(i)[elimVar] * matrixIn.getSingleRow(k)[elimVar];
+                inexactCond = matrixIn.getRow(i)[elimVar] * matrixIn.getRow(k)[elimVar];
                 if (Math.abs(inexactCond) > 1)
                     return true;
             }
@@ -760,29 +783,29 @@ public class FourierMotzkinEliminator {
 
     /**
      * @param matrixIn
-     * @param rowIndex
+     * @param row
      * @param divisor
      * @return matrixIn a matrix with the designated row's value divided by
      *         divisor
      */
-    public Matrix divideRowForIntegerProjection(Matrix matrixIn, int rowIndex, double divisor) {
-        int lastColIndex = matrixIn.getSingleRow(rowIndex).length - 1;
+    public Matrix divideRowForIntegerProjection(Matrix matrixIn, int row, double divisor) {
+        int lastColIndex = matrixIn.getRow(row).length - 1;
 
         // divide row A_i by divisor (won't get last column)
         for (int i = 0; i < lastColIndex; i++) {
-            if (matrixIn.getSingleRow(rowIndex)[i] != 0 && (matrixIn.getSingleRow(rowIndex)[i] / divisor) == 0.0) {
+            if (matrixIn.getRow(row)[i] != 0 && (matrixIn.getRow(row)[i] / divisor) == 0.0) {
                 throw new ArithmeticException("divideRowForIntegerProjection - underflow");
             }
-            matrixIn.getSingleRow(rowIndex)[i] = matrixIn.getSingleRow(rowIndex)[i] / divisor;
-            if (matrixIn.getSingleRow(rowIndex)[i] == Double.POSITIVE_INFINITY
-                    || matrixIn.getSingleRow(rowIndex)[i] == Double.NEGATIVE_INFINITY
-                    || matrixIn.getSingleRow(rowIndex)[i] == Double.NaN) {
+            matrixIn.getRow(row)[i] = matrixIn.getRow(row)[i] / divisor;
+            if (matrixIn.getRow(row)[i] == Double.POSITIVE_INFINITY
+                    || matrixIn.getRow(row)[i] == Double.NEGATIVE_INFINITY
+                    || matrixIn.getRow(row)[i] == Double.NaN) {
                 throw new ArithmeticException("divideRowForIntegerProjection - overflow or NaN result");
             }
         }
 
         // let b_i = floor( b_i / divisor )
-        matrixIn.getSingleRow(rowIndex)[lastColIndex] = Math.floor(matrixIn.getSingleRow(rowIndex)[lastColIndex]
+        matrixIn.getRow(row)[lastColIndex] = Math.floor(matrixIn.getRow(row)[lastColIndex]
                 / divisor);
 
         return matrixIn;
@@ -801,15 +824,15 @@ public class FourierMotzkinEliminator {
      * @return newRow the dark shadow inequality
      */
     public double[] calculateDarkShadow(Matrix matrixIn, int lowerBoundSetVal, int upperBoundSetVal, int elimVar) {
-        double akj = (matrixIn.getSingleRow(upperBoundSetVal))[elimVar];
-        double aij = (matrixIn.getSingleRow(lowerBoundSetVal))[elimVar];
-        double[] akjAi = multiplyArrayByNumber(matrixIn.getSingleRow(lowerBoundSetVal).clone(), akj);
-        double[] aijAk = multiplyArrayByNumber(matrixIn.getSingleRow(upperBoundSetVal).clone(), aij);
-        double akjbi = akj * matrixIn.getSingleRow(lowerBoundSetVal)[matrixIn.getNumColumns() - 1];
+        double akj = (matrixIn.getRow(upperBoundSetVal))[elimVar];
+        double aij = (matrixIn.getRow(lowerBoundSetVal))[elimVar];
+        double[] akjAi = multiplyArrayByNumber(matrixIn.getRow(lowerBoundSetVal).clone(), akj);
+        double[] aijAk = multiplyArrayByNumber(matrixIn.getRow(upperBoundSetVal).clone(), aij);
+        double akjbi = akj * matrixIn.getRow(lowerBoundSetVal)[matrixIn.getNumColumns() - 1];
         if (akjbi == Double.POSITIVE_INFINITY || akjbi == Double.NEGATIVE_INFINITY || akjbi == Double.NaN) {
             throw new ArithmeticException("calculateDarkShadow - overflow or NaN result for akjbi");
         }
-        double aijbk = aij * matrixIn.getSingleRow(upperBoundSetVal)[matrixIn.getNumColumns() - 1];
+        double aijbk = aij * matrixIn.getRow(upperBoundSetVal)[matrixIn.getNumColumns() - 1];
         if (aijbk == Double.POSITIVE_INFINITY || aijbk == Double.NEGATIVE_INFINITY || aijbk == Double.NaN) {
             throw new ArithmeticException("calculateDarkShadow - overflow or NaN result for aijbk");
         }
@@ -850,7 +873,7 @@ public class FourierMotzkinEliminator {
     public Matrix deleteRowsOfAllZeroes(Matrix matrixIn) {
         ArrayList<Integer> rowsToDelete = new ArrayList<Integer>();
         for (int i = 0; i < matrixIn.getNumRows(); i++) {
-            if (matrixIn.isRowFullOfZeroes(matrixIn.getSingleRow(i))) {
+            if (matrixIn.isRowFullOfZeroes(matrixIn.getRow(i))) {
                 rowsToDelete.add(i);
             }
         }

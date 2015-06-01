@@ -21,6 +21,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 
 public class ASTUtil {
+    
+    private ASTUtil() { }
+    
     public static <T> List<T> find(IASTNode parent, Class<T> clazz) {
         List<T> results = new LinkedList<T>();
         findAndAdd(parent, clazz, results);
