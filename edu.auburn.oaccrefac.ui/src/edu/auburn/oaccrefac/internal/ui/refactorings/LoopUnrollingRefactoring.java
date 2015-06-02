@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
@@ -60,15 +63,33 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    
 	    ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
 	    
+	    IASTStatement body = getLoop().getBody();
+        //if the body is empty, exit out -- pointless to unroll.
+        if (body == null || body instanceof IASTNullStatement)
+            return;
+        
+        
+        IASTCompoundStatement body_compound = null;
+        //if the body is not within braces, i.e. short-cut
+        //loop pattern, make it a compounded statement
+        if (!(body instanceof IASTCompoundStatement)) {
+            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+            body_compound = factory.newCompoundStatement();
+            body_compound.addStatement(body.copy());
+        } else {
+            body_compound = (IASTCompoundStatement) (body.copy());
+        }
+	    
 	    //get the loop upper bound from AST
 	    int upper = getUpperBoundValue();
+	    
 	    
 	    //Number of extra iterations to add after loop. Also
 	    //used to test if the loop is divisible by the unroll
 	    //factor.
 	    int extras = upper % m_unrollFactor;
 	    if (extras != 0) { //not divisible...
-	        addTrailer(upper, extras, rewriter);
+	        addTrailer(upper, extras, body_compound, rewriter);
 	        
 	        //re-adjust upper because now we
 	        //will treat the actual loop as if
@@ -80,10 +101,10 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	        setUpperBound(upper, rewriter);
 	    }
 	    
-	    //Now non-divisible loops are now treated as divisible loops.
-	    //Unroll the loop however many times specified.
-	    unroll(rewriter);
-	    
+	  //Now non-divisible loops are now treated as divisible loops.
+        //Unroll the loop however many times specified.
+        unroll((IASTCompoundStatement) body_compound);
+        rewriter.replace(getLoop().getBody(), body_compound, null);
 	}
 	
 	private void setUpperBound(int newUpperBound, ASTRewrite rewriter) {
@@ -100,37 +121,33 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    rewriter.replace(node_upper, newExpr, null);
 	}
 	
-	private void unroll(ASTRewrite rewriter) {	    
-	    IASTStatement braced_stmt = getLoop().getBody();
-	    IASTNode first_expr = braced_stmt.getChildren()[0];
-
-	    IASTExpression iter_exp = getLoop().getIterationExpression();
-        IASTNode iter_delimiter = rewriter.createLiteralNode(";");
+	private void unroll(IASTCompoundStatement body) {	
+	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+	    IASTExpression iter_expr = getLoop().getIterationExpression();
+        IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
 	    
 	    //We do unroll-1 since the first unroll is considered the
         //loop body itself without modifications. 
         //(i.e. a loop unroll of 1 would be no changes)
+        IASTNode[] chilluns = body.getChildren();
         for (int i = 0; i < (m_unrollFactor-1); i++) {
+            //Insert our loop iteration
+            body.addStatement(iter_exprstmt);
             //insert all children in the braced compound expression
             //before the first element
-            for (IASTNode child : braced_stmt.getChildren()) {
-                rewriter.insertBefore(braced_stmt, first_expr, child, null);
+            for (IASTNode child : chilluns) {
+                if (child instanceof IASTStatement) {
+                    body.addStatement((IASTStatement) child.copy()); 
+                }
             }
-            //Insert our loop iteration
-            rewriter.insertBefore(braced_stmt, first_expr, iter_exp, null);
-            //Add a semicolon after the iteration expression
-            //(it doesn't already come with one since it came from loop init)
-            rewriter.insertBefore(braced_stmt, first_expr, iter_delimiter, null);
         }
 	}
 	
-	private void addTrailer(int upperBound, int extras, ASTRewrite rewriter) {
+	private void addTrailer(int upperBound, int extras, IASTStatement body ,ASTRewrite rewriter) {
 	    //Find the first name in the initializer statement
 	    //We will use this as the name to replace in corresponding accesses
 	    IASTName var_name = findFirstName(getLoop().getInitializerStatement());
 	    	    
-	    //Get the body of the loop in order to copy after loop
-	    IASTStatement braced_stmt = getLoop().getBody();
 	    //Get the insertion locations
 	    IASTNode insert_parent = getLoop().getParent();
 	    IASTNode insert_before = getNextSibling(getLoop());
@@ -144,7 +161,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	     * the next sibling of the loop.
 	     */
 	    for (int i = 0; i < extras; i++) {
-	        for (IASTNode child : braced_stmt.getChildren())  {
+	        for (IASTNode child : body.getChildren())  {
 	            IASTNode newInsert = child.copy();
 	            int replace_const = (upperBound-(extras-i));
 	            ASTRewrite newRewriter = rewriter.insertBefore(insert_parent, insert_before, newInsert, null);

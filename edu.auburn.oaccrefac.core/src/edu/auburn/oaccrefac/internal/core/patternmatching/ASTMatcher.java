@@ -12,9 +12,13 @@ import org.eclipse.cdt.core.dom.ast.IASTCastExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTConditionalExpression;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTDefaultStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDoStatement;
+import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionList;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -92,6 +96,14 @@ public final class ASTMatcher {
             return match((IASTCompoundStatement) pattern, (IASTCompoundStatement) node);
         } else if (pattern instanceof IASTContinueStatement) {
             return match((IASTContinueStatement) pattern, (IASTContinueStatement) node);
+        } else if (pattern instanceof IASTEqualsInitializer) {
+            return match((IASTEqualsInitializer) pattern, (IASTEqualsInitializer) node);
+        } else if (pattern instanceof IASTDeclarator) {
+            return match((IASTDeclarator) pattern, (IASTDeclarator) node);
+        } else if (pattern instanceof IASTDeclSpecifier) {
+            return match((IASTDeclSpecifier) pattern, (IASTDeclSpecifier) node);
+        } else if (pattern instanceof IASTDeclaration) {
+            return match((IASTDeclaration) pattern, (IASTDeclaration) node);
         } else if (pattern instanceof IASTDeclarationStatement) {
             return match((IASTDeclarationStatement) pattern, (IASTDeclarationStatement) node);
         } else if (pattern instanceof IASTDefaultStatement) {
@@ -177,9 +189,36 @@ public final class ASTMatcher {
     public boolean match(IASTContinueStatement pattern, IASTContinueStatement node) {
         return true;
     }
+    
+    public boolean match (IASTEqualsInitializer pattern, IASTEqualsInitializer node) {
+        return genericMatch(pattern.getInitializerClause(), node.getInitializerClause());
+    }
+    
+    public boolean match(IASTDeclaration pattern, IASTDeclaration node) {
+        IASTNode[] patternChilluns = pattern.getChildren();
+        IASTNode[] nodeChilluns = node.getChildren();
+        int len = patternChilluns.length;
+        if (nodeChilluns.length != len)
+            return false;
+        for (int i = 0; i < len; i++) {
+            if (!genericMatch(patternChilluns[i], nodeChilluns[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean match(IASTDeclarator pattern, IASTDeclarator node) {
+        return genericMatch(pattern.getInitializer(), node.getInitializer())
+             && genericMatch(pattern.getNestedDeclarator(), node.getNestedDeclarator());
+    }
+    
+    public boolean match(IASTDeclSpecifier pattern, IASTDeclSpecifier node) {
+        return (pattern.getStorageClass() == node.getStorageClass());
+    }
 
     public boolean match(IASTDeclarationStatement pattern, IASTDeclarationStatement node) {
-        return unsupported(pattern);
+        return genericMatch(pattern.getDeclaration(), node.getDeclaration());
     }
 
     public boolean match(IASTDoStatement pattern, IASTDoStatement node) {
