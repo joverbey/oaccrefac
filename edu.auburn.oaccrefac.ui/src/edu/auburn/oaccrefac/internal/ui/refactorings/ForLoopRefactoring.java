@@ -104,11 +104,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 			throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
 	}	
 	
-	protected void refresh() throws OperationCanceledException, CoreException {
-	    m_ast = getAST(tu, m_progress.newChild(9));
-        m_forloop = findLoop(m_ast);
-	}
-	
 	protected CASTForStatement getLoop() {
 	    return (CASTForStatement) m_forloop;
 	}
@@ -200,7 +195,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	protected boolean supportedPattern(IASTForStatement matchee) throws CoreException {
 	    class LiteralReplacer extends ASTVisitor {
             public LiteralReplacer() {
-                //want to find names within access expressions
                 shouldVisitExpressions = true;
             }
             
