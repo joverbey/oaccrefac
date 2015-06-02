@@ -106,7 +106,7 @@ public class ASTUtil {
      *            the IASTNode to extract the line number information from
      * @throws RuntimeException
      */
-    static void raise(String message, IASTNode node) {
+    public static void raise(String message, IASTNode node) {
         throw new RuntimeException(message + " at line " + node.getFileLocation().getStartingLineNumber());
     }
 }
