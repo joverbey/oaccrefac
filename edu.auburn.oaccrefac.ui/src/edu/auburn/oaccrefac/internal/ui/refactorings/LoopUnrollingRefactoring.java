@@ -17,10 +17,7 @@ import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 
@@ -57,12 +54,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
     }
 
 	@Override
-	protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
-			throws CoreException, OperationCanceledException {
-	    pm.subTask("Calculating modifications...");
-	    
-	    ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
-	    
+	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	    	    
 	    IASTStatement body = getLoop().getBody();
         //if the body is empty, exit out -- pointless to unroll.
         if (body == null || body instanceof IASTNullStatement)

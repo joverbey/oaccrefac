@@ -13,15 +13,11 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
-import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.text.edits.TextEditGroup;
@@ -39,11 +35,7 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 	}
 
 	@Override
-	protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
-			throws CoreException {
-		pm.subTask("Calculating modifications...");
-
-		ASTRewrite rewriter = collector.rewriterForTranslationUnit(this.getAST());
+	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
 		CASTForStatement loop = getLoop();
 		IASTNode pragma = rewriter.createLiteralNode("	#pragma acc parallel loop private(n)\n");
 		rewriter.insertBefore(loop.getParent(), loop, pragma,

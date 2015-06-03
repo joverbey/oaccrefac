@@ -12,6 +12,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -48,6 +49,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     private IASTTranslationUnit m_ast;
     private IASTForStatement m_forloop;
     
+    //Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
             "for (i = 0; i < 1; i++) ;",
             "for (int i = 0; i < 1; i++) ;",
@@ -63,18 +65,57 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             "for (int i = 0; i <= 1; i=i+1) ;",
     };
 
-    
+    /**
+     * The constructor for ForLoopRefactoring takes items for refactoring and tosses them
+     * up to the super class as well as does some checks to make sure things are capiche.
+     */
 	public ForLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
 		super(element, selection, project);
 		
 		if (selection == null || tu.getResource() == null || project == null)
             initStatus.addFatalError("Invalid selection");
 	}
+	
+	/**
+	 * This is the abstract method that is the implementation for all refactorings.
+	 * Override this method in inherited classes and use the rewriter to collect changes
+	 * for refactoring.
+	 * Tip: Make bigger changes at a time -- making a ton of small replacements and additions
+	 *      in the rewriter may cause issues with overwritting text edits and nodes that don't
+	 *      appear to be in the AST. You can create new nodes using a node factory of the form
+	 *      ICNodeFactory factory = ASTNodeFactoryFactory.getCDefaultFactory();
+	 * Tip: Trying to add nodes from an existing AST (say, from the refactored code) into a
+	 *      node created from the factory may give you a 'this node is frozen' error. When
+	 *      adding a node from an existing AST to one created from a factory, call 'node'.copy()
+	 *      to create an unfrozen copy of the node.
+	 * @param rewriter
+	 * @param pm
+	 */
+	protected abstract void refactor(ASTRewrite rewriter, IProgressMonitor pm);
 
+	/**
+	 * This method is the driver for the refactoring implementation that you defined above.
+	 * It does some initialization before the refactoring (that is also similar to all
+	 * for loop refactorings) and then calls your implementation.
+	 */
 	@Override
-	protected abstract void collectModifications(IProgressMonitor pm, ModificationCollector collector)
-			throws CoreException, OperationCanceledException;
+	protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
+			throws CoreException, OperationCanceledException {
+	    
+	    pm.subTask("Calculating modifications...");   
+	    ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
+	    //Other initilization stuff here...
+	    
+	    refactor(rewriter, pm);
+	}
 
+	/**
+	 * Checks some initial conditions based on the element to be refactored. 
+	 * The method is typically called by the UI to perform an initial checks 
+	 * after an action has been executed. The refactoring has to be considered 
+	 * as not being executable if the returned status has the severity of 
+	 * RefactoringStatus#FATAL. 
+	 */
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
@@ -93,6 +134,12 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		return initStatus;
 	}
 
+	/**
+	 * Indexes the project if the project has not already been indexed.
+	 * Something to do with references???
+	 * @param pm
+	 * @throws CoreException
+	 */
 	private void prepareIndexer(IProgressMonitor pm) throws CoreException  {
 		IIndexManager im = CCorePlugin.getIndexManager();
 		while (!im.isProjectIndexed(project)) {
@@ -103,32 +150,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		if (!im.isProjectIndexed(project))
 			throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
 	}	
-	
-	protected CASTForStatement getLoop() {
-	    return (CASTForStatement) m_forloop;
-	}
-	
-	protected SubMonitor getProgress() {
-	    return m_progress;
-	}
-	
-	protected IASTTranslationUnit getAST() {
-	    return m_ast;
-	}
-	
-	protected IASTLiteralExpression getUpperBound() {
-        IASTExpression cond = m_forloop.getConditionExpression();
-        if (cond instanceof IASTBinaryExpression) {
-            IASTBinaryExpression binary_cond = (IASTBinaryExpression) cond;
-            return (IASTLiteralExpression) (binary_cond.getChildren()[1]);
-        } else {
-            return null;
-        }
-    }
-	
-	protected int getUpperBoundValue() {
-	    return Integer.parseInt(new String(getUpperBound().getValue()));
-	}
 	
 	/**
 	 * This function finds the first CASTForStatement (for-loop) within a
@@ -173,6 +194,13 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		return v.loop;
 	}
 
+	/**
+	 * This method takes a tree and finds the first IASTName occurrence within the
+	 * tree. This was a helper method that was used in LoopUnrolling that could be
+	 * applied to other situations, so it was placed here for utility.
+	 * @param tree -- tree in which to traverse
+	 * @return IASTName node of first variable name found
+	 */
     protected IASTName findFirstName(IASTNode tree) {
         class Visitor extends ASTVisitor {
             private IASTName varname = null;
@@ -192,6 +220,18 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return v.varname;
     }
 	
+    /**
+     * Method matches the parameter with all of the patterns defined in
+     * the pattern string array above. It parses each string into a corresponding
+     * AST and then uses a pattern matching utility to match if the pattern
+     * is loosely synonymous to the matchee.
+     * (Basically, we have to check some pre-conditions before refactoring or else
+     *   we could run into some hairy cases such as an array subscript expression
+     *   being in the initializer statement...which would be a nightmare to refactor).
+     * @param matchee -- tree or AST to match
+     * @return Boolean describing whether the matchee matches any supported pattern
+     * @throws CoreException
+     */
 	protected boolean supportedPattern(IASTForStatement matchee) throws CoreException {
 	    class LiteralReplacer extends ASTVisitor {
             public LiteralReplacer() {
@@ -222,6 +262,35 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	    return false;
 	} 
 	
+	//*************************************************************************
+    //Getters & Setters
+	
+    protected CASTForStatement getLoop() {
+        return (CASTForStatement) m_forloop;
+    }
+    
+    protected SubMonitor getProgress() {
+        return m_progress;
+    }
+    
+    protected IASTTranslationUnit getAST() {
+        return m_ast;
+    }
+    
+    protected IASTLiteralExpression getUpperBound() {
+        IASTExpression cond = m_forloop.getConditionExpression();
+        if (cond instanceof IASTBinaryExpression) {
+            IASTBinaryExpression binary_cond = (IASTBinaryExpression) cond;
+            return (IASTLiteralExpression) (binary_cond.getChildren()[1]);
+        } else {
+            return null;
+        }
+    }
+    
+    protected int getUpperBoundValue() {
+        return Integer.parseInt(new String(getUpperBound().getValue()));
+    }
+	
 	/**
 	 * This method (which baffles me as to why there isn't one of these
 	 * in the IASTNode class, but whatever) returns the next sibling 
@@ -240,4 +309,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	    }
 	    return null;
 	}
+	
+	//*************************************************************************
 }
