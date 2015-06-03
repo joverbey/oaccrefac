@@ -16,7 +16,7 @@ public class DependenceRunner {
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
         for (IASTNode child : main.getBody().getChildren()) {
             if (child instanceof CPPASTForStatement) {
-                ForLoopDependence dependence = new ForLoopDependence((CPPASTForStatement) child);
+                ForLoopDependenceSystem dependence = new ForLoopDependenceSystem((CPPASTForStatement) child);
                                 
             }
         }

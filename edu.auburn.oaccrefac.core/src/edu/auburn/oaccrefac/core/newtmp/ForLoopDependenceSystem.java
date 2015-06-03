@@ -1,5 +1,10 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -10,7 +15,10 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.IndexExpression;
+import edu.auburn.oaccrefac.internal.core.InductionVariable;
 import edu.auburn.oaccrefac.internal.core.Matrix;
+import edu.auburn.oaccrefac.internal.core.Pair;
 
 /**
  * @author Alexander Calvert
@@ -19,11 +27,12 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
  *
  */
 @SuppressWarnings("restriction")
-public class ForLoopDependence {
+public class ForLoopDependenceSystem {
 
     private Matrix inequalityMatrix;
     private Matrix equalityMatrix;
-    
+    private Map<String, InductionVariable> inductionVariables;    
+
     /** 
      * Constructor
      * takes a for statement in, setting up this instance's dependence 
@@ -31,7 +40,7 @@ public class ForLoopDependence {
      * 
      * @param outerLoop the outer for loop to be 
      */
-    public ForLoopDependence(CPPASTForStatement outerLoop) {
+    public ForLoopDependenceSystem(CPPASTForStatement outerLoop) {
         //consolidate most of the original code from Calvin's ForLoopDependence
         //to this constructor
         //should check for valid/invalid for statements and bodies and generate both
@@ -166,7 +175,7 @@ public class ForLoopDependence {
             p("only stmt is not asgt");
             return false;
         }
-    }
+    }    
     
     
 }
