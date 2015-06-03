@@ -5,6 +5,7 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
@@ -43,7 +44,7 @@ public class ForLoopDependence {
         
         //check if only statements on innermost loop are assignments
 
-        p(areAllStatementsInInnermostLoopBodyAssignments(outerLoop));
+        p(areAllInnermostStatementsValid(outerLoop));
         
         //for now, assume that there is only one statement in the body and  
         //that it's an assignment
@@ -106,10 +107,12 @@ public class ForLoopDependence {
     }
     
     /** Assumes loops are perfectly nested
+     * Check if all innermost statements are valid
+     *  currently, a valid statement is either an assignment statement or null
      * @param outerLoop
      * @return
      */
-    private boolean areAllStatementsInInnermostLoopBodyAssignments(CPPASTForStatement outerLoop) {
+    private boolean areAllInnermostStatementsValid(CPPASTForStatement outerLoop) {
         IASTNode body = outerLoop.getBody();
         if(body instanceof IASTCompoundStatement) {
             p("compound stmt body");
@@ -120,30 +123,36 @@ public class ForLoopDependence {
             //assuming perfect nesting, so only check children[0]
             else if(body.getChildren()[0] instanceof CPPASTForStatement) {
                 p("body has a for stmt child, calling recursively");
-                return areAllStatementsInInnermostLoopBodyAssignments((CPPASTForStatement) body.getChildren()[0]);
+                return areAllInnermostStatementsValid((CPPASTForStatement) body.getChildren()[0]);
             }
             else {
-                p("multiple children");
-                //check if all children are assignments
+                //check if all children are assignments or null stmts
                 for(IASTNode child : body.getChildren()) {
-                    p(child.getClass());
-                    if(!(body instanceof IASTBinaryExpression)) { 
-                         IASTExpressionStatement k;
-                        p("child not a binex");
-                        return false;
+                    //to be an asgt, must be an expr stmt with a bin expr child, 
+                    //which has asgt operator
+                    if(child instanceof IASTExpressionStatement 
+                            && child.getChildren().length > 0
+                            && child.getChildren()[0] instanceof IASTBinaryExpression
+                            && ((IASTBinaryExpression) child.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
+                        
+                        p("found binex child");
+                       continue;
                     }
-                    else if(((IASTBinaryExpression) body).getOperator() != IASTBinaryExpression.op_assign) {
-                        p("child not an asgt");
+                    else if(child instanceof IASTNullStatement) {
+                        p("found null child");
+                        continue;
+                    }
+                    else {
+                        p("child is not an assignment or null");
                         return false;
                     }
                 }
-                p("we're good");
                 return true;
             }
         }
         else if(body instanceof CPPASTForStatement) {
             p("simple body, for loop, calling recursively");
-            return areAllStatementsInInnermostLoopBodyAssignments((CPPASTForStatement) body);
+            return areAllInnermostStatementsValid((CPPASTForStatement) body);
         }
         else { //neither compound nor for statement - body is the only statement
             p("simple body, non-for loop");

@@ -24,28 +24,7 @@ public class DependenceTestTest extends TestCase {
     private void p(Object s) {
         System.out.println(s);
     }
-    private <T> void plist(List<T> list) {
-        System.out.print("<");
-        for(T t : list) System.out.print(t);
-        System.out.println(">");
-    }
-    
-    public void setUp() {
-        resetFields();
-    }
-    
-    private void resetFields() {
-        ArrayList<double[]> r = new ArrayList<double[]>();
-        r.add(new double[] {0, 0, 2, 0});
-        r.add(new double[] {2, 0, 30, 1});
-        r.add(new double[] {0, 4, 0, 0});
-        r.add(new double[] {0, 3, 0, 0});
-        r.add(new double[] {0, 7, 0, 0});
-        r.add(new double[] {0, 1, 0, 0});
-        r.add(new double[] {0, 0, 0, 0});
-        a = new Matrix(r);    
-    }
-    
+        
     public void test() throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(
                 "void main() {" +
