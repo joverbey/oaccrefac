@@ -30,8 +30,7 @@ import edu.auburn.oaccrefac.internal.core.Pair;
 public class ForLoopDependenceSystem {
 
     private Matrix inequalityMatrix;
-    private Matrix equalityMatrix;
-    private Map<String, InductionVariable> inductionVariables;    
+    private Matrix equalityMatrix;   
 
     /** 
      * Constructor
@@ -52,8 +51,9 @@ public class ForLoopDependenceSystem {
         }
         
         //check if only statements on innermost loop are assignments
-
-        p(areAllInnermostStatementsValid(outerLoop));
+        if(!areAllInnermostStatementsValid(outerLoop)) {
+            ASTUtil.raise("Innermost statements must be assignments (or null statements)", outerLoop);
+        }
         
         //for now, assume that there is only one statement in the body and  
         //that it's an assignment
@@ -116,7 +116,7 @@ public class ForLoopDependenceSystem {
     }
     
     /** Assumes loops are perfectly nested
-     * Check if all innermost statements are valid
+     * Checks if all innermost statements are valid
      *  currently, a valid statement is either an assignment statement or null
      * @param outerLoop
      * @return
