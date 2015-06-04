@@ -23,9 +23,9 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
 @SuppressWarnings("restriction")
 public class ForLoopDependenceSystem {
 
-    private final Matrix inequalityMatrix;
-    private final Matrix equalityMatrix;   
-    private final DataDependence[] dependences;
+    private final Matrix inequalityMatrix = null;
+    private final Matrix equalityMatrix = null;   
+    private final DataDependence[] dependences = null;
 
     /** 
      * Constructor
@@ -52,7 +52,7 @@ public class ForLoopDependenceSystem {
         
         //for now, assume that there is only one statement in the body and  
         //that it's an assignment
-        p(outerLoop.getRawSignature());
+        //p(outerLoop.getRawSignature());
     }
 
     public Matrix getInequalityMatrix() {
@@ -63,6 +63,10 @@ public class ForLoopDependenceSystem {
         return equalityMatrix;
     }
     
+    public DataDependence[] getDependences() {
+        return dependences;
+    }
+
     private void p(Object o) {
         System.out.println(o);
     }
