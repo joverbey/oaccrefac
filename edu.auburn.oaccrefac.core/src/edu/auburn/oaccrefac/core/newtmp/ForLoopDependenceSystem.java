@@ -1,24 +1,18 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.IndexExpression;
-import edu.auburn.oaccrefac.internal.core.InductionVariable;
 import edu.auburn.oaccrefac.internal.core.Matrix;
-import edu.auburn.oaccrefac.internal.core.Pair;
 
 /**
  * @author Alexander Calvert
@@ -29,8 +23,9 @@ import edu.auburn.oaccrefac.internal.core.Pair;
 @SuppressWarnings("restriction")
 public class ForLoopDependenceSystem {
 
-    private Matrix inequalityMatrix;
-    private Matrix equalityMatrix;   
+    private final Matrix inequalityMatrix;
+    private final Matrix equalityMatrix;   
+    private final DataDependence[] dependences;
 
     /** 
      * Constructor
@@ -57,9 +52,7 @@ public class ForLoopDependenceSystem {
         
         //for now, assume that there is only one statement in the body and  
         //that it's an assignment
-        
-        
-        
+        p(outerLoop.getRawSignature());
     }
 
     public Matrix getInequalityMatrix() {
