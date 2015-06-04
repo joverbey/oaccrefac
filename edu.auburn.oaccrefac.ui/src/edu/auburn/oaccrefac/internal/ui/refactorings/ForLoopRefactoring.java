@@ -84,6 +84,9 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	 *      in the rewriter may cause issues with overwritting text edits and nodes that don't
 	 *      appear to be in the AST. You can create new nodes using a node factory of the form
 	 *      ICNodeFactory factory = ASTNodeFactoryFactory.getCDefaultFactory();
+	 * Tip: While some cases it may be helpful to do the above, see 'LoopInterchangeRefactoring'
+	 *      for a case in which it is more practical to simply use the replace method on the
+	 *      tree instead.
 	 * Tip: Trying to add nodes from an existing AST (say, from the refactored code) into a
 	 *      node created from the factory may give you a 'this node is frozen' error. When
 	 *      adding a node from an existing AST to one created from a factory, call 'node'.copy()

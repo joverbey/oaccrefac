@@ -1,12 +1,9 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -22,44 +19,47 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
  *  Currently supports only perfectly, doubly nested loops.
  *
  */
-@SuppressWarnings("restriction")
 public class LoopInterchangeRefactoring extends ForLoopRefactoring {
     
-    private static final int DOUBLY_NESTED_DEPTH = 2;
-
+    private int m_depth;
+    
     public LoopInterchangeRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
+        m_depth = 1;
+    }
+    
+    public void setExchangeDepth(int depth) {
+        if (depth > 0) {
+            m_depth = depth;
+        }
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        IASTForStatement loop = getLoop().copy();
-        IASTForStatement xchng = findNextLoop(loop).copy();
+        //Get the top level loop and the loop to refactor.
+        IASTForStatement loop = getLoop();
+        //Finds our loop at hardcoded loop depth (DOUBLY_NESTED_DEPTH)
+        IASTForStatement xchng = findLoop(loop, m_depth);
         
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTStatement inner = factory.newForStatement(
-                loop.getInitializerStatement(), 
-                loop.getConditionExpression(), 
-                loop.getIterationExpression(), 
-                xchng.getBody());
+        rewriter.replace(loop.getInitializerStatement(), xchng.getInitializerStatement(), null);
+        rewriter.replace(loop.getConditionExpression(), xchng.getConditionExpression(), null);
+        rewriter.replace(loop.getIterationExpression(), xchng.getIterationExpression(), null);
         
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            IASTCompoundStatement compound = factory.newCompoundStatement();
-            compound.addStatement(inner);
-            inner = compound;
-        }
-        
-        IASTForStatement outer = factory.newForStatement(
-                xchng.getInitializerStatement(), 
-                xchng.getConditionExpression(), 
-                xchng.getIterationExpression(), 
-                inner);
-        
-        rewriter.replace(getLoop(), outer, null);
-        
+        rewriter.replace(xchng.getInitializerStatement(), loop.getInitializerStatement(), null);
+        rewriter.replace(xchng.getConditionExpression(), loop.getConditionExpression(), null);
+        rewriter.replace(xchng.getIterationExpression(), loop.getIterationExpression(), null);
     }
     
-    private IASTForStatement findNextLoop(IASTNode tree) {
+    /**
+     * Method takes in a tree and finds the nth for loop statement
+     * within the tree. Since we are expecting a perfectly nested loop
+     * from our preconditions, this is essentially the depth in which
+     * the for loop lies.
+     * @param tree -- tree in which to search for loop
+     * @param depth -- depth in which to find the loop
+     * @return the node for the for-loop at depth
+     */
+    private IASTForStatement findLoop(IASTNode tree, int depth) {
         
         class LoopFinder extends ASTVisitor {
             private IASTForStatement forloop = null;
@@ -88,7 +88,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
             }
         }
         
-        LoopFinder finder = new LoopFinder(DOUBLY_NESTED_DEPTH);
+        LoopFinder finder = new LoopFinder(depth);
         tree.accept(finder);
         return finder.forloop;
     }
