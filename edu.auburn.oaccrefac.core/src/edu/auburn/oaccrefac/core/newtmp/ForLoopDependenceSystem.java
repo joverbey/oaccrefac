@@ -27,7 +27,6 @@ public class ForLoopDependenceSystem {
     private static final int DEP_DOESNT_EXIST = 1;
     private static final int DEP_MIGHT_EXIST = 2;
     
-    
     private final Matrix inequalityMatrix = null;
     private final DataDependence[] dependences = null;
 
@@ -66,6 +65,24 @@ public class ForLoopDependenceSystem {
         return dependences;
     }
 
+    
+    /** TODO: is an ExprStmt the argument we want? should be Offset? IndexExpr? define new class?
+     *  TODO: at least probably need more info than just one stmt - one stmt could have multiple dependences
+     *  
+     *  return a particularly dependence within this system
+     * 
+     * @param statement the statement the dependence exists on
+     * @return the dependence
+     */
+    public DataDependence getDependence(IASTExpressionStatement statement) {
+        for(DataDependence dependence : dependences) {
+            if(dependence.equals(statement)) {
+                return dependence;
+            }
+        }
+        throw new IllegalArgumentException("Statement does not exist within loop system");
+    }
+    
     private void p(Object o) {
         System.out.println(o);
     }

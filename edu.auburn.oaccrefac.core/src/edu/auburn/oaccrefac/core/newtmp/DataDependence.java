@@ -55,23 +55,15 @@ public class DataDependence {
     public int getType() {
         return type;
     }
-    
-    public int getStatement1Offset() {
-        return statement1.getFileLocation().getNodeOffset();
+
+    public IASTExpressionStatement getStatement1() {
+        return statement1;
     }
-    
-    public int getStatement2Offset() {
-        return statement2.getFileLocation().getNodeOffset();
+
+    public IASTExpressionStatement getStatement2() {
+        return statement2;
     }
-    
-    public String getStatement1RawSignature() {
-        return statement1.getRawSignature();
-    }
-    
-    public String getStatement2RawSignature() {
-        return statement2.getRawSignature();
-    }    
-    
+
     public boolean isLoopIndependent() {
         for(Direction direction : this.getDirectionVector().getElements()) {
             if(direction != Direction.EQ) {
