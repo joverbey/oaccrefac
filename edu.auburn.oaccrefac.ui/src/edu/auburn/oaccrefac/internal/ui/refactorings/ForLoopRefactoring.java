@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -267,6 +268,12 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	
 	//*************************************************************************
     //Getters & Setters
+	
+    @Override
+    protected RefactoringDescriptor getRefactoringDescriptor() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	
     protected CASTForStatement getLoop() {
         return (CASTForStatement) m_forloop;

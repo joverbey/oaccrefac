@@ -39,6 +39,14 @@
                toolbarPath="oaccrefac_group"
                tooltip="Interchanges two nested loop headers">
          </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.LoopStripMiningDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.LoopStripMiningDelegate"
+               label="&amp;Strip Mining"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="Rearranges a loop into doubly-nested loops">
+         </action>
       </actionSet>
    </extension>
 
