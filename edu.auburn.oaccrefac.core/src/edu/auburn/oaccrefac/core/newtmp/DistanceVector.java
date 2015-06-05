@@ -4,32 +4,36 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * An immutable tuple type for integers
+ * represents a distance vector for a data dependency
+ * also essentially an immutable tuple type for integers
  * 
- * @author Alexander
+ * @author Alexander Calvert
  *
  */
-public class IntegerTuple implements Tuple {
+public class DistanceVector implements Tuple {
 
     private final Integer[] elements;
 
-    public IntegerTuple(Integer... elements) {
+    public DistanceVector(Integer... elements) {
         this.elements = elements;
     }
-    
+
+    @Override
     public Integer[] getElements() {
         return this.elements;
     }
     
+    @Override
     public Integer elementAt(int whichElement) {
         try {
             return elements[whichElement];
         }
         catch(ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Tuple index out of range");
+            throw new ArrayIndexOutOfBoundsException("Vector index out of range");
         }
     }
     
+    @Override
     public int size() {
         return elements.length;
     }

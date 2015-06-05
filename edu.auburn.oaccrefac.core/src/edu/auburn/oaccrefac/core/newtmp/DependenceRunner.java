@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
+import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -17,7 +18,6 @@ public class DependenceRunner {
         for (IASTNode child : main.getBody().getChildren()) {
             if (child instanceof CPPASTForStatement) {
                 ForLoopDependenceSystem dependence = new ForLoopDependenceSystem((CPPASTForStatement) child);
-                                
             }
         }
 

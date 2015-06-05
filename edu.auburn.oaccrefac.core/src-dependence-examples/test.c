@@ -2,13 +2,13 @@ void main() {
 
 
 
-		for(;i<9;)
+		for(;;) {
 			for(;;) {
 				for(;;) {
 					x = 0;
 				}
 			}
-
+		}
 
 
 

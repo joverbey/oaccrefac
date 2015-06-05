@@ -11,17 +11,17 @@ public class DataDependence {
     public static final int OUTPUT = 2;
     
     //DIRECTION VECTOR VALUES
-    public static final int GT = 3;
-    public static final int LT = 4;
-    public static final int EQ = 5;
-    public static final int GE = 6;
-    public static final int LE = 7;
+//    public static final int GT = 3;
+//    public static final int LT = 4;
+//    public static final int EQ = 5;
+//    public static final int GE = 6;
+//    public static final int LE = 7;
     
     private IASTExpressionStatement statement1;
     private IASTExpressionStatement statement2;
     
     private int type;
-    private IntegerTuple distanceVector;
+    private DistanceVector distanceVector;
     
     //need to get info about two iterations of the dependence (ie, distance vector) to set
     //direction vector
@@ -35,20 +35,20 @@ public class DataDependence {
     /**
      * should identify the direction vector using distance vector information 
      */
-    public IntegerTuple getDirectionVector() {
-        Integer[] direction = new Integer[distanceVector.size()];
+    public DirectionVector getDirectionVector() {
+        Direction[] direction = new Direction[distanceVector.size()];
         for(int i = 0; i < direction.length; i++) {
             if(distanceVector.elementAt(i) > 0) {
-                direction[i] = GT;
+                direction[i] = Direction.GT;
             }
             else if(distanceVector.elementAt(i) < 0) {
-                direction[i] = LT;
+                direction[i] = Direction.LT;
             }
             else {
-                direction[i] = EQ;
+                direction[i] = Direction.EQ;
             }
         }
-        return new IntegerTuple(direction);
+        return new DirectionVector(direction);
         
     }
     
@@ -56,9 +56,25 @@ public class DataDependence {
         return type;
     }
     
+    public int getStatement1Offset() {
+        return statement1.getFileLocation().getNodeOffset();
+    }
+    
+    public int getStatement2Offset() {
+        return statement2.getFileLocation().getNodeOffset();
+    }
+    
+    public String getStatement1RawSignature() {
+        return statement1.getRawSignature();
+    }
+    
+    public String getStatement2RawSignature() {
+        return statement2.getRawSignature();
+    }    
+    
     public boolean isLoopIndependent() {
-        for(int direction : this.getDirectionVector().getElements()) {
-            if(direction != EQ) {
+        for(Direction direction : this.getDirectionVector().getElements()) {
+            if(direction != Direction.EQ) {
                 return false;
             }
         }

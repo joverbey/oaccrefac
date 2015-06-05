@@ -23,8 +23,12 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
 @SuppressWarnings("restriction")
 public class ForLoopDependenceSystem {
 
+    private static final int DEP_EXISTS = 0;
+    private static final int DEP_DOESNT_EXIST = 1;
+    private static final int DEP_MIGHT_EXIST = 2;
+    
+    
     private final Matrix inequalityMatrix = null;
-    private final Matrix equalityMatrix = null;   
     private final DataDependence[] dependences = null;
 
     /** 
@@ -50,19 +54,14 @@ public class ForLoopDependenceSystem {
             ASTUtil.raise("Innermost statements must be assignments (or null statements)", outerLoop);
         }
         
-        //for now, assume that there is only one statement in the body and  
-        //that it's an assignment
-        //p(outerLoop.getRawSignature());
+        
+        
     }
 
     public Matrix getInequalityMatrix() {
         return inequalityMatrix;
     }
 
-    public Matrix getEqualityMatrix() {
-        return equalityMatrix;
-    }
-    
     public DataDependence[] getDependences() {
         return dependences;
     }
@@ -71,6 +70,10 @@ public class ForLoopDependenceSystem {
         System.out.println(o);
     }
     
+    /* ****************************************************************
+     * Methods to perform checks on incoming loop in constructor to ensure it meets
+     * the qualifications for this dependence analysis
+     * ****************************************************************/
     private boolean isForLoopPerfectlyNested(CPPASTForStatement outerLoop) {
         IASTNode[] loopChildren = outerLoop.getChildren();
         if(!doesForLoopContainForLoopChild(outerLoop)) {            
@@ -173,6 +176,11 @@ public class ForLoopDependenceSystem {
             return false;
         }
     }    
+    
+    
+    /* ************************************************************************
+     * Methods
+     * ************************************************************************/
     
     
 }
