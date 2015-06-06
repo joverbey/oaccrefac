@@ -41,7 +41,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -64,8 +63,7 @@ import junit.framework.TestCase;
  * expected to have one of the following forms:
  * <ol>
  * <li><tt>!&lt;&lt;&lt;&lt;&lt; line, col, ..., pass</tt>
- * <li>
- * <tt>!&lt;&lt;&lt;&lt;&lt; fromLine, fromCol, toLine, toCol, ..., pass</tt>
+ * <li><tt>!&lt;&lt;&lt;&lt;&lt; fromLine, fromCol, toLine, toCol, ..., pass</tt>
  * </ol>
  * That is, the first two fields in each marker are expected to be a line and column number; the text selection passed
  * to the refactoring will be the offset of that line and column. The third fourth fields may also be a line and column
@@ -95,7 +93,7 @@ import junit.framework.TestCase;
  * @since 3.0
  */
 @SuppressWarnings("restriction")
-public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
+public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCase {
     /**
      * Text of the last marker field when a refactoring is pass all precondition checks
      */
@@ -103,11 +101,7 @@ public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
     /**
      * Text of the last marker field when a refactoring is expected to fail initial precondition check
      */
-    private static final String FAIL_INITIAL = "fail-initial"; //$NON-NLS-1$
-    /**
-     * Text of the last marker field when a refactoring is expected to fail final precondition check
-     */
-    private static final String FAIL_FINAL = "fail-final"; //$NON-NLS-1$
+    private static final String FAIL = "fail"; //$NON-NLS-1$
 
     /** Used to give each project a new name */
     private static int n = 0;
@@ -185,33 +179,29 @@ public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
         assertNotNull(fileContainingMarker);
 
         LinkedList<String> markerFields = parseMarker(markerText);
-
         appendFilenameToDescription(markerFields);
+        assertTrue(lastMarkerField(markerFields).equals(PASS) || lastMarkerField(markerFields).equals(FAIL));
 
         TextSelection selection = determineSelection(markerFields, createDocument(fileContainingMarker));
+        R refactoring = createRefactoring(fileContainingMarker, selection);
+        new CRefactoringContext(refactoring);
 
-        R transformation = createRefactoring(fileContainingMarker, selection);
-
-        new CRefactoringContext(transformation);
-
-        RefactoringStatus status = checkInitialConditions(transformation, initializeRefactoring(markerFields));
-
+        RefactoringStatus status = refactoring.checkInitialConditions(new NullProgressMonitor());
         if (!status.hasFatalError()) {
             String before = shouldCompile(fileContainingMarker) ? compileAndRunProgram(files) : ""; //$NON-NLS-1$
 
-            status = checkFinalConditions(transformation,
-                    configureRefactoring(transformation, fileContainingMarker, selection, markerFields));
+            configureRefactoring(refactoring, fileContainingMarker, selection, markerFields);
+            status = refactoring.checkFinalConditions(new NullProgressMonitor());
 
             if (!status.hasFatalError()) {
-                performChange(transformation);
+                performChange(refactoring);
                 refreshProject();
 
                 if (!status.hasError() && shouldCompile(fileContainingMarker)) {
                     String after = compileAndRunProgram(files);
                     if (!before.equals(after)) {
-                        System.err
-                                .println("Refactored program has different runtime behavior than unrefactored program -- "
-                                        + fileContainingMarker);
+                        System.err.println(
+                                "Refactored program has different runtime behavior -- " + fileContainingMarker);
                     }
                     assertEquals(before, after);
                 }
@@ -219,31 +209,7 @@ public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
             }
         }
 
-        // boolean shouldPass = true;
-        // shouldPass = initializeRefactoring(refactoring, fileContainingMarker,
-        // selection, markerFields);
-        // IErrorLog errorLog = new ErrorLog();
-        // String before = shouldCompile(fileContainingMarker)
-        // ? compileAndRunProgram(files)
-        // : ""; //$NON-NLS-1$
-        //
-        // shouldPass = shouldPass && configureRefactoring(refactoring,
-        // fileContainingMarker, selection, markerFields);
-        //
-        // IPatch patch = refactoring.run(errorLog, new NullProgressReporter());
-        // assertEquals(shouldPass, !errorLog.containsFatalError());
-        // if (shouldPass) assertNotNull(patch);
-        // if (!errorLog.containsFatalError())
-        // {
-        // performChange(refactoring);
-        // refreshProject();
-        //
-        // if (!errorLog.containsError() && shouldCompile(fileContainingMarker))
-        // assertEquals(before, compileAndRunProgram(files));
-        // compareAgainstResultFile();
-        // }
-
-        deinitializeRefactoring(transformation, fileContainingMarker, selection, markerFields);
+        assertEquals(status.hasError(), lastMarkerField(markerFields).equals(FAIL));
     }
 
     private Map<String, IFile> importFiles() throws Exception {
@@ -351,22 +317,6 @@ public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
         description += " (" + jioFileContainingMarker.getName() + " " + markerStrings + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    /**
-     * This method is invoked after the refactoring is created ( {@link #createRefactoring()}) but before
-     * {@link Refactoring#checkInitialConditions(org.eclipse.core.runtime.IProgressMonitor)} is invoked. Override if
-     * necessary.
-     * 
-     * @return true iff the refactoring is expected to pass initial precondition checking
-     */
-    private boolean initializeRefactoring(LinkedList<String> markerFields) {
-        if (lastMarkerField(markerFields).equals(PASS) || lastMarkerField(markerFields).equals(FAIL_FINAL))
-            return true;
-        else if (lastMarkerField(markerFields).equals(FAIL_INITIAL))
-            return false;
-        else
-            throw new IllegalStateException("Last marker field should be pass, fail-initial, or fail-final"); //$NON-NLS-1$
-    }
-
     private String lastMarkerField(LinkedList<String> markerFields) {
         return markerFields.getLast();
     }
@@ -376,41 +326,9 @@ public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
      * {@link Refactoring#checkInitialConditions(org.eclipse.core.runtime.IProgressMonitor)} ) but before final
      * preconditions are checked ( {@link Refactoring#checkFinalConditions(org.eclipse.core.runtime.IProgressMonitor)}
      * ). Override if necessary to supply user input.
-     * 
-     * @return true iff the refactoring is expected to pass final precondition checking
      */
-    protected boolean configureRefactoring(R refactoring, IFile file, TextSelection selection,
+    protected void configureRefactoring(R refactoring, IFile file, TextSelection selection,
             LinkedList<String> markerFields) {
-        if (lastMarkerField(markerFields).equals(PASS))
-            return true;
-        else if (lastMarkerField(markerFields).equals(FAIL_FINAL))
-            return false;
-        else
-            throw new IllegalStateException();
-    }
-
-    private RefactoringStatus checkInitialConditions(Refactoring refactoring, boolean shouldSucceed)
-            throws OperationCanceledException, CoreException {
-        RefactoringStatus status = refactoring.checkInitialConditions(new NullProgressMonitor());
-        if (shouldSucceed)
-            assertTrue(description + " failed initial precondition check: " + status.toString(), !status.hasError()); //$NON-NLS-1$
-        else
-            assertTrue(
-                    description + " should have failed initial precondition check but did not: " + status.toString(), //$NON-NLS-1$
-                    status.hasError());
-        return status;
-    }
-
-    private RefactoringStatus checkFinalConditions(Refactoring refactoring, boolean shouldSucceed)
-            throws OperationCanceledException, CoreException {
-        RefactoringStatus status;
-        status = refactoring.checkFinalConditions(new NullProgressMonitor());
-        if (shouldSucceed)
-            assertTrue(description + " failed final precondition check: " + status.toString(), !status.hasError()); //$NON-NLS-1$
-        else
-            assertTrue(description + " should have failed final precondition check but did not: " + status.toString(), //$NON-NLS-1$
-                    status.hasError());
-        return status;
     }
 
     private void performChange(Refactoring refactoring) throws CoreException {
@@ -471,16 +389,5 @@ public class RefactoringTestCase<R extends CRefactoring> extends TestCase {
         Spawner.run(cwd, args);
 
         return Spawner.run(cwd, cwd.getAbsolutePath() + File.separator + "a.out");
-    }
-
-    /**
-     * This method is invoked after the refactoring has been performed (after
-     * {@link Refactoring#createChange(IProgressMonitor)} and {@link Change#perform(IProgressMonitor)}. Override if
-     * necessary.
-     * 
-     * @throws Exception
-     */
-    private void deinitializeRefactoring(R refactoring, IFile file, TextSelection selection,
-            LinkedList<String> markerFields) throws Exception {
     }
 }
