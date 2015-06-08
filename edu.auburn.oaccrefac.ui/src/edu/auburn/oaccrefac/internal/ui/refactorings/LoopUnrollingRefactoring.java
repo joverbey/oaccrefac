@@ -1,9 +1,7 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
-import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -21,7 +19,6 @@ import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 
 /**
  * This class defines the implementation for refactoring a loop
@@ -58,7 +55,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	@Override
 	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-	    IASTForStatement loop = getLoop();
+	    IASTForStatement loop = getLoop().copy();
 	    	    
 	    IASTStatement body = loop.getBody();
         //if the body is empty, exit out -- pointless to unroll.
@@ -80,7 +77,10 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         //move the declaration to outer scope if
         //possible and continue
         if (isInitDeclaration(loop)) {
-            adjustInit(loop, rewriter);
+            loop = adjustInit(loop, rewriter);
+            if (loop == null) {
+                return;
+            }
         }
 	    
 	    //get the loop upper bound from AST, if the 
@@ -96,7 +96,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    //factor.
 	    int extras = upper % m_unrollFactor;
 	    if (extras != 0) { //not divisible...
-	        //addTrailer(upper, extras, body_compound, rewriter);
+	        addTrailer(upper, extras, body_compound, rewriter);
 	        
 	        //re-adjust upper because now we
 	        //will treat the actual loop as if
@@ -105,38 +105,38 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	        
 	        //This also means we need to change the
 	        //loop's actual upper bound
-	        setUpperBound(upper, rewriter);
+	        setUpperBound(loop, upper, rewriter);
 	    }
 	    
 	  //Now non-divisible loops are now treated as divisible loops.
         //Unroll the loop however many times specified.
         unroll((IASTCompoundStatement) body_compound);
-        rewriter.replace(getLoop().getBody(), body_compound, null);
+        loop.setBody(body_compound);
+        rewriter.replace(getLoop(), loop, null);
 	}
 	
-	private void adjustInit(IASTForStatement loop, ASTRewrite rewriter) {
+	private IASTForStatement adjustInit(IASTForStatement loop, ASTRewrite rewriter) {
 	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
 	    IASTName counter_name = findFirstName(getLoop().getInitializerStatement());
+	    IASTForStatement originalLoop = getLoop();
 	    try {
-            if (!isNameInScope(counter_name, loop.getScope().getParent())) {
+            if (!isNameInScope(counter_name, originalLoop.getScope().getParent())) {
                 rewriter.insertBefore(
-                        loop.getParent(), 
-                        loop, 
-                        loop.getInitializerStatement(), 
+                        originalLoop.getParent(), 
+                        originalLoop, 
+                        originalLoop.getInitializerStatement(), 
                         null);
                 IASTForStatement newForLoop = factory.newForStatement
                         (factory.newNullStatement(), 
                                 loop.getConditionExpression().copy(), 
                                 loop.getIterationExpression().copy(), 
                                 loop.getBody().copy());
-                rewriter.replace(
-                        loop, 
-                        newForLoop, 
-                        null);
+                return newForLoop;
             }
         } catch (DOMException e) {
             e.printStackTrace();
         }
+	    return null;
 	}
 	
 	private boolean isInitDeclaration(IASTForStatement loop) {
@@ -158,7 +158,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
                 IASTBinaryExpression.op_lessThan, 
                 be.getOperand1().copy(), 
                 newUpperLiteral);
-        rewriter.replace(be, new_cond, null);
+        loop.setConditionExpression(new_cond);
 	}
 
     private boolean conditionLE(IASTForStatement loop) {
@@ -172,18 +172,15 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    return false;
     }
 	
-	private void setUpperBound(int newUpperBound, ASTRewrite rewriter) {
+	private void setUpperBound(IASTForStatement loop, int newUpperBound, ASTRewrite rewriter) {
 	    //Get a factory and create a new node to replace old one
 	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
 	    IASTLiteralExpression newExpr = factory.newLiteralExpression(
 	            IASTLiteralExpression.lk_integer_constant, 
                 new Integer(newUpperBound).toString());
 	    
-	    //Get our old upper bound expression from AST
-	    IASTLiteralExpression node_upper = getUpperBound();
-	    
-	    //Replace it!
-	    rewriter.replace(node_upper, newExpr, null);
+	    IASTBinaryExpression cond = (IASTBinaryExpression) loop.getConditionExpression();
+	    cond.setOperand2(newExpr);
 	}
 	
 	private void unroll(IASTCompoundStatement body) {	
@@ -209,29 +206,18 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	}
 	
 	private void addTrailer(int upperBound, int extras, IASTStatement body ,ASTRewrite rewriter) {
-	    //Find the first name in the initializer statement
-	    //We will use this as the name to replace in corresponding accesses
-	    IASTName var_name = findFirstName(getLoop().getInitializerStatement());
+	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTExpression iter_expr = getLoop().getIterationExpression();
+        IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
 	    	    
 	    //Get the insertion locations
 	    IASTNode insert_parent = getLoop().getParent();
 	    IASTNode insert_before = getNextSibling(getLoop());
-	    
-	    
-	    /*
-	     * The trailer consists of a number of extra loop iterations after 
-	     * the loop to make up for the non-divisibility of the loop body
-	     * bounds in accordance with the given loop factor. We must copy
-	     * each individual statement of the body to the location right before
-	     * the next sibling of the loop.
-	     */
+
 	    for (int i = 0; i < extras; i++) {
-	        for (IASTNode child : body.getChildren())  {
-	            IASTNode newInsert = child.copy();
-	            int replace_const = (upperBound-(extras-i));
-	            ASTRewrite newRewriter = rewriter.insertBefore(insert_parent, insert_before, newInsert, null);
-	            //findNameReplaceWithLiteral(var_name, newInsert, replace_const, newRewriter);
-	        }
+	        rewriter.insertBefore(insert_parent, insert_before, iter_exprstmt, null);
+	        for (IASTNode child : body.getChildren())
+	            rewriter.insertBefore(insert_parent, insert_before, child.copy(), null);
 	    }
 
 	}
