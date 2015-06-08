@@ -21,6 +21,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 
 public class ASTUtil {
+    
+    private ASTUtil() { }
+    
     public static <T> List<T> find(IASTNode parent, Class<T> clazz) {
         List<T> results = new LinkedList<T>();
         findAndAdd(parent, clazz, results);
@@ -103,7 +106,7 @@ public class ASTUtil {
      *            the IASTNode to extract the line number information from
      * @throws RuntimeException
      */
-    static void raise(String message, IASTNode node) {
+    public static void raise(String message, IASTNode node) {
         throw new RuntimeException(message + " at line " + node.getFileLocation().getStartingLineNumber());
     }
 }

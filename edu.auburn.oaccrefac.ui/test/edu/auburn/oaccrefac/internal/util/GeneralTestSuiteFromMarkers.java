@@ -125,7 +125,8 @@ public abstract class GeneralTestSuiteFromMarkers extends TestSuite {
 
             int markerEnd = Math.min(endOfLine, nextMarker);
 
-            this.addTest(createTestFor(file, index, fileContents.substring(index + marker.length(), markerEnd).trim()));
+            String markerText = fileContents.substring(index + marker.length(), markerEnd).trim();
+            this.addTest(createTestFor(file, index, markerText));
         }
     }
 

@@ -38,7 +38,7 @@ public final class Matrix {
      */
     public Matrix(List<double[]> rowsIn) {
         setRows(rowsIn);
-        setNumColumns(this.getSingleRow(0).length);
+        setNumColumns(this.getRow(0).length);
     }
 
     /**
@@ -71,6 +71,9 @@ public final class Matrix {
         this(aMatrix.getRows(), aMatrix.getNumColumns());
     }
 
+    /** numColumns field setter
+     * @param numColumnsIn
+     */
     public void setNumColumns(int numColumnsIn) {
     	this.numColumns = numColumnsIn;
     }
@@ -138,7 +141,7 @@ public final class Matrix {
      * @throws IndexOutOfBoundsException
      *             when the index is invalid
      */
-    public double[] getSingleRow(int rowIndex) throws IndexOutOfBoundsException {
+    public double[] getRow(int rowIndex) throws IndexOutOfBoundsException {
         if (rowIndex < 0 || rowIndex >= getNumRows())
             throw new IndexOutOfBoundsException("getSingleRow - index out of bounds");
         return rows.get(rowIndex);
@@ -172,7 +175,7 @@ public final class Matrix {
     public double getValueAtMatrixIndex(int rowIndex, int colIndex) throws IndexOutOfBoundsException {
         if (rowIndex < 0 || rowIndex >= getNumRows() || colIndex < 0 || colIndex >= getNumColumns())
             throw new IndexOutOfBoundsException("getValueAtMatrixIndex - index out of bounds");
-        return getSingleRow(rowIndex)[colIndex];
+        return getRow(rowIndex)[colIndex];
     }
 
     /**
@@ -231,8 +234,8 @@ public final class Matrix {
         double value = Math.abs(getValueAtMatrixIndex(rowIndex, colIndex));
         if (value == 0)
             return;
-        for (int i = 0; i < getSingleRow(rowIndex).length; i++) {
-            getSingleRow(rowIndex)[i] = getSingleRow(rowIndex)[i] / value;
+        for (int i = 0; i < getRow(rowIndex).length; i++) {
+            getRow(rowIndex)[i] = getRow(rowIndex)[i] / value;
         }
 
     }
@@ -297,4 +300,23 @@ public final class Matrix {
         return builder.toString();
     }
 
+    @Override
+    public boolean equals(Object m) {
+    	if(!(m instanceof Matrix)) {
+    		return false;
+    	}
+    	Matrix mat = (Matrix) m;
+    	if(this.numColumns != mat.getNumColumns()) {
+    		return false;
+    	}
+    	for(int i = 0; i < getNumRows(); i++) {
+    		for(int j = 0; j < getNumColumns(); j++) {
+    			if(this.getValueAtMatrixIndex(i, j) != mat.getValueAtMatrixIndex(i, j)) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+    
 }

@@ -21,13 +21,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
-/**
- * Container for perfectly nested for statements that are candidates 
- * for Fourier-Motzkin elimination
- *
- * 
- *
- */
+
 public class ForLoopDependence {
 
     private Map<String, InductionVariable> inductionVariables;
@@ -38,6 +32,12 @@ public class ForLoopDependence {
         this.equalities = new HashSet<Pair<IndexExpression, IndexExpression>>();
     }
 
+    /** Verifies that a for loop is perfectly nested then calls findEqualties to
+     *  turn all of the assignment statements to index expressions and
+     *  add them to this instance's set of equalities 
+     *  
+     * @param statement the for statement being added
+     */
     public void addForLoop(CPPASTForStatement statement) {
         findInductionVariables(statement);
         
@@ -129,6 +129,11 @@ public class ForLoopDependence {
         return A;
     }
 
+    
+    /**
+     * turns all of the assignment statements in the loop body 
+     * to index expressions and adds them to this instance's set of equalities 
+     */
     private void findEqualities(IASTStatement body) {
         List<IASTBinaryExpression> binExprs = ASTUtil.find(body, IASTBinaryExpression.class);
         for (IASTBinaryExpression binExpr : binExprs) {

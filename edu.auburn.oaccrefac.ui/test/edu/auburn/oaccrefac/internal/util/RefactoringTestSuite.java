@@ -79,7 +79,7 @@ public abstract class RefactoringTestSuite<R extends CRefactoring> extends Gener
     private FilenameFilter filenameFilter;
 
     public RefactoringTestSuite(Class<R> clazz, String directory) throws Exception {
-        super(MARKER, MARKER_END, new File(directory), C_FILENAME_FILTER);
+        super("", MARKER, MARKER_END, new File(directory), C_FILENAME_FILTER, clazz, C_FILENAME_FILTER);
     }
 
     // Callback method which is invoked before adding tests to this test suite.
@@ -96,14 +96,11 @@ public abstract class RefactoringTestSuite<R extends CRefactoring> extends Gener
         suite.addTest(new RefactoringTestCase<R>(fileContainingMarker, markerOffset, markerText, refactoringClass,
                 filenameFilter) {
             @Override
-            protected boolean configureRefactoring(R refactoring, IFile file, TextSelection selection,
+            protected void configureRefactoring(R refactoring, IFile file, TextSelection selection,
                     LinkedList<String> markerFields) {
-                // This allows subclasses of RefactoringTestSuite to override
-                // configureRefactoring
-                // rather than having to supply a custom subclass of
-                // RefactoringTestCase
+                // This allows subclasses of this class (RefactoringTestSuite) to override configureRefactoring (below)
+                // rather than having to supply a custom subclass of RefactoringTestCase
                 RefactoringTestSuite.this.configureRefactoring(refactoring, file, selection, markerFields);
-                return super.configureRefactoring(refactoring, file, selection, markerFields);
             }
         });
         return suite;
