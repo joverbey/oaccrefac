@@ -15,12 +15,7 @@ import java.util.List;
  *       exists. Solves the system by projecting it onto a reduced number of
  *       unknowns, eliminating one unknown at a time.
  */
-
 public class FourierMotzkinEliminator {
-    
-    private void p(Object o) {
-        System.out.println(o);
-    }
     
     public FourierMotzkinEliminator() {
     }
