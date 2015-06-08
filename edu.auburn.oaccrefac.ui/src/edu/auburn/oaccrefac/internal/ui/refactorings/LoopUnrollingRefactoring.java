@@ -1,7 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import java.util.ArrayList;
-
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
@@ -166,30 +164,6 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	private void findNameReplaceWithLiteral(IASTName find, IASTNode tree, int replacement, ASTRewrite rewriter) {
 	    
 	    /**
-	     * The NameVisitor visits all names within a tree. In this
-	     * context, it is used by the AccessVisitor class in order
-	     * to find all names within an array subscript. For example,
-	     * a[i] = 0; -- it would find 'i' as an IASTName object and
-	     * add it to the 'name_list'. After completion, the name_list
-	     * will be filled with IASTName objects to be replaced.
-	     */
-	    class NameVisitor extends ASTVisitor {
-            private ArrayList<IASTName> name_list = null;
-            
-            public NameVisitor() {
-                name_list = new ArrayList<IASTName>();
-                //want to find names within access expressions
-                shouldVisitNames = true;
-            }
-            
-            @Override
-            public int visit(IASTName visitor) {
-                name_list.add(visitor);
-                return PROCESS_CONTINUE;
-            }
-        }
-	    
-	    /**
 	     * The AccessVisitor visits all expressions and specifically
 	     * looks for IASTArraySubscriptExpression objects within a tree.
 	     * From there, the subscript expression does another search within
@@ -232,7 +206,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         //NOTE: The names IASTName are all children of IASTIdExpression,
         //therefore, we must replace the parent instead. We should probably
         //have a list of IdExpressions instead and compare them...but oh well?
-        for (IASTName name : v.name_visitor.name_list) {
+        for (IASTName name : v.name_visitor.getNames()) {
             String left = new String(name.getSimpleID());
             String right = new String(find.getSimpleID());
             if (left.compareTo(right) == 0) {

@@ -1,8 +1,12 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import java.util.ArrayList;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -135,6 +139,11 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             initStatus.addFatalError("Loop form not supported!");
         }
         
+        if (containsBreakorContinue(m_forloop)) {
+            initStatus.addFatalError("Cannot refactor -- loop contains "
+                    + "iteration augment statement (break or continue)");
+        }
+        
 		return initStatus;
 	}
 
@@ -197,7 +206,31 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		ast.accept(v);
 		return v.loop;
 	}
-
+	
+	/**
+	 * Method takes in a tree and traverses to determine whether the
+	 * tree contains a break or continue statement.
+	 * @param tree -- the tree to traverse
+	 * @return -- true/false on successful find
+	 */
+	private boolean containsBreakorContinue(IASTNode tree) {
+	    class UnsupportedVisitor extends ASTVisitor {
+	        public UnsupportedVisitor() {
+	            shouldVisitStatements = true;
+	            shouldVisitExpressions = true;
+	        }
+	        
+	        @Override
+	        public int visit(IASTStatement statement) {
+	            if (statement instanceof IASTBreakStatement
+	             || statement instanceof IASTContinueStatement)
+	                return PROCESS_ABORT;
+	            return PROCESS_CONTINUE;
+	        }
+	    }
+	    return (!tree.accept(new UnsupportedVisitor()));
+	}
+	
 	/**
 	 * This method takes a tree and finds the first IASTName occurrence within the
 	 * tree. This was a helper method that was used in LoopUnrolling that could be
@@ -321,4 +354,29 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	}
 	
 	//*************************************************************************
+	
+	/**
+     * The NameVisitor visits all names within a tree. It concatenates
+     * all names into a private variable called 'name_list'.
+     */
+    protected class NameVisitor extends ASTVisitor {
+        private ArrayList<IASTName> name_list = null;
+        
+        public NameVisitor() {
+            name_list = new ArrayList<IASTName>();
+            //want to find names within access expressions
+            shouldVisitNames = true;
+        }
+        
+        public ArrayList<IASTName> getNames() {
+            return name_list;
+        }
+        
+        @Override
+        public int visit(IASTName visitor) {
+            name_list.add(visitor);
+            return PROCESS_CONTINUE;
+        }
+    }
+	
 }
