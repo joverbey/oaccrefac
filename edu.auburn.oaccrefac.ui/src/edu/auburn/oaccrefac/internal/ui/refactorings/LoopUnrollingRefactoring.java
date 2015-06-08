@@ -2,9 +2,11 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -57,6 +59,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
 	    IASTForStatement loop = getLoop();
+	    	    
 	    IASTStatement body = loop.getBody();
         //if the body is empty, exit out -- pointless to unroll.
         if (body == null || body instanceof IASTNullStatement)
@@ -72,21 +75,28 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         } else {
             body_compound = (IASTCompoundStatement) (body.copy());
         }
+        
+        //if the init statement is a declaration,
+        //move the declaration to outer scope if
+        //possible and continue
+        if (isInitDeclaration(loop)) {
+            adjustInit(loop, rewriter);
+        }
 	    
-	    //get the loop upper bound from AST
+	    //get the loop upper bound from AST, if the 
+        //conditional statement is '<=', change it
 	    int upper = getUpperBoundValue();
 	    if (conditionLE(loop)) {
 	        upper = upper + 1;
 	        adjustCondition(loop, upper, rewriter);
 	    }
 	    
-	    
 	    //Number of extra iterations to add after loop. Also
 	    //used to test if the loop is divisible by the unroll
 	    //factor.
 	    int extras = upper % m_unrollFactor;
 	    if (extras != 0) { //not divisible...
-	        addTrailer(upper, extras, body_compound, rewriter);
+	        //addTrailer(upper, extras, body_compound, rewriter);
 	        
 	        //re-adjust upper because now we
 	        //will treat the actual loop as if
@@ -102,6 +112,39 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         //Unroll the loop however many times specified.
         unroll((IASTCompoundStatement) body_compound);
         rewriter.replace(getLoop().getBody(), body_compound, null);
+	}
+	
+	private void adjustInit(IASTForStatement loop, ASTRewrite rewriter) {
+	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+	    IASTName counter_name = findFirstName(getLoop().getInitializerStatement());
+	    try {
+            if (!isNameInScope(counter_name, loop.getScope().getParent())) {
+                rewriter.insertBefore(
+                        loop.getParent(), 
+                        loop, 
+                        loop.getInitializerStatement(), 
+                        null);
+                IASTForStatement newForLoop = factory.newForStatement
+                        (factory.newNullStatement(), 
+                                loop.getConditionExpression().copy(), 
+                                loop.getIterationExpression().copy(), 
+                                loop.getBody().copy());
+                rewriter.replace(
+                        loop, 
+                        newForLoop, 
+                        null);
+            }
+        } catch (DOMException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	private boolean isInitDeclaration(IASTForStatement loop) {
+	    IASTStatement init = loop.getInitializerStatement();
+	    if (init instanceof IASTDeclarationStatement) {
+	        return true;
+	    }
+	    return false;
 	}
 	
 	private void adjustCondition(IASTForStatement loop, int newUpper, ASTRewrite rewriter) {
@@ -187,69 +230,11 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	            IASTNode newInsert = child.copy();
 	            int replace_const = (upperBound-(extras-i));
 	            ASTRewrite newRewriter = rewriter.insertBefore(insert_parent, insert_before, newInsert, null);
-	            findNameReplaceWithLiteral(var_name, newInsert, replace_const, newRewriter);
+	            //findNameReplaceWithLiteral(var_name, newInsert, replace_const, newRewriter);
 	        }
 	    }
 
 	}
-	
-	private void findNameReplaceWithLiteral(IASTName find, IASTNode tree, int replacement, ASTRewrite rewriter) {
-	    
-	    /**
-	     * The AccessVisitor visits all expressions and specifically
-	     * looks for IASTArraySubscriptExpression objects within a tree.
-	     * From there, the subscript expression does another search within
-	     * its own tree to look for any IASTName objects.
-	     */
-	    class AccessVisitor extends ASTVisitor {
-            private IASTArraySubscriptExpression access = null;
-            private NameVisitor name_visitor = null;
-            
-            public AccessVisitor() {
-                name_visitor = new NameVisitor();
-                //want to find array access expressions
-                shouldVisitExpressions = true;
-            }
-            
-            @Override
-            public int visit(IASTExpression visitor) {
-                if (visitor instanceof IASTArraySubscriptExpression) {
-                    access = (IASTArraySubscriptExpression) visitor;
-                    access.accept(name_visitor);
-                }
-                return PROCESS_CONTINUE; //we want to visit all possibilities
-            }
-        }
-	    
-	    //Create a visitor and process on all instances of array subscript
-	    //expressions. This way we can create a list of all names we need
-	    //to replace within this tree.
-        AccessVisitor v = new AccessVisitor();
-        tree.accept(v);
-        
-        //Create our new literal node containing our constant
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTLiteralExpression const_replace = factory.newLiteralExpression(
-                IASTLiteralExpression.lk_integer_constant, 
-                replacement+"");
-        
-        //Iterate through list of names, replacing all matching
-        //names with the literal constant nodes.
-        //NOTE: The names IASTName are all children of IASTIdExpression,
-        //therefore, we must replace the parent instead. We should probably
-        //have a list of IdExpressions instead and compare them...but oh well?
-        for (IASTName name : v.name_visitor.getNames()) {
-            String left = new String(name.getSimpleID());
-            String right = new String(find.getSimpleID());
-            if (left.compareTo(right) == 0) {
-                rewriter.replace(name.getParent(), const_replace, null);
-            }
-        }
-    }
-	
-	@Override
-	protected RefactoringDescriptor getRefactoringDescriptor() {
-		return null;
-	}
+
 
 }

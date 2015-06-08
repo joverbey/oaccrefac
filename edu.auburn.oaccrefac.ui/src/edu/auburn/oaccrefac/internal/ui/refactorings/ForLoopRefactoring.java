@@ -10,12 +10,15 @@ import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
@@ -223,7 +226,8 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	        @Override
 	        public int visit(IASTStatement statement) {
 	            if (statement instanceof IASTBreakStatement
-	             || statement instanceof IASTContinueStatement)
+	             || statement instanceof IASTContinueStatement
+	             || statement instanceof IASTGotoStatement)
 	                return PROCESS_ABORT;
 	            return PROCESS_CONTINUE;
 	        }
@@ -299,6 +303,15 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	    return false;
 	} 
 	
+	protected boolean isNameInScope(IASTName varname, IScope scope) {
+	    IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
+	    if (bindings.length > 0) {
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+	
 	//*************************************************************************
     //Getters & Setters
 	
@@ -354,29 +367,5 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	}
 	
 	//*************************************************************************
-	
-	/**
-     * The NameVisitor visits all names within a tree. It concatenates
-     * all names into a private variable called 'name_list'.
-     */
-    protected class NameVisitor extends ASTVisitor {
-        private ArrayList<IASTName> name_list = null;
-        
-        public NameVisitor() {
-            name_list = new ArrayList<IASTName>();
-            //want to find names within access expressions
-            shouldVisitNames = true;
-        }
-        
-        public ArrayList<IASTName> getNames() {
-            return name_list;
-        }
-        
-        @Override
-        public int visit(IASTName visitor) {
-            name_list.add(visitor);
-            return PROCESS_CONTINUE;
-        }
-    }
 	
 }

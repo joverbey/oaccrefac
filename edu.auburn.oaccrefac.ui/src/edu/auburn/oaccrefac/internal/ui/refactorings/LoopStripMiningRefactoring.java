@@ -3,6 +3,7 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 import java.util.ArrayList;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
+import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -50,15 +51,16 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
         
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         //Create new incrementer name (and check for scope conflicts)
-        NameVisitor nv = new NameVisitor();
-        loop.accept(nv);
-        ArrayList<IASTName> name_list = nv.getNames();
         String counter_name_str = new String(counter_name.getSimpleID());
         int diff_counter = 1;
         IASTName outerCounter = factory.newName((counter_name_str + "_" + diff_counter).toCharArray());
-        while (name_list.contains(outerCounter)) {
-            diff_counter++;
-            outerCounter = factory.newName((counter_name_str + "_" + diff_counter).toCharArray());
+        try {
+            while (isNameInScope(outerCounter, loop.getScope().getParent())) {
+                diff_counter++;
+                outerCounter = factory.newName((counter_name_str + "_" + diff_counter).toCharArray());
+            }
+        } catch (DOMException e) {
+            e.printStackTrace();
         }
         
         IASTForStatement outerLoop = createOuterLoop(outerCounter, upperBound);
