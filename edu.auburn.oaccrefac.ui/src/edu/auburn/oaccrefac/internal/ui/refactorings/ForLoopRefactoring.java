@@ -132,12 +132,17 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		
         if (!supportedPattern(m_forloop)) {
             initStatus.addFatalError("Loop form not supported!");
+        } else {
+            doCheckInitialConditions(initStatus);
         }
         
 		return initStatus;
 	}
 
-	/**
+	protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+    }
+
+    /**
 	 * Indexes the project if the project has not already been indexed.
 	 * Something to do with references???
 	 * @param pm

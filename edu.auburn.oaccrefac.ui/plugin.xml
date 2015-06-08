@@ -39,6 +39,14 @@
                toolbarPath="oaccrefac_group"
                tooltip="Interchanges two nested loop headers">
          </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.LoopFusionDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.LoopFusionDelegate"
+               label="&amp;Fusion"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="Defuse two for-loop together when possible.">
+         </action>
       </actionSet>
    </extension>
 
