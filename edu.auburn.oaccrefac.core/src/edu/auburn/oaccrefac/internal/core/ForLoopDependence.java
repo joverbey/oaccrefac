@@ -1,4 +1,5 @@
 package edu.auburn.oaccrefac.internal.core;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
-
+@SuppressWarnings("restriction")
 public class ForLoopDependence {
 
     private Map<String, InductionVariable> inductionVariables;
