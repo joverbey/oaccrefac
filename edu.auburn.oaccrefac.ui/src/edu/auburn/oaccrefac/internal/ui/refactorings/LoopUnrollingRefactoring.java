@@ -3,9 +3,11 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -52,8 +54,10 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
     }
 
 	@Override
-	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	    	    
-	    IASTStatement body = getLoop().getBody();
+	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+	    IASTForStatement loop = getLoop();
+	    IASTStatement body = loop.getBody();
         //if the body is empty, exit out -- pointless to unroll.
         if (body == null || body instanceof IASTNullStatement)
             return;
@@ -63,7 +67,6 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         //if the body is not within braces, i.e. short-cut
         //loop pattern, make it a compounded statement
         if (!(body instanceof IASTCompoundStatement)) {
-            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
             body_compound = factory.newCompoundStatement();
             body_compound.addStatement(body.copy());
         } else {
@@ -72,6 +75,10 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    
 	    //get the loop upper bound from AST
 	    int upper = getUpperBoundValue();
+	    if (conditionLE(loop)) {
+	        upper = upper + 1;
+	        adjustCondition(loop, upper, rewriter);
+	    }
 	    
 	    
 	    //Number of extra iterations to add after loop. Also
@@ -96,6 +103,31 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         unroll((IASTCompoundStatement) body_compound);
         rewriter.replace(getLoop().getBody(), body_compound, null);
 	}
+	
+	private void adjustCondition(IASTForStatement loop, int newUpper, ASTRewrite rewriter) {
+	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
+        
+        IASTLiteralExpression newUpperLiteral = factory.newLiteralExpression(
+                IASTLiteralExpression.lk_integer_constant, 
+                newUpper+"");
+        IASTBinaryExpression new_cond = factory.newBinaryExpression(
+                IASTBinaryExpression.op_lessThan, 
+                be.getOperand1().copy(), 
+                newUpperLiteral);
+        rewriter.replace(be, new_cond, null);
+	}
+
+    private boolean conditionLE(IASTForStatement loop) {
+        //Check to see if the loop condition statement has '<=' operator
+	    if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
+	        IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
+	        if (be.getOperator() == IASTBinaryExpression.op_lessEqual) {
+	            return true;
+	        }
+	    }
+	    return false;
+    }
 	
 	private void setUpperBound(int newUpperBound, ASTRewrite rewriter) {
 	    //Get a factory and create a new node to replace old one
