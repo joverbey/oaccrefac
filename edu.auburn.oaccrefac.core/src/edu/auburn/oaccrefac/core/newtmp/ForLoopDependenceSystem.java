@@ -1,14 +1,12 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -20,7 +18,7 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
  * Class to encapsulate a for loop data dependence
  *
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({"restriction", "unused"})
 public class ForLoopDependenceSystem {
 
     private static final int DEP_EXISTS = 0;

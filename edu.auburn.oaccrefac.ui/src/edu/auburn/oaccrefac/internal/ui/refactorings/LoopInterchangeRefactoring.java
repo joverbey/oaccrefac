@@ -16,8 +16,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
  *  interchange is the exchange of the ordering of two iteration
  *  variables used in nested loops.
  * 
- *  Currently supports only perfectly, doubly nested loops.
- *
  */
 public class LoopInterchangeRefactoring extends ForLoopRefactoring {
     

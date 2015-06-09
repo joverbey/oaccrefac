@@ -1,8 +1,5 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * represents a distance vector for a data dependency
  * also essentially an immutable tuple type for integers

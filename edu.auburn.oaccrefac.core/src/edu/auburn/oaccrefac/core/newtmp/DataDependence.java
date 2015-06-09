@@ -1,7 +1,6 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
 public class DataDependence {
 

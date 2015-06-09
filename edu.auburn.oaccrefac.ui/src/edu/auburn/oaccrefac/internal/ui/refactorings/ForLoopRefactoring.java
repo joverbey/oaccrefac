@@ -1,17 +1,24 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import java.util.ArrayList;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
@@ -27,6 +34,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -136,6 +144,11 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             doCheckInitialConditions(initStatus);
         }
         
+        if (containsBreakorContinue(m_forloop)) {
+            initStatus.addFatalError("Cannot refactor -- loop contains "
+                    + "iteration augment statement (break or continue)");
+        }
+        
 		return initStatus;
 	}
 
@@ -201,7 +214,32 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 		ast.accept(v);
 		return v.loop;
 	}
-
+	
+	/**
+	 * Method takes in a tree and traverses to determine whether the
+	 * tree contains a break or continue statement.
+	 * @param tree -- the tree to traverse
+	 * @return -- true/false on successful find
+	 */
+	private boolean containsBreakorContinue(IASTNode tree) {
+	    class UnsupportedVisitor extends ASTVisitor {
+	        public UnsupportedVisitor() {
+	            shouldVisitStatements = true;
+	            shouldVisitExpressions = true;
+	        }
+	        
+	        @Override
+	        public int visit(IASTStatement statement) {
+	            if (statement instanceof IASTBreakStatement
+	             || statement instanceof IASTContinueStatement
+	             || statement instanceof IASTGotoStatement)
+	                return PROCESS_ABORT;
+	            return PROCESS_CONTINUE;
+	        }
+	    }
+	    return (!tree.accept(new UnsupportedVisitor()));
+	}
+	
 	/**
 	 * This method takes a tree and finds the first IASTName occurrence within the
 	 * tree. This was a helper method that was used in LoopUnrolling that could be
@@ -270,8 +308,23 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	    return false;
 	} 
 	
+	protected boolean isNameInScope(IASTName varname, IScope scope) {
+	    IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
+	    if (bindings.length > 0) {
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+	
 	//*************************************************************************
     //Getters & Setters
+	
+    @Override
+    protected RefactoringDescriptor getRefactoringDescriptor() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	
     protected CASTForStatement getLoop() {
         return (CASTForStatement) m_forloop;
@@ -319,4 +372,5 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	}
 	
 	//*************************************************************************
+	
 }

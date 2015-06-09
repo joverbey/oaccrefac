@@ -1,9 +1,5 @@
 package edu.auburn.oaccrefac.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -17,14 +13,11 @@ import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 import junit.framework.TestCase;
 
+@SuppressWarnings("restriction")
 public class DependenceTestTest extends TestCase {
 
-    Matrix a;
-    
-    private void p(Object s) {
-        System.out.println(s);
-    }
-        
+    //private Matrix a;
+
     public void test() throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(
                 "void main() {" +
@@ -42,7 +35,7 @@ public class DependenceTestTest extends TestCase {
                 ForLoopDependence dependence = new ForLoopDependence();
                 dependence.addForLoop((CPPASTForStatement) child);
                 Matrix A = dependence.generateInequalities();
-                FourierMotzkinEliminator f = new FourierMotzkinEliminator();
+                //FourierMotzkinEliminator f = new FourierMotzkinEliminator();
                 
                 
                 
@@ -52,5 +45,4 @@ public class DependenceTestTest extends TestCase {
             }
         }
     }
-    
 }

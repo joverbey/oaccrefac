@@ -342,14 +342,17 @@ public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCa
 
     private void compareAgainstResultFile() throws IOException, URISyntaxException, CoreException {
         for (String filename : files.keySet()) {
-            if (resultFileFor(filename).exists()) {
-                String expected = IOUtil.read(resultFileFor(filename)).replaceAll("\\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                String actual = readWorkspaceFile(filename).replaceAll("\\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                if (!expected.equals(actual)) {
-                    System.err.println("Actual result does not match contents of .result file -- " + filename);
-                }
-                assertEquals(expected, actual);
+            File resultFile = resultFileFor(filename);
+            if (!resultFile.exists()) {
+                fail(resultFile.getName() + " does not exist");
+                return;
             }
+            String expected = IOUtil.read(resultFileFor(filename)).replaceAll("\\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
+            String actual = readWorkspaceFile(filename).replaceAll("\\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
+            if (!expected.equals(actual)) {
+                System.err.println("Actual result does not match contents of .result file -- " + filename);
+            }
+            assertEquals(expected, actual);
         }
     }
 
