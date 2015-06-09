@@ -19,6 +19,7 @@ import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 /**
  * This class defines the implementation for refactoring a loop
@@ -51,18 +52,21 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
             throw new IllegalArgumentException("Unroll factor <= 0");
         }
     }
+    
+    @Override
+    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+        IASTStatement body = getLoop().getBody();
+        //if the body is empty, exit out -- pointless to unroll.
+        if (body == null || body instanceof IASTNullStatement)
+            initStatus.addFatalError("Loop body is empty -- nothing to unroll!");
+    };
 
 	@Override
 	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
 	    IASTForStatement loop = getLoop().copy();
-	    	    
+	    
 	    IASTStatement body = loop.getBody();
-        //if the body is empty, exit out -- pointless to unroll.
-        if (body == null || body instanceof IASTNullStatement)
-            return;
-        
-        
         IASTCompoundStatement body_compound = null;
         //if the body is not within braces, i.e. short-cut
         //loop pattern, make it a compounded statement
@@ -88,7 +92,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    int upper = getUpperBoundValue();
 	    if (conditionLE(loop)) {
 	        upper = upper + 1;
-	        adjustCondition(loop, upper, rewriter);
+	        adjustCondition(loop, upper);
 	    }
 	    
 	    //Number of extra iterations to add after loop. Also
@@ -147,7 +151,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    return false;
 	}
 	
-	private void adjustCondition(IASTForStatement loop, int newUpper, ASTRewrite rewriter) {
+	private void adjustCondition(IASTForStatement loop, int newUpper) {
 	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
         
@@ -219,7 +223,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	        for (IASTNode child : body.getChildren())
 	            rewriter.insertBefore(insert_parent, insert_before, child.copy(), null);
 	    }
-
+        rewriter.insertBefore(insert_parent, insert_before, iter_exprstmt, null);
 	}
 
 

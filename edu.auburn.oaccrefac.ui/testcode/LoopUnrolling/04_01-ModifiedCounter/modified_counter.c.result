@@ -1,0 +1,21 @@
+
+int main() {
+
+	char a[10];
+	char b[10];
+	int i = 0;
+	for (; i < 9; i++) {
+		a[i] = b[i];
+		i++;
+		i++;
+		a[i] = b[i];
+		i++;
+		i++;
+		a[i] = b[i];
+		i++;
+	}
+	i++;
+	a[i] = b[i];
+	i++;
+	i++;
+}
