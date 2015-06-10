@@ -63,7 +63,6 @@ public class ForLoopDependenceSystem {
         return dependences;
     }
 
-    
     /** TODO: is an ExprStmt the argument we want? should be Offset? IndexExpr? define new class?
      *  TODO: at least probably need more info than just one stmt - one stmt could have multiple dependences
      *  
@@ -72,9 +71,11 @@ public class ForLoopDependenceSystem {
      * @param statement the statement the dependence exists on
      * @return the dependence
      */
-    public DataDependence getDependence(IASTExpressionStatement statement) {
+    public DataDependence getDependence(IASTExpressionStatement statement1, IASTExpressionStatement statement2, DependenceType type) {
         for(DataDependence dependence : dependences) {
-            if(dependence.equals(statement)) {
+            //checking for for object equivalence rather than just separate identical objects should be enough - 
+            //the appropriate statement being used should be the same node on the same tree
+            if(dependence.equals(statement1) && dependence.equals(statement2) && dependence.getType() == type) {
                 return dependence;
             }
         }
@@ -109,6 +110,7 @@ public class ForLoopDependenceSystem {
             }
         }
     }
+
     private boolean doesForLoopContainForLoopChild(CPPASTForStatement loop) {
         
         class Visitor extends ASTVisitor {

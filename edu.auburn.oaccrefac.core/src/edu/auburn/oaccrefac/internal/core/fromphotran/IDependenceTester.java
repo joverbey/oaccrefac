@@ -69,5 +69,5 @@ public interface IDependenceTester
         public boolean isDefinite() { return isDefinite; }
     }
 
-    Result test(int n, int[] L, int[] U, int[] a, int[] b, Direction[] direction);
+    Result test(int nestingLevel, int[] lowerBounds, int[] upperBounds, int[] writeCoefficients, int[] readCoefficients, Direction[] direction);
 }
