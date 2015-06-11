@@ -1,0 +1,20 @@
+
+static int foo();
+
+int main() {
+
+	int i = 0;
+	int i_0 = 100;
+	int a[N];
+	for (int i_1 = 0; i_1 < i_0; i_1 += 2) {
+		for (int i = i_1; (i < (i_1+1) && i < i_0); i++) {
+			a[i] = 0;
+			foo();
+		}
+	}
+
+}
+
+int foo() {
+	return 0;
+}

@@ -36,7 +36,6 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
         //Get the top level loop and the loop to refactor.
         IASTForStatement loop = getLoop();
-        //Finds our loop at hardcoded loop depth (DOUBLY_NESTED_DEPTH)
         IASTForStatement xchng = findLoop(loop, m_depth);
         
         rewriter.replace(loop.getInitializerStatement(), xchng.getInitializerStatement(), null);
