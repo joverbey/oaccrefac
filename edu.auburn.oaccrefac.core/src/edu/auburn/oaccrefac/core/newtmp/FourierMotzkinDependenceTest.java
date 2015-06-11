@@ -26,8 +26,6 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
         Matrix m = new Matrix();
         
-        //int numColumns = writeCoefficients[0].length + readCoefficients.length + 1;
-        
         //get the inequalities from the subscripts
         for(int i = 0; i < writeCoefficients.length; i++) {
             //row will contain write coeffs, the negative read coeffs, and the constant
@@ -72,22 +70,53 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
         //iterate through the direction vector, adding an inequality 
         //comparing i_d and i_u for that particular vector element
         for(int i = 0; i < direction.length; i++) {
+            double[] row;
             switch(direction[i]) {
             case ANY:
+                //don't add any more constraints
                 break;
             case EQUALS:
+                //i_d - i_u <= 0, -i_d + i_u <= 0
+                //ie, [1 -1 0 0 ... 0], [-1 1 0 0 ... 0]
+                row = new double[writeCoefficients[0].length + readCoefficients.length + 1];
+                row[2*i] = 1;
+                row[2*i+1] = -1;
+                row[row.length-1] = 0;
+                m.addRowAtIndex(m.getNumRows(), row);
+                row = new double[writeCoefficients[0].length + readCoefficients.length + 1];
+                row[2*i] = -1;
+                row[2*i+1] = 1;
+                row[row.length-1] = 0;
+                m.addRowAtIndex(m.getNumRows(), row);
                 break;
             case GREATER_THAN:
+                //i_u < i_d
+                //in integer terms, i_u <= i_d-1, or -i_d+i_d <= -1
+                //ie, [-1 1 0 0 ... -1]
+                row = new double[writeCoefficients[0].length + readCoefficients.length + 1];
+                row[2*i] = -1;
+                row[2*i+1] = 1;
+                row[row.length-1] = -1;
+                m.addRowAtIndex(m.getNumRows(), row);
                 break;
             case LESS_THAN:
-                
+                //i_d < i_u
+                //in integer terms, i_d <= i_u-1, or i_d-i_u <= -1
+                //ie, [1 -1 0 0 ... -1]
+                row = new double[writeCoefficients[0].length + readCoefficients.length + 1];
+                row[2*i] = 1;
+                row[2*i+1] = -1;
+                row[row.length-1] = -1;
+                m.addRowAtIndex(m.getNumRows(), row);
                 break;
             }
         }
         
-        el.eliminateForIntegerSolutions(m);
+        //at this point, we should have the matrix completely put together 
         
-        return false;
+        //if there is an integer solution to the matrix, there is (possibly) a 
+        //dependence; otherwise, there is no dependence
+        return el.eliminateForIntegerSolutions(m);
     }
     
     //why this method isnt in the java library already, i dont know. 
