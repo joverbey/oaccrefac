@@ -28,8 +28,8 @@ package edu.auburn.oaccrefac.internal.core.fromphotran;
  * <ol>
  *   <li> the number of loops <i>n</i> in the nest,
  *   <li> the lower and upper bounds, L_i and U_i, of each loop (for each 1 &lt;= i &lt;= n),
- *   <li> the coefficients a_i of a linearly-subscripted array access (for each 1 &lt;= i &lt;= n), and
- *   <li> the coefficients b_i of another linearly-subscripted array access (for each 1 &lt;= i &lt;= n),
+ *   <li> the coefficients a_i of a linearly-subscripted array access (for each 0 &lt;= i &lt;= n), and
+ *   <li> the coefficients b_i of another linearly-subscripted array access (for each 0 &lt;= i &lt;= n),
  * </ol>
  * as well as the entries of a direction vector
  * D = (D_1, D_2, ..., D_n)
@@ -46,28 +46,28 @@ package edu.auburn.oaccrefac.internal.core.fromphotran;
  */
 public interface IDependenceTester
 {
-    public static enum Result
-    {
-        //                  Dependence might exist?
-        //                  |       Definite result?
-        //                  |       |
-        NO_DEPENDENCE      (false,  true),
-        POSSIBLE_DEPENDENCE(true,   false),
-        DEFINITE_DEPENDENCE(true,   true);
+//    public static enum Result
+//    {
+//        //                  Dependence might exist?
+//        //                  |       Definite result?
+//        //                  |       |
+//        NO_DEPENDENCE      (false,  true),
+//        POSSIBLE_DEPENDENCE(true,   false),
+//        DEFINITE_DEPENDENCE(true,   true);
+//
+//        private boolean asBoolean;
+//        private boolean isDefinite;
+//
+//        private Result(boolean asBoolean, boolean isDefinite)
+//        {
+//            this.asBoolean = asBoolean;
+//            this.isDefinite = isDefinite;
+//        }
+//
+//        public boolean dependenceMightExist() { return asBoolean; }
+//
+//        public boolean isDefinite() { return isDefinite; }
+//    }
 
-        private boolean asBoolean;
-        private boolean isDefinite;
-
-        private Result(boolean asBoolean, boolean isDefinite)
-        {
-            this.asBoolean = asBoolean;
-            this.isDefinite = isDefinite;
-        }
-
-        public boolean dependenceMightExist() { return asBoolean; }
-
-        public boolean isDefinite() { return isDefinite; }
-    }
-
-    Result test(int nestingLevel, int[] lowerBounds, int[] upperBounds, int[] writeCoefficients, int[] readCoefficients, Direction[] direction);
+    boolean test(int nestingLevel, int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients, Direction[] direction);
 }
