@@ -25,7 +25,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
  * }                          |     b[i] = 2; 
  *                            |
  * 
- * (Example taken from Wikipedia's web page on loop Fusion)
+ * (Example taken from Wikipedia's web page on loop Fission.)
  */
 @SuppressWarnings("restriction")
 public class LoopFissionRefactoring extends ForLoopRefactoring {
@@ -38,7 +38,7 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
     }
 
     protected void doCheckInitialConditions(RefactoringStatus initStatus) {
-        // This gets the selected loop to re-factor.
+        // This gets the selected loop to re-factor and checks if the body is compound statement only..
         loop = getLoop();
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {
             initStatus.addFatalError("The loop fission requires to have a compound body.");
@@ -53,6 +53,9 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
         IASTNode insert_before = getNextSibling(getLoop());
         IASTNode[] chilluns = body.getChildren();
         
+        /*Over here, we are looking for all the statements in the body of for-loop
+         *which can be put into individual for-loop of their own.
+         */
         for (IASTNode child : chilluns) {
             IASTStatement stmt = (IASTStatement) (child.copy());
             IASTForStatement newForLoop = factory.newForStatement
@@ -62,6 +65,9 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
                             stmt);
             rewriter.insertBefore(insert_parent, insert_before, newForLoop, null);
         }
+            /*This check is to make sure that compound body is not empty. 
+             * If yes, it'll not perform re-factoring.
+             */
             if (chilluns.length>0) {
                 rewriter.remove(loop, null);
             }
