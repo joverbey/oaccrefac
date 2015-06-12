@@ -2,37 +2,36 @@ package edu.auburn.oaccrefac.core.newtmp;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 
+/** 
+ * Class to encapsulate a data dependence
+ * any complex calculations determining dependence information
+ * are performed primarily in other classes; this one is simply a 
+ * container for information
+ * 
+ * @author Alexander Calvert
+ *
+ */
 public class DataDependence {
-
-    //TYPES OF DEPENDENCE
-    public static final int FLOW = 0;
-    public static final int ANTI = 1;
-    public static final int OUTPUT = 2;
-    
-    //DIRECTION VECTOR VALUES
-//    public static final int GT = 3;
-//    public static final int LT = 4;
-//    public static final int EQ = 5;
-//    public static final int GE = 6;
-//    public static final int LE = 7;
     
     private IASTExpressionStatement statement1;
     private IASTExpressionStatement statement2;
-    
-    private int type;
     private DistanceVector distanceVector;
+    private DependenceType type;
     
     //need to get info about two iterations of the dependence (ie, distance vector) to set
     //direction vector
     //args: statement1, statement2 - 
-    public DataDependence(IASTExpressionStatement statement1, IASTExpressionStatement statement2, int type) {
+    public DataDependence(IASTExpressionStatement statement1, IASTExpressionStatement statement2, DistanceVector distanceVector, DependenceType type) {
         this.statement1 = statement1;
         this.statement2 = statement2;
+        this.distanceVector = distanceVector;
         this.type = type;
     }
 
     /**
      * should identify the direction vector using distance vector information 
+     * TODO: might should move this work to the constructor and create an instance variable 
+     *  so it only has to get done once
      */
     public DirectionVector getDirectionVector() {
         Direction[] direction = new Direction[distanceVector.size()];
@@ -51,7 +50,7 @@ public class DataDependence {
         
     }
     
-    public int getType() {
+    public DependenceType getType() {
         return type;
     }
 

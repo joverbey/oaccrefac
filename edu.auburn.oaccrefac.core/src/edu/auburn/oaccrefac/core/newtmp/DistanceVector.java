@@ -7,7 +7,7 @@ package edu.auburn.oaccrefac.core.newtmp;
  * @author Alexander Calvert
  *
  */
-public class DistanceVector implements Tuple {
+public class DistanceVector implements ITuple {
 
     private final Integer[] elements;
 

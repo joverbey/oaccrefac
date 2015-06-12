@@ -1,6 +1,6 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
-public interface Tuple {
+public interface ITuple {
 
     public Object[] getElements();
     

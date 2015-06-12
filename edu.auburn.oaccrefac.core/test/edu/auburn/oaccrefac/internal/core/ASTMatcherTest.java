@@ -1,3 +1,4 @@
+package edu.auburn.oaccrefac.internal.core;
 import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;

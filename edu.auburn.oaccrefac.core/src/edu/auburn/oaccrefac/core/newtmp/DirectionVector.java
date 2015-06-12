@@ -1,6 +1,6 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
-public class DirectionVector implements Tuple {
+public class DirectionVector implements ITuple {
 
     private final Direction[] elements;
     

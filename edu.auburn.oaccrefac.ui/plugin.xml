@@ -48,6 +48,14 @@
                tooltip="Defuse two for-loop together when possible.">
          </action>
          <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.LoopFissionDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.LoopFissionDelegate"
+               label="&amp;Fission"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="Apply loop fission on a compound for body.">
+         </action>
+         <action
                class="edu.auburn.oaccrefac.internal.ui.actions.LoopStripMiningDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.LoopStripMiningDelegate"
                label="&amp;Strip Mining"

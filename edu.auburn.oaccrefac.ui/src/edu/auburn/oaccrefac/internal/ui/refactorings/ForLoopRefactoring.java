@@ -119,37 +119,41 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 	    refactor(rewriter, pm);
 	}
 
-	/**
-	 * Checks some initial conditions based on the element to be refactored. 
-	 * The method is typically called by the UI to perform an initial checks 
-	 * after an action has been executed. The refactoring has to be considered 
-	 * as not being executable if the returned status has the severity of 
-	 * RefactoringStatus#FATAL. 
-	 */
-	@Override
-	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
-			throws CoreException, OperationCanceledException {
-		pm.subTask("Waiting for indexer...");
-		prepareIndexer(pm);
-		pm.subTask("Analyzing selection...");
-		
-		m_progress = SubMonitor.convert(pm, 10);
+    /**
+     * Checks some initial conditions based on the element to be refactored. The method is typically called by the UI to
+     * perform an initial checks after an action has been executed. The refactoring has to be considered as not being
+     * executable if the returned status has the severity of RefactoringStatus#FATAL.
+     */
+    @Override
+    public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+            throws CoreException, OperationCanceledException {
+        if (initStatus.hasFatalError()) {
+            return initStatus;
+        }
+
+        pm.subTask("Waiting for indexer...");
+        prepareIndexer(pm);
+        pm.subTask("Analyzing selection...");
+
+        m_progress = SubMonitor.convert(pm, 10);
         m_ast = getAST(tu, m_progress.newChild(9));
         m_forloop = findLoop(m_ast);
-		
-        if (!supportedPattern(m_forloop)) {
+
+        if (m_forloop == null) {
+            initStatus.addFatalError("Please select a counted for-loop.");
+        } else if (!supportedPattern(m_forloop)) {
             initStatus.addFatalError("Loop form not supported!");
         } else {
             doCheckInitialConditions(initStatus);
+
+            if (containsBreakorContinue(m_forloop)) {
+                initStatus.addFatalError(
+                        "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
+            }
         }
-        
-        if (containsBreakorContinue(m_forloop)) {
-            initStatus.addFatalError("Cannot refactor -- loop contains "
-                    + "iteration augment statement (break or continue)");
-        }
-        
-		return initStatus;
-	}
+
+        return initStatus;
+    }
 	
 	@Override
 	protected RefactoringStatus checkFinalConditions(IProgressMonitor subProgressMonitor,

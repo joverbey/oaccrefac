@@ -1,3 +1,4 @@
+package edu.auburn.oaccrefac.internal.core;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
