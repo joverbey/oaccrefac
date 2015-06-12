@@ -30,7 +30,6 @@ public final class Matrix
 
     // rows = { [1, 2, 3, 4], [5, 6, 7, 8] }
     // matrix = 1.0 2.0 3.0 | 4.0
-    // 5.0 6.0 7.0 | 8.0
 
     /**
      * default constructor - creates an empty matrix
@@ -204,8 +203,13 @@ public final class Matrix
 
         // trying to add a row with the incorrect number of columns
         // or adding at an invalid index
-        if (rowIn.length != numColumns || index < 0 || index > getNumRows() + 1)
+        if (rowIn.length != numColumns || index < 0 || index > getNumRows() + 1) {
+            System.out.println("len in: " + rowIn.length);
+            System.out.println("num cols: " + numColumns);
+            System.out.println("index: " + index);
+            System.out.println("num rows: " + getNumRows() + "\n");
             throw new IllegalArgumentException("addRowAtIndex - invalid column or index number"); //$NON-NLS-1$
+        }
 
         // shifts everything down
         rows.add(index, rowIn.clone());
@@ -310,4 +314,21 @@ public final class Matrix
         return builder.toString();
     }
 
+    public boolean isEquivalentTo(Matrix m) {
+        double epsilon = 0.005;
+        if(this.numColumns != m.getNumColumns()) {
+            return false;
+        }
+        for(int i = 0; i < getNumRows(); i++) {
+            for(int j = 0; j < getNumColumns(); j++) {
+                double thisEl = this.getValueAtMatrixIndex(i, j);
+                double thatEl = m.getValueAtMatrixIndex(i, j);
+                if(Math.abs(thisEl - thatEl) > epsilon) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
 }
