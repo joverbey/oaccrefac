@@ -10,6 +10,16 @@ import edu.auburn.oaccrefac.core.newtmp.FourierMotzkinDependenceTest;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 import edu.auburn.oaccrefac.internal.core.fromphotran.Direction;
 
+/**
+ * Unit tests for FourierMotzkinDependenceTest class
+ * 
+ * the test() method is not tested here because it is simply a wrapper 
+ *  for generateDependenceMatrix() and eliminateForIntegerSolutions() 
+ *  from the FM eliminator class  
+ * 
+ * @author Alexander Calvert
+ * 
+ */
 public class FourierMotzkinDependenceTestTest {
 
     /*

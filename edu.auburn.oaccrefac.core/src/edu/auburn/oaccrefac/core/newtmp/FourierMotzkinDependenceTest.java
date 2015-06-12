@@ -46,7 +46,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
 
     //negate all values in an array
     //useful for putting equals relations in a <= matrix
-    //ie, (x == 1) <=> (x <= 1) && (-x <= -1)
+    //ie, (x == 1) iff (x <= 1) && (-x <= -1)
     private double[] negate(double[] arr) {
         double[] ret = new double[arr.length];
         for(int i = 0; i < arr.length; i++) {
