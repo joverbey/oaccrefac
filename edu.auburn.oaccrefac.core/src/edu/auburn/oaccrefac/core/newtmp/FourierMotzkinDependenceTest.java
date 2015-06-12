@@ -18,7 +18,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
      * assumes that the subscript expressions are normalized
      * see example on Wolfe pg 225-226
      * 
-     * TODO: currently does variables in the upper/lower bounds - only constants
+     * TODO: currently does not handle variables in the upper/lower bounds - only constants
      *  (may need to adjust the interface itself to handle that) 
      *  
      */
