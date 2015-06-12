@@ -1,7 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import java.util.ArrayList;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
@@ -36,6 +34,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
@@ -151,8 +150,18 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         
 		return initStatus;
 	}
+	
+	@Override
+	protected RefactoringStatus checkFinalConditions(IProgressMonitor subProgressMonitor,
+	        CheckConditionsContext checkContext) throws CoreException, OperationCanceledException {
+	    doCheckFinalConditions(initStatus);
+	    return initStatus;
+	}
 
 	protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+    }
+	
+	protected void doCheckFinalConditions(RefactoringStatus initStatus) {
     }
 
     /**
