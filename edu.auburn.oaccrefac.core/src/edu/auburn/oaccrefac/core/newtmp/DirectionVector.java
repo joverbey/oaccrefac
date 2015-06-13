@@ -1,11 +1,19 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
+import java.util.Arrays;
+
 public class DirectionVector implements ITuple {
 
     private final Direction[] elements;
 
     public DirectionVector(Direction... elements) {
         this.elements = elements;
+    }
+    
+    public DirectionVector(Direction element, int length) {
+        Direction[] els = new Direction[length];
+        Arrays.fill(els, element);
+        this.elements = els;
     }
 
     public DirectionVector(int size) {

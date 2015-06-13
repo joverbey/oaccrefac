@@ -17,6 +17,8 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
      * 
      * TODO: currently does not handle variables in the upper/lower bounds - only constants
      *  (may need to adjust the interface itself to handle that) 
+     * TODO: consider changing 'the argument 'direction' from a Direction[] to a DirectionVector
+     * 
      *  
      */
     @Override
