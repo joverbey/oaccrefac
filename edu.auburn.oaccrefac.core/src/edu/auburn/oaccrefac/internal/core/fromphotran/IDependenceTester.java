@@ -10,6 +10,8 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.core.fromphotran;
 
+import edu.auburn.oaccrefac.core.newtmp.Direction;
+
 /**
  * A dependence test operating on a perfect loop nest
  * <pre>
@@ -46,28 +48,5 @@ package edu.auburn.oaccrefac.internal.core.fromphotran;
  */
 public interface IDependenceTester
 {
-//    public static enum Result
-//    {
-//        //                  Dependence might exist?
-//        //                  |       Definite result?
-//        //                  |       |
-//        NO_DEPENDENCE      (false,  true),
-//        POSSIBLE_DEPENDENCE(true,   false),
-//        DEFINITE_DEPENDENCE(true,   true);
-//
-//        private boolean asBoolean;
-//        private boolean isDefinite;
-//
-//        private Result(boolean asBoolean, boolean isDefinite)
-//        {
-//            this.asBoolean = asBoolean;
-//            this.isDefinite = isDefinite;
-//        }
-//
-//        public boolean dependenceMightExist() { return asBoolean; }
-//
-//        public boolean isDefinite() { return isDefinite; }
-//    }
-
-    boolean test(int nestingLevel, int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients, Direction[] direction);
+    boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients, Direction[] direction);
 }

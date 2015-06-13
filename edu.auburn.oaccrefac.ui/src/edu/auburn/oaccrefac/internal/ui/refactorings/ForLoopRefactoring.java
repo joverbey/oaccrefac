@@ -1,20 +1,13 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import java.util.ArrayList;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
-import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
-import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
-import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -37,10 +30,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryIntegerConstant;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
 /**
  * Class is meant to be an abstract base class for all ForLoop transformation refactorings. It includes all methods that
@@ -54,13 +44,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     private SubMonitor m_progress;
     private IASTTranslationUnit m_ast;
     private IASTForStatement m_forloop;
-
-    // Patterns of for loops that are acceptable to refactor...
-    private static String[] patterns = { "for (i = 0; i < 1; i++) ;", "for (int i = 0; i < 1; i++) ;",
-            "for (i = 0; i <= 1; i++) ;", "for (int i = 0; i <= 1; i++) ;", "for (i = 0; i < 1; i+=1) ;",
-            "for (int i = 0; i < 1; i+=1) ;", "for (i = 0; i <= 1; i+=1) ;", "for (int i = 0; i <= 1; i+=1) ;",
-            "for (i = 0; i < 1; i=i+1) ;", "for (int i = 0; i < 1; i=i+1) ;", "for (i = 0; i <= 1; i=i+1) ;",
-            "for (int i = 0; i <= 1; i=i+1) ;", };
 
     /**
      * The constructor for ForLoopRefactoring takes items for refactoring and tosses them up to the super class as well
@@ -126,12 +109,12 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         if (m_forloop == null) {
             initStatus.addFatalError("Please select a counted for-loop.");
-        } else if (!supportedPattern(m_forloop)) {
+        } else if (!ForLoopUtil.isCountedLoop(m_forloop)) {
             initStatus.addFatalError("Loop form not supported!");
         } else {
             doCheckInitialConditions(initStatus);
 
-            if (containsBreakorContinue(m_forloop)) {
+            if (ForLoopUtil.containsBreakorContinue(m_forloop)) {
                 initStatus.addFatalError(
                         "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
             }
@@ -203,31 +186,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     }
 
     /**
-     * Method takes in a tree and traverses to determine whether the tree contains a break or continue statement.
-     * 
-     * @param tree
-     *            -- the tree to traverse
-     * @return -- true/false on successful find
-     */
-    private boolean containsBreakorContinue(IASTNode tree) {
-        class UnsupportedVisitor extends ASTVisitor {
-            public UnsupportedVisitor() {
-                shouldVisitStatements = true;
-                shouldVisitExpressions = true;
-            }
-
-            @Override
-            public int visit(IASTStatement statement) {
-                if (statement instanceof IASTBreakStatement || statement instanceof IASTContinueStatement
-                        || statement instanceof IASTGotoStatement)
-                    return PROCESS_ABORT;
-                return PROCESS_CONTINUE;
-            }
-        }
-        return (!tree.accept(new UnsupportedVisitor()));
-    }
-
-    /**
      * This method takes a tree and finds the first IASTName occurrence within the tree. This was a helper method that
      * was used in LoopUnrolling that could be applied to other situations, so it was placed here for utility.
      * 
@@ -252,48 +210,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         Visitor v = new Visitor();
         tree.accept(v);
         return v.varname;
-    }
-
-    /**
-     * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
-     * string into a corresponding AST and then uses a pattern matching utility to match if the pattern is loosely
-     * synonymous to the matchee. (Basically, we have to check some pre-conditions before refactoring or else we could
-     * run into some hairy cases such as an array subscript expression being in the initializer statement...which would
-     * be a nightmare to refactor).
-     * 
-     * @param matchee
-     *            -- tree or AST to match
-     * @return Boolean describing whether the matchee matches any supported pattern
-     * @throws CoreException
-     */
-    protected boolean supportedPattern(IASTForStatement matchee) throws CoreException {
-        class LiteralReplacer extends ASTVisitor {
-            public LiteralReplacer() {
-                shouldVisitExpressions = true;
-            }
-
-            @Override
-            public int visit(IASTExpression visitor) {
-                if (visitor instanceof IASTLiteralExpression && visitor.getParent() != null) {
-                    IASTLiteralExpression expr = (IASTLiteralExpression) visitor;
-                    if (expr.getParent() instanceof IASTBinaryExpression)
-                        ((IASTBinaryExpression) expr.getParent()).setOperand2(new ArbitraryIntegerConstant());
-                    else if (expr.getParent() instanceof IASTEqualsInitializer)
-                        ((IASTEqualsInitializer) expr.getParent()).setInitializerClause(new ArbitraryIntegerConstant());
-                }
-                return PROCESS_CONTINUE;
-            }
-        }
-
-        for (String pattern : patterns) {
-            IASTForStatement forLoop = (IASTForStatement) ASTUtil.parseStatement(pattern);
-            IASTForStatement pattern_ast = forLoop.copy(CopyStyle.withoutLocations);
-            pattern_ast.accept(new LiteralReplacer());
-            pattern_ast.setBody(new ArbitraryStatement());
-            if (ASTMatcher.unify(pattern_ast, matchee) != null)
-                return true;
-        }
-        return false;
     }
 
     protected boolean isNameInScope(IASTName varname, IScope scope) {

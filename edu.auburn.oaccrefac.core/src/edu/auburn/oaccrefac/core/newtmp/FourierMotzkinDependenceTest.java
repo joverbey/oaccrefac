@@ -3,11 +3,8 @@ package edu.auburn.oaccrefac.core.newtmp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.layout.GridLayout;
-
 import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
 import edu.auburn.oaccrefac.internal.core.Matrix;
-import edu.auburn.oaccrefac.internal.core.fromphotran.Direction;
 import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
 
 public class FourierMotzkinDependenceTest implements IDependenceTester {
@@ -23,12 +20,12 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
      *  
      */
     @Override
-    public boolean test(int nestingLevel, int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
+    public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, Direction[] direction) {
 
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
 
-        Matrix m = generateDependenceMatrix(nestingLevel, lowerBounds, upperBounds, writeCoefficients, readCoefficients, direction);
+        Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, direction);
 
         //if there is an integer solution to the matrix, there is (possibly) a 
         //dependence; otherwise, there is no dependence
@@ -55,7 +52,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
         return ret;
     }
 
-    public Matrix generateDependenceMatrix(int nestingLevel, int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
+    public Matrix generateDependenceMatrix(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, Direction[] direction) {
         Matrix m = new Matrix();
 
@@ -108,7 +105,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
             case ANY:
                 //don't add any more constraints
                 break;
-            case EQUALS:
+            case EQ:
                 //i_d - i_u <= 0, -i_d + i_u <= 0
                 //ie, [1 -1 0 0 ... 0], [-1 1 0 0 ... 0]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - 1];
@@ -122,7 +119,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
                 row[row.length-1] = 0;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
-            case GREATER_THAN:
+            case GT:
                 //i_u < i_d
                 //in integer terms, i_u <= i_d-1, or -i_d+i_d <= -1
                 //ie, [-1 1 0 0 ... -1]
@@ -132,7 +129,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
                 row[row.length-1] = -1;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
-            case LESS_THAN:
+            case LT:
                 //i_d < i_u
                 //in integer terms, i_d <= i_u-1, or i_d-i_u <= -1
                 //ie, [1 -1 0 0 ... -1]
@@ -142,6 +139,9 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
                 row[row.length-1] = -1;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
+            default:
+                // FIXME -- handle GE and LE
+                throw new UnsupportedOperationException();
             }
         }
         return m;

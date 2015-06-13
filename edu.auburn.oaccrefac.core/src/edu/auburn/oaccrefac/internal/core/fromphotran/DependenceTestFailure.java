@@ -18,7 +18,7 @@ package edu.auburn.oaccrefac.internal.core.fromphotran;
  * @author Jeff Overbey
  */
 @SuppressWarnings("serial")
-public class DependenceTestFailure extends Error
+public class DependenceTestFailure extends Exception
 {
     public DependenceTestFailure(String message)
     {
