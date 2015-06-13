@@ -175,9 +175,9 @@ public class DependenceAnalysis {
             return;
         }
 
-        Pair<IASTName, IASTExpression> arrayAccess = ASTUtil.getSupportedArrayAccess(expr);
+        Pair<IASTName, LinearExpression> arrayAccess = ASTUtil.getSimpleArrayAccess(expr);
         if (arrayAccess != null) {
-            variableAccesses.add(new VariableAccess(arrayAccess, true));
+            variableAccesses.add(new VariableAccess(arrayAccess.getFirst(), arrayAccess.getSecond(), true));
             return;
         }
 
@@ -252,12 +252,12 @@ public class DependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
-        Pair<IASTName, IASTExpression> arrayAccess = ASTUtil.getSupportedArrayAccess(expr);
+        Pair<IASTName,LinearExpression> arrayAccess = ASTUtil.getSimpleArrayAccess(expr);
         if (arrayAccess == null)
             throw unsupported(expr);
-        variableAccesses.add(new VariableAccess(arrayAccess, true));
+        variableAccesses.add(new VariableAccess(arrayAccess.getFirst(), arrayAccess.getSecond(), false));
 
-        collectAccessesFromExpression(arrayAccess.getSecond());
+        collectAccessesFromExpression((IASTExpression)expr.getArgument());
     }
 
     private static DependenceTestFailure unsupported(IASTNode node) {

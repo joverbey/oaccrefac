@@ -5,14 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-import edu.auburn.oaccrefac.internal.core.Pair;
 import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 
 public class VariableAccess {
@@ -22,16 +20,13 @@ public class VariableAccess {
     private final boolean isWrite;
 
     public VariableAccess(IASTName scalarVariable, boolean isWrite) {
-        this.variable = scalarVariable;
-        this.binding = this.variable.resolveBinding();
-        this.arraySubscript = null;
-        this.isWrite = isWrite;
+        this(scalarVariable, null, isWrite);
     }
 
-    public VariableAccess(Pair<IASTName, IASTExpression> arrayAccess, boolean isWrite) {
-        this.variable = arrayAccess.getFirst();
+    public VariableAccess(IASTName array, LinearExpression arraySubscript, boolean isWrite) {
+        this.variable = array;
         this.binding = this.variable.resolveBinding();
-        this.arraySubscript = LinearExpression.createFrom(arrayAccess.getSecond());
+        this.arraySubscript = arraySubscript;
         this.isWrite = isWrite;
     }
 

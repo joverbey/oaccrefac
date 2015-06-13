@@ -69,6 +69,22 @@ public class DependenceAnalysisTest extends TestCase {
         assertDependencesEqual(expected, stmt);
     }
 
+    public void testArrayAssignmentsInLoop() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int scalar = 1, array[10];\n" +
+                /* 3 */ "  for (int i = 0; i < 10; i++) {\n" +
+                /* 4 */ "    array[i] = scalar;\n" +
+                /* 5 */ "    array[i] = array[i] + 1;\n" +
+                /* 6 */ "}");
+        String[] expected = new String[] { //
+                "FLOW 2 -> 4 []", //
+                "OUTPUT 2 -> 4 []", //
+                "OUTPUT 2 -> 5 []", //
+                "FLOW 4 -> 5 [*]", //
+                "OUTPUT 4 -> 5 [*]" };
+        assertDependencesEqual(expected, stmt);
+    }
+
     private void assertDependencesEqual(String[] expectedStrings, IASTStatement stmt) throws DependenceTestFailure {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 

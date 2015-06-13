@@ -27,6 +27,8 @@ import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 
+import edu.auburn.oaccrefac.core.newtmp.LinearExpression;
+
 public class ASTUtil {
 
     public static <T> List<T> find(IASTNode parent, Class<T> clazz) {
@@ -146,7 +148,7 @@ public class ASTUtil {
         return ((IASTIdExpression) expr).getName();
     }
 
-    public static Pair<IASTName, IASTExpression> getSupportedArrayAccess(IASTExpression expr) {
+    public static Pair<IASTName, LinearExpression> getSimpleArrayAccess(IASTExpression expr) {
         if (!(expr instanceof IASTArraySubscriptExpression))
             return null;
 
@@ -158,12 +160,9 @@ public class ASTUtil {
         if (name == null || !(subscript instanceof IASTExpression))
             return null;
 
-        // FIXME -- should be any linear expression
-        Integer constant = getConstantExpression((IASTExpression) subscript);
-        if (constant == null)
-            return null;
+        LinearExpression linearSubscript = LinearExpression.createFrom((IASTExpression)subscript);
 
-        return new Pair<IASTName, IASTExpression>(name, (IASTExpression) subscript);
+        return new Pair<IASTName, LinearExpression>(name, linearSubscript);
     }
 
     public static Integer getConstantExpression(IASTExpression expr) {
