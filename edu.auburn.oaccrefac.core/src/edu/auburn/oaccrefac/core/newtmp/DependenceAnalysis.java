@@ -68,10 +68,10 @@ public class DependenceAnalysis {
                     } else {
                         // FIXME Handle loop nests properly -- bounds, index variables, etc.
                         // List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
-                        IBinding[] vars = collectAllVariables(v1.getLinearSubscriptExpression(),
-                                v2.getLinearSubscriptExpression());
-                        int[][] writeCoefficients = new int[][] { v1.collectCoefficients(vars) };
-                        int[][] readCoefficients = new int[][] { v2.collectCoefficients(vars) };
+                        IBinding[] vars = collectAllVariables(v1.getLinearSubscriptExpressions(),
+                                v2.getLinearSubscriptExpressions());
+                        int[][] writeCoefficients = v1.collectCoefficients(vars);
+                        int[][] readCoefficients = v2.collectCoefficients(vars);
                         int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE+1);
                         int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE-1);
                         DirectionVector direction = new DirectionVector(vars.length);
@@ -92,10 +92,13 @@ public class DependenceAnalysis {
         return dependences;
     }
 
-    private IBinding[] collectAllVariables(LinearExpression le1, LinearExpression le2) {
+    private IBinding[] collectAllVariables(LinearExpression[]... exprs) {
         Set<IBinding> vars = new HashSet<IBinding>();
-        vars.addAll(le1.getCoefficients().keySet());
-        vars.addAll(le2.getCoefficients().keySet());
+        for (LinearExpression[] array : exprs) {
+            for (LinearExpression e : array) {
+                vars.addAll(e.getCoefficients().keySet());
+            }
+        }
         IBinding[] result = vars.toArray(new IBinding[vars.size()]);
         Arrays.sort(result, new BindingComparator());
         return result;
@@ -154,7 +157,7 @@ public class DependenceAnalysis {
             if (declarator.getNestedDeclarator() != null || declarator.getPointerOperators().length > 0)
                 throw unsupported(stmt);
 
-            variableAccesses.add(new VariableAccess(declarator.getName(), true));
+            variableAccesses.add(new VariableAccess(true, declarator.getName()));
 
             if (declarator.getInitializer() != null) {
                 if (!(declarator.getInitializer() instanceof IASTEqualsInitializer))
@@ -180,13 +183,13 @@ public class DependenceAnalysis {
     private void collectAccessesFromAssignmentLHS(IASTExpression expr) throws DependenceTestFailure {
         IASTName scalar = ASTUtil.getIdExpression(expr);
         if (scalar != null) {
-            variableAccesses.add(new VariableAccess(scalar, true));
+            variableAccesses.add(new VariableAccess(true, scalar));
             return;
         }
 
-        Pair<IASTName, LinearExpression> arrayAccess = ASTUtil.getSimpleArrayAccess(expr);
+        Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
         if (arrayAccess != null) {
-            variableAccesses.add(new VariableAccess(arrayAccess.getFirst(), arrayAccess.getSecond(), true));
+            variableAccesses.add(new VariableAccess(true, arrayAccess.getFirst(), arrayAccess.getSecond()));
             return;
         }
 
@@ -257,14 +260,14 @@ public class DependenceAnalysis {
         IASTName name = ASTUtil.getIdExpression(expr);
         if (name == null)
             throw unsupported(expr);
-        variableAccesses.add(new VariableAccess(name, false));
+        variableAccesses.add(new VariableAccess(false, name));
     }
 
     private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
-        Pair<IASTName, LinearExpression> arrayAccess = ASTUtil.getSimpleArrayAccess(expr);
+        Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
         if (arrayAccess == null)
             throw unsupported(expr);
-        variableAccesses.add(new VariableAccess(arrayAccess.getFirst(), arrayAccess.getSecond(), false));
+        variableAccesses.add(new VariableAccess(false, arrayAccess.getFirst(), arrayAccess.getSecond()));
 
         collectAccessesFromExpression((IASTExpression) expr.getArgument());
     }

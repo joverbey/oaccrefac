@@ -93,6 +93,32 @@ public class DependenceAnalysisTest extends TestCase {
         assertDependencesEqual(expected, stmt);
     }
 
+    public void test2DArrayAssignments1() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int matrix[2][2];\n" +
+                /* 3 */ "  matrix[1][0] = 0;\n" +
+                /* 4 */ "  matrix[1][0] = matrix[0][1];\n" +
+                /* 5 */ "  matrix[0][0] = matrix[1][0];\n" +
+                /* 6 */ "}");
+        String[] expected = new String[] { //
+                "OUTPUT 3 -> 4 [*,*]", //
+                "FLOW 3 -> 5 [*,*]" };
+        assertDependencesEqual(expected, stmt);
+    }
+
+    public void test2DArrayAssignments2() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int i, matrix[2][2];\n" +
+                /* 3 */ "  matrix[1][0] = 0;\n" +
+                /* 4 */ "  matrix[1][0] = matrix[i][1];\n" +
+                /* 5 */ "  matrix[0][0] = matrix[1][i];\n" +
+                /* 6 */ "}");
+        String[] expected = new String[] { //
+                "OUTPUT 3 -> 4 [*,*]", //
+                "FLOW 3 -> 5 [*,*]" };
+        assertDependencesEqual(expected, stmt);
+    }
+
     private void assertDependencesEqual(String[] expectedStrings, IASTStatement stmt) throws DependenceTestFailure {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 
