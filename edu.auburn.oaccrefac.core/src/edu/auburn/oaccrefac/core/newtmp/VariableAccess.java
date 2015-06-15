@@ -111,9 +111,9 @@ public class VariableAccess {
         for (int i = 0; i < vars.length; i++) {
             Integer coeff = coeffs.get(vars[i]);
             if (coeff == null) {
-                result[i+1] = 0;
+                result[i + 1] = 0;
             } else {
-                result[i+1] = coeff.intValue();
+                result[i + 1] = coeff.intValue();
             }
         }
         return result;
@@ -125,11 +125,11 @@ public class VariableAccess {
         sb.append(isWrite ? "Write of " : "Read of ");
         sb.append(variable);
         if (arraySubscripts != null) {
-            sb.append("[");
             for (int i = 0; i < arraySubscripts.length; i++) {
+                sb.append("[");
                 sb.append(arraySubscripts[i]);
+                sb.append("]");
             }
-            sb.append("]");
         }
         return sb.toString();
     }
