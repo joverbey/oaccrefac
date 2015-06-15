@@ -70,6 +70,19 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             "for (int i = 0; i < 1; i=i+1) ;",
             "for (i = 0; i <= 1; i=i+1) ;",
             "for (int i = 0; i <= 1; i=i+1) ;",
+            
+            "for (i = 0; i < j; i++) ;",
+            "for (int i = 0; i < j; i++) ;",
+            "for (i = 0; i <= j; i++) ;",
+            "for (int i = 0; i <= j; i++) ;",
+            "for (i = 0; i < j; i+=1) ;",
+            "for (int i = 0; i < j; i+=1) ;",
+            "for (i = 0; i <= j; i+=1) ;",
+            "for (int i = 0; i <= j; i+=1) ;",
+            "for (i = 0; i < j; i=i+1) ;",
+            "for (int i = 0; i < j; i=i+1) ;",
+            "for (i = 0; i <= j; i=i+1) ;",
+            "for (int i = 0; i <= j; i=i+1) ;",
     };
 
     /**

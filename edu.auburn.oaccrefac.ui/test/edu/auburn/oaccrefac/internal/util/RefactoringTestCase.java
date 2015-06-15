@@ -209,7 +209,8 @@ public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCa
             }
         }
 
-        assertEquals(status.hasError(), lastMarkerField(markerFields).equals(FAIL));
+        assertEquals(status.toString(),
+                status.hasError(), lastMarkerField(markerFields).equals(FAIL));
     }
 
     private Map<String, IFile> importFiles() throws Exception {
