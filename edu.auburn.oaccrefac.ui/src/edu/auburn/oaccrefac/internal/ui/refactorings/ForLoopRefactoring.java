@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
@@ -122,9 +123,18 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         return initStatus;
     }
+    
+    @Override
+    protected RefactoringStatus checkFinalConditions(IProgressMonitor subProgressMonitor, 
+            CheckConditionsContext checkContext) 
+            throws CoreException ,OperationCanceledException {
+        doCheckFinalConditions(initStatus);
+        return initStatus;
+    };
 
-    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
-    }
+    protected void doCheckInitialConditions(RefactoringStatus initStatus) {}
+    
+    protected void doCheckFinalConditions(RefactoringStatus initStatus) {}
 
     /**
      * Indexes the project if the project has not already been indexed. Something to do with references???
@@ -254,26 +264,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
     protected int getUpperBoundValue() {
         return Integer.parseInt(new String(getUpperBound().getValue()));
-    }
-
-    /**
-     * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
-     * next sibling after itself with respect to its parent.
-     * 
-     * @param n
-     *            node in which to find next sibling
-     * @return IASTNode of next sibling or null if last child
-     */
-    protected IASTNode getNextSibling(IASTNode n) {
-        if (n.getParent() != null) {
-            IASTNode[] chilluns = n.getParent().getChildren();
-            for (int i = 0; i < chilluns.length; i++) {
-                if (n == chilluns[i] && i < (chilluns.length - 1)) {
-                    return chilluns[i + 1];
-                }
-            }
-        }
-        return null;
     }
 
     // *************************************************************************

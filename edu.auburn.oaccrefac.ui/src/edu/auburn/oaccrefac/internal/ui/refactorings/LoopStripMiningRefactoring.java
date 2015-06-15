@@ -22,8 +22,8 @@ import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 @SuppressWarnings("restriction")
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
@@ -44,6 +44,21 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
         }
         return false;
     }
+    
+    @Override
+    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+        if (!checkBoundDivisibility()) {
+            initStatus.addFatalError("Original loop iterator does not"
+                    + "divide evenly into strip factor. Cannot refactor.");
+        }
+    };
+    
+    @Override
+    protected void doCheckFinalConditions(RefactoringStatus initStatus) {
+        if (m_stripFactor <= 0) {
+            initStatus.addFatalError("Strip factor invalid");
+        }
+    }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {        
@@ -56,9 +71,6 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
         IASTExpression originalCondition = originalLoop.getConditionExpression();
         if (originalCondition instanceof IASTBinaryExpression) {
             m_upperBoundExpression = ((IASTBinaryExpression)originalCondition).getOperand2().copy();
-            if (!checkBoundDivisibility()) {
-                throw new OperationCanceledException("Known divisibility error!");
-            }
         }
         
         IASTForStatement outerLoop = createOuterLoop(loop, factory);

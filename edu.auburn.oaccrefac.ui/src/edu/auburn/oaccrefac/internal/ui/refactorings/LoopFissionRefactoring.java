@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
  * 
@@ -50,7 +52,7 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
         body = loop.getBody();
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTNode insert_parent = getLoop().getParent();
-        IASTNode insert_before = getNextSibling(getLoop());
+        IASTNode insert_before = ForLoopUtil.getNextSibling(getLoop());
         IASTNode[] chilluns = body.getChildren();
         
         /*Over here, we are looking for all the statements in the body of for-loop
