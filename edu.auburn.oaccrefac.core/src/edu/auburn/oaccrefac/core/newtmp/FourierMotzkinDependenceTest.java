@@ -26,17 +26,10 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
             int[][] readCoefficients, Direction[] direction) {
 
         //if there are only constant subscripts given, if those values are equal, there is a dependence
-        if(writeCoefficients.length == 1 && readCoefficients.length == 1) {
-            if(writeCoefficients[0][0] == readCoefficients[0][0]) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
         
         //check if there is any subscript of the array where the read and the write are different constants
         //ie, arr[2i+1][4] = arr[i+3][6] : 4 != 6, so no dependence can exist
+        boolean allSubscriptsAreConstants = true;
         for(int subscript = 0; subscript < writeCoefficients.length; subscript++) {
             boolean allWriteCoeffsExceptConstantAreZero = true;
             boolean allReadCoeffsExceptConstantAreZero = true;
@@ -56,10 +49,13 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
                 if(writeCoefficients[subscript][0] != readCoefficients[subscript][0]) {
                     return false;
                 }
-                else {
-                    return true;
-                }
             }
+            else {
+                allSubscriptsAreConstants = false;
+            }
+        }
+        if(allSubscriptsAreConstants) {
+            return true;
         }
         
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
