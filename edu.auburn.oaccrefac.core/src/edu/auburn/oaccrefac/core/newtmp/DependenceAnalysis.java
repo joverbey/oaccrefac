@@ -41,7 +41,7 @@ import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 public class DependenceAnalysis {
 
     private final List<VariableAccess> variableAccesses = new ArrayList<VariableAccess>();
-    
+
     private final FourierMotzkinDependenceTest tester = new FourierMotzkinDependenceTest();
 
     /**
@@ -63,17 +63,26 @@ public class DependenceAnalysis {
                     IASTStatement s2 = v2.getEnclosingStatement();
                     DependenceType dependenceType = DependenceType.forAccesses(v1, v2);
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
-                        dependences.add(new DataDependence(s1, s2, new DirectionVector(v1.numEnclosingLoops()), dependenceType));
+                        dependences.add(new DataDependence(s1, s2, new DirectionVector(v1.numEnclosingLoops()),
+                                dependenceType));
                     } else {
                         // FIXME Handle loop nests properly -- bounds, index variables, etc.
-                        //List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
-                        IBinding[] vars = collectAllVariables(v1.getLinearSubscriptExpression(), v2.getLinearSubscriptExpression());
+                        // List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
+                        IBinding[] vars = collectAllVariables(v1.getLinearSubscriptExpression(),
+                                v2.getLinearSubscriptExpression());
                         int[][] writeCoefficients = new int[][] { v1.collectCoefficients(vars) };
                         int[][] readCoefficients = new int[][] { v2.collectCoefficients(vars) };
-                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE);
-                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE);
+                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE+1);
+                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE-1);
                         DirectionVector direction = new DirectionVector(vars.length);
-                        if (tester.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients, direction.getElements())) {
+                        System.out.println("Testing for dependence from " + v1 + " to " + v2);
+                        boolean result = tester.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients,
+                                direction.getElements());
+                        System.out.println(String.format("%s - LB: %s UB: %s WC: %s RC: %s D: %s", result,
+                                Arrays.toString(lowerBounds), Arrays.toString(upperBounds),
+                                Arrays.deepToString(writeCoefficients), Arrays.deepToString(readCoefficients),
+                                Arrays.toString(direction.getElements())));
+                        if (result) {
                             dependences.add(new DataDependence(s1, s2, direction, dependenceType));
                         }
                     }
@@ -252,12 +261,12 @@ public class DependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
-        Pair<IASTName,LinearExpression> arrayAccess = ASTUtil.getSimpleArrayAccess(expr);
+        Pair<IASTName, LinearExpression> arrayAccess = ASTUtil.getSimpleArrayAccess(expr);
         if (arrayAccess == null)
             throw unsupported(expr);
         variableAccesses.add(new VariableAccess(arrayAccess.getFirst(), arrayAccess.getSecond(), false));
 
-        collectAccessesFromExpression((IASTExpression)expr.getArgument());
+        collectAccessesFromExpression((IASTExpression) expr.getArgument());
     }
 
     private static DependenceTestFailure unsupported(IASTNode node) {
