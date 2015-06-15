@@ -1,12 +1,19 @@
 package edu.auburn.oaccrefac.internal.core;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
+import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -20,10 +27,10 @@ import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 
+import edu.auburn.oaccrefac.core.newtmp.LinearExpression;
+
 public class ASTUtil {
-    
-    private ASTUtil() { }
-    
+
     public static <T> List<T> find(IASTNode parent, Class<T> clazz) {
         List<T> results = new LinkedList<T>();
         findAndAdd(parent, clazz, results);
@@ -37,6 +44,16 @@ public class ASTUtil {
         }
 
         return results.get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T findNearestAncestor(IASTNode startingNode, Class<T> clazz) {
+        for (IASTNode node = startingNode.getParent(); node != null; node = node.getParent()) {
+            if (clazz.isInstance(node)) {
+                return (T) node;
+            }
+        }
+        return null;
     }
 
     public static IASTTranslationUnit translationUnitForFile(String file) throws CoreException {
@@ -58,6 +75,14 @@ public class ASTUtil {
         return translationUnit;
     }
 
+    public static IASTStatement parseStatementNoFail(String string) {
+        try {
+            return parseStatement(string);
+        } catch (CoreException e) {
+            throw new IllegalStateException("INTERNAL ERROR: Could not parse " + string);
+        }
+    }
+
     public static IASTStatement parseStatement(String string) throws CoreException {
         String program = String.format("void f() { %s; }", string);
         IASTTranslationUnit tu = translationUnitForString(program);
@@ -66,6 +91,14 @@ public class ASTUtil {
         Assert.assertNotNull(stmt);
         Assert.assertTrue(stmt instanceof IASTCompoundStatement);
         return ((IASTCompoundStatement) stmt).getStatements()[0];
+    }
+
+    public static IASTExpression parseExpressionNoFail(String string) {
+        try {
+            return parseExpression(string);
+        } catch (CoreException e) {
+            throw new IllegalStateException("INTERNAL ERROR: Could not parse " + string);
+        }
     }
 
     public static IASTExpression parseExpression(String string) throws CoreException {
@@ -97,6 +130,56 @@ public class ASTUtil {
         }
     }
 
+    public static Pair<IASTExpression, IASTExpression> getAssignment(IASTExpression expr) {
+        if (!(expr instanceof IASTBinaryExpression))
+            return null;
+
+        IASTBinaryExpression binExp = (IASTBinaryExpression) expr;
+        if (binExp.getOperator() != IASTBinaryExpression.op_assign)
+            return null;
+
+        return new Pair<IASTExpression, IASTExpression>(binExp.getOperand1(), binExp.getOperand2());
+    }
+
+    public static IASTName getIdExpression(IASTExpression expr) {
+        if (!(expr instanceof IASTIdExpression))
+            return null;
+
+        return ((IASTIdExpression) expr).getName();
+    }
+
+    public static Pair<IASTName, LinearExpression> getSimpleArrayAccess(IASTExpression expr) {
+        if (!(expr instanceof IASTArraySubscriptExpression))
+            return null;
+
+        IASTArraySubscriptExpression arrSub = (IASTArraySubscriptExpression) expr;
+        IASTExpression array = arrSub.getArrayExpression();
+        IASTInitializerClause subscript = arrSub.getArgument();
+
+        IASTName name = getIdExpression(array);
+        if (name == null || !(subscript instanceof IASTExpression))
+            return null;
+
+        LinearExpression linearSubscript = LinearExpression.createFrom((IASTExpression)subscript);
+
+        return new Pair<IASTName, LinearExpression>(name, linearSubscript);
+    }
+
+    public static Integer getConstantExpression(IASTExpression expr) {
+        if (!(expr instanceof IASTLiteralExpression))
+            return null;
+
+        IASTLiteralExpression literal = (IASTLiteralExpression) expr;
+        if (literal.getKind() != IASTLiteralExpression.lk_integer_constant)
+            return null;
+
+        try {
+            return Integer.parseInt(String.valueOf(literal.getValue()));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     /**
      * Raises an exception with line number information
      * 
@@ -108,5 +191,8 @@ public class ASTUtil {
      */
     public static void raise(String message, IASTNode node) {
         throw new RuntimeException(message + " at line " + node.getFileLocation().getStartingLineNumber());
+    }
+
+    private ASTUtil() {
     }
 }

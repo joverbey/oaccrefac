@@ -1,5 +1,9 @@
 package edu.auburn.oaccrefac.core.newtmp;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -15,7 +19,17 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
 /**
  * @author Alexander Calvert
  * 
- * Class to encapsulate a for loop data dependence
+ * Class to encapsulate a for loop data dependence system
+ *
+ * TODO: finish constructor (see other todo's for new fields, etc.)
+ * TODO: this class contains the inequality matrix for the loop system, but 
+ *  FMDepTest generates it from array info internally from loop bounds, etc.
+ *  Either this class should keep loop bounds, etc. instead of the matrix, 
+ *  or FMDepTest should take the matrix as an argument rather than loop bounds, etc.
+ *  This would, however, mess with the IDependenceTest interface. 
+ *  
+ *  int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients
+ *  
  *
  */
 @SuppressWarnings({"restriction", "unused"})
@@ -53,6 +67,8 @@ public class ForLoopDependenceSystem {
         
         
         
+        
+        
     }
 
     public Matrix getInequalityMatrix() {
@@ -63,10 +79,8 @@ public class ForLoopDependenceSystem {
         return dependences;
     }
 
-    /** TODO: is an ExprStmt the argument we want? should be Offset? IndexExpr? define new class?
-     *  TODO: at least probably need more info than just one stmt - one stmt could have multiple dependences
-     *  
-     *  return a particularly dependence within this system
+    /**   
+     *  return a particular dependence within this system
      * 
      * @param statement the statement the dependence exists on
      * @return the dependence
@@ -195,9 +209,81 @@ public class ForLoopDependenceSystem {
     }    
     
     
-    /* ************************************************************************
-     * Methods
-     * ************************************************************************/
+    /** TODO: get nesting level from loop somehow (maybe in constructor)
+     *  TODO: get other arguments for the tester; probably also from constructor
+     *  TODO: if test() method changes to take a DirectionVector arg, change this as well
+     *  
+     * @return a set containing all directions in which there might be a dependence
+     */
+    
+    public Set<DirectionVector> getPossibleDependenceDirections() {
+        
+        int nestingLevel = 4;
+        DirectionVector allDirections = new DirectionVector(Direction.ANY, nestingLevel);
+        
+        Set<DirectionVector> results = new HashSet<DirectionVector>();
+        
+        return getPossibleDependenceDirections(allDirections, results);
+        
+    }
+    private Set<DirectionVector> getPossibleDependenceDirections(DirectionVector dv, Set<DirectionVector> results) {
+        
+        /*
+         * run on given direction vector
+         * if there is no dependence,
+         *  return empty list 
+         * otherwise
+         *  add given direction vector to the list
+         *  get new direction vectors where all initial non-'*' elements 
+         *      are the same and the first '*' is replaced with '<'/'='/'>'
+         *  recursively run on each of three new direction vectors, adding the result to the list
+         * 
+         */
+        
+        FourierMotzkinDependenceTest fourierMotzkin = new FourierMotzkinDependenceTest();
+        
+        int[] lowerBounds = {};
+        int[] upperBounds = {};
+        int[][] writeCoefficients = {{}};
+        int[][] readCoefficients = {{}};
+        Direction[] dvEls = dv.getElements();
+        
+        //if there is no dependence
+        if(fourierMotzkin.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients, dvEls)) {
+            return results;
+        }
+        else {
+            
+            Direction[] originalVector = dv.getElements();                        
+            int firstAny = Arrays.asList(originalVector).indexOf(Direction.ANY);
+
+            //if we have a dependence, but this vector is at the 
+            //bottom of the hierarchy (no '*' element)
+            if(firstAny < 0) {
+                results.add(dv);
+                return results;
+            }
+            else {
+                Direction[] newLTEls = Arrays.copyOf(originalVector, originalVector.length);
+                Direction[] newGTEls = Arrays.copyOf(originalVector, originalVector.length);
+                Direction[] newEQEls = Arrays.copyOf(originalVector, originalVector.length);
+                newLTEls[firstAny] = Direction.LT;
+                newGTEls[firstAny] = Direction.GT;
+                newEQEls[firstAny] = Direction.EQ;
+                DirectionVector newLT = new DirectionVector(newLTEls);
+                DirectionVector newGT = new DirectionVector(newGTEls);
+                DirectionVector newEQ = new DirectionVector(newEQEls);
+                
+                results.addAll(getPossibleDependenceDirections(newLT, results));
+                results.addAll(getPossibleDependenceDirections(newGT, results));
+                results.addAll(getPossibleDependenceDirections(newEQ, results));
+                
+                return results;
+                
+            }
+        }        
+        
+    }
     
     
 }

@@ -24,7 +24,6 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 @SuppressWarnings("restriction")
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
@@ -44,13 +43,6 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
             return true;
         }
         return false;
-    }
-    
-    @Override
-    protected void doCheckFinalConditions(RefactoringStatus initStatus) {
-        if (m_stripFactor <= 1) {
-            initStatus.addFatalError("Strip factor is invalid (<= 1)");
-        }
     }
 
     @Override
