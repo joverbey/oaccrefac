@@ -56,6 +56,9 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
                 if(writeCoefficients[subscript][0] != readCoefficients[subscript][0]) {
                     return false;
                 }
+                else {
+                    return true;
+                }
             }
         }
         
