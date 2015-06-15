@@ -231,7 +231,7 @@ public class ForLoopDependenceSystem {
         /*
          * run on given direction vector
          * if there is no dependence,
-         *  return empty list 
+         *  return list as-is 
          * otherwise
          *  add given direction vector to the list
          *  get new direction vectors where all initial non-'*' elements 

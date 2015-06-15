@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+
 /**
  * This class defines the implementation for refactoring a loop
  * so that it is unrolled. For example:
@@ -216,7 +218,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	    	    
 	    //Get the insertion locations
 	    IASTNode insert_parent = getLoop().getParent();
-	    IASTNode insert_before = getNextSibling(getLoop());
+	    IASTNode insert_before = ForLoopUtil.getNextSibling(getLoop());
 
 	    for (int i = 0; i < extras; i++) {
 	        rewriter.insertBefore(insert_parent, insert_before, iter_exprstmt, null);

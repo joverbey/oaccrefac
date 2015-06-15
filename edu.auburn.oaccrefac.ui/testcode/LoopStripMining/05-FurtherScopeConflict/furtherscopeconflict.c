@@ -4,10 +4,12 @@ static int foo();
 
 int main() {
 
+	int i_0 = 50;
 	int i_1 = 100;
+	int N = i_1;
 	int a[N];
-	for (int i_0 = 0; i_0 < i_1; i_0++) { /*<<<<< 9,5,12,6,2,pass*/
-		a[i_0] = 0;
+	for (int i = 0; i < i_0; i++) { /*<<<<< 11,1,15,1,2,pass*/
+		a[i] = 0;
 		foo();
 	}
 

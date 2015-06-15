@@ -58,11 +58,15 @@ public class DependenceAnalysisTest extends TestCase {
                 /* 7 */ "}");
         String[] expected = new String[] { //
                 "OUTPUT 2 -> 3 []", //
+                "FLOW 2 -> 4 []", //
+                "FLOW 2 -> 5 []", //
+                "FLOW 2 -> 6 []", //
                 "OUTPUT 2 -> 4 []", //
                 "OUTPUT 2 -> 5 []", //
                 "OUTPUT 2 -> 6 []", //
                 "FLOW 3 -> 4 []", //
                 "FLOW 4 -> 5 []", //
+                "FLOW 4 -> 6 []", //
                 "OUTPUT 4 -> 6 []", //
                 "OUTPUT 2 -> 5 []", //
                 "ANTI 5 -> 6 []" };

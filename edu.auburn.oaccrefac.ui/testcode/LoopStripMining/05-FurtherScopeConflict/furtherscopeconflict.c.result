@@ -4,11 +4,13 @@ static int foo();
 
 int main() {
 
+	int i_0 = 50;
 	int i_1 = 100;
+	int N = i_1;
 	int a[N];
-	for (int i_2 = 0; i_2 < i_1; i_2 += 2) {
-		for (int i_0 = i_2; (i_0 < i_2 + 1) && i_0 < i_1); i_0++) {
-			a[i_0] = 0;
+	for (int i_2 = 0; i_2 < i_0; i_2 += 2) {
+		for (int i = i_2; (i < i_2 + 1 && i < i_0); i++) {
+			a[i] = 0;
 			foo();
 		}
 	}

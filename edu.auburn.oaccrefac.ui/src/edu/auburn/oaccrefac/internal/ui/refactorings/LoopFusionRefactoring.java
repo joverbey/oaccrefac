@@ -16,6 +16,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
  * 
@@ -48,8 +50,8 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
         loop = getLoop();
         boolean found = false;
         IASTNode newnode = loop;
-        while (getNextSibling(newnode) != null && !found) {
-            newnode = getNextSibling(newnode);
+        while (ForLoopUtil.getNextSibling(newnode) != null && !found) {
+            newnode = ForLoopUtil.getNextSibling(newnode);
             nxtloop = findLoop(newnode);
             found = (nxtloop != null);
         }

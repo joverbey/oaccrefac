@@ -22,21 +22,33 @@ import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 public class ForLoopUtil {
 
     // Patterns of for loops that are acceptable to refactor...
-    private static final String[] patterns = { //
-            "for (i = 0; i < 1; i++) ;", //
-            "for (int i = 0; i < 1; i++) ;", //
-            "for (i = 0; i <= 1; i++) ;", //
-            "for (int i = 0; i <= 1; i++) ;", //
-            "for (i = 0; i < 1; i+=1) ;", //
-
-            "for (int i = 0; i < 1; i+=1) ;", //
-            "for (i = 0; i <= 1; i+=1) ;", //
-            "for (int i = 0; i <= 1; i+=1) ;", //
-
-            "for (i = 0; i < 1; i=i+1) ;", //
-            "for (int i = 0; i < 1; i=i+1) ;", //
-            "for (i = 0; i <= 1; i=i+1) ;", //
-            "for (int i = 0; i <= 1; i=i+1) ;", };
+    //Patterns of for loops that are acceptable to refactor...
+    private static String[] patterns = {
+        "for (i = 0; i < 1; i++) ;",
+        "for (int i = 0; i < 1; i++) ;",
+        "for (i = 0; i <= 1; i++) ;",
+        "for (int i = 0; i <= 1; i++) ;",
+        "for (i = 0; i < 1; i+=1) ;",
+        "for (int i = 0; i < 1; i+=1) ;",
+        "for (i = 0; i <= 1; i+=1) ;",
+        "for (int i = 0; i <= 1; i+=1) ;",
+        "for (i = 0; i < 1; i=i+1) ;",
+        "for (int i = 0; i < 1; i=i+1) ;",
+        "for (i = 0; i <= 1; i=i+1) ;",
+        "for (int i = 0; i <= 1; i=i+1) ;",
+        "for (i = 0; i < j; i++) ;",
+        "for (int i = 0; i < j; i++) ;",
+        "for (i = 0; i <= j; i++) ;",
+        "for (int i = 0; i <= j; i++) ;",
+        "for (i = 0; i < j; i+=1) ;",
+        "for (int i = 0; i < j; i+=1) ;",
+        "for (i = 0; i <= j; i+=1) ;",
+        "for (int i = 0; i <= j; i+=1) ;",
+        "for (i = 0; i < j; i=i+1) ;",
+        "for (int i = 0; i < j; i=i+1) ;",
+        "for (i = 0; i <= j; i=i+1) ;",
+        "for (int i = 0; i <= j; i=i+1) ;",
+    };
 
     /**
      * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
@@ -140,7 +152,27 @@ public class ForLoopUtil {
         // If we've aborted, it's because we found a for statement
         return !loop.getBody().accept(new Visitor());
     }
-
+    
+    /**
+     * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
+     * next sibling after itself with respect to its parent.
+     * 
+     * @param n
+     *            node in which to find next sibling
+     * @return IASTNode of next sibling or null if last child
+     */
+    public static IASTNode getNextSibling(IASTNode n) {
+        if (n.getParent() != null) {
+            IASTNode[] chilluns = n.getParent().getChildren();
+            for (int i = 0; i < chilluns.length; i++) {
+                if (n == chilluns[i] && i < (chilluns.length - 1)) {
+                    return chilluns[i + 1];
+                }
+            }
+        }
+        return null;
+    }
+    
     private ForLoopUtil() {
     }
 }
