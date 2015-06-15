@@ -25,8 +25,41 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
     public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, Direction[] direction) {
 
+        //if there are only constant subscripts given, if those values are equal, there is a dependence
+        if(writeCoefficients.length == 1 && readCoefficients.length == 1) {
+            if(writeCoefficients[0][0] == readCoefficients[0][0]) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        
+        //check if there is any subscript of the array where the read and the write are different constants
+        //ie, arr[2i+1][4] = arr[i+3][6] : 4 != 6, so no dependence can exist
+        for(int subscript = 0; subscript < writeCoefficients.length; subscript++) {
+            boolean allWriteCoeffsExceptConstantAreZero = true;
+            boolean allReadCoeffsExceptConstantAreZero = true;
+            for(int coeff = 1; coeff < writeCoefficients[subscript].length; coeff++) {
+                if(writeCoefficients[subscript][coeff] != 0) {
+                    allWriteCoeffsExceptConstantAreZero = false;
+                    break;
+                }
+            }
+            for(int coeff = 1; coeff < readCoefficients[subscript].length; coeff++) {
+                if(readCoefficients[subscript][coeff] != 0) {
+                    allReadCoeffsExceptConstantAreZero = false;
+                    break;
+                }
+            }
+            if(allWriteCoeffsExceptConstantAreZero && allReadCoeffsExceptConstantAreZero) {
+                if(writeCoefficients[subscript][0] != readCoefficients[subscript][0]) {
+                    return false;
+                }
+            }
+        }
+        
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
-
         Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, direction);
 
         //if there is an integer solution to the matrix, there is (possibly) a 
