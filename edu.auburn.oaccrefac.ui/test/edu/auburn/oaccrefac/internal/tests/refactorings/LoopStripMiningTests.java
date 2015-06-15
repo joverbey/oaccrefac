@@ -31,7 +31,7 @@ public class LoopStripMiningTests extends RefactoringTestSuite<LoopStripMiningRe
     @Override
     protected void configureRefactoring(LoopStripMiningRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-         String unrollFactor = markerFields.removeFirst();
-         refactoring.setStripFactor(Integer.parseInt(unrollFactor));
+         String stripFactor = markerFields.removeFirst();
+         refactoring.setStripFactor(Integer.parseInt(stripFactor));
     }
 }
