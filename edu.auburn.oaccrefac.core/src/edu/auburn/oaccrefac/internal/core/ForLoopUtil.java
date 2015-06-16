@@ -12,6 +12,7 @@ import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 
@@ -171,6 +172,29 @@ public class ForLoopUtil {
             }
         }
         return null;
+    }
+    
+    /** Assumes loops are perfectly nested
+     * @param outerLoop
+     * @return
+     */
+    public static IASTStatement getInnermostLoopBody(IASTForStatement outerLoop) {
+        IASTStatement body = outerLoop.getBody();
+        if(body instanceof IASTForStatement) {
+            return getInnermostLoopBody((IASTForStatement) body);
+        }
+        else if(body instanceof IASTCompoundStatement) {
+            IASTNode[] children = ((IASTCompoundStatement) body).getChildren();
+            if(children.length == 1 && children[0] instanceof IASTForStatement) {
+                return getInnermostLoopBody((IASTForStatement) children[0]);
+            }
+            else {
+                return body;
+            }
+        }
+        else {
+            return body;
+        }
     }
     
     private ForLoopUtil() {
