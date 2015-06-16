@@ -7,10 +7,12 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -196,6 +198,57 @@ public class ForLoopUtil {
             return body;
         }
     }
+    
+    /** Assumes loops are perfectly nested
+     * Checks if all innermost statements are valid
+     *  currently, a valid statement is either an assignment statement or null
+     * @param outerLoop
+     * @return
+     */
+    public static boolean areAllInnermostStatementsValid(IASTForStatement outerLoop) {
+        IASTNode body = outerLoop.getBody();
+        if(body instanceof IASTCompoundStatement) {
+            if(body.getChildren().length == 0) {
+                return true;
+            }
+            //assuming perfect nesting, so only check children[0]
+            else if(body.getChildren()[0] instanceof IASTForStatement) {
+                return areAllInnermostStatementsValid((IASTForStatement) body.getChildren()[0]);
+            }
+            else {
+                //check if all children are assignments or null stmts
+                for(IASTNode child : body.getChildren()) {
+                    //to be an asgt, must be an expr stmt with a bin expr child, 
+                    //which has asgt operator
+                    if(child instanceof IASTExpressionStatement 
+                            && child.getChildren().length > 0
+                            && child.getChildren()[0] instanceof IASTBinaryExpression
+                            && ((IASTBinaryExpression) child.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
+                       continue;
+                    }
+                    else if(child instanceof IASTNullStatement) {
+                        continue;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        else if(body instanceof CPPASTForStatement) {
+            return areAllInnermostStatementsValid((CPPASTForStatement) body);
+        }
+        else { //neither compound nor for statement - body is the only statement
+            if(body instanceof IASTBinaryExpression) {
+                if(((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
+                    return true;
+                }
+            }
+            //either not binary or not an assignment
+            return false;
+        }
+    }    
     
     private ForLoopUtil() {
     }

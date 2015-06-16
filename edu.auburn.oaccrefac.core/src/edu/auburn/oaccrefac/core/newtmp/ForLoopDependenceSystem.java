@@ -58,12 +58,11 @@ public class ForLoopDependenceSystem {
         }
         
         //check if only statements on innermost loop are assignments
-        if(!areAllInnermostStatementsValid(outerLoop)) {
+        if(!ForLoopUtil.areAllInnermostStatementsValid(outerLoop)) {
             ASTUtil.raise("Innermost statements must be assignments (or null statements)", outerLoop);
         }
         
         this.dependences = new DependenceAnalysis().analyze(ForLoopUtil.getInnermostLoopBody(outerLoop));
-        
         
     }
 
@@ -91,57 +90,6 @@ public class ForLoopDependenceSystem {
         }
         throw new IllegalArgumentException("Statement does not exist within loop system");
     }
-    
-    /** Assumes loops are perfectly nested
-     * Checks if all innermost statements are valid
-     *  currently, a valid statement is either an assignment statement or null
-     * @param outerLoop
-     * @return
-     */
-    private boolean areAllInnermostStatementsValid(CPPASTForStatement outerLoop) {
-        IASTNode body = outerLoop.getBody();
-        if(body instanceof IASTCompoundStatement) {
-            if(body.getChildren().length == 0) {
-                return true;
-            }
-            //assuming perfect nesting, so only check children[0]
-            else if(body.getChildren()[0] instanceof CPPASTForStatement) {
-                return areAllInnermostStatementsValid((CPPASTForStatement) body.getChildren()[0]);
-            }
-            else {
-                //check if all children are assignments or null stmts
-                for(IASTNode child : body.getChildren()) {
-                    //to be an asgt, must be an expr stmt with a bin expr child, 
-                    //which has asgt operator
-                    if(child instanceof IASTExpressionStatement 
-                            && child.getChildren().length > 0
-                            && child.getChildren()[0] instanceof IASTBinaryExpression
-                            && ((IASTBinaryExpression) child.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
-                       continue;
-                    }
-                    else if(child instanceof IASTNullStatement) {
-                        continue;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        else if(body instanceof CPPASTForStatement) {
-            return areAllInnermostStatementsValid((CPPASTForStatement) body);
-        }
-        else { //neither compound nor for statement - body is the only statement
-            if(body instanceof IASTBinaryExpression) {
-                if(((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
-                    return true;
-                }
-            }
-            //either not binary or not an assignment
-            return false;
-        }
-    }    
     
     
     /** TODO: get nesting level from loop somehow (maybe in constructor)
