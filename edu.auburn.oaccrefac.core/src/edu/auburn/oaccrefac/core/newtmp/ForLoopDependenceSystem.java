@@ -8,6 +8,7 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -15,6 +16,7 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.Matrix;
+import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 
 /**
  * @author Alexander Calvert
@@ -34,13 +36,9 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
  */
 @SuppressWarnings({"restriction", "unused"})
 public class ForLoopDependenceSystem {
-
-    private static final int DEP_EXISTS = 0;
-    private static final int DEP_DOESNT_EXIST = 1;
-    private static final int DEP_MIGHT_EXIST = 2;
     
-    private final Matrix inequalityMatrix = null;
-    private final DataDependence[] dependences = null;
+    //private final Matrix inequalityMatrix = null;
+    private final Set<DataDependence> dependences;
 
     /** 
      * Constructor
@@ -48,8 +46,9 @@ public class ForLoopDependenceSystem {
      * dependence system of equations if it is valid 
      * 
      * @param outerLoop the outer for loop to be 
+     * @throws DependenceTestFailure 
      */
-    public ForLoopDependenceSystem(CPPASTForStatement outerLoop) {
+    public ForLoopDependenceSystem(CPPASTForStatement outerLoop) throws DependenceTestFailure {
         //consolidate most of the original code from Calvin's ForLoopDependence
         //to this constructor
         //should check for valid/invalid for statements and bodies and generate both
@@ -65,17 +64,16 @@ public class ForLoopDependenceSystem {
             ASTUtil.raise("Innermost statements must be assignments (or null statements)", outerLoop);
         }
         
-        
-        
+        this.dependences = new DependenceAnalysis().analyze(getInnermostLoopBody(outerLoop));
         
         
     }
 
-    public Matrix getInequalityMatrix() {
-        return inequalityMatrix;
-    }
+//    public Matrix getInequalityMatrix() {
+//        return inequalityMatrix;
+//    }
 
-    public DataDependence[] getDependences() {
+    public Set<DataDependence> getDependences() {
         return dependences;
     }
 
@@ -96,14 +94,20 @@ public class ForLoopDependenceSystem {
         throw new IllegalArgumentException("Statement does not exist within loop system");
     }
     
-    private void p(Object o) {
-        System.out.println(o);
-    }
-    
-    /* ****************************************************************
-     * Methods to perform checks on incoming loop in constructor to ensure it meets
-     * the qualifications for this dependence analysis
-     * ****************************************************************/
+    /** Check if loop is perfectly nested
+     *  also assumes there is nothing weird like this: 
+     *  
+     *   for(;;) {
+     *       {
+     *           for(;;) {
+     *               ...
+     *           }
+     *       }
+     *   }
+     * 
+     * @param outerLoop
+     * @return
+     */
     private boolean isForLoopPerfectlyNested(CPPASTForStatement outerLoop) {
         IASTNode[] loopChildren = outerLoop.getChildren();
         if(!doesForLoopContainForLoopChild(outerLoop)) {            
@@ -155,14 +159,11 @@ public class ForLoopDependenceSystem {
     private boolean areAllInnermostStatementsValid(CPPASTForStatement outerLoop) {
         IASTNode body = outerLoop.getBody();
         if(body instanceof IASTCompoundStatement) {
-            p("compound stmt body");
             if(body.getChildren().length == 0) {
-                p("body has no children");
                 return true;
             }
             //assuming perfect nesting, so only check children[0]
             else if(body.getChildren()[0] instanceof CPPASTForStatement) {
-                p("body has a for stmt child, calling recursively");
                 return areAllInnermostStatementsValid((CPPASTForStatement) body.getChildren()[0]);
             }
             else {
@@ -174,16 +175,12 @@ public class ForLoopDependenceSystem {
                             && child.getChildren().length > 0
                             && child.getChildren()[0] instanceof IASTBinaryExpression
                             && ((IASTBinaryExpression) child.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
-                        
-                        p("found binex child");
                        continue;
                     }
                     else if(child instanceof IASTNullStatement) {
-                        p("found null child");
                         continue;
                     }
                     else {
-                        p("child is not an assignment or null");
                         return false;
                     }
                 }
@@ -191,24 +188,42 @@ public class ForLoopDependenceSystem {
             }
         }
         else if(body instanceof CPPASTForStatement) {
-            p("simple body, for loop, calling recursively");
             return areAllInnermostStatementsValid((CPPASTForStatement) body);
         }
         else { //neither compound nor for statement - body is the only statement
-            p("simple body, non-for loop");
             if(body instanceof IASTBinaryExpression) {
                 if(((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
-                    p("only stmt is a asgt");
                     return true;
                 }
             }
             //either not binary or not an assignment
-            p("only stmt is not asgt");
             return false;
         }
     }    
     
     
+    /** Assumes loops are perfectly nested
+     * @param outerLoop
+     * @return
+     */
+    private IASTStatement getInnermostLoopBody(CPPASTForStatement outerLoop) {
+        IASTStatement body = outerLoop.getBody();
+        if(body instanceof CPPASTForStatement) {
+            return getInnermostLoopBody((CPPASTForStatement) body);
+        }
+        else if(body instanceof IASTCompoundStatement) {
+            IASTNode[] children = ((IASTCompoundStatement) body).getChildren();
+            if(children.length == 1 && children[0] instanceof CPPASTForStatement) {
+                return getInnermostLoopBody((CPPASTForStatement) children[0]);
+            }
+            else {
+                return body;
+            }
+        }
+        else {
+            return body;
+        }
+    }
     /** TODO: get nesting level from loop somehow (maybe in constructor)
      *  TODO: get other arguments for the tester; probably also from constructor
      *  TODO: if test() method changes to take a DirectionVector arg, change this as well
@@ -281,7 +296,7 @@ public class ForLoopDependenceSystem {
                 return results;
                 
             }
-        }        
+        }
         
     }
     

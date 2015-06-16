@@ -17,6 +17,8 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
  *  for generateDependenceMatrix() and eliminateForIntegerSolutions() 
  *  from the FM eliminator class  
  * 
+ * TODO: write cases to handle GE and LE in direction vector
+ * 
  * @author Alexander Calvert
  * 
  */
