@@ -42,7 +42,7 @@ public class DependenceAnalysis {
 
     private final List<VariableAccess> variableAccesses = new ArrayList<VariableAccess>();
 
-    private final FourierMotzkinDependenceTest tester = new FourierMotzkinDependenceTest();
+    private final FourierMotzkinDependenceTester tester = new FourierMotzkinDependenceTester();
 
     /**
      * Constructor takes a for statement in, setting up this instance's dependence dependence system of equations if it

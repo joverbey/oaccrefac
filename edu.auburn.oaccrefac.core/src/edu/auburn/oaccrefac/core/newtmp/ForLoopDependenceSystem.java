@@ -240,7 +240,7 @@ public class ForLoopDependenceSystem {
          * 
          */
         
-        FourierMotzkinDependenceTest fourierMotzkin = new FourierMotzkinDependenceTest();
+        FourierMotzkinDependenceTester fourierMotzkin = new FourierMotzkinDependenceTester();
         
         int[] lowerBounds = {};
         int[] upperBounds = {};

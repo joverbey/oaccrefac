@@ -7,7 +7,7 @@ import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
 
-public class FourierMotzkinDependenceTest implements IDependenceTester {
+public class FourierMotzkinDependenceTester implements IDependenceTester {
 
 
 
