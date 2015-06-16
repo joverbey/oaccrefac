@@ -46,17 +46,13 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     }
     
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
-        if (!checkBoundDivisibility()) {
-            initStatus.addFatalError("Original loop iterator does not"
-                    + "divide evenly into strip factor. Cannot refactor.");
-        }
-    };
-    
-    @Override
     protected void doCheckFinalConditions(RefactoringStatus initStatus) {
         if (m_stripFactor <= 0) {
             initStatus.addFatalError("Strip factor invalid");
+        }
+        if (!checkBoundDivisibility()) {
+            initStatus.addFatalError("Original loop iterator does not"
+                    + "divide evenly into strip factor. Cannot refactor.");
         }
     }
 
