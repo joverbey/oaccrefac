@@ -123,9 +123,17 @@ public class DependenceAnalysisTest extends TestCase {
                 /* 4 */ "  matrix[1][0] = matrix[i][1];\n" +
                 /* 5 */ "  matrix[0][0] = matrix[1][i];\n" +
                 /* 6 */ "}");
-        String[] expected = new String[] { //
-                "OUTPUT 3 -> 4 [*,*]", //
-                "FLOW 3 -> 5 [*,*]" };
+        String[] expected = new String[] { // FIXME no direction vectors for user variables
+                "FLOW 2 -> 4 []", //
+                "FLOW 2 -> 5 []", //
+                "OUTPUT 2 -> 3 []", //
+                "FLOW 2 -> 4 []", //
+                "OUTPUT 2 -> 4 []", //
+                "FLOW 2 -> 5 []", //
+                "OUTPUT 2 -> 5 []", //
+                "OUTPUT 3 -> 4 []", //
+                "FLOW 3 -> 5 [*]",
+                "FLOW 4 -> 5 [*]"};
         assertDependencesEqual(expected, stmt);
     }
 
