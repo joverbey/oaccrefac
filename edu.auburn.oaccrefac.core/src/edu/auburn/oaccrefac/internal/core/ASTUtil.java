@@ -148,7 +148,8 @@ public class ASTUtil {
         return ((IASTIdExpression) expr).getName();
     }
 
-    public static Pair<IASTName, LinearExpression> getSimpleArrayAccess(IASTExpression expr) {
+    @SuppressWarnings("unused")
+    private static Pair<IASTName, LinearExpression> getSimpleArrayAccess(IASTExpression expr) {
         if (!(expr instanceof IASTArraySubscriptExpression))
             return null;
 
@@ -160,9 +161,47 @@ public class ASTUtil {
         if (name == null || !(subscript instanceof IASTExpression))
             return null;
 
-        LinearExpression linearSubscript = LinearExpression.createFrom((IASTExpression)subscript);
+        LinearExpression linearSubscript = LinearExpression.createFrom((IASTExpression) subscript);
 
         return new Pair<IASTName, LinearExpression>(name, linearSubscript);
+    }
+
+    public static Pair<IASTName, LinearExpression[]> getMultidimArrayAccess(IASTExpression expr) {
+        if (!(expr instanceof IASTArraySubscriptExpression))
+            return null;
+
+        IASTArraySubscriptExpression arrSub = (IASTArraySubscriptExpression) expr;
+        IASTExpression array = arrSub.getArrayExpression();
+        IASTInitializerClause subscript = arrSub.getArgument();
+
+        IASTName name;
+        LinearExpression[] prevSubscripts;
+        if (array instanceof IASTArraySubscriptExpression) {
+            Pair<IASTName, LinearExpression[]> nested = getMultidimArrayAccess(array);
+            name = nested.getFirst();
+            prevSubscripts = nested.getSecond();
+        } else {
+            name = getIdExpression(array);
+            prevSubscripts = new LinearExpression[0];
+        }
+
+        if (name == null || !(subscript instanceof IASTExpression))
+            return null;
+
+        LinearExpression thisSubscript = LinearExpression.createFrom((IASTExpression) subscript);
+        return new Pair<IASTName, LinearExpression[]>(name, concat(prevSubscripts, thisSubscript));
+    }
+
+    private static LinearExpression[] concat(LinearExpression[] prevSubscripts, LinearExpression thisSubscript) {
+        // If any of the subscript expressions is not linear, treat the array access like a scalar access
+        // (i.e., ignore all subscripts)
+        if (prevSubscripts == null || thisSubscript == null)
+            return null;
+
+        LinearExpression[] result = new LinearExpression[prevSubscripts.length + 1];
+        System.arraycopy(prevSubscripts, 0, result, 0, prevSubscripts.length);
+        result[result.length - 1] = thisSubscript;
+        return result;
     }
 
     public static Integer getConstantExpression(IASTExpression expr) {

@@ -7,11 +7,12 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 
 @SuppressWarnings("restriction")
 public class DependenceRunner {
 
-    public static void main(String[] args) throws CoreException {
+    public static void main(String[] args) throws CoreException, DependenceTestFailure {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForFile("src-dependence-examples/test.c");
 
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);

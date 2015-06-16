@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import edu.auburn.oaccrefac.core.newtmp.Direction;
-import edu.auburn.oaccrefac.core.newtmp.FourierMotzkinDependenceTest;
+import edu.auburn.oaccrefac.core.newtmp.FourierMotzkinDependenceTester;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 
 /**
@@ -16,6 +16,8 @@ import edu.auburn.oaccrefac.internal.core.Matrix;
  * the test() method is not tested here because it is simply a wrapper 
  *  for generateDependenceMatrix() and eliminateForIntegerSolutions() 
  *  from the FM eliminator class  
+ * 
+ * TODO: write cases to handle GE and LE in direction vector
  * 
  * @author Alexander Calvert
  * 
@@ -29,7 +31,7 @@ public class FourierMotzkinDependenceTestTest {
      * public boolean test(int nestingLevel, int[] lowerBounds, int[] upperBounds, 
      *      int[][] writeCoefficients, int[][] readCoefficients, Direction[] direction)
      */
-    FourierMotzkinDependenceTest tester = new FourierMotzkinDependenceTest();
+    FourierMotzkinDependenceTester tester = new FourierMotzkinDependenceTester();
 
     //in a loop dependence, it must be the case that 
     // d.length == lb.length == ub.length == wd.length == rc.length == wc[x].length-1 == rc[x].length-1

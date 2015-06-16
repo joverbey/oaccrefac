@@ -7,7 +7,7 @@ import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
 
-public class FourierMotzkinDependenceTest implements IDependenceTester {
+public class FourierMotzkinDependenceTester implements IDependenceTester {
 
 
 
@@ -25,8 +25,40 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
     public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, Direction[] direction) {
 
+        //if there are only constant subscripts given, if those values are equal, there is a dependence
+        
+        //check if there is any subscript of the array where the read and the write are different constants
+        //ie, arr[2i+1][4] = arr[i+3][6] : 4 != 6, so no dependence can exist
+        boolean allSubscriptsAreConstants = true;
+        for(int subscript = 0; subscript < writeCoefficients.length; subscript++) {
+            boolean allWriteCoeffsExceptConstantAreZero = true;
+            boolean allReadCoeffsExceptConstantAreZero = true;
+            for(int coeff = 1; coeff < writeCoefficients[subscript].length; coeff++) {
+                if(writeCoefficients[subscript][coeff] != 0) {
+                    allWriteCoeffsExceptConstantAreZero = false;
+                    break;
+                }
+            }
+            for(int coeff = 1; coeff < readCoefficients[subscript].length; coeff++) {
+                if(readCoefficients[subscript][coeff] != 0) {
+                    allReadCoeffsExceptConstantAreZero = false;
+                    break;
+                }
+            }
+            if(allWriteCoeffsExceptConstantAreZero && allReadCoeffsExceptConstantAreZero) {
+                if(writeCoefficients[subscript][0] != readCoefficients[subscript][0]) {
+                    return false;
+                }
+            }
+            else {
+                allSubscriptsAreConstants = false;
+            }
+        }
+        if(allSubscriptsAreConstants) {
+            return true;
+        }
+        
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
-
         Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, direction);
 
         //if there is an integer solution to the matrix, there is (possibly) a 
@@ -103,6 +135,7 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
         //comparing i_d and i_u for that particular vector element
         for(int i = 0; i < direction.length; i++) {
             double[] row;
+            //all elements default to zero
             switch(direction[i]) {
             case ANY:
                 //don't add any more constraints
@@ -141,8 +174,26 @@ public class FourierMotzkinDependenceTest implements IDependenceTester {
                 row[row.length-1] = -1;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
+            //TODO: write unit tests to cover GE and LE
+            case GE:
+                //i_u <= i_d
+                //ie, -i_d+i_u <= 0, or [-1 1 0 0 ... 0]
+                row = new double[writeCoefficients[0].length + readCoefficients[0].length - 1];
+                row[2*i] = -1;
+                row[2*i+1] = 1;
+                row[row.length-1] = 0;
+                m.addRowAtIndex(m.getNumRows(), row);
+                break;
+            case LE:
+                //i_d <= i_u
+                //ie, i_d-i_u <= 0, or [1 -1 0 0 ... 0]
+                row = new double[writeCoefficients[0].length + readCoefficients[0].length - 1];
+                row[2*i] = 1;
+                row[2*i+1] = -1;
+                row[row.length-1] = 0;
+                m.addRowAtIndex(m.getNumRows(), row);
+                break;
             default:
-                // FIXME -- handle GE and LE
                 throw new UnsupportedOperationException();
             }
         }

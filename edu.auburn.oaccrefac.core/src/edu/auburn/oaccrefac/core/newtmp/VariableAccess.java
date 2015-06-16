@@ -16,17 +16,16 @@ import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 public class VariableAccess {
     private final IASTName variable;
     private final IBinding binding;
-    private final LinearExpression arraySubscript;
+    private final LinearExpression[] arraySubscripts;
     private final boolean isWrite;
 
-    public VariableAccess(IASTName scalarVariable, boolean isWrite) {
-        this(scalarVariable, null, isWrite);
-    }
-
-    public VariableAccess(IASTName array, LinearExpression arraySubscript, boolean isWrite) {
-        this.variable = array;
+    public VariableAccess(boolean isWrite, IASTName variable, LinearExpression... arraySubscripts) {
+        this.variable = variable;
         this.binding = this.variable.resolveBinding();
-        this.arraySubscript = arraySubscript;
+        if (arraySubscripts == null || arraySubscripts.length == 0)
+            this.arraySubscripts = null;
+        else
+            this.arraySubscripts = arraySubscripts;
         this.isWrite = isWrite;
     }
 
@@ -37,7 +36,7 @@ public class VariableAccess {
     }
 
     public boolean isScalarAccess() {
-        return arraySubscript == null;
+        return arraySubscripts == null;
     }
 
     public boolean isRead() {
@@ -93,20 +92,28 @@ public class VariableAccess {
                 .getFileLocation().getNodeOffset();
     }
 
-    public LinearExpression getLinearSubscriptExpression() {
-        return arraySubscript;
+    public LinearExpression[] getLinearSubscriptExpressions() {
+        return arraySubscripts;
     }
 
-    public int[] collectCoefficients(IBinding[] vars) {
+    public int[][] collectCoefficients(IBinding[] vars) {
+        int[][] result = new int[arraySubscripts.length][];
+        for (int i = 0; i < arraySubscripts.length; i++) {
+            result[i] = collectCoefficients(vars, i);
+        }
+        return result;
+    }
+
+    private int[] collectCoefficients(IBinding[] vars, int subscript) {
         int[] result = new int[vars.length + 1];
-        result[0] = arraySubscript.getConstantCoefficient();
-        Map<IBinding, Integer> coeffs = arraySubscript.getCoefficients();
+        result[0] = arraySubscripts[subscript].getConstantCoefficient();
+        Map<IBinding, Integer> coeffs = arraySubscripts[subscript].getCoefficients();
         for (int i = 0; i < vars.length; i++) {
             Integer coeff = coeffs.get(vars[i]);
             if (coeff == null) {
-                result[i+1] = 0;
+                result[i + 1] = 0;
             } else {
-                result[i+1] = coeff.intValue();
+                result[i + 1] = coeff.intValue();
             }
         }
         return result;
@@ -117,10 +124,12 @@ public class VariableAccess {
         StringBuilder sb = new StringBuilder();
         sb.append(isWrite ? "Write of " : "Read of ");
         sb.append(variable);
-        if (arraySubscript != null) {
-            sb.append("[");
-            sb.append(arraySubscript);
-            sb.append("]");
+        if (arraySubscripts != null) {
+            for (int i = 0; i < arraySubscripts.length; i++) {
+                sb.append("[");
+                sb.append(arraySubscripts[i]);
+                sb.append("]");
+            }
         }
         return sb.toString();
     }

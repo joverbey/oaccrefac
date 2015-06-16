@@ -58,11 +58,15 @@ public class DependenceAnalysisTest extends TestCase {
                 /* 7 */ "}");
         String[] expected = new String[] { //
                 "OUTPUT 2 -> 3 []", //
+                "FLOW 2 -> 4 []", //
+                "FLOW 2 -> 5 []", //
+                "FLOW 2 -> 6 []", //
                 "OUTPUT 2 -> 4 []", //
                 "OUTPUT 2 -> 5 []", //
                 "OUTPUT 2 -> 6 []", //
                 "FLOW 3 -> 4 []", //
                 "FLOW 4 -> 5 []", //
+                "FLOW 4 -> 6 []", //
                 "OUTPUT 4 -> 6 []", //
                 "OUTPUT 2 -> 5 []", //
                 "ANTI 5 -> 6 []" };
@@ -90,6 +94,38 @@ public class DependenceAnalysisTest extends TestCase {
                 "ANTI 5 -> 4 [*]", //
                 "ANTI 5 -> 5 [*]", //
                 };
+        assertDependencesEqual(expected, stmt);
+    }
+
+    public void test2DArrayAssignments1() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int matrix[2][2];\n" +
+                /* 3 */ "  matrix[1][0] = 0;\n" +
+                /* 4 */ "  matrix[1][0] = matrix[0][1];\n" +
+                /* 5 */ "  matrix[0][0] = matrix[1][0];\n" +
+                /* 6 */ "}");
+        String[] expected = new String[] { //
+                "OUTPUT 2 -> 3 []", //
+                "OUTPUT 2 -> 4 []", //
+                "OUTPUT 2 -> 5 []", //
+                "OUTPUT 3 -> 4 []", //
+                "FLOW 2 -> 4 []", //
+                "FLOW 2 -> 5 []", //
+                "FLOW 3 -> 5 []", //
+                "FLOW 4 -> 5 []" };
+        assertDependencesEqual(expected, stmt);
+    }
+
+    public void test2DArrayAssignments2() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int i, matrix[2][2];\n" +
+                /* 3 */ "  matrix[1][0] = 0;\n" +
+                /* 4 */ "  matrix[1][0] = matrix[i][1];\n" +
+                /* 5 */ "  matrix[0][0] = matrix[1][i];\n" +
+                /* 6 */ "}");
+        String[] expected = new String[] { //
+                "OUTPUT 3 -> 4 [*,*]", //
+                "FLOW 3 -> 5 [*,*]" };
         assertDependencesEqual(expected, stmt);
     }
 
