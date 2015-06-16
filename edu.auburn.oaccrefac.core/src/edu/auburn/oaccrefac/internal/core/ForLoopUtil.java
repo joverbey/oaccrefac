@@ -13,12 +13,15 @@ import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+<<<<<<< HEAD
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
+=======
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
+>>>>>>> 60536931baa8b0b88d1cec2dd3c3ea6db2b5e16f
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;

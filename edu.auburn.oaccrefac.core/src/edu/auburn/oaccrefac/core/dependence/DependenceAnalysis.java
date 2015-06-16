@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,9 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 import edu.auburn.oaccrefac.internal.core.Pair;
-import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
+import edu.auburn.oaccrefac.internal.core.dependence.DirectionHierarchyTester;
+import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
+import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 
 /**
  * Analyzes data dependences between statements.
@@ -41,8 +43,6 @@ import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 public class DependenceAnalysis {
 
     private final List<VariableAccess> variableAccesses = new ArrayList<VariableAccess>();
-
-    private final FourierMotzkinDependenceTester tester = new FourierMotzkinDependenceTester();
 
     /**
      * Constructor takes a for statement in, setting up this instance's dependence dependence system of equations if it
@@ -61,10 +61,11 @@ public class DependenceAnalysis {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)) {
                     IASTStatement s1 = v1.getEnclosingStatement();
                     IASTStatement s2 = v2.getEnclosingStatement();
-                    DependenceType dependenceType = DependenceType.forAccesses(v1, v2);
+                    DependenceType dependenceType = v1.getDependenceTypeTo(v2);
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
-                        dependences.add(new DataDependence(s1, s2, new DirectionVector(v1.numEnclosingLoops()),
-                                dependenceType));
+                        Direction[] directionVector = new Direction[v1.numEnclosingLoops()];
+                        Arrays.fill(directionVector, Direction.ANY);
+                        dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                     } else {
                         // FIXME Handle loop nests properly -- bounds, index variables, etc.
                         // List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
@@ -72,18 +73,12 @@ public class DependenceAnalysis {
                                 v2.getLinearSubscriptExpressions());
                         int[][] writeCoefficients = v1.collectCoefficients(vars);
                         int[][] readCoefficients = v2.collectCoefficients(vars);
-                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE+1);
-                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE-1);
-                        DirectionVector direction = new DirectionVector(vars.length);
-                        System.out.println("Testing for dependence from " + v1 + " to " + v2);
-                        boolean result = tester.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients,
-                                direction.getElements());
-                        System.out.println(String.format("%s - LB: %s UB: %s WC: %s RC: %s D: %s", result,
-                                Arrays.toString(lowerBounds), Arrays.toString(upperBounds),
-                                Arrays.deepToString(writeCoefficients), Arrays.deepToString(readCoefficients),
-                                Arrays.toString(direction.getElements())));
-                        if (result) {
-                            dependences.add(new DataDependence(s1, s2, direction, dependenceType));
+                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE + 1);
+                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE - 1);
+
+                        for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
+                                writeCoefficients, readCoefficients).getPossibleDependenceDirections()) {
+                            dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }
                 }

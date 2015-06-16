@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core;
+package edu.auburn.oaccrefac.internal.core.tests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import edu.auburn.oaccrefac.core.newtmp.Direction;
-import edu.auburn.oaccrefac.core.newtmp.FourierMotzkinDependenceTester;
-import edu.auburn.oaccrefac.internal.core.Matrix;
+import edu.auburn.oaccrefac.core.dependence.Direction;
+import edu.auburn.oaccrefac.internal.core.dependence.FourierMotzkinDependenceTester;
+import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
 
 /**
  * Unit tests for FourierMotzkinDependenceTest class

@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,7 +11,8 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+import edu.auburn.oaccrefac.core.dependence.DependenceType;
 
 public class VariableAccess {
     private final IASTName variable;
@@ -132,5 +133,16 @@ public class VariableAccess {
             }
         }
         return sb.toString();
+    }
+
+    public DependenceType getDependenceTypeTo(VariableAccess that) {
+        if (this.isWrite() && that.isRead())
+            return DependenceType.FLOW;
+        else if (this.isRead() && that.isWrite())
+            return DependenceType.ANTI;
+        else if (this.isWrite() && that.isWrite())
+            return DependenceType.OUTPUT;
+        else
+            return DependenceType.INPUT;
     }
 }

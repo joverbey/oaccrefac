@@ -1,10 +1,9 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.core.dependence;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
 /**
- * Class to encapsulate a data dependence 
- * any complex calculations determining dependence information are performed
+ * Class to encapsulate a data dependence any complex calculations determining dependence information are performed
  * primarily in other classes; this one is simply a container for information
  * 
  * @author Alexander Calvert
@@ -14,10 +13,10 @@ public class DataDependence {
 
     private final IASTStatement statement1;
     private final IASTStatement statement2;
-    private final DirectionVector directionVector;
+    private final Direction[] directionVector;
     private final DependenceType type;
 
-    public DataDependence(IASTStatement statement1, IASTStatement statement2, DirectionVector directionVector,
+    public DataDependence(IASTStatement statement1, IASTStatement statement2, Direction[] directionVector,
             DependenceType type) {
         this.statement1 = statement1;
         this.statement2 = statement2;
@@ -25,7 +24,7 @@ public class DataDependence {
         this.type = type;
     }
 
-    public DirectionVector getDirectionVector() {
+    public Direction[] getDirectionVector() {
         return directionVector;
     }
 
@@ -42,7 +41,7 @@ public class DataDependence {
     }
 
     public boolean isLoopIndependent() {
-        for (Direction direction : this.getDirectionVector().getElements()) {
+        for (Direction direction : this.getDirectionVector()) {
             if (direction != Direction.EQ) {
                 return false;
             }
@@ -59,7 +58,13 @@ public class DataDependence {
         sb.append(" -> ");
         sb.append(statement2.getFileLocation().getStartingLineNumber());
         sb.append(" ");
-        sb.append(directionVector);
+        sb.append('[');
+        for (int i = 0; i < directionVector.length; i++) {
+            if (i > 0)
+                sb.append(", ");
+            sb.append(directionVector[i]);
+        }
+        sb.append(']');
         return sb.toString();
     }
 }

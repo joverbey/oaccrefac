@@ -8,7 +8,7 @@
  * Contributors:
  *    UIUC - Initial API and implementation
  *******************************************************************************/
-package edu.auburn.oaccrefac.internal.core.fromphotran;
+package edu.auburn.oaccrefac.core.dependence;
 
 /**
  * Thrown when dependence testing cannot succeed.

@@ -8,9 +8,7 @@
  * Contributors:
  *    UIUC - Initial API and implementation
  *******************************************************************************/
-package edu.auburn.oaccrefac.core.newtmp;
-
-import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
+package edu.auburn.oaccrefac.core.dependence;
 
 /**
  * Enumeration representing the possible entries in a direction vector:
