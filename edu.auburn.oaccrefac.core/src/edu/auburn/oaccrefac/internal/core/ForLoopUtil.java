@@ -11,11 +11,14 @@ import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
@@ -249,6 +252,15 @@ public class ForLoopUtil {
             return false;
         }
     }    
+    
+    public static boolean isNameInScope(IASTName varname, IScope scope) {
+        IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
+        if (bindings.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     private ForLoopUtil() {
     }

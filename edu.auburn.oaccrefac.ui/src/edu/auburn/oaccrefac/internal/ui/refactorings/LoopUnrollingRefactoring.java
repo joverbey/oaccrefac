@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
 /**
@@ -123,10 +124,10 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 	
 	private IASTForStatement adjustInit(IASTForStatement loop, ASTRewrite rewriter) {
 	    ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-	    IASTName counter_name = findFirstName(getLoop().getInitializerStatement());
+	    IASTName counter_name = ASTUtil.findOne(getLoop().getInitializerStatement(), IASTName.class);
 	    IASTForStatement originalLoop = getLoop();
 	    try {
-            if (!isNameInScope(counter_name, originalLoop.getScope().getParent())) {
+            if (!ForLoopUtil.isNameInScope(counter_name, originalLoop.getScope().getParent())) {
                 rewriter.insertBefore(
                         originalLoop.getParent(), 
                         originalLoop, 
