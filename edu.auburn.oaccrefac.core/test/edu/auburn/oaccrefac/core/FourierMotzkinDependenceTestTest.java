@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import edu.auburn.oaccrefac.core.newtmp.Direction;
+import edu.auburn.oaccrefac.core.dependence.Direction;
 import edu.auburn.oaccrefac.core.newtmp.FourierMotzkinDependenceTester;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 

@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
+import edu.auburn.oaccrefac.core.dependence.DependenceType;
 import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 
 public class VariableAccess {
@@ -132,5 +133,16 @@ public class VariableAccess {
             }
         }
         return sb.toString();
+    }
+
+    public DependenceType getDependenceTypeTo(VariableAccess that) {
+        if (this.isWrite() && that.isRead())
+            return DependenceType.FLOW;
+        else if (this.isRead() && that.isWrite())
+            return DependenceType.ANTI;
+        else if (this.isWrite() && that.isWrite())
+            return DependenceType.OUTPUT;
+        else
+            return DependenceType.INPUT;
     }
 }

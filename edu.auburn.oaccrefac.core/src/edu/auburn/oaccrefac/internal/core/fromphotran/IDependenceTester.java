@@ -10,7 +10,7 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.core.fromphotran;
 
-import edu.auburn.oaccrefac.core.newtmp.Direction;
+import edu.auburn.oaccrefac.core.dependence.Direction;
 
 /**
  * A dependence test operating on a perfect loop nest

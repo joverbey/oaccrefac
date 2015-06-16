@@ -3,6 +3,7 @@ package edu.auburn.oaccrefac.core.newtmp;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.auburn.oaccrefac.core.dependence.Direction;
 import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
 import edu.auburn.oaccrefac.internal.core.Matrix;
 import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;

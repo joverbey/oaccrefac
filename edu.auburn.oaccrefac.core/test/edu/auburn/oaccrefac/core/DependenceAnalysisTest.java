@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
-import edu.auburn.oaccrefac.core.newtmp.DataDependence;
+import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.newtmp.DependenceAnalysis;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;

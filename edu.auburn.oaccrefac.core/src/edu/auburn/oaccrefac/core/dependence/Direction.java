@@ -8,7 +8,7 @@
  * Contributors:
  *    UIUC - Initial API and implementation
  *******************************************************************************/
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.core.dependence;
 
 import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
 
