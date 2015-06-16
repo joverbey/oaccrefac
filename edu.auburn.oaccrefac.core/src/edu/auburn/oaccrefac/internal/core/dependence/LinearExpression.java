@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,9 +13,9 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
-import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 
 public class LinearExpression {
     private static interface ILENode {

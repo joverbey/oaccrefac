@@ -8,7 +8,7 @@
  * Contributors:
  *    Susan Chesnut - Initial API and implementation
  *******************************************************************************/
-package edu.auburn.oaccrefac.internal.core;
+package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;

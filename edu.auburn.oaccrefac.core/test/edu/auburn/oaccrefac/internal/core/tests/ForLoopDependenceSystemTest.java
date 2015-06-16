@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core;
+package edu.auburn.oaccrefac.internal.core.tests;
 
 import static org.junit.Assert.*;
 

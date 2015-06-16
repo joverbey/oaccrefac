@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.internal.core;
+package edu.auburn.oaccrefac.internal.core.tests;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;

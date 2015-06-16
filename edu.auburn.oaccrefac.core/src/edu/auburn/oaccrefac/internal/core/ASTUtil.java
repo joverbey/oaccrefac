@@ -27,7 +27,7 @@ import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 
-import edu.auburn.oaccrefac.core.newtmp.LinearExpression;
+import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 
 public class ASTUtil {
 

@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,8 +11,8 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.core.dependence.DependenceType;
-import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 
 public class VariableAccess {
     private final IASTName variable;

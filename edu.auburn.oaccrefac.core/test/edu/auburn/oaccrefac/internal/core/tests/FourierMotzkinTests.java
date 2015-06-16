@@ -1,3 +1,4 @@
+package edu.auburn.oaccrefac.internal.core.tests;
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -13,13 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
-import edu.auburn.oaccrefac.internal.core.Matrix;
+import edu.auburn.oaccrefac.internal.core.dependence.FourierMotzkinEliminator;
+import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
 import junit.framework.TestCase;
 
 /**
  * Unit tests for
- * {@link org.eclipse.photran.internal.core.analysis.dependence.FourierMotzkinEliminator}.
+ * {@link edu.auburn.oaccrefac.internal.core.dependence.photran.internal.core.analysis.dependence.FourierMotzkinEliminator}.
  * 
  * @author Susan Chesnut
  * @edit September 27,2014

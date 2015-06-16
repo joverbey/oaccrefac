@@ -1,14 +1,11 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.auburn.oaccrefac.core.dependence.Direction;
-import edu.auburn.oaccrefac.internal.core.FourierMotzkinEliminator;
-import edu.auburn.oaccrefac.internal.core.Matrix;
-import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
 
-public class FourierMotzkinDependenceTester implements IDependenceTester {
+public class FourierMotzkinDependenceTester {
 
 
 
@@ -22,7 +19,6 @@ public class FourierMotzkinDependenceTester implements IDependenceTester {
      * 
      *  
      */
-    @Override
     public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, Direction[] direction) {
 

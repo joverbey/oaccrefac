@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core;
+package edu.auburn.oaccrefac.internal.core.tests;
 
 import java.util.Arrays;
 import java.util.TreeSet;
@@ -6,9 +6,9 @@ import java.util.TreeSet;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
-import edu.auburn.oaccrefac.core.newtmp.DependenceAnalysis;
+import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 import junit.framework.TestCase;
 
 public class DependenceAnalysisTest extends TestCase {

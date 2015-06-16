@@ -1,3 +1,4 @@
+package edu.auburn.oaccrefac.internal.core.tests;
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.auburn.oaccrefac.internal.core.Matrix;
+import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
 import junit.framework.TestCase;
 
 public class MatrixTests extends TestCase {

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.dependence;
 
-import edu.auburn.oaccrefac.internal.core.fromphotran.IDependenceTester;
-
 /**
  * Enumeration representing the possible entries in a direction vector:
  * &quot;&lt;&quot, &quot;=&quot;, or &quot;&gt;&quot;.

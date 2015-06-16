@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.newtmp;
+package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,14 +26,13 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-import edu.auburn.oaccrefac.core.dependence.DataDependence;
-import edu.auburn.oaccrefac.core.dependence.DependenceType;
-import edu.auburn.oaccrefac.core.dependence.Direction;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 import edu.auburn.oaccrefac.internal.core.Pair;
-import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
+import edu.auburn.oaccrefac.internal.core.dependence.DirectionHierarchyTester;
+import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
+import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 
 /**
  * Analyzes data dependences between statements.
@@ -44,8 +43,6 @@ import edu.auburn.oaccrefac.internal.core.fromphotran.DependenceTestFailure;
 public class DependenceAnalysis {
 
     private final List<VariableAccess> variableAccesses = new ArrayList<VariableAccess>();
-
-    private final FourierMotzkinDependenceTester tester = new FourierMotzkinDependenceTester();
 
     /**
      * Constructor takes a for statement in, setting up this instance's dependence dependence system of equations if it
@@ -76,19 +73,12 @@ public class DependenceAnalysis {
                                 v2.getLinearSubscriptExpressions());
                         int[][] writeCoefficients = v1.collectCoefficients(vars);
                         int[][] readCoefficients = v2.collectCoefficients(vars);
-                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE+1);
-                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE-1);
-                        Direction[] direction = new Direction[vars.length];
-                        Arrays.fill(direction, Direction.ANY);
-                        System.out.println("Testing for dependence from " + v1 + " to " + v2);
-                        boolean result = tester.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients,
-                                direction);
-                        System.out.println(String.format("%s - LB: %s UB: %s WC: %s RC: %s D: %s", result,
-                                Arrays.toString(lowerBounds), Arrays.toString(upperBounds),
-                                Arrays.deepToString(writeCoefficients), Arrays.deepToString(readCoefficients),
-                                Arrays.toString(direction)));
-                        if (result) {
-                            dependences.add(new DataDependence(s1, s2, direction, dependenceType));
+                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE + 1);
+                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE - 1);
+
+                        for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
+                                writeCoefficients, readCoefficients).getPossibleDependenceDirections()) {
+                            dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }
                 }
