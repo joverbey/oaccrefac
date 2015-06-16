@@ -135,6 +135,7 @@ public class FourierMotzkinDependenceTester implements IDependenceTester {
         //comparing i_d and i_u for that particular vector element
         for(int i = 0; i < direction.length; i++) {
             double[] row;
+            //all elements default to zero
             switch(direction[i]) {
             case ANY:
                 //don't add any more constraints
@@ -173,8 +174,26 @@ public class FourierMotzkinDependenceTester implements IDependenceTester {
                 row[row.length-1] = -1;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
+            //TODO: write unit tests to cover GE and LE
+            case GE:
+                //i_u <= i_d
+                //ie, -i_d+i_u <= 0, or [-1 1 0 0 ... 0]
+                row = new double[writeCoefficients[0].length + readCoefficients[0].length - 1];
+                row[2*i] = -1;
+                row[2*i+1] = 1;
+                row[row.length-1] = 0;
+                m.addRowAtIndex(m.getNumRows(), row);
+                break;
+            case LE:
+                //i_d <= i_u
+                //ie, i_d-i_u <= 0, or [1 -1 0 0 ... 0]
+                row = new double[writeCoefficients[0].length + readCoefficients[0].length - 1];
+                row[2*i] = 1;
+                row[2*i+1] = -1;
+                row[row.length-1] = 0;
+                m.addRowAtIndex(m.getNumRows(), row);
+                break;
             default:
-                // FIXME -- handle GE and LE
                 throw new UnsupportedOperationException();
             }
         }
