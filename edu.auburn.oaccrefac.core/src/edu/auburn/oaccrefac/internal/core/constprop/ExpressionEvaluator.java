@@ -19,6 +19,7 @@ package edu.auburn.oaccrefac.internal.core.constprop;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCastExpression;
@@ -89,15 +90,21 @@ public class ExpressionEvaluator {
         this.constValuedNames = new HashMap<IASTName, Long>();
     }
 
+    protected ExpressionEvaluator() {
+        this(ConstEnv.EMPTY);
+    }
+
     /**
      * Computes the canonical representation of the value of the expression. Returns a {@code Number} for numerical
      * values or {@code null}, otherwise.
      * 
      * @throws UnknownValueException
      */
-    private Long evaluate(IASTExpression exp) {
+    public final Long evaluate(IASTExpression exp) {
         if (exp == null)
             return null;
+
+        setAllNamesToNull(exp);
 
         if (exp instanceof IASTArraySubscriptExpression) {
             return null;
@@ -126,8 +133,7 @@ public class ExpressionEvaluator {
         }
         if (exp instanceof IASTIdExpression) {
             IASTName name = ((IASTIdExpression) exp).getName();
-            IBinding b = name.resolvePreBinding();
-            Long value = env == null ? null : env.getValue(b);
+            Long value = evaluateName(name);
             constValuedNames.put(name, value);
             return value;
         }
@@ -148,6 +154,21 @@ public class ExpressionEvaluator {
 
         env = ConstEnv.EMPTY;
         return null;
+    }
+
+    private void setAllNamesToNull(IASTExpression exp) {
+        exp.accept(new ASTVisitor(true) {
+            @Override
+            public int visit(IASTName name) {
+                constValuedNames.put(name, null);
+                return PROCESS_CONTINUE;
+            }
+        });
+    }
+
+    protected Long evaluateName(IASTName name) {
+        IBinding b = name.resolvePreBinding();
+        return env == null ? null : env.getValue(b);
     }
 
     // from org.eclipse.cdt.internal.core.parser.scanner.ExpressionEvaluator

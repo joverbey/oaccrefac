@@ -20,7 +20,7 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
  */
 public class ConstEnv {
     /** An empty constant environment, where no variables are constant-valued. */
-    static final ConstEnv EMPTY = new ConstEnv(Collections.<IBinding, Long> emptyMap());
+    public static final ConstEnv EMPTY = new ConstEnv(Collections.<IBinding, Long> emptyMap());
 
     private final Map<IBinding, Long> env;
 

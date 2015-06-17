@@ -85,14 +85,14 @@ public class DependenceAnalysisTest extends TestCase {
                 "FLOW 2 -> 5 []", //
                 "OUTPUT 2 -> 4 []", //
                 "OUTPUT 2 -> 5 []", //
-                "FLOW 4 -> 5 [*]", //
-                "OUTPUT 4 -> 4 [*]", //
-                "OUTPUT 4 -> 5 [*]", //
-                "FLOW 5 -> 5 [*]", //
-                "OUTPUT 5 -> 4 [*]", //
-                "OUTPUT 5 -> 5 [*]", //
-                "ANTI 5 -> 4 [*]", //
-                "ANTI 5 -> 5 [*]", //
+                "FLOW 4 -> 5 [=]", //
+                "OUTPUT 4 -> 4 [=]", //
+                "OUTPUT 4 -> 5 [=]", //
+                "FLOW 5 -> 5 [=]", //
+                "OUTPUT 5 -> 4 [=]", //
+                "OUTPUT 5 -> 5 [=]", //
+                "ANTI 5 -> 4 [=]", //
+                "ANTI 5 -> 5 [=]", //
                 };
         assertDependencesEqual(expected, stmt);
     }
@@ -132,8 +132,8 @@ public class DependenceAnalysisTest extends TestCase {
                 "FLOW 2 -> 5 []", //
                 "OUTPUT 2 -> 5 []", //
                 "OUTPUT 3 -> 4 []", //
-                "FLOW 3 -> 5 [*]",
-                "FLOW 4 -> 5 [*]"};
+                "FLOW 3 -> 5 [=]",
+                "FLOW 4 -> 5 [=]"};
         assertDependencesEqual(expected, stmt);
     }
 

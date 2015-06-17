@@ -97,7 +97,7 @@ public class VariableAccess {
         return arraySubscripts;
     }
 
-    public int[][] collectCoefficients(IBinding[] vars) {
+    public int[][] collectCoefficients(List<IBinding> vars) {
         int[][] result = new int[arraySubscripts.length][];
         for (int i = 0; i < arraySubscripts.length; i++) {
             result[i] = collectCoefficients(vars, i);
@@ -105,12 +105,12 @@ public class VariableAccess {
         return result;
     }
 
-    private int[] collectCoefficients(IBinding[] vars, int subscript) {
-        int[] result = new int[vars.length + 1];
+    private int[] collectCoefficients(List<IBinding> vars, int subscript) {
+        int[] result = new int[vars.size() + 1];
         result[0] = arraySubscripts[subscript].getConstantCoefficient();
         Map<IBinding, Integer> coeffs = arraySubscripts[subscript].getCoefficients();
-        for (int i = 0; i < vars.length; i++) {
-            Integer coeff = coeffs.get(vars[i]);
+        for (int i = 0; i < vars.size(); i++) {
+            Integer coeff = coeffs.get(vars.get(i));
             if (coeff == null) {
                 result[i + 1] = 0;
             } else {

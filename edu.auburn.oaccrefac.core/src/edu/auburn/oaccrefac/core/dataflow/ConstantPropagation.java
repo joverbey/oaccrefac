@@ -7,6 +7,7 @@ import org.eclipse.cdt.codan.core.cxx.internal.model.cfg.ControlFlowGraphBuilder
 import org.eclipse.cdt.codan.core.model.cfg.IBasicBlock;
 import org.eclipse.cdt.codan.core.model.cfg.ICfgData;
 import org.eclipse.cdt.codan.core.model.cfg.IControlFlowGraph;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -19,6 +20,7 @@ import org.eclipse.cdt.core.dom.ast.IVariable;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.constprop.ConstEnv;
 import edu.auburn.oaccrefac.internal.core.constprop.ConstPropNodeEvaluator;
+import edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator;
 
 /**
  * Constant propagation analysis.
@@ -35,7 +37,7 @@ import edu.auburn.oaccrefac.internal.core.constprop.ConstPropNodeEvaluator;
  * @author Jeff Overbey
  */
 @SuppressWarnings("restriction")
-public class ConstantPropagation {
+public final class ConstantPropagation {
     /** The control flow graph on which constant propagation will be performed. */
     private final IControlFlowGraph cfg;
 
@@ -116,6 +118,18 @@ public class ConstantPropagation {
 
     public Long getConstantValue(IASTName name) {
         return constValuedNames.get(name);
+    }
+
+    public Long evaluate(IASTExpression expr) {
+        class Eval extends ExpressionEvaluator {
+            @Override
+            protected Long evaluateName(IASTName name) {
+                // Constant propagation was performed in the constructor.
+                // Use the results of that analysis to evaluate names.
+                return getConstantValue(name);
+            }
+        }
+        return new Eval().evaluate(expr);
     }
 
     public String toString() {

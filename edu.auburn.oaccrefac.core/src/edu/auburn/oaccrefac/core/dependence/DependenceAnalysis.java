@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
@@ -67,18 +68,28 @@ public class DependenceAnalysis {
                         Arrays.fill(directionVector, Direction.ANY);
                         dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                     } else {
-                        // FIXME Handle loop nests properly -- bounds, index variables, etc.
-                        // List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
-                        // and also # scalars
-                        IBinding[] vars = collectAllVariables(v1.getLinearSubscriptExpressions(),
+                        List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
+                        List<IBinding> indexVars = ForLoopUtil.getLoopIndexVariables(commonLoops);
+                        Set<IBinding> otherVars = collectAllVariables(v1.getLinearSubscriptExpressions(),
                                 v2.getLinearSubscriptExpressions());
+                        otherVars.removeAll(indexVars);
+
+                        List<IBinding> vars = new ArrayList<IBinding>(indexVars.size() + otherVars.size());
+                        vars.addAll(indexVars);
+                        vars.addAll(otherVars);
+
                         int[][] writeCoefficients = v1.collectCoefficients(vars);
                         int[][] readCoefficients = v2.collectCoefficients(vars);
-                        int[] lowerBounds = fillArray(vars.length, Integer.MIN_VALUE + 1);
-                        int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE - 1);
+
+                        int[] lowerBounds = fillArray(vars.size(), Integer.MIN_VALUE + 1);
+                        int[] upperBounds = fillArray(vars.size(), Integer.MAX_VALUE - 1);
+                        for (int i = 0; i < commonLoops.size(); i++) {
+                            lowerBounds[i] = ForLoopUtil.getLowerBound(commonLoops.get(i));
+                            upperBounds[i] = ForLoopUtil.getInclusiveUpperBound(commonLoops.get(i));
+                        }
 
                         for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
-                                writeCoefficients, readCoefficients, 0).getPossibleDependenceDirections()) {
+                                writeCoefficients, readCoefficients, otherVars.size()).getPossibleDependenceDirections()) {
                             dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }
@@ -88,16 +99,14 @@ public class DependenceAnalysis {
         return dependences;
     }
 
-    private IBinding[] collectAllVariables(LinearExpression[]... exprs) {
-        Set<IBinding> vars = new HashSet<IBinding>();
+    private Set<IBinding> collectAllVariables(LinearExpression[]... exprs) {
+        Set<IBinding> vars = new TreeSet<IBinding>(new BindingComparator());
         for (LinearExpression[] array : exprs) {
             for (LinearExpression e : array) {
                 vars.addAll(e.getCoefficients().keySet());
             }
         }
-        IBinding[] result = vars.toArray(new IBinding[vars.size()]);
-        Arrays.sort(result, new BindingComparator());
-        return result;
+        return vars;
     }
 
     private int[] fillArray(int length, int value) {

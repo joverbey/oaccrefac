@@ -1,5 +1,8 @@
 package edu.auburn.oaccrefac.internal.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
@@ -9,6 +12,7 @@ import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
@@ -20,6 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.core.runtime.CoreException;
 
+import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryIntegerConstant;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
@@ -95,6 +100,38 @@ public class ForLoopUtil {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Returns the index variable for a counted loop, or <code>null</code> if the loop does not match one of the
+     * supported patterns for counted loops.
+     * 
+     * @param matchee
+     * @return
+     */
+    public static IBinding getIndexVariable(IASTForStatement forStmt) {
+        if (!isCountedLoop(forStmt))
+            return null;
+
+        class NameFinder extends ASTVisitor {
+            private IASTName name = null;
+
+            NameFinder() {
+                super(true);
+            }
+
+            @Override
+            public int visit(IASTName name) {
+                if (this.name == null)
+                    this.name = name;
+                return PROCESS_ABORT;
+            }
+        }
+
+        NameFinder nameFinder = new NameFinder();
+        forStmt.getConditionExpression().accept(nameFinder);
+        // nameFinder.name will be non-null for all of the patterns we match
+        return nameFinder.name.resolveBinding();
     }
 
     /**
@@ -260,7 +297,38 @@ public class ForLoopUtil {
             return false;
         }
     }
-    
+
+    public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
+        List<IBinding> result = new ArrayList<IBinding>(loops.size());
+        for (IASTForStatement forStmt : loops) {
+            IBinding variable = getIndexVariable(forStmt);
+            if (variable != null) {
+                result.add(variable);
+            }
+        }
+        return result;
+    }
+
+    public static int getLowerBound(IASTForStatement forStmt) {
+        return 0;
+    }
+
+    public static int getInclusiveUpperBound(IASTForStatement forStmt) {
+        IASTBinaryExpression condExpr = (IASTBinaryExpression) forStmt.getConditionExpression();
+        IASTExpression ubExpr = condExpr.getOperand2();
+        int ub = Integer.MAX_VALUE - 1;
+
+        IASTFunctionDefinition enclosingFunction = ASTUtil.findNearestAncestor(forStmt, IASTFunctionDefinition.class);
+        Long newUB = new ConstantPropagation(enclosingFunction).evaluate(ubExpr);
+        if (newUB != null && Integer.MIN_VALUE + 1 <= newUB.longValue() && newUB.longValue() <= Integer.MAX_VALUE - 1)
+            ub = (int)newUB.longValue();
+
+        if (condExpr.getOperator() == IASTBinaryExpression.op_lessThan)
+            ub--;
+
+        return ub;
+    }
+
     private ForLoopUtil() {
     }
 }
