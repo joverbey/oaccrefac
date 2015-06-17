@@ -24,15 +24,6 @@ public abstract class ForLoopChange {
     }
     
     /**
-     * Constructor for a change within a chain. The chain will
-     * be called after the inner most is called first 
-     * @param chain -- Change to be chained to this one
-     */
-    public ForLoopChange(ForLoopChange chain) {
-        m_loop = null;
-    }
-    
-    /**
      * Abstract method describes the implementation that all changes must
      * define. This method takes in a loop and changes it in respect to
      * it's intended purpose.
