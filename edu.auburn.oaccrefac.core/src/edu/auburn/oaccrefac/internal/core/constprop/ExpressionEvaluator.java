@@ -24,13 +24,11 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCastExpression;
 import org.eclipse.cdt.core.dom.ast.IASTConditionalExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleTypeConstructorExpression;
 import org.eclipse.cdt.core.parser.IProblem;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
@@ -39,6 +37,10 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 /**
  * Evaluates a C expression in a given environment.
  * <p>
+ * Since C expressions can have side effects (e.g., <code>a + (++b)</code>), the
+ * {@link #evaluate(IASTExpression, ConstEnv)} method returns both the value of the expression and the new constant
+ * environment that resulting from its evaluation.
+ * <p>
  * Used by {@link ConstantPropagation}.
  * <p>
  * Primarily based on org.eclipse.cdt.internal.core.dom.parser.Value with portions (getNumber) based on
@@ -46,9 +48,15 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  */
 public class ExpressionEvaluator {
 
+    /** Result returned by {@link ExpressionEvaluator#evaluate(IASTExpression, ConstEnv)}. */
     public static final class Result {
+        /** The value of the expression being evaluated. */
         public final Long value;
+
+        /** The constant environment that results after the node has been evaluated. */
         public final ConstEnv environment;
+
+        /** Maps constant-valued {@link IASTName} nodes under the node being evaluated to their constant values. */
         public final Map<IASTName, Long> constValuedNames;
 
         private Result(Long value, ConstEnv environment, Map<IASTName, Long> constValuedNames) {
@@ -58,6 +66,14 @@ public class ExpressionEvaluator {
         }
     }
 
+    /**
+     * Evaluates the effects of an expression on a constant environment.
+     * <p>
+     * For example, evaluating the expression <code>b = 2+(a++);</code> in the constant environment [a=1] results in the
+     * constant environment [a=2,b=3].
+     * 
+     * @see Result
+     */
     public static Result evaluate(IASTExpression exp, ConstEnv initialEnv) {
         ExpressionEvaluator e = new ExpressionEvaluator(initialEnv);
         Long value = e.evaluate(exp);
@@ -99,7 +115,7 @@ public class ExpressionEvaluator {
             IASTConditionalExpression cexpr = (IASTConditionalExpression) exp;
             Long v = evaluate(cexpr.getLogicalConditionExpression());
             if (v == null)
-                return v;
+                return null;
             if (v.longValue() == 0) {
                 return evaluate(cexpr.getNegativeResultExpression());
             }
@@ -129,9 +145,8 @@ public class ExpressionEvaluator {
                 return null;
             }
         }
-        if (exp instanceof IASTFunctionCallExpression || exp instanceof ICPPASTSimpleTypeConstructorExpression) {
-            return null; // The value will be obtained from the evaluation.
-        }
+
+        env = ConstEnv.EMPTY;
         return null;
     }
 
@@ -259,8 +274,10 @@ public class ExpressionEvaluator {
                     IBinding binding = lhsName.resolveBinding();
                     if (env == null)
                         env = ConstEnv.EMPTY;
-                    env = env.set(binding, rhsValue);
-                    constValuedNames.put(lhsName, rhsValue);
+                    if (ConstEnv.canTrackConstantValues(binding)) {
+                        env = env.set(binding, rhsValue);
+                        constValuedNames.put(lhsName, rhsValue);
+                    }
                     return rhsValue;
                 }
             }
@@ -385,8 +402,11 @@ public class ExpressionEvaluator {
         if (lhsName != null) {
             if (env == null)
                 env = ConstEnv.EMPTY;
-            env = env.set(lhsName.resolveBinding(), value);
-            constValuedNames.put(lhsName, value);
+            IBinding binding = lhsName.resolveBinding();
+            if (ConstEnv.canTrackConstantValues(binding)) {
+                env = env.set(binding, value);
+                constValuedNames.put(lhsName, value);
+            }
         } else {
             env = ConstEnv.EMPTY;
         }

@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.dom.ast.DOMException;
-import org.eclipse.cdt.core.dom.ast.EScopeKind;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 
@@ -22,7 +20,18 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
  * @author Jeff Overbey
  */
 public class ConstEnv {
+    /** An empty constant environment, where no variables are constant-valued. */
     static final ConstEnv EMPTY = new ConstEnv(Collections.<IBinding, Long> emptyMap());
+
+    /**
+     * Returns true if constant values can be tracked for the given binding.
+     * 
+     * @param binding
+     * @return
+     */
+    static boolean canTrackConstantValues(IBinding binding) {
+        return binding != null && binding instanceof IVariable;
+    }
 
     private final Map<IBinding, Long> env;
 
@@ -31,7 +40,8 @@ public class ConstEnv {
     }
 
     public ConstEnv intersect(ConstEnv that) {
-        if (that == null) return this;
+        if (that == null)
+            return this;
 
         Map<IBinding, Long> result = new HashMap<IBinding, Long>();
         for (IBinding b : this.env.keySet()) {
@@ -44,13 +54,9 @@ public class ConstEnv {
     }
 
     public ConstEnv set(IBinding variable, Long value) {
-        try {
-            if (variable == null || !(variable instanceof IVariable)
-                    || variable.getScope().getKind() != EScopeKind.eLocal)
-                return this;
-        } catch (DOMException e) {
-            return ConstEnv.EMPTY;
-        }
+        if (!canTrackConstantValues(variable))
+            throw new IllegalArgumentException("Cannot track constant values for " + variable);
+
         Map<IBinding, Long> updated = new HashMap<IBinding, Long>(this.env);
         if (value == null)
             updated.remove(variable);

@@ -82,6 +82,45 @@ public class ConstPropAnalysisTest extends TestCase {
         check(program, expectedValues);
     }
 
+    public void testPointer() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  int n = 1, p = &n;\n" +
+                /* 3 */ "  n = 2;\n" +
+                /* 4 */ "  *p = 3;\n" +
+                /* 5 */ "  n;\n" +
+                /* 6 */ "}";
+        String[] expectedValues = { //
+                "Line 2: n = 1", //
+                "Line 3: n = 2", //
+        };
+        check(program, expectedValues);
+    }
+
+    public void testGlobal() throws CoreException {
+        String program = "int global;\n" +
+                /* 2 */ "void foo();\n" +
+                /* 3 */ "void main() {\n" +
+                /* 4 */ "  global = 1;\n" +
+                /* 5 */ "  foo();\n" +
+                /* 6 */ "  global;\n" +
+                /* 7 */ "}";
+        String[] expectedValues = { "Line 4: global = 1" };
+        check(program, expectedValues);
+    }
+
+    public void testConditionalPointer() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  int n = 1, *p = &n, m;\n" +
+                /* 3 */ "  m = (*p = 2) > 1 ? 3 : 4;\n" +
+                /* 4 */ "  n;\n" + // n's constant value cannot be tracked here
+                /* 5 */ "}";
+        String[] expectedValues = { //
+                "Line 2: n = 1", //
+                "Line 3: m = 3", //
+        };
+        check(program, expectedValues);
+    }
+
     private void check(String program, String[] expectedValues) throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(program);
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);

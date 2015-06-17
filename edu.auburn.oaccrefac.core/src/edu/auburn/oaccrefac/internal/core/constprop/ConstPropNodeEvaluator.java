@@ -15,6 +15,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 
@@ -27,10 +28,15 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
  */
 public class ConstPropNodeEvaluator {
 
+    /** Result returned by {@link ConstPropNodeEvaluator#evaluate(IASTNode, ConstEnv)}. */
     public static final class Result {
-        public static final Result EMPTY = new Result(ConstEnv.EMPTY, Collections.<IASTName, Long>emptyMap());
+        /** An environment where no variables are constant-valued */
+        private static final Result EMPTY = new Result(ConstEnv.EMPTY, Collections.<IASTName, Long> emptyMap());
 
+        /** The constant environment that results after the node has been evaluated. */
         public final ConstEnv environment;
+
+        /** Maps constant-valued {@link IASTName} nodes under the node being evaluated to their constant values. */
         public final Map<IASTName, Long> constValuedNames;
 
         private Result(ConstEnv environment, Map<IASTName, Long> constValuedNames) {
@@ -39,6 +45,14 @@ public class ConstPropNodeEvaluator {
         }
     }
 
+    /**
+     * Evaluates the effects of a statement, declaration, or expression on a constant environment.
+     * <p>
+     * For example, evaluating the statement <code>b = 2+a;</code> in the constant environment [a=1] results in the
+     * constant environment [a=1,b=3].
+     * 
+     * @see Result
+     */
     public static Result evaluate(IASTNode node, ConstEnv initialEnv) {
         ConstPropNodeEvaluator e = new ConstPropNodeEvaluator(initialEnv);
         if (node instanceof IASTStatement) {
@@ -61,7 +75,6 @@ public class ConstPropNodeEvaluator {
         this.env = initialEnv;
         this.constValuedNames = new HashMap<IASTName, Long>();
     }
-
 
     private void unhandled(IASTNode node) {
         System.err.println("Unhandled " + node);
@@ -105,13 +118,16 @@ public class ConstPropNodeEvaluator {
                     unhandled(declaration);
                     return;
                 }
-                
+
                 IASTName name = declarator.getName();
                 Long value = evaluate((IASTExpression) initializer);
                 if (env == null)
                     env = ConstEnv.EMPTY;
-                env = env.set(name.resolveBinding(), value);
-                constValuedNames.put(name, value);
+                IBinding binding = name.resolveBinding();
+                if (ConstEnv.canTrackConstantValues(binding)) {
+                    env = env.set(binding, value);
+                    constValuedNames.put(name, value);
+                }
             }
         }
     }
