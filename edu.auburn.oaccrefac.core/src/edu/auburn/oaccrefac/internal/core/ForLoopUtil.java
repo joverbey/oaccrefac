@@ -18,7 +18,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
@@ -239,8 +238,8 @@ public class ForLoopUtil {
                 return true;
             }
         }
-        else if(body instanceof CPPASTForStatement) {
-            return areAllInnermostStatementsValid((CPPASTForStatement) body);
+        else if(body instanceof IASTForStatement) {
+            return areAllInnermostStatementsValid((IASTForStatement) body);
         }
         else { //neither compound nor for statement - body is the only statement
             if(body instanceof IASTBinaryExpression) {

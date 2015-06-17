@@ -28,13 +28,15 @@ public class DirectionHierarchyTester {
     private int[] upperBounds;
     private int[][] writeCoefficients;
     private int[][] readCoefficients;
+    private int numScalars;
 
     public DirectionHierarchyTester(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
-            int[][] readCoefficients) {
+            int[][] readCoefficients, int numScalars) {
         this.lowerBounds = lowerBounds;
         this.upperBounds = upperBounds;
         this.writeCoefficients = writeCoefficients;
         this.readCoefficients = readCoefficients;
+        this.numScalars = numScalars;
     }
 
     /**
@@ -63,7 +65,7 @@ public class DirectionHierarchyTester {
          */
 
         // if there is no dependence
-        if (!fourierMotzkin.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients, dvEls)) {
+        if (!fourierMotzkin.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients, numScalars, dvEls)) {
             return results;
         } else {
             Direction[] originalVector = dvEls;

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -22,6 +23,7 @@ import org.eclipse.cdt.core.parser.DefaultLogService;
 import org.eclipse.cdt.core.parser.FileContent;
 import org.eclipse.cdt.core.parser.IParserLogService;
 import org.eclipse.cdt.core.parser.IScannerInfo;
+import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
@@ -239,6 +241,25 @@ public class ASTUtil {
      */
     public static void raise(String message, IASTNode node) {
         throw new RuntimeException(message + " at line " + node.getFileLocation().getStartingLineNumber());
+    }
+
+    /**
+     * Returns the (approximate) source code for an AST node, primarily for use in debugging.
+     * 
+     * @param node
+     * @return String
+     */
+    public static String toString(IASTNode node) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (IToken tok = node.getSyntax(); tok != null; tok = tok.getNext()) {
+                sb.append(tok.getCharImage());
+                sb.append(' ');
+            }
+            return sb.toString().trim();
+        } catch (ExpansionOverlapsBoundaryException e) {
+            return "<error>";
+        }
     }
 
     private ASTUtil() {

@@ -20,7 +20,7 @@ public class FourierMotzkinDependenceTester {
      *  
      */
     public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
-            int[][] readCoefficients, Direction[] direction) {
+            int[][] readCoefficients, int numScalars, Direction[] direction) {
 
         //if there are only constant subscripts given, if those values are equal, there is a dependence
         
@@ -56,7 +56,7 @@ public class FourierMotzkinDependenceTester {
         }
         
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
-        Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, direction);
+        Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, numScalars, direction);
 
         //if there is an integer solution to the matrix, there is (possibly) a 
         //dependence; otherwise, there is no dependence
@@ -84,7 +84,7 @@ public class FourierMotzkinDependenceTester {
     }
 
     public Matrix generateDependenceMatrix(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
-            int[][] readCoefficients, Direction[] direction) {
+            int[][] readCoefficients, int numScalars, Direction[] direction) {
         Matrix m = new Matrix();
 
         //get the inequalities from the subscripts

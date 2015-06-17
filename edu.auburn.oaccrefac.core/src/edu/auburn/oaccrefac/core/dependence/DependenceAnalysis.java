@@ -69,6 +69,7 @@ public class DependenceAnalysis {
                     } else {
                         // FIXME Handle loop nests properly -- bounds, index variables, etc.
                         // List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
+                        // and also # scalars
                         IBinding[] vars = collectAllVariables(v1.getLinearSubscriptExpressions(),
                                 v2.getLinearSubscriptExpressions());
                         int[][] writeCoefficients = v1.collectCoefficients(vars);
@@ -77,7 +78,7 @@ public class DependenceAnalysis {
                         int[] upperBounds = fillArray(vars.length, Integer.MAX_VALUE - 1);
 
                         for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
-                                writeCoefficients, readCoefficients).getPossibleDependenceDirections()) {
+                                writeCoefficients, readCoefficients, 0).getPossibleDependenceDirections()) {
                             dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }

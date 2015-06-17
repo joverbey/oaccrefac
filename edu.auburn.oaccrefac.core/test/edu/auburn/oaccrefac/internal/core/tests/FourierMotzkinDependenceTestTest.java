@@ -117,7 +117,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         Matrix expected = new Matrix(rowsExpected);     
-        Matrix result = tester.generateDependenceMatrix(lb1, ub1, wc1, rc1, d1);
+        Matrix result = tester.generateDependenceMatrix(lb1, ub1, wc1, rc1, 0, d1);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -137,7 +137,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 10000});
         Matrix expected = new Matrix(rowsExpected);     
-        Matrix result = tester.generateDependenceMatrix(lb2, ub2, wc2, rc2, d2);
+        Matrix result = tester.generateDependenceMatrix(lb2, ub2, wc2, rc2, 0, d2);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -157,7 +157,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 1});
         Matrix expected = new Matrix(rowsExpected);  
-        Matrix result = tester.generateDependenceMatrix(lb3, ub3, wc3, rc3, d3);
+        Matrix result = tester.generateDependenceMatrix(lb3, ub3, wc3, rc3, 0, d3);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -177,7 +177,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -10});
         rowsExpected.add(new double[] {0, 0, 0, 1, 1});
         Matrix expected = new Matrix(rowsExpected);       
-        Matrix result = tester.generateDependenceMatrix(lb4, ub4, wc4, rc4, d4);
+        Matrix result = tester.generateDependenceMatrix(lb4, ub4, wc4, rc4, 0, d4);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -197,7 +197,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         Matrix expected = new Matrix(rowsExpected);       
-        Matrix result = tester.generateDependenceMatrix(lb5, ub5, wc5, rc5, d5);
+        Matrix result = tester.generateDependenceMatrix(lb5, ub5, wc5, rc5, 0, d5);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -217,7 +217,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         Matrix expected = new Matrix(rowsExpected);       
-        Matrix result = tester.generateDependenceMatrix(lb6, ub6, wc6, rc6, d6);
+        Matrix result = tester.generateDependenceMatrix(lb6, ub6, wc6, rc6, 0, d6);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -237,7 +237,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         Matrix expected = new Matrix(rowsExpected);       
-        Matrix result = tester.generateDependenceMatrix(lb7, ub7, wc7, rc7, d7);
+        Matrix result = tester.generateDependenceMatrix(lb7, ub7, wc7, rc7, 0, d7);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -257,7 +257,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, -1, -1});
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         Matrix expected = new Matrix(rowsExpected);   
-        Matrix result = tester.generateDependenceMatrix(lb8, ub8, wc8, rc8, d8);
+        Matrix result = tester.generateDependenceMatrix(lb8, ub8, wc8, rc8, 0, d8);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -278,7 +278,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         rowsExpected.add(new double[] {1, -1, 0, 0, -1});
         Matrix expected = new Matrix(rowsExpected);   
-        Matrix result = tester.generateDependenceMatrix(lb9, ub9, wc9, rc9, d9);
+        Matrix result = tester.generateDependenceMatrix(lb9, ub9, wc9, rc9, 0, d9);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -299,7 +299,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, 0, 0, 1, 100});
         rowsExpected.add(new double[] {-1, 1, 0, 0, -1});
         Matrix expected = new Matrix(rowsExpected);  
-        Matrix result = tester.generateDependenceMatrix(lb10, ub10, wc10, rc10, d10);
+        Matrix result = tester.generateDependenceMatrix(lb10, ub10, wc10, rc10, 0, d10);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -321,7 +321,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {1, -1, 0, 0, 0});
         rowsExpected.add(new double[] {-1, 1, 0, 0, 0});
         Matrix expected = new Matrix(rowsExpected);
-        Matrix result = tester.generateDependenceMatrix(lb11, ub11, wc11, rc11, d11);
+        Matrix result = tester.generateDependenceMatrix(lb11, ub11, wc11, rc11, 0, d11);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
     
@@ -335,7 +335,7 @@ public class FourierMotzkinDependenceTestTest {
         rowsExpected.add(new double[] {0, -1, -1});
         rowsExpected.add(new double[] {0, 1, 100});
         Matrix expected = new Matrix(rowsExpected);
-        Matrix result = tester.generateDependenceMatrix(lb12, ub12, wc12, rc12, d12);
+        Matrix result = tester.generateDependenceMatrix(lb12, ub12, wc12, rc12, 0, d12);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
 }
