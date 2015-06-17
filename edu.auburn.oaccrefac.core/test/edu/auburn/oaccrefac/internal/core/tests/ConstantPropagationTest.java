@@ -1,5 +1,10 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
+import static edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator.addWillOverflow;
+import static edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator.multiplyWillOverflow;
+import static edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator.subtractWillOverflow;
+
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,7 +19,7 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import junit.framework.TestCase;
 
-public class ConstPropAnalysisTest extends TestCase {
+public class ConstantPropagationTest extends TestCase {
 
     public void testBasic() throws CoreException {
         String program = "void main() {\n" +
@@ -113,10 +118,56 @@ public class ConstPropAnalysisTest extends TestCase {
                 /* 2 */ "  int n = 1, *p = &n, m;\n" +
                 /* 3 */ "  m = (*p = 2) > 1 ? 3 : 4;\n" +
                 /* 4 */ "  n;\n" + // n's constant value cannot be tracked here
-                /* 5 */ "}";
+        /* 5 */ "}";
         String[] expectedValues = { //
                 "Line 2: n = 1", //
                 "Line 3: m = 3", //
+        };
+        check(program, expectedValues);
+    }
+
+    public void testLong() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  long n = 5000000000L, m;\n" +
+                /* 3 */ "  m = 2*n;\n" +
+                /* 4 */ "}";
+        String[] expectedValues = { //
+                "Line 2: n = 5000000000", //
+                "Line 3: m = 10000000000", //
+                "Line 3: n = 5000000000", //
+        };
+        check(program, expectedValues);
+    }
+
+    public void testFloat() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  float n = 1.0;\n" +
+                /* 3 */ "  n;\n" +
+                /* 4 */ "}";
+        String[] expectedValues = {};
+        check(program, expectedValues);
+    }
+
+    public void testChar() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  char n = 32;\n" +
+                /* 3 */ "  n;\n" +
+                /* 4 */ "}";
+        String[] expectedValues = { };
+        check(program, expectedValues);
+    }
+
+    public void testShortOverflow() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  short n = 32766, m;\n" +
+                /* 3 */ "  m = n + 1;\n" +
+                /* 4 */ "  m = n + 2;\n" + // Overflow
+                /* 5 */ "}";
+        String[] expectedValues = { //
+                "Line 2: n = 32766", //
+                "Line 3: n = 32766", //
+                "Line 3: m = 32767", //
+                "Line 4: n = 32766", //
         };
         check(program, expectedValues);
     }
@@ -155,5 +206,27 @@ public class ConstPropAnalysisTest extends TestCase {
             sb.append(s);
         }
         return sb.toString();
+    }
+
+    public void testOverflowChecks() {
+        long[] values = { Long.MIN_VALUE, Long.MIN_VALUE + 1, Long.MIN_VALUE + 10, -20, -11, -10, -9, -5, -1, 0, //
+                1, 5, 9, 10, 11, 20, Long.MAX_VALUE - 1, Long.MAX_VALUE - 10, Long.MAX_VALUE };
+        for (long v1 : values) {
+            for (long v2 : values) {
+                long sum = v1 + v2;
+                long difference = v1 - v2;
+                long product = v1 * v2;
+
+                BigInteger b1 = BigInteger.valueOf(v1);
+                BigInteger b2 = BigInteger.valueOf(v2);
+                BigInteger bsum = b1.add(b2);
+                BigInteger bdifference = b1.subtract(b2);
+                BigInteger bproduct = b1.multiply(b2);
+
+                assertEquals(!bsum.equals(BigInteger.valueOf(sum)), addWillOverflow(v1, v2));
+                assertEquals(!bdifference.equals(BigInteger.valueOf(difference)), subtractWillOverflow(v1, v2));
+                assertEquals(!bproduct.equals(BigInteger.valueOf(product)), multiplyWillOverflow(v1, v2));
+            }
+        }
     }
 }

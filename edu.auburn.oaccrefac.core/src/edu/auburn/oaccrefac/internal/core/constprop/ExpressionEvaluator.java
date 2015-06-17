@@ -274,7 +274,8 @@ public class ExpressionEvaluator {
                     IBinding binding = lhsName.resolveBinding();
                     if (env == null)
                         env = ConstEnv.EMPTY;
-                    if (ConstEnv.canTrackConstantValues(binding)) {
+                    if (ConstantPropagation.canTrackConstantValues(binding)
+                            && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
                         env = env.set(binding, rhsValue);
                         constValuedNames.put(lhsName, rhsValue);
                     }
@@ -326,7 +327,10 @@ public class ExpressionEvaluator {
     private Long applyBinaryOperator(final int op, final long v1, final long v2) {
         switch (op) {
         case IASTBinaryExpression.op_multiply:
-            return v1 * v2;
+            if (multiplyWillOverflow(v1, v2))
+                return null;
+            else
+                return v1 * v2;
         case IASTBinaryExpression.op_divide:
             if (v2 == 0)
                 return null;
@@ -336,13 +340,19 @@ public class ExpressionEvaluator {
                 return null;
             return v1 % v2;
         case IASTBinaryExpression.op_plus:
-            return v1 + v2;
+            if (addWillOverflow(v1, v2))
+                return null;
+            else
+                return v1 + v2;
         case IASTBinaryExpression.op_minus:
-            return v1 - v2;
+            if (subtractWillOverflow(v1, v2))
+                return null;
+            else
+                return v1 - v2;
         case IASTBinaryExpression.op_shiftLeft:
             return v1 << v2;
         case IASTBinaryExpression.op_shiftRight:
-            return v1 >> v2;
+            return null; // Whether signed or unsigned is implementation-dependent
         case IASTBinaryExpression.op_lessThan:
             return v1 < v2 ? Long.valueOf(1) : Long.valueOf(0);
         case IASTBinaryExpression.op_greaterThan:
@@ -371,6 +381,38 @@ public class ExpressionEvaluator {
             return Math.min(v1, v2);
         }
         return null;
+    }
+
+    // See discussion at
+    // http://stackoverflow.com/questions/1657834/how-can-i-check-if-multiplying-two-numbers-in-java-will-cause-an-overflow
+    // for various alternatives. The check for negating Long.MIN_VALUE is mine.
+    public static boolean multiplyWillOverflow(long v1, long v2) {
+        long maximum = Long.signum(v1) == Long.signum(v2) ? Long.MAX_VALUE : Long.MIN_VALUE;
+
+        if (v1 == 0 || v2 == 0)
+            return false;
+
+        if (v2 == -1 && maximum < 0)
+            return v1 == Long.MIN_VALUE;
+        else if (v1 == -1 && maximum < 0)
+            return v2 == Long.MIN_VALUE;
+
+        return v2 > 0 && v2 > maximum / v1 || v2 < 0 && v2 < maximum / v1;
+    }
+
+    // See discussion at http://codereview.stackexchange.com/questions/6255/int-overflow-check-in-java
+    public static boolean addWillOverflow(long v1, long v2) {
+        if (v1 >= 0)
+            return Long.MAX_VALUE - v1 < v2;
+        else
+            return Long.MIN_VALUE - v1 > v2;
+    }
+
+    public static boolean subtractWillOverflow(long v1, long v2) {
+        if (v2 >= 0)
+            return Long.MIN_VALUE + v2 > v1;
+        else
+            return Long.MAX_VALUE + v2 < v1;
     }
 
     private Long evaluateUnaryExpression(IASTUnaryExpression exp) {
@@ -403,7 +445,8 @@ public class ExpressionEvaluator {
             if (env == null)
                 env = ConstEnv.EMPTY;
             IBinding binding = lhsName.resolveBinding();
-            if (ConstEnv.canTrackConstantValues(binding)) {
+            if (ConstantPropagation.canTrackConstantValues(binding)
+                    && ConstantPropagation.isInTrackedRange(binding, value)) {
                 env = env.set(binding, value);
                 constValuedNames.put(lhsName, value);
             }

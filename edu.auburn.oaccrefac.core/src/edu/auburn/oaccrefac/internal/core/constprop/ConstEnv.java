@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.IVariable;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 
@@ -22,16 +21,6 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 public class ConstEnv {
     /** An empty constant environment, where no variables are constant-valued. */
     static final ConstEnv EMPTY = new ConstEnv(Collections.<IBinding, Long> emptyMap());
-
-    /**
-     * Returns true if constant values can be tracked for the given binding.
-     * 
-     * @param binding
-     * @return
-     */
-    static boolean canTrackConstantValues(IBinding binding) {
-        return binding != null && binding instanceof IVariable;
-    }
 
     private final Map<IBinding, Long> env;
 
@@ -54,8 +43,12 @@ public class ConstEnv {
     }
 
     public ConstEnv set(IBinding variable, Long value) {
-        if (!canTrackConstantValues(variable))
-            throw new IllegalArgumentException("Cannot track constant values for " + variable);
+        if (!ConstantPropagation.canTrackConstantValues(variable))
+            throw new IllegalArgumentException("Cannot track constant values for " + variable
+                    + ".  Invoke canTrackConstantValues() before calling set().");
+        if (!ConstantPropagation.isInTrackedRange(variable, value))
+            throw new IllegalArgumentException(
+                    "Value is out of range for " + variable + ".  Invoke isInTrackedRange() before calling set().");
 
         Map<IBinding, Long> updated = new HashMap<IBinding, Long>(this.env);
         if (value == null)

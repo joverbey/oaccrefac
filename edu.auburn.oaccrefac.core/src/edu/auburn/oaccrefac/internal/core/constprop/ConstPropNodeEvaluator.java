@@ -18,6 +18,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
  * Determines the effect of a statement or expression on a constant environment.
@@ -77,9 +78,9 @@ public class ConstPropNodeEvaluator {
     }
 
     private void unhandled(IASTNode node) {
-        System.err.println("Unhandled " + node);
+        System.err.println("Unhandled " + node + " - " + ASTUtil.toString(node));
         // Unsure how to handle this node
-        // Conservatively assume that it could change anything -- nothing is constant-valued at this point
+        // Conservatively assume that it could change anything -- nothing is constant-valued anymore
         env = ConstEnv.EMPTY;
     }
 
@@ -124,7 +125,8 @@ public class ConstPropNodeEvaluator {
                 if (env == null)
                     env = ConstEnv.EMPTY;
                 IBinding binding = name.resolveBinding();
-                if (ConstEnv.canTrackConstantValues(binding)) {
+                if (ConstantPropagation.canTrackConstantValues(binding)
+                        && ConstantPropagation.isInTrackedRange(binding, value)) {
                     env = env.set(binding, value);
                     constValuedNames.put(name, value);
                 }

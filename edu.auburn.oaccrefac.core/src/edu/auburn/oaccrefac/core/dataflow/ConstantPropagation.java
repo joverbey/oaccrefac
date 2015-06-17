@@ -10,6 +10,11 @@ import org.eclipse.cdt.codan.core.model.cfg.IControlFlowGraph;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IBasicType;
+import org.eclipse.cdt.core.dom.ast.IBasicType.Kind;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IType;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.constprop.ConstEnv;
@@ -18,17 +23,20 @@ import edu.auburn.oaccrefac.internal.core.constprop.ConstPropNodeEvaluator;
 /**
  * Constant propagation analysis.
  * <p>
- * Constant propagation determines, at each point in a function, whether a variable is constant-valued and, if it is,
- * what its value is.
+ * Constant propagation determines, at each point in a function, whether a variable is definitely constant-valued and,
+ * if it is, what its value is.
  * <p>
- * This analysis is intraprocedural and assumes all local variables are not aliased. It applies only to integers and
- * assumes integers are 32 bits wide.
+ * This analysis is intraprocedural and assumes short, int, and long are (at least) 16, 32, and 64 bits wide,
+ * respectively; constant values are not tracked if a computation may overflow these limits. Values for global variables
+ * are tracked only after they are assigned a constant value. When the analysis reaches an assignment through a pointer,
+ * a function call, or any other construct it cannot handle, it conservatively discards the entire constant environment,
+ * assuming that all of its knowledge about constant-valued variables may be wrong after that point.
  * 
  * @author Jeff Overbey
  */
 @SuppressWarnings("restriction")
 public class ConstantPropagation {
-    /** The control flow graph on which constnat propagation will be performed. */
+    /** The control flow graph on which constant propagation will be performed. */
     private final IControlFlowGraph cfg;
 
     /** The constant environment at the entry to each block in the CFG. */
@@ -151,5 +159,37 @@ public class ConstantPropagation {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * @return true if constant values can be tracked for the given binding
+     */
+    public static boolean canTrackConstantValues(IBinding binding) {
+        if (binding == null || !(binding instanceof IVariable))
+            return false;
+
+        IType type = ((IVariable) binding).getType();
+        if (!(type instanceof IBasicType))
+            return false;
+
+        Kind kind = ((IBasicType) type).getKind();
+        return kind == Kind.eInt;
+    }
+
+    /**
+     * @return true if the given value is in the range of constant values that can be tracked for the given binding
+     */
+    public static boolean isInTrackedRange(IBinding binding, Long value) {
+        if (value == null || !canTrackConstantValues(binding))
+            return false;
+        IBasicType type = (IBasicType) ((IVariable) binding).getType();
+        if (type.isShort())
+            return -32768 <= value && value <= 32767;
+        else if (type.isLong())
+            return Long.MIN_VALUE <= value && value <= Long.MAX_VALUE;
+        else if (type.isLongLong() || type.isUnsigned() || type.isComplex() || type.isImaginary())
+            return false;
+        else
+            return Integer.MIN_VALUE <= value && value <= Integer.MAX_VALUE;
     }
 }
