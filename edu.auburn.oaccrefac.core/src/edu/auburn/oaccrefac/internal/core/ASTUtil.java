@@ -47,6 +47,15 @@ public class ASTUtil {
 
         return results.get(0);
     }
+    
+    public static <T> T findDepth(IASTNode parent, Class<T> clazz, int depth) {
+        List<T> results = find(parent, clazz);
+        if (results.size() == 0) {
+            throw new RuntimeException("Failed to find any " + clazz.getName() + " in " + parent.toString());
+        }
+
+        return results.get(depth);
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T findNearestAncestor(IASTNode startingNode, Class<T> clazz) {

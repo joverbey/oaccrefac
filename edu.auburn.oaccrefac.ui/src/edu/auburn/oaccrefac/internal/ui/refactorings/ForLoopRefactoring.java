@@ -195,42 +195,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return v.loop;
     }
 
-    /**
-     * This method takes a tree and finds the first IASTName occurrence within the tree. This was a helper method that
-     * was used in LoopUnrolling that could be applied to other situations, so it was placed here for utility.
-     * 
-     * @param tree
-     *            -- tree in which to traverse
-     * @return IASTName node of first variable name found
-     */
-    protected IASTName findFirstName(IASTNode tree) {
-        class Visitor extends ASTVisitor {
-            private IASTName varname = null;
-
-            public Visitor() {
-                shouldVisitNames = true;
-            }
-
-            @Override
-            public int visit(IASTName visitor) {
-                varname = visitor;
-                return PROCESS_ABORT;
-            }
-        }
-        Visitor v = new Visitor();
-        tree.accept(v);
-        return v.varname;
-    }
-
-    protected boolean isNameInScope(IASTName varname, IScope scope) {
-        IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
-        if (bindings.length > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // *************************************************************************
     // Getters & Setters
 
