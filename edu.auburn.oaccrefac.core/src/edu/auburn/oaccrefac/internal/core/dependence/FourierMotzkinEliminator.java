@@ -93,6 +93,10 @@ public class FourierMotzkinEliminator
 
     /**
      * The Fourier-Motzkin Elimination integer algorithm
+     * 
+     * FIXME: Gives index of -1 to Matrix#deleteRows at some point
+     *  see FourierMotzkinDependenceTestTest#test101_005NoConstantSubscripts for broken input
+     * 
      * @param matrixIn system of linear inequalities on which to find whether a integer solution
      *            exists or not
      * @return whether a solution exists or not

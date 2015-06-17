@@ -40,8 +40,7 @@ public class DirectionHierarchyTester {
     }
 
     /**
-     * TODO: get nesting level from loop somehow (maybe in constructor) TODO: get other arguments for the tester;
-     * probably also from constructor TODO: if test() method changes to take a DirectionVector arg, change this as well
+     * TODO: get other arguments for the tester; probably also from constructor
      * 
      * @return a set containing all directions in which there might be a dependence
      */
