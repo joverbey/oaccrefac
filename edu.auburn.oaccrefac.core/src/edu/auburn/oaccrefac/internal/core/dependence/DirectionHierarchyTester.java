@@ -40,7 +40,10 @@ public class DirectionHierarchyTester {
     }
 
     /**
-     * TODO: get other arguments for the tester; probably also from constructor
+     * 
+     * Uses the direction vector hierarchy to find all possible direction vectors
+     * for a loop dependence
+     * 
      * 
      * @return a set containing all directions in which there might be a dependence
      */
