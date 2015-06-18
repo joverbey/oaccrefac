@@ -204,7 +204,8 @@ public abstract class ForLoopRefactoring extends CRefactoring {
                     int forStmtStart = forStmtLocation.getNodeOffset();
                     int forStmtEnd = forStmtStart + forStmtLocation.getNodeLength();
 
-                    if (forStmtStart <= selectionStart && selectionEnd <= forStmtEnd) {
+                    if (forStmtStart <= selectionStart && selectionEnd <= forStmtEnd
+                            || selectionStart <= forStmtStart && forStmtEnd <= selectionEnd) {
                         loop = for_stmt;
                         // Check nested loops
                         return PROCESS_CONTINUE;
