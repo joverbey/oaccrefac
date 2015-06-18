@@ -2,6 +2,7 @@ package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
@@ -43,20 +45,21 @@ import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
  */
 public class DependenceAnalysis {
 
-    private final List<VariableAccess> variableAccesses = new ArrayList<VariableAccess>();
+    private final List<VariableAccess> variableAccesses;
+
+    private final Set<DataDependence> dependences;
 
     /**
-     * Constructor takes a for statement in, setting up this instance's dependence dependence system of equations if it
-     * is valid
+     * Constructor.  Analyzes dependences in a sequence of C statements.
      * 
-     * @param outerLoop
-     *            the outer for loop to be
      * @throws DependenceTestFailure
      */
-    public Set<DataDependence> analyze(IASTStatement... statements) throws DependenceTestFailure {
+    public DependenceAnalysis(IASTStatement... statements) throws DependenceTestFailure {
+        variableAccesses = new ArrayList<VariableAccess>();
+        dependences = new HashSet<DataDependence>();
+
         collectAccessesFromStatements(statements);
 
-        Set<DataDependence> dependences = new HashSet<DataDependence>();
         for (VariableAccess v1 : variableAccesses) {
             for (VariableAccess v2 : variableAccesses) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)) {
@@ -89,14 +92,14 @@ public class DependenceAnalysis {
                         }
 
                         for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
-                                writeCoefficients, readCoefficients, otherVars.size()).getPossibleDependenceDirections()) {
+                                writeCoefficients, readCoefficients, otherVars.size())
+                                        .getPossibleDependenceDirections()) {
                             dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }
                 }
             }
         }
-        return dependences;
     }
 
     private Set<IBinding> collectAllVariables(LinearExpression[]... exprs) {
@@ -192,6 +195,15 @@ public class DependenceAnalysis {
             return;
         }
 
+        Pair<IASTName, IASTName> fieldReference = ASTUtil.getSimpleFieldReference(expr);
+        if (fieldReference != null) {
+            IASTName owner = fieldReference.getFirst();
+            IASTName field = fieldReference.getSecond();
+            variableAccesses.add(new VariableAccess(false, owner));
+            variableAccesses.add(new VariableAccess(true, field));
+            return;
+        }
+
         Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
         if (arrayAccess != null) {
             variableAccesses.add(new VariableAccess(true, arrayAccess.getFirst(), arrayAccess.getSecond()));
@@ -212,6 +224,8 @@ public class DependenceAnalysis {
             collectAccessesFrom((IASTIdExpression) expr);
         } else if (expr instanceof IASTArraySubscriptExpression) {
             collectAccessesFrom((IASTArraySubscriptExpression) expr);
+        } else if (expr instanceof IASTFieldReference) {
+            collectAccessesFrom((IASTFieldReference) expr);
         } else {
             throw unsupported(expr);
         }
@@ -268,6 +282,17 @@ public class DependenceAnalysis {
         variableAccesses.add(new VariableAccess(false, name));
     }
 
+    private void collectAccessesFrom(IASTFieldReference expr) throws DependenceTestFailure {
+        Pair<IASTName, IASTName> pair = ASTUtil.getSimpleFieldReference(expr);
+        if (pair == null)
+            throw unsupported(expr);
+
+        IASTName owner = pair.getFirst();
+        IASTName field = pair.getSecond();
+        variableAccesses.add(new VariableAccess(false, owner));
+        variableAccesses.add(new VariableAccess(false, field));
+    }
+
     private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
         Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
         if (arrayAccess == null)
@@ -281,5 +306,18 @@ public class DependenceAnalysis {
         return new DependenceTestFailure(
                 String.format("Unsupported construct on line %d (%s)", node.getFileLocation().getStartingLineNumber(), //
                         node.getClass().getSimpleName()));
+    }
+
+    public Set<DataDependence> getDependences() {
+        return Collections.unmodifiableSet(dependences);
+    }
+
+    public boolean hasLevel1CarriedDependence() {
+        for (DataDependence dep : dependences) {
+            if (dep.getLevel() == 1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -30,6 +30,7 @@ import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLabelStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
@@ -150,6 +151,10 @@ public final class ASTMatcher {
             return match((IASTExpressionList) pattern, (IASTExpressionList) node);
         } else if (pattern instanceof IASTTypeIdExpression) {
             return match((IASTTypeIdExpression) pattern, (IASTTypeIdExpression) node);
+        } else if (pattern instanceof IASTFieldReference) {
+            return match((IASTFieldReference) pattern, (IASTFieldReference) node);
+        } else if (pattern instanceof IASTName) {
+            return match((IASTName) pattern, (IASTName) node);
         } else {
             return unsupported(pattern);
         }
@@ -271,11 +276,21 @@ public final class ASTMatcher {
     }
 
     private boolean match(IASTIdExpression pattern, IASTIdExpression node) {
-        String patternName = pattern.getName().toString();
-        String nodeName = node.getName().toString();
+        return genericMatch(pattern.getName(), node.getName());
+    }
+
+    private boolean match(IASTName pattern, IASTName node) {
+        String patternName = pattern.toString();
+        String nodeName = node.toString();
         if (!nameMapping.containsKey(patternName))
             nameMapping.put(patternName, nodeName);
         return nodeName.equals(nameMapping.get(patternName));
+    }
+
+    private boolean match(IASTFieldReference pattern, IASTFieldReference node) {
+        return pattern.isPointerDereference() == node.isPointerDereference()
+                && genericMatch(pattern.getFieldOwner(), node.getFieldOwner())
+                && genericMatch(pattern.getFieldName(), node.getFieldName());
     }
 
     private boolean match(IASTLiteralExpression pattern, IASTLiteralExpression node) {
@@ -295,10 +310,6 @@ public final class ASTMatcher {
     }
 
     private boolean match(IASTArraySubscriptExpression pattern, IASTArraySubscriptExpression node) {
-        return unsupported(pattern);
-    }
-
-    private boolean match(IASTFieldReference pattern, IASTFieldReference node) {
         return unsupported(pattern);
     }
 

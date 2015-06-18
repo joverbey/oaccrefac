@@ -32,8 +32,8 @@ import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 public class ForLoopUtil {
 
     // Patterns of for loops that are acceptable to refactor...
-    //Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
+        // Constant upper bound
         "for (i = 0; i < 1; i++) ;",
         "for (int i = 0; i < 1; i++) ;",
         "for (i = 0; i <= 1; i++) ;",
@@ -46,6 +46,7 @@ public class ForLoopUtil {
         "for (int i = 0; i < 1; i=i+1) ;",
         "for (i = 0; i <= 1; i=i+1) ;",
         "for (int i = 0; i <= 1; i=i+1) ;",
+        // Variable upper bound
         "for (i = 0; i < j; i++) ;",
         "for (int i = 0; i < j; i++) ;",
         "for (i = 0; i <= j; i++) ;",
@@ -58,6 +59,19 @@ public class ForLoopUtil {
         "for (int i = 0; i < j; i=i+1) ;",
         "for (i = 0; i <= j; i=i+1) ;",
         "for (int i = 0; i <= j; i=i+1) ;",
+        // Simple field reference upper bound (used in Livermore Loops)
+        "for (i = 0; i < j.k; i++) ;",
+        "for (int i = 0; i < j.k; i++) ;",
+        "for (i = 0; i <= j.k; i++) ;",
+        "for (int i = 0; i <= j.k; i++) ;",
+        "for (i = 0; i < j.k; i+=1) ;",
+        "for (int i = 0; i < j.k; i+=1) ;",
+        "for (i = 0; i <= j.k; i+=1) ;",
+        "for (int i = 0; i <= j.k; i+=1) ;",
+        "for (i = 0; i < j.k; i=i+1) ;",
+        "for (int i = 0; i < j.k; i=i+1) ;",
+        "for (i = 0; i <= j.k; i=i+1) ;",
+        "for (int i = 0; i <= j.k; i=i+1) ;",
     };
 
     /**
@@ -79,24 +93,24 @@ public class ForLoopUtil {
             }
 
             @Override
-            public int visit(IASTExpression visitor) {
-                if (visitor instanceof IASTLiteralExpression && visitor.getParent() != null) {
-                    IASTLiteralExpression expr = (IASTLiteralExpression) visitor;
-                    if (expr.getParent() instanceof IASTBinaryExpression)
-                        ((IASTBinaryExpression) expr.getParent()).setOperand2(new ArbitraryIntegerConstant());
-                    else if (expr.getParent() instanceof IASTEqualsInitializer)
-                        ((IASTEqualsInitializer) expr.getParent()).setInitializerClause(new ArbitraryIntegerConstant());
+            public int visit(IASTExpression expr) {
+                if (expr instanceof IASTLiteralExpression && expr.getParent() != null) {
+                    IASTLiteralExpression literal = (IASTLiteralExpression) expr;
+                    if (literal.getParent() instanceof IASTBinaryExpression)
+                        ((IASTBinaryExpression) literal.getParent()).setOperand2(new ArbitraryIntegerConstant());
+                    else if (literal.getParent() instanceof IASTEqualsInitializer)
+                        ((IASTEqualsInitializer) literal.getParent()).setInitializerClause(new ArbitraryIntegerConstant());
                 }
                 return PROCESS_CONTINUE;
             }
         }
 
         for (String pattern : patterns) {
-            IASTForStatement forLoop = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
-            IASTForStatement pattern_ast = forLoop.copy(CopyStyle.withoutLocations);
-            pattern_ast.accept(new LiteralReplacer());
-            pattern_ast.setBody(new ArbitraryStatement());
-            if (ASTMatcher.unify(pattern_ast, matchee) != null)
+            IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
+            IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
+            patternAST.accept(new LiteralReplacer());
+            patternAST.setBody(new ArbitraryStatement());
+            if (ASTMatcher.unify(patternAST, matchee) != null)
                 return true;
         }
         return false;

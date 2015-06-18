@@ -40,13 +40,21 @@ public class DataDependence {
         return statement2;
     }
 
+    public boolean isLoopCarried() {
+        return getLevel() > 0;
+    }
+
     public boolean isLoopIndependent() {
-        for (Direction direction : this.getDirectionVector()) {
-            if (direction != Direction.EQ) {
-                return false;
+        return getLevel() == 0;
+    }
+
+    public int getLevel() {
+        for (int i = 0; i < directionVector.length; i++) {
+            if (directionVector[i] != Direction.EQ) {
+                return i + 1;
             }
         }
-        return true;
+        return 0;
     }
 
     @Override

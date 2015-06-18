@@ -141,7 +141,7 @@ public class DependenceAnalysisTest extends TestCase {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 
         TreeSet<String> actual = new TreeSet<String>();
-        for (DataDependence dep : new DependenceAnalysis().analyze(stmt))
+        for (DataDependence dep : new DependenceAnalysis(stmt).getDependences())
             actual.add(dep.toString());
 
         assertEquals(stringify(expected), stringify(actual));

@@ -15,5 +15,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.swt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: edu.auburn.oaccrefac.internal.core,
- edu.auburn.oaccrefac.internal.core.patternmatching
+Export-Package: edu.auburn.oaccrefac.core.dataflow,
+ edu.auburn.oaccrefac.core.dependence,
+ edu.auburn.oaccrefac.internal.core,
+ edu.auburn.oaccrefac.internal.core.constprop,
+ edu.auburn.oaccrefac.internal.core.dependence,
+ edu.auburn.oaccrefac.internal.core.patternmatching,
+ edu.auburn.oaccrefac.internal.core.tests

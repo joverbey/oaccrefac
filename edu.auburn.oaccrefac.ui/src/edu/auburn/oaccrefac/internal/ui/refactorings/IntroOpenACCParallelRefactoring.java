@@ -1,14 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Institute for Software, HSR Hochschule fuer Technik  
- * Rapperswil, University of applied sciences and others.
+ * Copyright (c) 2015 Auburn University and others. 
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution, and is available at 
  * http://www.eclipse.org/legal/epl-v10.html  
  * 
  * Contributors: 
- * 		Martin Schwab & Thomas Kallenberg - initial API and implementation
- * 		Sergey Prigogin (Google)
+ *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Adam Eichelkraut (Auburn) - initial API and implementation
  ******************************************************************************/
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
@@ -16,34 +15,51 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.TextEditGroup;
 
+import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+
 /**
- * Determines whether a valid function was selected by the user to be able to
- * run the appropriate strategy for moving the function body to another
- * position.
+ * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.
+ * 
+ * @author Jeff Overbey
+ * @author Adam Eichelkraut
  */
 @SuppressWarnings("restriction")
 public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
-	
-	public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {
-		super(element, selection, project);
-	}
 
-	@Override
-	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-		CASTForStatement loop = getLoop();
-		IASTNode pragma = rewriter.createLiteralNode("	#pragma acc parallel loop private(n)\n");
-		rewriter.insertBefore(loop.getParent(), loop, pragma,
-				new TextEditGroup("Insert #pragma"));
-	}
+    public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {
+        super(element, selection, project);
+    }
 
-	@Override
-	protected RefactoringDescriptor getRefactoringDescriptor() {
-		return null;  // Refactoring history is not supported.
-	}
+    @Override
+    protected void doCheckFinalConditions(RefactoringStatus initStatus) {
+        try {
+            // TODO: Check for existing/conflicting OpenACC pragma
+
+            if (new DependenceAnalysis(getLoop()).hasLevel1CarriedDependence()) {
+                initStatus.addError("This loop cannot be parallelized because it carries a dependence.", getLocation(getLoop()));
+                return;
+            }
+        } catch (DependenceTestFailure e) {
+            initStatus.addError("Dependences in the selected loop could not be analyzed.  " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
+        IASTNode pragma = rewriter.createLiteralNode("#pragma acc parallel loop\n");
+        getLoop().getFileLocation().getStartingLineNumber();
+        rewriter.insertBefore(getLoop().getParent(), getLoop(), pragma, new TextEditGroup("Insert #pragma"));
+    }
+
+    @Override
+    protected RefactoringDescriptor getRefactoringDescriptor() {
+        return null; // Refactoring history is not supported.
+    }
 }

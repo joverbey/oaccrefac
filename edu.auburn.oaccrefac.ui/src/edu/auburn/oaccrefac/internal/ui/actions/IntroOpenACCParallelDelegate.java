@@ -70,10 +70,11 @@ public class IntroOpenACCParallelDelegate extends RefactoringActionDelegate {
 
     	@Override
     	protected void addUserInputPages() {
-    		addPage(new EmptyPage());
+    		//addPage(new EmptyPage());
     	}
     }
 
+    @SuppressWarnings("unused")
     private static class EmptyPage extends UserInputWizardPage {
     	
     	public EmptyPage() {

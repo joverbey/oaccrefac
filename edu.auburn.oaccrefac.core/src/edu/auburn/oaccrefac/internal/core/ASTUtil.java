@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
@@ -47,7 +48,7 @@ public class ASTUtil {
 
         return results.get(0);
     }
-    
+
     public static <T> T findDepth(IASTNode parent, Class<T> clazz, int depth) {
         List<T> results = find(parent, clazz);
         if (results.size() == 0) {
@@ -159,22 +160,18 @@ public class ASTUtil {
         return ((IASTIdExpression) expr).getName();
     }
 
-    @SuppressWarnings("unused")
-    private static Pair<IASTName, LinearExpression> getSimpleArrayAccess(IASTExpression expr) {
-        if (!(expr instanceof IASTArraySubscriptExpression))
+    public static Pair<IASTName, IASTName> getSimpleFieldReference(IASTExpression expr) {
+        if (!(expr instanceof IASTFieldReference))
             return null;
 
-        IASTArraySubscriptExpression arrSub = (IASTArraySubscriptExpression) expr;
-        IASTExpression array = arrSub.getArrayExpression();
-        IASTInitializerClause subscript = arrSub.getArgument();
+        IASTFieldReference fieldReference = (IASTFieldReference) expr;
+        IASTName owner = getIdExpression(fieldReference.getFieldOwner());
+        IASTName field = fieldReference.getFieldName();
 
-        IASTName name = getIdExpression(array);
-        if (name == null || !(subscript instanceof IASTExpression))
+        if (owner == null || field == null || fieldReference.isPointerDereference())
             return null;
-
-        LinearExpression linearSubscript = LinearExpression.createFrom((IASTExpression) subscript);
-
-        return new Pair<IASTName, LinearExpression>(name, linearSubscript);
+        else
+            return new Pair<IASTName, IASTName>(owner, field);
     }
 
     public static Pair<IASTName, LinearExpression[]> getMultidimArrayAccess(IASTExpression expr) {
@@ -189,10 +186,16 @@ public class ASTUtil {
         LinearExpression[] prevSubscripts;
         if (array instanceof IASTArraySubscriptExpression) {
             Pair<IASTName, LinearExpression[]> nested = getMultidimArrayAccess(array);
+            if (nested == null)
+                return null;
             name = nested.getFirst();
             prevSubscripts = nested.getSecond();
         } else {
             name = getIdExpression(array);
+            if (name == null) {
+                Pair<IASTName, IASTName> fieldRef = getSimpleFieldReference(array);
+                name = fieldRef == null ? null : fieldRef.getSecond();
+            }
             prevSubscripts = new LinearExpression[0];
         }
 
@@ -260,6 +263,21 @@ public class ASTUtil {
         } catch (ExpansionOverlapsBoundaryException e) {
             return "<error>";
         }
+    }
+
+    /**
+     * Returns the first few characters of an AST node's source code, primarily for use in descriptive messages.
+     * 
+     * @param node
+     * @return String
+     */
+    public static String summarize(IASTNode node) {
+        final int MAX_LEN = 80;
+
+        String result = toString(node).replace('\n', ' ');
+        if (result.length() > MAX_LEN)
+            result = result.substring(0, MAX_LEN + 1) + "...";
+        return result;
     }
 
     private ASTUtil() {

@@ -4,14 +4,12 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
-import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
@@ -26,11 +24,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.jface.text.Region;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
 /**
@@ -109,27 +111,43 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         m_forloop = findLoop(m_ast);
 
         if (m_forloop == null) {
-            initStatus.addFatalError("Please select a counted for-loop.");
-        } else if (!ForLoopUtil.isCountedLoop(m_forloop)) {
-            initStatus.addFatalError("Loop form not supported!");
-        } else {
-            doCheckInitialConditions(initStatus);
+            initStatus.addFatalError("Please select a for loop.");
+            return initStatus;
+        }
 
-            if (ForLoopUtil.containsBreakorContinue(m_forloop)) {
-                initStatus.addFatalError(
-                        "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
-            }
+        String msg = String.format("Selected loop (line %d) is %s", m_forloop.getFileLocation().getStartingLineNumber(),
+                ASTUtil.summarize(m_forloop));
+        initStatus.addInfo(msg, getLocation(m_forloop));
+
+        if (!ForLoopUtil.isCountedLoop(m_forloop)) {
+            initStatus.addFatalError("Loop form not supported!", getLocation(m_forloop));
+            return initStatus;
+        }
+
+        doCheckInitialConditions(initStatus);
+
+        if (ForLoopUtil.containsBreakorContinue(m_forloop)) {
+            initStatus.addFatalError(
+                    "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
         }
 
         return initStatus;
     }
-    
+
+    protected RefactoringStatusContext getLocation(IASTNode node) {
+        IASTFileLocation fileLocation = node.getFileLocation();
+        Region region = new Region(fileLocation.getNodeOffset(), fileLocation.getNodeLength());
+        return new FileStatusContext(tu.getFile(), region);
+    }
+
     @Override
     protected RefactoringStatus checkFinalConditions(IProgressMonitor subProgressMonitor, 
             CheckConditionsContext checkContext) 
             throws CoreException ,OperationCanceledException {
-        doCheckFinalConditions(initStatus);
-        return initStatus;
+        RefactoringStatus result = new RefactoringStatus();
+        subProgressMonitor.subTask("Determining if transformation can be safely performed...");
+        doCheckFinalConditions(result);
+        return result;
     };
 
     protected void doCheckInitialConditions(RefactoringStatus initStatus) {}
@@ -175,13 +193,21 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             public int visit(IASTStatement statement) {
                 if (statement instanceof CASTForStatement) {
                     CASTForStatement for_stmt = (CASTForStatement) statement;
+
                     // Make sure we are getting the correct loop by checking the statement's
                     // offset with the selected text's region in the project.
-                    int begin_offset = selectedRegion.getOffset();
-                    int end_offset = selectedRegion.getOffset() + selectedRegion.getLength();
-                    if (for_stmt.getOffset() >= begin_offset && (for_stmt.getOffset() < end_offset)) {
+
+                    int selectionStart = selectedRegion.getOffset();
+                    int selectionEnd = selectedRegion.getOffset() + selectedRegion.getLength();
+
+                    IASTFileLocation forStmtLocation = for_stmt.getFileLocation();
+                    int forStmtStart = forStmtLocation.getNodeOffset();
+                    int forStmtEnd = forStmtStart + forStmtLocation.getNodeLength();
+
+                    if (forStmtStart <= selectionStart && selectionEnd <= forStmtEnd) {
                         loop = for_stmt;
-                        return PROCESS_ABORT;
+                        // Check nested loops
+                        return PROCESS_CONTINUE;
                     } else {
                         // Otherwise skip this statement
                         return PROCESS_CONTINUE;

@@ -10,7 +10,7 @@
             visible="true">
          <menu
                id="oaccrefac_menu"
-               label="OpenAcc &amp;Refactoring">
+               label="OpenACC &amp;Refactoring">
             <separator
                   name="oaccrefac_group">
             </separator>
@@ -18,10 +18,10 @@
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCParallelDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCParallelDelegate"
-               label="&amp;Simple Pragma"
+               label="&amp;Parallelize (OpenACC)"
                menubarPath="oaccrefac_menu/oaccrefac_group"
                toolbarPath="oaccrefac_group"
-               tooltip="Adds a simple parallel pragma before a for-loop">
+               tooltip="Adds an OpenACC parallel pragma before a for-loop">
          </action>
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.LoopUnrollingDelegate"
