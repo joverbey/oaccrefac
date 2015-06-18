@@ -32,7 +32,7 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     }
     
     @Override
-    protected void doCheckFinalConditions(RefactoringStatus initStatus) {
+    protected void doCheckFinalConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         if (m_stripFactor <= 0) {
             initStatus.addFatalError("Strip factor invalid");
         }

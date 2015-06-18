@@ -57,7 +57,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
     }
     
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+    protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         IASTStatement body = getLoop().getBody();
         //if the body is empty, exit out -- pointless to unroll.
         if (body == null || body instanceof IASTNullStatement)

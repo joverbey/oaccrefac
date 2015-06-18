@@ -28,6 +28,9 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubMonitor;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
@@ -54,13 +57,23 @@ public class DependenceAnalysis {
      * 
      * @throws DependenceTestFailure
      */
-    public DependenceAnalysis(IASTStatement... statements) throws DependenceTestFailure {
+    public DependenceAnalysis(IProgressMonitor pm, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
         variableAccesses = new ArrayList<VariableAccess>();
         dependences = new HashSet<DataDependence>();
 
+        pm.subTask("Finding variable accesses...");
         collectAccessesFromStatements(statements);
 
+        pm.subTask("Analyzing dependences...");
+        computeDependences(pm);
+    }
+
+    private void computeDependences(IProgressMonitor pm) throws DependenceTestFailure {
+        SubMonitor progress = SubMonitor.convert(pm, variableAccesses.size() * variableAccesses.size());
+
         for (VariableAccess v1 : variableAccesses) {
+            progress.subTask(String.format("Analyzing line %d - %s",
+                    v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
             for (VariableAccess v2 : variableAccesses) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)) {
                     IASTStatement s1 = v1.getEnclosingStatement();
@@ -97,6 +110,11 @@ public class DependenceAnalysis {
                             dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }
+                }
+
+                progress.worked(1);
+                if (progress.isCanceled()) {
+                    throw new OperationCanceledException("Dependence test cancelled.");
                 }
             }
         }

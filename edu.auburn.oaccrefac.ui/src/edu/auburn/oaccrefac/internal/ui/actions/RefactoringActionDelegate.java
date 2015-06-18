@@ -32,6 +32,11 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 				  .getActivePage()
 				  .getActiveEditor();
 		
+		ISelection selection = editor.getSelectionProvider().getSelection();
+		if (selection instanceof ITextSelection) {
+		    m_selection = (ITextSelection)selection;
+		}
+		
 		if (editor != null) {
 			final IWorkingCopy wc = CUIPlugin.getDefault()
 					.getWorkingCopyManager()
@@ -64,7 +69,8 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 	 * resources we previously allocated.
 	 * @see IWorkbenchWindowActionDelegate#dispose
 	 */
-	public void dispose() {
+	@Override
+    public void dispose() {
 	}
 
 	/**
@@ -72,7 +78,8 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 	 * be able to provide parent shell for the message dialog.
 	 * @see IWorkbenchWindowActionDelegate#init
 	 */
-	public void init(IWorkbenchWindow window) {
+	@Override
+    public void init(IWorkbenchWindow window) {
 		this.m_window = window;
 	}
 	

@@ -63,7 +63,7 @@ public class LoopStripMiningWizard extends RefactoringWizard {
                     }
                 }
             });
-            
+            inputUnroll.setFocus();
             setControl(c);
             setTitle(getName());
             setPageComplete(true);

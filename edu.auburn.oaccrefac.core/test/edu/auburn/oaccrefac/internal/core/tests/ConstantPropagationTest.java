@@ -179,6 +179,7 @@ public class ConstantPropagationTest extends TestCase {
         final ConstantPropagation analysis = new ConstantPropagation(main);
         final Set<String> values = new TreeSet<String>();
         main.accept(new ASTVisitor(true) {
+            @Override
             public int visit(IASTName name) {
                 Long constantValue = analysis.getConstantValue(name);
                 if (constantValue != null) {

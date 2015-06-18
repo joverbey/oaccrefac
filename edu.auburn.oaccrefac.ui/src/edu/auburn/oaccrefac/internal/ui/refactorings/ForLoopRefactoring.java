@@ -44,7 +44,6 @@ import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 @SuppressWarnings("restriction")
 public abstract class ForLoopRefactoring extends CRefactoring {
 
-    private SubMonitor m_progress;
     private IASTTranslationUnit m_ast;
     private IASTForStatement m_forloop;
 
@@ -85,7 +84,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         pm.subTask("Calculating modifications...");
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
-        // Other initilization stuff here...
+        // Other initialization stuff here...
 
         refactor(rewriter, pm);
     }
@@ -106,8 +105,8 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         prepareIndexer(pm);
         pm.subTask("Analyzing selection...");
 
-        m_progress = SubMonitor.convert(pm, 10);
-        m_ast = getAST(tu, m_progress.newChild(9));
+        SubMonitor progress = SubMonitor.convert(pm, 10);
+        m_ast = getAST(tu, progress.newChild(9));
         m_forloop = findLoop(m_ast);
 
         if (m_forloop == null) {
@@ -115,7 +114,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             return initStatus;
         }
 
-        String msg = String.format("Selected loop (line %d) is %s", m_forloop.getFileLocation().getStartingLineNumber(),
+        String msg = String.format("Selected loop (line %d) is: %s", m_forloop.getFileLocation().getStartingLineNumber(),
                 ASTUtil.summarize(m_forloop));
         initStatus.addInfo(msg, getLocation(m_forloop));
 
@@ -124,7 +123,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             return initStatus;
         }
 
-        doCheckInitialConditions(initStatus);
+        doCheckInitialConditions(initStatus, progress.newChild(1));
 
         if (ForLoopUtil.containsBreakorContinue(m_forloop)) {
             initStatus.addFatalError(
@@ -141,18 +140,18 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     }
 
     @Override
-    protected RefactoringStatus checkFinalConditions(IProgressMonitor subProgressMonitor, 
+    protected RefactoringStatus checkFinalConditions(IProgressMonitor pm, 
             CheckConditionsContext checkContext) 
-            throws CoreException ,OperationCanceledException {
+            throws CoreException, OperationCanceledException {
         RefactoringStatus result = new RefactoringStatus();
-        subProgressMonitor.subTask("Determining if transformation can be safely performed...");
-        doCheckFinalConditions(result);
+        pm.subTask("Determining if transformation can be safely performed...");
+        doCheckFinalConditions(result, pm);
         return result;
     };
 
-    protected void doCheckInitialConditions(RefactoringStatus initStatus) {}
-    
-    protected void doCheckFinalConditions(RefactoringStatus initStatus) {}
+    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {}
+
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {}
 
     /**
      * Indexes the project if the project has not already been indexed. Something to do with references???
@@ -233,10 +232,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
     protected CASTForStatement getLoop() {
         return (CASTForStatement) m_forloop;
-    }
-
-    protected SubMonitor getProgress() {
-        return m_progress;
     }
 
     protected IASTTranslationUnit getAST() {

@@ -39,7 +39,8 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
         super(element, selection, project);
     }
 
-    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+    @Override
+    protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         // This gets the selected loop to re-factor and checks if the body is compound statement only..
         loop = getLoop();
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {

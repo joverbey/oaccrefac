@@ -61,7 +61,7 @@ public class LoopUnrollingWizard extends RefactoringWizard {
                     }
                 }
             });
-            
+            inputUnroll.setFocus();
             setControl(c);
             setTitle(getName());
             setPageComplete(true);

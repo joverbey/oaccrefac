@@ -36,6 +36,10 @@ public class VariableAccess {
         return this.binding.equals(that.binding);
     }
 
+    public IASTName getVariableName() {
+        return variable;
+    }
+
     public boolean isScalarAccess() {
         return arraySubscripts == null;
     }

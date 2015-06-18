@@ -27,8 +27,10 @@ public class LinearExpression {
     }
 
     private static interface ILEPrimary extends ILENode {
+        @Override
         ILEPrimary negated();
 
+        @Override
         ILEPrimary multiply(ILENode negated) throws DependenceTestFailure;
     }
 

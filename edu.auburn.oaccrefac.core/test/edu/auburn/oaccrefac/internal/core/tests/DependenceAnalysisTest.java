@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
@@ -141,7 +142,7 @@ public class DependenceAnalysisTest extends TestCase {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 
         TreeSet<String> actual = new TreeSet<String>();
-        for (DataDependence dep : new DependenceAnalysis(stmt).getDependences())
+        for (DataDependence dep : new DependenceAnalysis(new NullProgressMonitor(), stmt).getDependences())
             actual.add(dep.toString());
 
         assertEquals(stringify(expected), stringify(actual));

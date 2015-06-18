@@ -45,7 +45,8 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
         super(element, selection, project);
     }
 
-    protected void doCheckInitialConditions(RefactoringStatus initStatus) {
+    @Override
+    protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         // This gets the selected loop to re-factor.
         loop = getLoop();
         boolean found = false;
