@@ -97,8 +97,8 @@ public class DependenceAnalysis {
                         int[][] writeCoefficients = v1.collectCoefficients(vars);
                         int[][] readCoefficients = v2.collectCoefficients(vars);
 
-                        int[] lowerBounds = fillArray(vars.size(), Integer.MIN_VALUE + 1);
-                        int[] upperBounds = fillArray(vars.size(), Integer.MAX_VALUE - 1);
+                        int[] lowerBounds = fillArray(commonLoops.size(), Integer.MIN_VALUE + 1);
+                        int[] upperBounds = fillArray(commonLoops.size(), Integer.MAX_VALUE - 1);
                         for (int i = 0; i < commonLoops.size(); i++) {
                             lowerBounds[i] = ForLoopUtil.getLowerBound(commonLoops.get(i));
                             upperBounds[i] = ForLoopUtil.getInclusiveUpperBound(commonLoops.get(i));
