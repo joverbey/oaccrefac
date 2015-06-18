@@ -12,7 +12,9 @@
 package edu.auburn.oaccrefac.internal.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
@@ -62,7 +64,7 @@ import junit.framework.TestSuite;
  * @since 3.0
  */
 @SuppressWarnings("restriction")
-public abstract class RefactoringTestSuite<R extends CRefactoring> extends GeneralTestSuiteFromMarkers {
+public abstract class RefactoringTestSuite<R extends CRefactoring> extends TestSuite {
 
     private static final FilenameFilter C_FILENAME_FILTER = new FilenameFilter() {
         public boolean accept(File dir, String name) {
@@ -75,26 +77,87 @@ public abstract class RefactoringTestSuite<R extends CRefactoring> extends Gener
 
     private static final String MARKER_END = "*/";
 
-    private Class<R> refactoringClass;
-    private FilenameFilter filenameFilter;
+    private final String description;
+    private final Class<R> refactoringClass;
 
+    /**
+     * Constructor. Creates this {@link TestSuite} and populates it with test cases.
+     * 
+     * @param description
+     * @param marker
+     * @param markerEnd
+     * @param fileOrDirectory
+     * @param filenameFilter
+     * @param initializationData
+     *            these arguments (if any) will be passed directly to {@link #initialize(Object...)} before adding tests
+     *            to the test suite
+     * @throws Exception
+     */
     public RefactoringTestSuite(Class<R> clazz, String directory) throws Exception {
-        super("", MARKER, MARKER_END, new File(directory), C_FILENAME_FILTER, clazz, C_FILENAME_FILTER);
+        File fileOrDirectory = new File(directory);
+
+        this.description = "";
+        this.refactoringClass = clazz;
+
+        setName(getDescription(fileOrDirectory));
+
+        addTestsForFileOrDirectory(fileOrDirectory, C_FILENAME_FILTER);
+
+        if (countTestCases() == 0)
+            throw new Exception(String.format("No markers of the form %s found in %s", MARKER,
+                    fileOrDirectory.getName()));
     }
 
-    // Callback method which is invoked before adding tests to this test suite.
-    @SuppressWarnings("unchecked")
-    @Override
-    protected void initialize(Object... initializationData) {
-        this.refactoringClass = (Class<R>) initializationData[0];
-        this.filenameFilter = (FilenameFilter) initializationData[1];
+    private void addTestsForFileOrDirectory(File fileOrDirectory, FilenameFilter filenameFilter) throws Exception {
+        if (!fileOrDirectory.exists())
+            throw new FileNotFoundException(String.format("%s not found", fileOrDirectory.getAbsolutePath()));
+        if (!fileOrDirectory.canRead())
+            throw new IOException(String.format("%s cannot be read", fileOrDirectory.getAbsolutePath()));
+
+        if (fileOrDirectory.isDirectory())
+            for (File file : fileOrDirectory.listFiles(filenameFilter))
+                addTestsForFileOrDirectory(file, filenameFilter);
+        else
+            addTestForFile(fileOrDirectory);
     }
 
-    @Override
-    protected Test createTestFor(File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+    private void addTestForFile(File file) throws IOException, Exception {
+        String fileContents = IOUtil.read(file);
+        for (int index = fileContents.indexOf(MARKER); index >= 0; index = fileContents.indexOf(MARKER, index + 1)) {
+            int endOfLine = fileContents.indexOf(MARKER_END, index);
+            if (endOfLine < 0)
+                endOfLine = fileContents.length();
+
+            int nextMarker = fileContents.indexOf(MARKER, index + 1);
+            if (nextMarker < 0)
+                nextMarker = fileContents.length();
+
+            int markerEnd = Math.min(endOfLine, nextMarker);
+
+            String markerText = fileContents.substring(index + MARKER.length(), markerEnd).trim();
+            this.addTest(createTestFor(file, index, markerText));
+        }
+    }
+
+    private String getDescription(File fileOrDirectory) {
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(description);
+        sb.append(' ');
+        sb.append(fileOrDirectory.getName());
+        String message = sb.toString();
+
+        if (!fileOrDirectory.exists()) {
+            message = String.format("NOTE: Some optional test files are not present: directory %s does not exist",
+                    fileOrDirectory);
+        }
+
+        return message;
+    }
+
+    private Test createTestFor(File fileContainingMarker, int markerOffset, String markerText) throws Exception {
         TestSuite suite = new TestSuite(fileContainingMarker + " " + markerText);
         suite.addTest(new RefactoringTestCase<R>(fileContainingMarker, markerOffset, markerText, refactoringClass,
-                filenameFilter) {
+                C_FILENAME_FILTER) {
             @Override
             protected void configureRefactoring(R refactoring, IFile file, TextSelection selection,
                     LinkedList<String> markerFields) {
