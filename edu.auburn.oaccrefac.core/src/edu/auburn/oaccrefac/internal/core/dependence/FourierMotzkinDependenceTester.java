@@ -122,7 +122,6 @@ public class FourierMotzkinDependenceTester {
         // -i_u1 <= -l1; 0 -1 0 ... -l1
         // i_u1 <= u1; 0 1 0 ... u1
         // ...
-        // FIXME error on livermore kernel 8
         for (int i = 0; i < lowerBounds.length; i++) {
             double[] row1 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
             double[] row2 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
