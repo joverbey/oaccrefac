@@ -21,7 +21,7 @@ import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
  * @author Alexander Calvert
  * 
  */
-public class FourierMotzkinDependenceTestTest {
+public class FourierMotzkinDependenceTesterTest {
 
     /*
      * tests FourierMotzkinDependenceTest class

@@ -1,6 +1,7 @@
 package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.auburn.oaccrefac.core.dependence.Direction;
@@ -121,6 +122,7 @@ public class FourierMotzkinDependenceTester {
         // -i_u1 <= -l1; 0 -1 0 ... -l1
         // i_u1 <= u1; 0 1 0 ... u1
         // ...
+        // FIXME error on livermore kernel 8
         for (int i = 0; i < lowerBounds.length; i++) {
             double[] row1 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
             double[] row2 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
@@ -139,6 +141,7 @@ public class FourierMotzkinDependenceTester {
             m.addRowAtIndex(m.getNumRows(), row3);
             m.addRowAtIndex(m.getNumRows(), row4);
         }
+
 
         // get the inequalities from the dependence direction vector
         // iterate through the direction vector, adding an inequality
