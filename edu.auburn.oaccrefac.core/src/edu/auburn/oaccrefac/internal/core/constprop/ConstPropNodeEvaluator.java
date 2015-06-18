@@ -13,6 +13,7 @@ import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -89,6 +90,8 @@ public class ConstPropNodeEvaluator {
             evaluate(((IASTDeclarationStatement) node).getDeclaration());
         } else if (node instanceof IASTExpressionStatement) {
             evaluate(((IASTExpressionStatement) node).getExpression());
+        } else if (node instanceof IASTNullStatement) {
+            // Nothing to do
         } else {
             unhandled(node);
         }
