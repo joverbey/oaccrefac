@@ -30,7 +30,7 @@ public abstract class ForLoopChange {
      * @param loop -- the loop in which to change
      * @return reference to changed loop
      */
-    public abstract IASTForStatement doChange(IASTForStatement loop);
+    protected abstract IASTForStatement doChange(IASTForStatement loop);
     
     /**
      * This method is the runner for all changes.
