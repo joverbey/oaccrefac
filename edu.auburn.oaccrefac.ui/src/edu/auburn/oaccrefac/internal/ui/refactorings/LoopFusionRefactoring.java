@@ -1,22 +1,20 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FuseLoops;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -31,15 +29,10 @@ import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
  * 
  * (Example taken from Wikipedia's web page on loop Fusion)
  */
-@SuppressWarnings("restriction")
 public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     private IASTForStatement nxtloop = null;
     private IASTForStatement loop = null;
-    private IASTStatement body = null;
-    private IASTCompoundStatement body_compound = null;
-    private IASTCompoundStatement bdy_compound = null;
-    private IASTCompoundStatement newbody = null;
 
     public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -61,38 +54,14 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
             initStatus.addFatalError("There is no for loop for fusion to be possible.");
         }
     }
-    private IASTCompoundStatement convertIntoCompound(IASTStatement bdy)
-    {
-        // if the body is not within braces, i.e. short-cut
-        // loop pattern, make it a compounded statement
-        if (!(bdy instanceof IASTCompoundStatement)) {
-            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-            bdy_compound = factory.newCompoundStatement();
-            bdy_compound.addStatement(bdy.copy());
-        } else {
-            bdy_compound = (IASTCompoundStatement) (bdy.copy());
-            }
-        return bdy_compound;
-    }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        body = getLoop().getBody();
-        body_compound = convertIntoCompound(body);
-        IASTStatement loopbody = nxtloop.getBody();
-        newbody = convertIntoCompound(loopbody);
-        addbody((IASTCompoundStatement) body_compound, newbody);
-        CASTForStatement newFor = getLoop().copy();
-        newFor.setBody(body_compound);
-        rewriter.replace(getLoop(), newFor, null);
-        rewriter.remove(nxtloop, null);
-    }
-
-    private void addbody(IASTCompoundStatement body_compound, IASTCompoundStatement loopbody) {
-        for (IASTNode childz : loopbody.getChildren()) {
-            body_compound.addStatement((IASTStatement) childz.copy());
-        }
-
+        IASTForStatement loop = getLoop();
+        IASTCompoundStatement enclosingCompound = 
+                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
+        FuseLoops fl = new FuseLoops(enclosingCompound, loop, nxtloop);
+        rewriter.replace(enclosingCompound, fl.change(), null);
     }
 
     private IASTForStatement findLoop(IASTNode tree) {
@@ -117,11 +86,6 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
         LoopFinder finder = new LoopFinder();
         tree.accept(finder);
         return finder.forloop;
-    }
-
-    @Override
-    protected RefactoringDescriptor getRefactoringDescriptor() {
-        return null;
     }
 
 }

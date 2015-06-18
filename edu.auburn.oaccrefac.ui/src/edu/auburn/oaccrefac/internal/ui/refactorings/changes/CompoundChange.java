@@ -32,7 +32,7 @@ public abstract class CompoundChange {
     * @param loop -- the loop in which to change
     * @return reference to changed loop
     */
-   protected abstract IASTCompoundStatement doChange(IASTCompoundStatement loop);
+   protected abstract IASTCompoundStatement doChange();
    
    /**
     * This method is the runner for all changes.
@@ -41,7 +41,7 @@ public abstract class CompoundChange {
     */
    public final IASTCompoundStatement change() {
        if (m_compound != null) {
-           return doChange(m_compound);
+           return doChange();
        } else {
            return null;
        }

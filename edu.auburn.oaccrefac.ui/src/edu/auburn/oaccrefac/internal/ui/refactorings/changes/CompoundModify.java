@@ -12,7 +12,7 @@ public class CompoundModify extends CompoundChange {
     }
 
     @Override
-    protected IASTCompoundStatement doChange(IASTCompoundStatement loop) {
+    protected IASTCompoundStatement doChange() {
         return rebuildCompound();
     }
     
@@ -74,6 +74,18 @@ public class CompoundModify extends CompoundChange {
         if (index != -1) {
             statement = chilluns.get(index);
             chilluns.remove(index);
+        }
+        return statement;
+    }
+    
+    public IASTStatement replace(IASTStatement toReplace, IASTStatement replacement) {
+        LinkedList<IASTStatement> chilluns = getStatementList();
+        IASTStatement statement = null;
+        int index = chilluns.indexOf(toReplace);
+        if (index != -1) {
+            statement = chilluns.get(index);
+            chilluns.add(index, replacement);
+            chilluns.remove(index+1);
         }
         return statement;
     }
