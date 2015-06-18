@@ -2,8 +2,10 @@ package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
 
 import java.util.LinkedList;
 
+import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
 /**
 * This class defines the base strategy interface to be derived
@@ -16,18 +18,11 @@ public abstract class CompoundChange {
    private IASTCompoundStatement m_compound;
    private LinkedList<IASTStatement> m_chilluns;
    
-   public CompoundChange(IASTCompoundStatement compoundCopy) {
-       if (!m_compound.isFrozen()) {
-           m_compound = compoundCopy;
-           m_chilluns = new LinkedList<IASTStatement>();
-           for (IASTStatement child : m_compound.getStatements())
-               m_chilluns.add(child);
-       } else {
-           throw new IllegalStateException("Error attempting"
-                   + "to make a CompoundChange object with"
-                   + "a frozen node. Use node.copy() to create"
-                   + "an unfrozen copy of the node first.");
-       }
+   public CompoundChange(IASTCompoundStatement compoundStatement) {
+       m_compound = compoundStatement;
+       m_chilluns = new LinkedList<IASTStatement>();
+       for (IASTStatement child : m_compound.getStatements())
+           m_chilluns.add(child);
    }
    
    /**
@@ -50,6 +45,15 @@ public abstract class CompoundChange {
        } else {
            return null;
        }
+   }
+   
+   protected IASTCompoundStatement rebuildCompound() {
+       ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+       IASTCompoundStatement newCompound = factory.newCompoundStatement();
+       for (IASTStatement child : m_chilluns) {
+           newCompound.addStatement(child.copy());
+       }
+       return newCompound;
    }
    
    protected final LinkedList<IASTStatement> getStatementList() {
