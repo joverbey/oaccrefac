@@ -12,7 +12,6 @@ static void foo(char* p) {
 }
 
 int main() {
-
 	char a[10];
 	int i = 0;
 	for (; i < 10; i++) {
@@ -20,5 +19,4 @@ int main() {
 		i++;
 		foo(a[i]);
 	}
-
 }
