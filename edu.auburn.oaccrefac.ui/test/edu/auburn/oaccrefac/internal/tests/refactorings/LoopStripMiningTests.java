@@ -10,22 +10,27 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopStripMiningRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTestSuite;
-import junit.framework.Test;
+import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
-public class LoopStripMiningTests extends RefactoringTestSuite<LoopStripMiningRefactoring> {
-    public static Test suite() throws Exception {
-        return new LoopStripMiningTests();
+@RunWith(Parameterized.class)
+public class LoopStripMiningTests extends RefactoringTest<LoopStripMiningRefactoring> {
+    @Parameters(name = "{0}")
+    public static Iterable<Object[]> generateParameters() throws Exception {
+        return generateParameters("testcode/LoopStripMining");
     }
 
-    public LoopStripMiningTests() throws Exception {
-        super(LoopStripMiningRefactoring.class, "testcode/LoopStripMining");
+    public LoopStripMiningTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(LoopStripMiningRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override

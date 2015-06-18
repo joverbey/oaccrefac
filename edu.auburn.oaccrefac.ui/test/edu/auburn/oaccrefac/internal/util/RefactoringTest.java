@@ -1,19 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2008, 2012, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2008, 2012, 2015 University of Illinois at Urbana-Champaign,
+ * Auburn University, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *     Markus Schorn (Wind River Systems)
- *     Jeff Overbey
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,14 +52,47 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 /**
+ * Test suite for a refactoring.
+ * <p>
+ * The test suite is constructed by importing files from a directory in the source tree, searching its files for
+ * <i>markers,</i> and adding one test case to the suite for each marker.
+ * <p>
+ * The prefix and suffix of the marker are passed as the <code>marker</code> and <code>markerEnd</code> arguments to the
+ * constructor. Assuming <code>marker</code> is &quot;!&lt;&lt;&lt;&lt;&lt;&quot; and <code>markerEnd</code> is
+ * &quot;\n&quot;, markers are expected to have one of the following forms:
+ * <ol>
+ * <li><tt>!&lt;&lt;&lt;&lt;&lt; line, col, ..., pass</tt>
+ * <li><tt>!&lt;&lt;&lt;&lt;&lt; fromLine, fromCol, toLine, toCol, ..., pass</tt>
+ * </ol>
+ * That is, the first two fields in each marker are expected to be a line and column number; the text selection passed
+ * to the refactoring will be the offset of that line and column. The third fourth fields may also be a line and column
+ * number; then, the selection passed to the refactoring will extend from the first line/column to the second
+ * line/column.
+ * <p>
+ * The line and column numbers may be followed by an arbitrary number of fields that contain data specific to the
+ * refactoring being invoked. Many refactorings don't require any additional data; the Extract Local Variable test suite
+ * uses one field for the new variable declaration; the Add ONLY to USE Statement test suite uses these fields to list
+ * the module entities to add; etc.
+ * <p>
+ * The final field must be either &quot;pass&quot;, &quot;fail-initial&quot;, or &quot;fail-final&quot;, indicating
+ * whether the refactoring should succeed, fail its initial precondition check, or fail its final precondition check.
+ * <p>
+ * If the refactoring is expected to succeed, the program may be compiled and run before and after the refactoring in
+ * order to ensure that the refactoring actually preserved behavior. See the documentation for
+ * {@link RefactoringTestCase} for more information.
+ * 
+ * <p>
  * Test case for a refactoring (used in a {@link GeneralTestSuiteFromMarkers}).
  * <p>
  * Most clients will want to subclass {@link RefactoringTestSuite} instead of manually constructing a suite of
- * {@link RefactoringTestCase}s.
+ * {@link RefactoringTest}s.
  * <p>
  * Assuming the marker prefix is &quot;!&lt;&lt;&lt;&lt;&lt;&quot; and the marker suffix is &quot;\n&quot;, markers are
  * expected to have one of the following forms:
@@ -79,8 +114,8 @@ import junit.framework.TestCase;
  * whether the refactoring should succeed, fail its initial precondition check, or fail its final precondition check.
  * <p>
  * If the refactoring is expected to succeed, the program may be compiled and run before and after the refactoring in
- * order to ensure that the refactoring actually preserved behavior. See the documentation for
- * {@link RefactoringTestCase} for more information.
+ * order to ensure that the refactoring actually preserved behavior. See the documentation for {@link RefactoringTest}
+ * for more information.
  * <p>
  * Portions of this class are based on org.eclipse.cdt.core.tests.BaseTestFramework.
  * 
@@ -92,12 +127,77 @@ import junit.framework.TestCase;
  * 
  * @since 3.0
  */
+@RunWith(Parameterized.class)
 @SuppressWarnings("restriction")
-public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCase {
+public abstract class RefactoringTest<R extends CRefactoring> {
+    private static final FilenameFilter C_FILENAME_FILTER = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return new File(dir, name).isDirectory() && !name.equalsIgnoreCase("CVS") && !name.equalsIgnoreCase(".svn")
+                    || name.endsWith(".c");
+        }
+    };
+
+    private static final String MARKER = "/*<<<<<";
+
+    private static final String MARKER_END = "*/";
+
+    /**
+     * String description, File fileContainingMarker, int markerOffset, String markerText
+     * 
+     * @param directory
+     * @return
+     * @throws Exception
+     */
+    protected static Iterable<Object[]> generateParameters(String directory) throws Exception {
+        File fileOrDirectory = new File(directory);
+
+        List<Object[]> result = new ArrayList<Object[]>();
+        addTestsForFileOrDirectory(fileOrDirectory, result);
+        if (result.size() == 0)
+            throw new Exception(
+                    String.format("No markers of the form %s found in %s", MARKER, fileOrDirectory.getName()));
+        return result;
+    }
+
+    private static void addTestsForFileOrDirectory(File fileOrDirectory, List<Object[]> result) throws Exception {
+        if (!fileOrDirectory.exists())
+            throw new FileNotFoundException(String.format("%s not found", fileOrDirectory.getAbsolutePath()));
+        if (!fileOrDirectory.canRead())
+            throw new IOException(String.format("%s cannot be read", fileOrDirectory.getAbsolutePath()));
+
+        if (fileOrDirectory.isDirectory())
+            for (File file : fileOrDirectory.listFiles(C_FILENAME_FILTER))
+                addTestsForFileOrDirectory(file, result);
+        else
+            addTestForFile(fileOrDirectory, result);
+    }
+
+    private static void addTestForFile(File file, List<Object[]> result) throws IOException, Exception {
+        String fileContents = IOUtil.read(file);
+        for (int index = fileContents.indexOf(MARKER); index >= 0; index = fileContents.indexOf(MARKER, index + 1)) {
+            int endOfLine = fileContents.indexOf(MARKER_END, index);
+            if (endOfLine < 0)
+                endOfLine = fileContents.length();
+
+            int nextMarker = fileContents.indexOf(MARKER, index + 1);
+            if (nextMarker < 0)
+                nextMarker = fileContents.length();
+
+            int markerEnd = Math.min(endOfLine, nextMarker);
+
+            String markerText = fileContents.substring(index + MARKER.length(), markerEnd).trim();
+            String description = file + " " + markerText;
+            if (description.startsWith("testcode/"))
+                description = description.substring("testcode/".length());
+            result.add(new Object[] { description, file, index, markerText });
+        }
+    }
+
     /**
      * Text of the last marker field when a refactoring is pass all precondition checks
      */
     private static final String PASS = "pass"; //$NON-NLS-1$
+
     /**
      * Text of the last marker field when a refactoring is expected to fail initial precondition check
      */
@@ -110,24 +210,19 @@ public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCa
     private final File jioFileContainingMarker;
     private final String markerText;
     private final Class<R> refactoringClass;
-    private final FilenameFilter filenameFilter;
     private String description;
     private Map<String, IFile> files;
 
-    public RefactoringTestCase(File fileContainingMarker, int markerOffset, String markerText,
-            Class<R> refactoringClass, FilenameFilter filenameFilter) throws Exception {
-        super("test"); //$NON-NLS-1$
+    protected RefactoringTest(Class<R> refactoringClass, File fileContainingMarker, int markerOffset, String markerText)
+            throws Exception {
         this.jioFileContainingMarker = fileContainingMarker;
         this.markerText = markerText;
         this.refactoringClass = refactoringClass;
-        this.filenameFilter = filenameFilter;
         this.description = fileContainingMarker.getName();
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         if (project != null)
             return;
 
@@ -158,8 +253,8 @@ public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCa
         return runnable.project;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         if (project == null || !project.exists())
             return;
 
@@ -172,6 +267,7 @@ public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCa
         }
     }
 
+    @Test
     public void test() throws Exception {
         this.files = importFiles();
 
@@ -209,19 +305,18 @@ public abstract class RefactoringTestCase<R extends CRefactoring> extends TestCa
             }
         }
 
-        assertEquals(status.toString(),
-                status.hasError(), lastMarkerField(markerFields).equals(FAIL));
+        assertEquals(status.toString(), status.hasError(), lastMarkerField(markerFields).equals(FAIL));
     }
 
     private Map<String, IFile> importFiles() throws Exception {
-        Map<String, IFile> result = importAllFiles(jioFileContainingMarker.getParentFile(), filenameFilter);
+        Map<String, IFile> result = importAllFiles(jioFileContainingMarker.getParentFile());
         refreshProject();
         return result;
     }
 
-    private Map<String, IFile> importAllFiles(File directory, FilenameFilter filenameFilter) throws Exception {
+    private Map<String, IFile> importAllFiles(File directory) throws Exception {
         Map<String, IFile> filesImported = new TreeMap<String, IFile>();
-        for (File file : directory.listFiles(filenameFilter)) {
+        for (File file : directory.listFiles(C_FILENAME_FILTER)) {
             IFile thisFile = importFile(file);
             filesImported.put(thisFile.getName(), thisFile);
         }

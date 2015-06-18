@@ -10,16 +10,23 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTestSuite;
-import junit.framework.Test;
+import java.io.File;
 
-public class LoopFusionTests extends RefactoringTestSuite<LoopFusionRefactoring> {
-    public static Test suite() throws Exception {
-        return new LoopFusionTests();
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
+import edu.auburn.oaccrefac.internal.util.RefactoringTest;
+
+@RunWith(Parameterized.class)
+public class LoopFusionTests extends RefactoringTest<LoopFusionRefactoring> {
+    @Parameters(name = "{0}")
+    public static Iterable<Object[]> generateParameters() throws Exception {
+        return generateParameters("testcode/LoopFusion");
     }
 
-    public LoopFusionTests() throws Exception {
-        super(LoopFusionRefactoring.class, "testcode/LoopFusion");
+    public LoopFusionTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(LoopFusionRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 }

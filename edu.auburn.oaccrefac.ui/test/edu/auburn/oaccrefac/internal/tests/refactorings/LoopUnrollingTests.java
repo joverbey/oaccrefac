@@ -10,22 +10,27 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopUnrollingRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTestSuite;
-import junit.framework.Test;
+import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
-public class LoopUnrollingTests extends RefactoringTestSuite<LoopUnrollingRefactoring> {
-    public static Test suite() throws Exception {
-        return new LoopUnrollingTests();
+@RunWith(Parameterized.class)
+public class LoopUnrollingTests extends RefactoringTest<LoopUnrollingRefactoring> {
+    @Parameters(name = "{0}")
+    public static Iterable<Object[]> generateParameters() throws Exception {
+        return generateParameters("testcode/LoopUnrolling");
     }
 
-    public LoopUnrollingTests() throws Exception {
-        super(LoopUnrollingRefactoring.class, "testcode/LoopUnrolling");
+    public LoopUnrollingTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(LoopUnrollingRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override

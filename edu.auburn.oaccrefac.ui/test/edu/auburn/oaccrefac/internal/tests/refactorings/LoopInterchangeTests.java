@@ -10,22 +10,27 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopInterchangeRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTestSuite;
-import junit.framework.Test;
+import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
-public class LoopInterchangeTests extends RefactoringTestSuite<LoopInterchangeRefactoring> {
-    public static Test suite() throws Exception {
-        return new LoopInterchangeTests();
+@RunWith(Parameterized.class)
+public class LoopInterchangeTests extends RefactoringTest<LoopInterchangeRefactoring> {
+    @Parameters(name = "{0}")
+    public static Iterable<Object[]> generateParameters() throws Exception {
+        return generateParameters("testcode/LoopInterchange");
     }
 
-    public LoopInterchangeTests() throws Exception {
-        super(LoopInterchangeRefactoring.class, "testcode/LoopInterchange");
+    public LoopInterchangeTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(LoopInterchangeRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override

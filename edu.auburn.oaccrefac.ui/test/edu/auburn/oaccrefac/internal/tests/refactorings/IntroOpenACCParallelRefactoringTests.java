@@ -10,22 +10,27 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTestSuite;
-import junit.framework.Test;
+import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
-public class IntroOpenACCParallelRefactoringTests extends RefactoringTestSuite<IntroOpenACCParallelRefactoring> {
-    public static Test suite() throws Exception {
-        return new IntroOpenACCParallelRefactoringTests();
+@RunWith(Parameterized.class)
+public class IntroOpenACCParallelRefactoringTests extends RefactoringTest<IntroOpenACCParallelRefactoring> {
+    @Parameters(name = "{0}")
+    public static Iterable<Object[]> generateParameters() throws Exception {
+        return generateParameters("testcode/IntroOpenACCParallel");
     }
 
-    public IntroOpenACCParallelRefactoringTests() throws Exception {
-        super(IntroOpenACCParallelRefactoring.class, "testcode/IntroOpenACCParallel");
+    public IntroOpenACCParallelRefactoringTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
