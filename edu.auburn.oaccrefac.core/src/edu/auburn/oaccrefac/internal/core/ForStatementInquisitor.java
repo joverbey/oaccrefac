@@ -15,7 +15,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
@@ -25,6 +24,11 @@ import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
 public class ForStatementInquisitor  {
 
+    public static ForStatementInquisitor getInquisitor(IASTForStatement statement) {
+        return new ForStatementInquisitor(statement);
+    }
+
+    
     private IASTForStatement statement;
  // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
@@ -69,7 +73,7 @@ public class ForStatementInquisitor  {
         "for (int i = 0; i <= j.k; i=i+1) ;",
     };
 
-    public ForStatementInquisitor(IASTForStatement statement) {
+    private ForStatementInquisitor(IASTForStatement statement) {
         //TODO decide if we want to call ForLoopUtil methods here initially 
         //and store results in fields or if we should do it on the fly 
         //when the information is needed

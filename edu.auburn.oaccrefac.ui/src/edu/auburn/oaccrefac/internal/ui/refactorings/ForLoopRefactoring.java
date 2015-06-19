@@ -32,6 +32,8 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
+import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
@@ -220,6 +222,16 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         Visitor v = new Visitor();
         ast.accept(v);
         return v.loop;
+    }
+
+    protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, IProgressMonitor pm) {
+        try {
+            return new DependenceAnalysis(pm, getLoop());
+        } catch (DependenceTestFailure e) {
+            status.addError("Dependences in the selected loop could not be analyzed.  " + e.getMessage());
+            return null;
+        }
+
     }
 
     // *************************************************************************

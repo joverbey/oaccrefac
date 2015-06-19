@@ -98,7 +98,8 @@ import edu.auburn.oaccrefac.internal.util.Spawner;
  * @author aniefer
  * @author Jeff Overbey
  *
- * @param <R> {@link CRefactoring} subclass under test
+ * @param <R>
+ *            {@link CRefactoring} subclass under test
  */
 @RunWith(Parameterized.class)
 @SuppressWarnings("restriction")
@@ -478,7 +479,11 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         File cwd = files.values().iterator().next().getParent().getLocation().toFile();
 
         List<String> args = new ArrayList<String>();
-        args.add("gcc");
+        if (System.getenv("CC") != null) {
+            args.add(System.getenv("CC"));
+        } else {
+            args.add("gcc");
+        }
         args.add("-o");
         args.add("a.out");
         args.add("-std=c99");

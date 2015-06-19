@@ -22,7 +22,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 
 /**
  * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.
@@ -39,15 +38,12 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        try {
-            // TODO: Check for existing/conflicting OpenACC pragma
+        // TODO: Check for existing/conflicting OpenACC pragma
 
-            if (new DependenceAnalysis(pm, getLoop()).hasLevel1CarriedDependence()) {
-                status.addError("This loop cannot be parallelized because it carries a dependence.", getLocation(getLoop()));
-                return;
-            }
-        } catch (DependenceTestFailure e) {
-            status.addError("Dependences in the selected loop could not be analyzed.  " + e.getMessage());
+        DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
+        if (dependenceAnalysis != null && dependenceAnalysis.hasLevel1CarriedDependence()) {
+            status.addError("This loop cannot be parallelized because it carries a dependence.",
+                    getLocation(getLoop()));
         }
     }
 
