@@ -17,7 +17,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFissionRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
 @RunWith(Parameterized.class)
 public class LoopFissionTests extends RefactoringTest<LoopFissionRefactoring> {

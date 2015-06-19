@@ -20,16 +20,15 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
 @RunWith(Parameterized.class)
-public class IntroOpenACCParallelRefactoringTests extends RefactoringTest<IntroOpenACCParallelRefactoring> {
+public class IntroOpenACCParallelTests extends RefactoringTest<IntroOpenACCParallelRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
         return generateParameters("testcode/IntroOpenACCParallel");
     }
 
-    public IntroOpenACCParallelRefactoringTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+    public IntroOpenACCParallelTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
         super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 

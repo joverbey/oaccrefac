@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package edu.auburn.oaccrefac.internal.util;
+package edu.auburn.oaccrefac.internal.tests.refactorings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,78 +58,71 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import edu.auburn.oaccrefac.internal.util.IOUtil;
+import edu.auburn.oaccrefac.internal.util.Spawner;
+
 /**
- * Test suite for a refactoring.
+ * Base class for C refactoring tests.
  * <p>
  * The test suite is constructed by importing files from a directory in the source tree, searching its files for
- * <i>markers,</i> and adding one test case to the suite for each marker.
- * <p>
- * The prefix and suffix of the marker are passed as the <code>marker</code> and <code>markerEnd</code> arguments to the
- * constructor. Assuming <code>marker</code> is &quot;!&lt;&lt;&lt;&lt;&lt;&quot; and <code>markerEnd</code> is
- * &quot;\n&quot;, markers are expected to have one of the following forms:
- * <ol>
- * <li><tt>!&lt;&lt;&lt;&lt;&lt; line, col, ..., pass</tt>
- * <li><tt>!&lt;&lt;&lt;&lt;&lt; fromLine, fromCol, toLine, toCol, ..., pass</tt>
- * </ol>
- * That is, the first two fields in each marker are expected to be a line and column number; the text selection passed
- * to the refactoring will be the offset of that line and column. The third fourth fields may also be a line and column
- * number; then, the selection passed to the refactoring will extend from the first line/column to the second
- * line/column.
- * <p>
- * The line and column numbers may be followed by an arbitrary number of fields that contain data specific to the
- * refactoring being invoked. Many refactorings don't require any additional data; the Extract Local Variable test suite
- * uses one field for the new variable declaration; the Add ONLY to USE Statement test suite uses these fields to list
- * the module entities to add; etc.
- * <p>
- * The final field must be either &quot;pass&quot;, &quot;fail-initial&quot;, or &quot;fail-final&quot;, indicating
- * whether the refactoring should succeed, fail its initial precondition check, or fail its final precondition check.
- * <p>
- * If the refactoring is expected to succeed, the program may be compiled and run before and after the refactoring in
- * order to ensure that the refactoring actually preserved behavior. See the documentation for
- * {@link RefactoringTestCase} for more information.
+ * <i>markers</i> of the form
  * 
+ * <pre>
+ * !&lt;&lt;&lt;&lt;&lt; fromLine, fromCol, toLine, toCol, ..., pass
+ * </pre>
+ * 
+ * and adding one test case to the suite for each marker.
  * <p>
- * Test case for a refactoring (used in a {@link GeneralTestSuiteFromMarkers}).
- * <p>
- * Most clients will want to subclass {@link RefactoringTestSuite} instead of manually constructing a suite of
- * {@link RefactoringTest}s.
- * <p>
- * Assuming the marker prefix is &quot;!&lt;&lt;&lt;&lt;&lt;&quot; and the marker suffix is &quot;\n&quot;, markers are
- * expected to have one of the following forms:
- * <ol>
- * <li><tt>!&lt;&lt;&lt;&lt;&lt; line, col, ..., pass</tt>
- * <li><tt>!&lt;&lt;&lt;&lt;&lt; fromLine, fromCol, toLine, toCol, ..., pass</tt>
- * </ol>
- * That is, the first two fields in each marker are expected to be a line and column number; the text selection passed
- * to the refactoring will be the offset of that line and column. The third fourth fields may also be a line and column
- * number; then, the selection passed to the refactoring will extend from the first line/column to the second
+ * The first two fields in each marker are expected to be a line and column number; the third and fourth fields are also
+ * a line and column number. The selection passed to the refactoring extends from the first line/column to the second
  * line/column.
  * <p>
  * The line and column numbers may be followed by an arbitrary number of fields that contain data specific to the
- * refactoring being invoked. Many refactorings don't require any additional data; the Extract Local Variable test suite
- * uses one field for the new variable declaration; the Add ONLY to USE Statement test suite uses these fields to list
- * the module entities to add; etc.
+ * refactoring being tested. Many refactorings don't require any additional data. Subclasses can retrieve the data from
+ * these fields by overriding {@link #configureRefactoring(CRefactoring, IFile, TextSelection, LinkedList)}.
  * <p>
- * The final field must be either &quot;pass&quot;, &quot;fail-initial&quot;, or &quot;fail-final&quot;, indicating
- * whether the refactoring should succeed, fail its initial precondition check, or fail its final precondition check.
+ * In most cases, the final field must be either &quot;pass&quot; or &quot;fail&quot;, indicating whether the
+ * refactoring should succeed or be blocked during precondition checking. This behavior can be changed by overriding
+ * {@link #shouldFail(IFile, LinkedList)}.
  * <p>
- * If the refactoring is expected to succeed, the program may be compiled and run before and after the refactoring in
- * order to ensure that the refactoring actually preserved behavior. See the documentation for {@link RefactoringTest}
- * for more information.
+ * If the refactoring is expected to succeed, the program will be compiled and run before and after the refactoring in
+ * order to ensure that the refactoring actually preserved behavior. This can be prevented by overriding
+ * {@link #shouldCompile(IFile)}.
+ * <p>
+ * Finally, if the refactoring succeeds, the source code produced by the refactoring is compared against the source code
+ * in a result file (usually, the same as the input file, but with a .c.result filename extension). The location of the
+ * result file can be changed by overriding {@link #resultFileFor(String)}.
  * <p>
  * Portions of this class are based on org.eclipse.cdt.core.tests.BaseTestFramework.
  * 
  * @author aniefer
  * @author Jeff Overbey
- * 
- * @see RefactoringTestSuite
- * @see GeneralTestSuiteFromMarkers
- * 
- * @since 3.0
+ *
+ * @param <R> {@link CRefactoring} subclass under test
  */
 @RunWith(Parameterized.class)
 @SuppressWarnings("restriction")
 public abstract class RefactoringTest<R extends CRefactoring> {
+    private static final IProgressMonitor SYSOUT_PROGRESS_MONITOR = new NullProgressMonitor() {
+        private String name = "";
+
+        @Override
+        public void beginTask(String name, int totalWork) {
+            this.name = name;
+            System.out.println(name);
+        }
+
+        @Override
+        public void done() {
+            System.out.println("Done " + name);
+        }
+
+        @Override
+        public void subTask(String name) {
+            System.out.println("- " + name);
+        }
+    };
+
     private static final FilenameFilter C_FILENAME_FILTER = new FilenameFilter() {
         public boolean accept(File dir, String name) {
             return new File(dir, name).isDirectory() && !name.equalsIgnoreCase("CVS") && !name.equalsIgnoreCase(".svn")
@@ -269,27 +262,27 @@ public abstract class RefactoringTest<R extends CRefactoring> {
 
     @Test
     public void test() throws Exception {
-        this.files = importFiles();
+        this.files = importFiles(jioFileContainingMarker);
 
         IFile fileContainingMarker = files.get(jioFileContainingMarker.getName());
         assertNotNull(fileContainingMarker);
 
         LinkedList<String> markerFields = parseMarker(markerText);
         appendFilenameToDescription(markerFields);
-        assertTrue(lastMarkerField(markerFields).equals(PASS) || lastMarkerField(markerFields).equals(FAIL));
+        validateRemainingMarkerFields(markerFields);
 
         TextSelection selection = determineSelection(markerFields, createDocument(fileContainingMarker));
         R refactoring = createRefactoring(fileContainingMarker, selection);
         new CRefactoringContext(refactoring);
 
-        RefactoringStatus status = refactoring.checkInitialConditions(new NullProgressMonitor());
-        if (!status.hasFatalError()) {
+        RefactoringStatus status = refactoring.checkInitialConditions(SYSOUT_PROGRESS_MONITOR);
+        if (!status.hasError()) {
             String before = shouldCompile(fileContainingMarker) ? compileAndRunProgram(files) : ""; //$NON-NLS-1$
 
             configureRefactoring(refactoring, fileContainingMarker, selection, markerFields);
-            status = refactoring.checkFinalConditions(new NullProgressMonitor());
+            status = refactoring.checkFinalConditions(SYSOUT_PROGRESS_MONITOR);
 
-            if (!status.hasFatalError()) {
+            if (!status.hasError()) {
                 performChange(refactoring);
                 refreshProject();
 
@@ -305,10 +298,18 @@ public abstract class RefactoringTest<R extends CRefactoring> {
             }
         }
 
-        assertEquals(status.toString(), status.hasError(), lastMarkerField(markerFields).equals(FAIL));
+        assertEquals(status.toString(), status.hasError(), shouldFail(fileContainingMarker, markerFields));
     }
 
-    private Map<String, IFile> importFiles() throws Exception {
+    protected void validateRemainingMarkerFields(LinkedList<String> markerFields) {
+        assertTrue(lastMarkerField(markerFields).equals(PASS) || lastMarkerField(markerFields).equals(FAIL));
+    }
+
+    protected boolean shouldFail(IFile fileContainingMarker, LinkedList<String> markerFields) {
+        return lastMarkerField(markerFields).equals(FAIL);
+    }
+
+    protected Map<String, IFile> importFiles(File jioFileContainingMarker) throws Exception {
         Map<String, IFile> result = importAllFiles(jioFileContainingMarker.getParentFile());
         refreshProject();
         return result;
@@ -328,9 +329,9 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         InputStream stream = new ByteArrayInputStream(contents.getBytes());
 
         if (file.exists())
-            file.setContents(stream, false, false, new NullProgressMonitor());
+            file.setContents(stream, false, false, SYSOUT_PROGRESS_MONITOR);
         else
-            file.create(stream, false, new NullProgressMonitor());
+            file.create(stream, false, SYSOUT_PROGRESS_MONITOR);
 
         return file;
     }
@@ -339,7 +340,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         return importFile(fileName, IOUtil.read(fileToCopyIntoWorkspace));
     }
 
-    private IFile importFile(File fileToCopyIntoWorkspace) throws Exception {
+    protected final IFile importFile(File fileToCopyIntoWorkspace) throws Exception {
         return importFile(fileToCopyIntoWorkspace.getName(), fileToCopyIntoWorkspace);
     }
 
@@ -351,9 +352,8 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         return new Document(readWorkspaceFile(file.getName()));
     }
 
-    private void refreshProject() throws CoreException {
-        NullProgressMonitor pm = new NullProgressMonitor();
-        project.refreshLocal(IResource.DEPTH_INFINITE, pm);
+    protected final void refreshProject() throws CoreException {
+        project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     }
 
     public static LinkedList<String> parseMarker(String markerText) {
@@ -428,7 +428,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
     }
 
     private void performChange(Refactoring refactoring) throws CoreException {
-        IProgressMonitor pm = new NullProgressMonitor();
+        IProgressMonitor pm = SYSOUT_PROGRESS_MONITOR;
         Change change = refactoring.createChange(pm);
         assertNotNull(description + " returned null Change object", change); //$NON-NLS-1$
         // assertTrue(description + " returned invalid Change object",
@@ -440,7 +440,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         for (String filename : files.keySet()) {
             File resultFile = resultFileFor(filename);
             if (!resultFile.exists()) {
-                fail(resultFile.getName() + " does not exist");
+                fail("Refactoring succeeded, but result file " + resultFile.getName() + " does not exist");
                 return;
             }
             String expected = IOUtil.read(resultFileFor(filename)).replaceAll("\\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -452,14 +452,14 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         }
     }
 
-    private File resultFileFor(String filename) {
+    protected File resultFileFor(String filename) {
         return new File(jioFileContainingMarker.getParent() + File.separator + filename + ".result"); //$NON-NLS-1$
     }
 
     /**
      * @return true iff the program should be compiled and run using {@link #compileAndRunProgram(Map)}
      */
-    private boolean shouldCompile(IFile fileContainingMarker) {
+    protected boolean shouldCompile(IFile fileContainingMarker) {
         return true;
     }
 

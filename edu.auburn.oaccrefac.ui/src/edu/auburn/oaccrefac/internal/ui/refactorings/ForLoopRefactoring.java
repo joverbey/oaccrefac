@@ -108,7 +108,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         SubMonitor progress = SubMonitor.convert(pm, 10);
         m_ast = getAST(tu, progress.newChild(9));
         m_forloop = findLoop(m_ast);
-
         if (m_forloop == null) {
             initStatus.addFatalError("Please select a for loop.");
             return initStatus;
@@ -118,6 +117,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
                 ASTUtil.summarize(m_forloop));
         initStatus.addInfo(msg, getLocation(m_forloop));
 
+        pm.subTask("Checking initial conditions...");
         if (!ForLoopUtil.isCountedLoop(m_forloop)) {
             initStatus.addFatalError("Loop form not supported!", getLocation(m_forloop));
             return initStatus;
@@ -130,6 +130,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
                     "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
         }
 
+        pm.subTask("Done checking initial conditions");
         return initStatus;
     }
 

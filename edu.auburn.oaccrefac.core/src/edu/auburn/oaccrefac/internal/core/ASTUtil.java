@@ -68,10 +68,6 @@ public class ASTUtil {
         return null;
     }
 
-    public static IASTTranslationUnit translationUnitForFile(String file) throws CoreException {
-        return translationUnitForFileContent(FileContent.createForExternalFileLocation(file));
-    }
-
     public static IASTTranslationUnit translationUnitForString(String string) throws CoreException {
         return translationUnitForFileContent(FileContent.create("test.c", string.toCharArray()));
     }

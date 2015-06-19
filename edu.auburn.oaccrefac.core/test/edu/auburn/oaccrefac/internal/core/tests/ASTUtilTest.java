@@ -1,4 +1,5 @@
 package edu.auburn.oaccrefac.internal.core.tests;
+
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
@@ -18,7 +19,12 @@ public class ASTUtilTest {
 
     @Before
     public void setUp() throws CoreException {
-        translationUnit = ASTUtil.translationUnitForFile("fixtures/find-in-ast/01-example.cpp");
+        translationUnit = ASTUtil.translationUnitForString( //
+                "int main() {\n" + //
+                        "    int sum = 0;\n" + //
+                        "    int j = sum++;\n" + //
+                        "    int k = j + 2*3;\n" + //
+                        "}");
     }
 
     @Test
