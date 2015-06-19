@@ -74,7 +74,7 @@ public class ForLoopUtil {
         "for (int i = 0; i <= j.k; i=i+1) ;",
     };
 
-    /**
+    /** MIGRATED
      * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
      * string into a corresponding AST and then uses a pattern matching utility to match if the pattern is loosely
      * synonymous to the matchee. (Basically, we have to check some pre-conditions before refactoring or else we could
@@ -116,7 +116,7 @@ public class ForLoopUtil {
         return false;
     }
 
-    /**
+    /** MIGRATED
      * Returns the index variable for a counted loop, or <code>null</code> if the loop does not match one of the
      * supported patterns for counted loops.
      * 
@@ -172,7 +172,9 @@ public class ForLoopUtil {
         }
         return (!tree.accept(new UnsupportedVisitor()));
     }
-
+    
+    /** MIGRATED
+     */
     public static boolean isPerfectLoopNest(IASTForStatement outerLoop) {
         if (!doesForLoopContainForLoopChild(outerLoop)) {
             return true;
@@ -190,6 +192,8 @@ public class ForLoopUtil {
         }
     }
 
+    /** MIGRATED
+     */
     private static boolean doesForLoopContainForLoopChild(IASTForStatement loop) {
         class Visitor extends ASTVisitor {
             public Visitor() {
@@ -209,7 +213,7 @@ public class ForLoopUtil {
         return !loop.getBody().accept(new Visitor());
     }
     
-    /**
+    /** MIGRATED
      * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
      * next sibling after itself with respect to its parent.
      * 
@@ -229,7 +233,8 @@ public class ForLoopUtil {
         return null;
     }
     
-    /** Assumes loops are perfectly nested
+    /** MIGRATED 
+     * Assumes loops are perfectly nested
      * @param outerLoop
      * @return
      */
@@ -252,7 +257,8 @@ public class ForLoopUtil {
         }
     }
     
-    /** Assumes loops are perfectly nested
+    /** MIGRATED
+     * Assumes loops are perfectly nested
      * Checks if all innermost statements are valid
      *  currently, a valid statement is either an assignment statement or null
      * @param outerLoop
@@ -312,6 +318,7 @@ public class ForLoopUtil {
         }
     }
 
+    
     public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
         List<IBinding> result = new ArrayList<IBinding>(loops.size());
         for (IASTForStatement forStmt : loops) {
@@ -323,10 +330,15 @@ public class ForLoopUtil {
         return result;
     }
 
+    //FIXME fails to handle cases where the lower bound is not 0
+    /** MIGRATED
+     */
     public static int getLowerBound(IASTForStatement forStmt) {
         return 0;
     }
 
+    /** MIGRATED
+     */
     public static int getInclusiveUpperBound(IASTForStatement forStmt) {
         IASTBinaryExpression condExpr = (IASTBinaryExpression) forStmt.getConditionExpression();
         IASTExpression ubExpr = condExpr.getOperand2();
