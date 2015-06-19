@@ -30,6 +30,13 @@ public class DirectionHierarchyTester {
     private int[][] readCoefficients;
     private int numScalars;
 
+    /**
+     * @param lowerBounds 
+     * @param upperBounds 
+     * @param writeCoefficients constant first, then induction var coeffs, then scalar coeffs 
+     * @param readCoefficients constant first, then induction var coeffs, then scalar coeffs
+     * @param numScalars 
+     */
     public DirectionHierarchyTester(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, int numScalars) {
         this.lowerBounds = lowerBounds;

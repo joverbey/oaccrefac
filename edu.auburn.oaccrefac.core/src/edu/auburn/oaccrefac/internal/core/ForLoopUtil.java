@@ -309,6 +309,8 @@ public class ForLoopUtil {
         }
     }    
     
+    /** MIGRATED
+     */
     public static boolean isNameInScope(IASTName varname, IScope scope) {
         IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
         if (bindings.length > 0) {
@@ -317,8 +319,8 @@ public class ForLoopUtil {
             return false;
         }
     }
-
     
+    //TODO migrate to ASTUtil for now
     public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
         List<IBinding> result = new ArrayList<IBinding>(loops.size());
         for (IASTForStatement forStmt : loops) {

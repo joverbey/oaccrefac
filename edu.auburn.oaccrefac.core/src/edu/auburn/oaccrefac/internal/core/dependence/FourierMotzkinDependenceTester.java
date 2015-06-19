@@ -12,13 +12,15 @@ public class FourierMotzkinDependenceTester {
      * assumes that the subscript expressions are normalized see example on Wolfe pg 225-226
      * 
      * TODO: currently does not handle variables in the upper/lower bounds - only constants (may need to adjust the
-     * interface itself to handle that)
+     * interface itself to handle that) 
+     *      - may be able to just have client use constant prop to give this method a constant
      * 
      * coefficients are arrays of subscript linear expressions a linear expression should be an array of doubles,
      * listing the constant value first, then the induction var coefficients in order, then the scalar coefficients in
      * order ie, 1 + 2i_2 + 3N + 4i_1 becomes [1 4 2 3]
      * 
-     * 
+     * writeCoefficients constant first, then induction var coeffs, then scalar coeffs
+     * readCoefficients constant first, then induction var coeffs, then scalar coeffs
      */
     public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients,
             int numScalars, Direction[] direction) {
