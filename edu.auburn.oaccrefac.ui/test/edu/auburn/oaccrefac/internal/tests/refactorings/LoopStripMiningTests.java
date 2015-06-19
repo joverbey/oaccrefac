@@ -20,7 +20,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopStripMiningRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
 @RunWith(Parameterized.class)
 public class LoopStripMiningTests extends RefactoringTest<LoopStripMiningRefactoring> {

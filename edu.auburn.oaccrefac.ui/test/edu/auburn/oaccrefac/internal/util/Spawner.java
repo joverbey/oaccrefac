@@ -93,19 +93,27 @@ public final class Spawner {
             if (exitCode != 0) {
                 if (SHOW_OUTPUT_ON_ERROR) {
                     System.err.println("(Working directory is " + workingDirectory.getAbsolutePath() + ")");
-                    for (String arg : args) {
-                        System.err.print(arg);
-                        System.err.print(' ');
-                    }
-                    System.err.println();
+                    System.err.println(concat(args, " "));
                     System.err.println(output.toString());
                 }
-                throw new Exception(String.format("Process exited abnormally with exit code %s\n%s", exitCode,
-                        output.toString()));
+                throw new Exception(String.format("Process exited abnormally with exit code %s -  %s\n%s",
+                        exitCode, concat(args, " "), output.toString()));
             }
             waitFor(output);
         }
         return output.toString();
+    }
+
+    private static String concat(List<String> args, String separator) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (String arg : args) {
+            if (!first)
+                sb.append(' ');
+            first = false;
+            sb.append(arg);
+        }
+        return sb.toString();
     }
 
     private static void waitFor(ConcurrentReader output) {

@@ -3,7 +3,6 @@
  * loop unrolling factors.
  */
 int main() {
-
 	char a[15];
 	int i = 0;
 	for (; i < 12; i++) {

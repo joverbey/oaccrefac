@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/edu.auburn.oaccrefac.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/edu.auburn.oaccrefac.ui"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.cdt.core_5.10.0.201506020305.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.ltk.core.refactoring_3.6.200.v20140826-0859.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.text_3.5.400.v20150505-1044.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.runtime_3.11.0.v20150405-1723.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

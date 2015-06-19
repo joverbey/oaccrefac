@@ -1,6 +1,5 @@
 
 int main() {
-
 	char a[10];
 	char b[10];
 	int i = 0;

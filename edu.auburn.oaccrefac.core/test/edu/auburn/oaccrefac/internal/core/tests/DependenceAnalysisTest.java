@@ -133,8 +133,8 @@ public class DependenceAnalysisTest extends TestCase {
                 "FLOW 2 -> 5 []", //
                 "OUTPUT 2 -> 5 []", //
                 "OUTPUT 3 -> 4 []", //
-                "FLOW 3 -> 5 [=]",
-                "FLOW 4 -> 5 [=]"};
+                "FLOW 3 -> 5 []",
+                "FLOW 4 -> 5 []"};
         assertDependencesEqual(expected, stmt);
     }
 

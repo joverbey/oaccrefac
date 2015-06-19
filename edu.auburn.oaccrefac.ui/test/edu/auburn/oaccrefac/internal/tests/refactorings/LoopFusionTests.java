@@ -17,7 +17,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
-import edu.auburn.oaccrefac.internal.util.RefactoringTest;
 
 @RunWith(Parameterized.class)
 public class LoopFusionTests extends RefactoringTest<LoopFusionRefactoring> {
