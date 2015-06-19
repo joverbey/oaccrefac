@@ -12,6 +12,6 @@ int main(int argc, char **argv)
 		msg[i] = msg[i] + 1;
 	}
 
-	println(msg);
+	puts(msg);
 	return EXIT_SUCCESS;
 }
