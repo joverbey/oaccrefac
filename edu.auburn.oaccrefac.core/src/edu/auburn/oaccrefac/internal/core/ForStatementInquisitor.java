@@ -1,5 +1,8 @@
 package edu.auburn.oaccrefac.internal.core;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -226,6 +229,25 @@ public class ForStatementInquisitor {
             // either not binary or not an assignment
             return false;
         }
+    }
+
+    public List<IASTForStatement> getPerfectLoopNestHeaders() {
+        return getPerfectLoopNestHeaders(statement);
+    }
+
+    private static List<IASTForStatement> getPerfectLoopNestHeaders(IASTForStatement outerLoop) {
+        List<IASTForStatement> result = new LinkedList<IASTForStatement>();
+        result.add(outerLoop);
+
+        if (outerLoop.getBody() instanceof IASTCompoundStatement) {
+            IASTNode[] children = outerLoop.getBody().getChildren();
+            if (children.length == 1 && children[0] instanceof IASTForStatement) {
+                result.addAll(getPerfectLoopNestHeaders((IASTForStatement) children[0]));
+            }
+        } else if (outerLoop.getBody() instanceof IASTForStatement) {
+            result.addAll(getPerfectLoopNestHeaders((IASTForStatement) outerLoop.getBody()));
+        }
+        return result;
     }
 
     public boolean isPerfectLoopNest() {

@@ -40,7 +40,7 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         // TODO: Check for existing/conflicting OpenACC pragma
 
-        DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
+        DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm, getLoop());
         if (dependenceAnalysis != null && dependenceAnalysis.hasLevel1CarriedDependence()) {
             status.addError("This loop cannot be parallelized because it carries a dependence.",
                     getLocation(getLoop()));
