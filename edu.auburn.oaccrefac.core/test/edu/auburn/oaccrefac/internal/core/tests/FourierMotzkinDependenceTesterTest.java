@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
-import java.security.cert.CertPathValidatorException.Reason;
 import java.util.ArrayList;
 import java.util.List;
 

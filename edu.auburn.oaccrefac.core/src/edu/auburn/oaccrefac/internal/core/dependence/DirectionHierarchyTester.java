@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.core.dependence;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
