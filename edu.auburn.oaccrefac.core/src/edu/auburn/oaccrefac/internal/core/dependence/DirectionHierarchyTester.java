@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.internal.core.dependence;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,17 +55,18 @@ public class DirectionHierarchyTester {
      * 
      * @return a set containing all directions in which there might be a dependence
      */
-
+    
     public Set<Direction[]> getPossibleDependenceDirections() {
         Direction[] allDirections = new Direction[lowerBounds.length];
         Arrays.fill(allDirections, Direction.ANY);
 
         Set<Direction[]> results = new HashSet<Direction[]>();
 
+        
         return getPossibleDependenceDirections(allDirections, results);
-    }
 
-    private Set<Direction[]> getPossibleDependenceDirections(Direction[] dvEls, Set<Direction[]> results) {
+    }
+    private Set<Direction[]> getPossibleDependenceDirections(Direction[] dv, Set<Direction[]> results) {
         /*
          * run on given direction vector if there is no dependence, return list as-is otherwise add given direction
          * vector to the list get new direction vectors where all initial non-'*' elements are the same and the first
@@ -74,16 +76,16 @@ public class DirectionHierarchyTester {
          */
 
         // if there is no dependence
-        if (!fourierMotzkin.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients, numScalars, dvEls)) {
+        if (!fourierMotzkin.test(lowerBounds, upperBounds, writeCoefficients, readCoefficients, numScalars, dv)) {
             return results;
         } else {
-            Direction[] originalVector = dvEls;
+            Direction[] originalVector = dv;
             int firstAny = Arrays.asList(originalVector).indexOf(Direction.ANY);
 
             // if we have a dependence, but this vector is at the
             // bottom of the hierarchy (no '*' element in the vector)
             if (firstAny < 0) {
-                results.add(dvEls);
+                results.add(dv);
                 return results;
             } else {
                 Direction[] newLT = Arrays.copyOf(originalVector, originalVector.length);

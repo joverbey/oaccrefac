@@ -1,5 +1,8 @@
 package edu.auburn.oaccrefac.internal.core;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -22,64 +25,39 @@ import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryIntegerConstant;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
-public class ForStatementInquisitor  {
+public class ForStatementInquisitor {
 
     public static ForStatementInquisitor getInquisitor(IASTForStatement statement) {
         return new ForStatementInquisitor(statement);
     }
 
-    
     private IASTForStatement statement;
- // Patterns of for loops that are acceptable to refactor...
+    // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
-        // Constant upper bound
-        "for (i = 0; i < 1; i++) ;",
-        "for (int i = 0; i < 1; i++) ;",
-        "for (i = 0; i <= 1; i++) ;",
-        "for (int i = 0; i <= 1; i++) ;",
-        "for (i = 0; i < 1; i+=1) ;",
-        "for (int i = 0; i < 1; i+=1) ;",
-        "for (i = 0; i <= 1; i+=1) ;",
-        "for (int i = 0; i <= 1; i+=1) ;",
-        "for (i = 0; i < 1; i=i+1) ;",
-        "for (int i = 0; i < 1; i=i+1) ;",
-        "for (i = 0; i <= 1; i=i+1) ;",
-        "for (int i = 0; i <= 1; i=i+1) ;",
-        // Variable upper bound
-        "for (i = 0; i < j; i++) ;",
-        "for (int i = 0; i < j; i++) ;",
-        "for (i = 0; i <= j; i++) ;",
-        "for (int i = 0; i <= j; i++) ;",
-        "for (i = 0; i < j; i+=1) ;",
-        "for (int i = 0; i < j; i+=1) ;",
-        "for (i = 0; i <= j; i+=1) ;",
-        "for (int i = 0; i <= j; i+=1) ;",
-        "for (i = 0; i < j; i=i+1) ;",
-        "for (int i = 0; i < j; i=i+1) ;",
-        "for (i = 0; i <= j; i=i+1) ;",
-        "for (int i = 0; i <= j; i=i+1) ;",
-        // Simple field reference upper bound (used in Livermore Loops)
-        "for (i = 0; i < j.k; i++) ;",
-        "for (int i = 0; i < j.k; i++) ;",
-        "for (i = 0; i <= j.k; i++) ;",
-        "for (int i = 0; i <= j.k; i++) ;",
-        "for (i = 0; i < j.k; i+=1) ;",
-        "for (int i = 0; i < j.k; i+=1) ;",
-        "for (i = 0; i <= j.k; i+=1) ;",
-        "for (int i = 0; i <= j.k; i+=1) ;",
-        "for (i = 0; i < j.k; i=i+1) ;",
-        "for (int i = 0; i < j.k; i=i+1) ;",
-        "for (i = 0; i <= j.k; i=i+1) ;",
-        "for (int i = 0; i <= j.k; i=i+1) ;",
-    };
+            // Constant upper bound
+            "for (i = 0; i < 1; i++) ;", "for (int i = 0; i < 1; i++) ;", "for (i = 0; i <= 1; i++) ;",
+            "for (int i = 0; i <= 1; i++) ;", "for (i = 0; i < 1; i+=1) ;", "for (int i = 0; i < 1; i+=1) ;",
+            "for (i = 0; i <= 1; i+=1) ;", "for (int i = 0; i <= 1; i+=1) ;", "for (i = 0; i < 1; i=i+1) ;",
+            "for (int i = 0; i < 1; i=i+1) ;", "for (i = 0; i <= 1; i=i+1) ;", "for (int i = 0; i <= 1; i=i+1) ;",
+            // Variable upper bound
+            "for (i = 0; i < j; i++) ;", "for (int i = 0; i < j; i++) ;", "for (i = 0; i <= j; i++) ;",
+            "for (int i = 0; i <= j; i++) ;", "for (i = 0; i < j; i+=1) ;", "for (int i = 0; i < j; i+=1) ;",
+            "for (i = 0; i <= j; i+=1) ;", "for (int i = 0; i <= j; i+=1) ;", "for (i = 0; i < j; i=i+1) ;",
+            "for (int i = 0; i < j; i=i+1) ;", "for (i = 0; i <= j; i=i+1) ;", "for (int i = 0; i <= j; i=i+1) ;",
+            // Simple field reference upper bound (used in Livermore Loops)
+            "for (i = 0; i < j.k; i++) ;", "for (int i = 0; i < j.k; i++) ;", "for (i = 0; i <= j.k; i++) ;",
+            "for (int i = 0; i <= j.k; i++) ;", "for (i = 0; i < j.k; i+=1) ;", "for (int i = 0; i < j.k; i+=1) ;",
+            "for (i = 0; i <= j.k; i+=1) ;", "for (int i = 0; i <= j.k; i+=1) ;", "for (i = 0; i < j.k; i=i+1) ;",
+            "for (int i = 0; i < j.k; i=i+1) ;", "for (i = 0; i <= j.k; i=i+1) ;",
+            "for (int i = 0; i <= j.k; i=i+1) ;", };
 
     private ForStatementInquisitor(IASTForStatement statement) {
-        //TODO decide if we want to call ForLoopUtil methods here initially 
-        //and store results in fields or if we should do it on the fly 
-        //when the information is needed
+        // TODO decide if we want to call ForLoopUtil methods here initially
+        // and store results in fields or if we should do it on the fly
+        // when the information is needed
         this.statement = statement;
     }
-    
+
     /**
      * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
      * string into a corresponding AST and then uses a pattern matching utility to match if the pattern is loosely
@@ -105,7 +83,8 @@ public class ForStatementInquisitor  {
                     if (literal.getParent() instanceof IASTBinaryExpression)
                         ((IASTBinaryExpression) literal.getParent()).setOperand2(new ArbitraryIntegerConstant());
                     else if (literal.getParent() instanceof IASTEqualsInitializer)
-                        ((IASTEqualsInitializer) literal.getParent()).setInitializerClause(new ArbitraryIntegerConstant());
+                        ((IASTEqualsInitializer) literal.getParent())
+                                .setInitializerClause(new ArbitraryIntegerConstant());
                 }
                 return PROCESS_CONTINUE;
             }
@@ -121,7 +100,7 @@ public class ForStatementInquisitor  {
         }
         return false;
     }
-    
+
     /**
      * Returns the index variable for a counted loop, or <code>null</code> if the loop does not match one of the
      * supported patterns for counted loops.
@@ -154,27 +133,7 @@ public class ForStatementInquisitor  {
         return nameFinder.name.resolveBinding();
     }
 
-    /**
-     * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
-     * next sibling after itself with respect to its parent.
-     * 
-     * @param n
-     *            node in which to find next sibling
-     * @return IASTNode of next sibling or null if last child
-     */
-    public IASTNode getNextSibling() {
-        if (statement.getParent() != null) {
-            IASTNode[] chilluns = statement.getParent().getChildren();
-            for (int i = 0; i < chilluns.length; i++) {
-                if (statement == chilluns[i] && i < (chilluns.length - 1)) {
-                    return chilluns[i + 1];
-                }
-            }
-        }
-        return null;
-    }
-
-    //FIXME fails to handle cases where there lower bound is not 0
+    // FIXME fails to handle cases where there lower bound is not 0
     public int getLowerBound() {
         return 0;
     }
@@ -187,101 +146,114 @@ public class ForStatementInquisitor  {
         IASTFunctionDefinition enclosingFunction = ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class);
         Long newUB = new ConstantPropagation(enclosingFunction).evaluate(ubExpr);
         if (newUB != null && Integer.MIN_VALUE + 1 <= newUB.longValue() && newUB.longValue() <= Integer.MAX_VALUE - 1)
-            ub = (int)newUB.longValue();
+            ub = (int) newUB.longValue();
 
         if (condExpr.getOperator() == IASTBinaryExpression.op_lessThan)
             ub--;
 
         return ub;
     }
-    
-    
-    /** 
+
+    /**
      * Assumes loops are perfectly nested
+     * 
      * @param outerLoop
      * @return
      */
     public IASTStatement getInnermostLoopBody() {
         return getInnermostLoopBody(statement);
     }
+
     private IASTStatement getInnermostLoopBody(IASTForStatement outerLoop) {
         IASTStatement body = outerLoop.getBody();
-        if(body instanceof IASTForStatement) {
+        if (body instanceof IASTForStatement) {
             return getInnermostLoopBody((IASTForStatement) body);
-        }
-        else if(body instanceof IASTCompoundStatement) {
+        } else if (body instanceof IASTCompoundStatement) {
             IASTNode[] children = ((IASTCompoundStatement) body).getChildren();
-            if(children.length == 1 && children[0] instanceof IASTForStatement) {
+            if (children.length == 1 && children[0] instanceof IASTForStatement) {
                 return getInnermostLoopBody((IASTForStatement) children[0]);
-            }
-            else {
+            } else {
                 return body;
             }
-        }
-        else {
+        } else {
             return body;
         }
     }
-    
-    
-    /** Assumes loops are perfectly nested
-     * Checks if all innermost statements are valid
-     *  currently, a valid statement is either an assignment statement or null
+
+    /**
+     * Assumes loops are perfectly nested Checks if all innermost statements are valid currently, a valid statement is
+     * either an assignment statement or null
+     * 
      * @param outerLoop
      * @return
      */
     public boolean areAllInnermostStatementsValid() {
         return areAllInnermostStatementsValid(statement);
     }
+
     private boolean areAllInnermostStatementsValid(IASTForStatement outerLoop) {
         IASTNode body = outerLoop.getBody();
-        if(body instanceof IASTCompoundStatement) {
-            if(body.getChildren().length == 0) {
+        if (body instanceof IASTCompoundStatement) {
+            if (body.getChildren().length == 0) {
                 return true;
             }
-            //assuming perfect nesting, so only check children[0]
-            else if(body.getChildren()[0] instanceof IASTForStatement) {
+            // assuming perfect nesting, so only check children[0]
+            else if (body.getChildren()[0] instanceof IASTForStatement) {
                 return areAllInnermostStatementsValid((IASTForStatement) body.getChildren()[0]);
-            }
-            else {
-                //check if all children are assignments or null stmts
-                for(IASTNode child : body.getChildren()) {
-                    //to be an asgt, must be an expr stmt with a bin expr child, 
-                    //which has asgt operator
-                    if(child instanceof IASTExpressionStatement 
-                            && child.getChildren().length > 0
+            } else {
+                // check if all children are assignments or null stmts
+                for (IASTNode child : body.getChildren()) {
+                    // to be an asgt, must be an expr stmt with a bin expr child,
+                    // which has asgt operator
+                    if (child instanceof IASTExpressionStatement && child.getChildren().length > 0
                             && child.getChildren()[0] instanceof IASTBinaryExpression
-                            && ((IASTBinaryExpression) child.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
-                       continue;
-                    }
-                    else if(child instanceof IASTNullStatement) {
+                            && ((IASTBinaryExpression) child.getChildren()[0])
+                                    .getOperator() == IASTBinaryExpression.op_assign) {
                         continue;
-                    }
-                    else {
+                    } else if (child instanceof IASTNullStatement) {
+                        continue;
+                    } else {
                         return false;
                     }
                 }
                 return true;
             }
-        }
-        else if(body instanceof IASTForStatement) {
+        } else if (body instanceof IASTForStatement) {
             return areAllInnermostStatementsValid((IASTForStatement) body);
-        }
-        else { //neither compound nor for statement - body is the only statement
-            if(body instanceof IASTBinaryExpression) {
-                if(((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
+        } else { // neither compound nor for statement - body is the only statement
+            if (body instanceof IASTBinaryExpression) {
+                if (((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
                     return true;
                 }
             }
-            //either not binary or not an assignment
+            // either not binary or not an assignment
             return false;
         }
-    }    
- 
-    
+    }
+
+    public List<IASTForStatement> getPerfectLoopNestHeaders() {
+        return getPerfectLoopNestHeaders(statement);
+    }
+
+    private static List<IASTForStatement> getPerfectLoopNestHeaders(IASTForStatement outerLoop) {
+        List<IASTForStatement> result = new LinkedList<IASTForStatement>();
+        result.add(outerLoop);
+
+        if (outerLoop.getBody() instanceof IASTCompoundStatement) {
+            IASTNode[] children = outerLoop.getBody().getChildren();
+            if (children.length == 1 && children[0] instanceof IASTForStatement) {
+                result.addAll(getPerfectLoopNestHeaders((IASTForStatement) children[0]));
+            }
+        } else if (outerLoop.getBody() instanceof IASTForStatement) {
+            result.addAll(getPerfectLoopNestHeaders((IASTForStatement) outerLoop.getBody()));
+        }
+        return result;
+    }
+
     public boolean isPerfectLoopNest() {
         return isPerfectLoopNest(statement);
     }
+
     private boolean isPerfectLoopNest(IASTForStatement outerLoop) {
         if (!doesForLoopContainForLoopChild(outerLoop)) {
             return true;
@@ -298,6 +270,7 @@ public class ForStatementInquisitor  {
             return isPerfectLoopNest((IASTForStatement) outerLoop.getBody());
         }
     }
+
     private boolean doesForLoopContainForLoopChild(IASTForStatement loop) {
         class Visitor extends ASTVisitor {
             public Visitor() {
@@ -316,15 +289,4 @@ public class ForStatementInquisitor  {
         // If we've aborted, it's because we found a for statement
         return !loop.getBody().accept(new Visitor());
     }
-    
-
-    public boolean isNameInScope(IASTName varname) {
-        IBinding[] bindings = statement.getScope().find(new String(varname.getSimpleID()));
-        if (bindings.length > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
 }

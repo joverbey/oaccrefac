@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
+import java.security.cert.CertPathValidatorException.Reason;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -447,6 +448,13 @@ public class FourierMotzkinDependenceTesterTest {
         Matrix result = tester.generateDependenceMatrix(lb16, ub16, wc16, rc16, 0, d16);
         Assert.assertTrue("\nExpected:\n" + expected + "Got:\n" + result, expected.isEquivalentTo(result));
     }
+    
+    @Test 
+    public void test100_017MatrixCaching() {
+        Matrix result1 = tester.generateDependenceMatrix(lb1, ub1, wc1, rc1, 0, d1);
+        Matrix result2 = tester.generateDependenceMatrix(lb1, ub1, wc1, rc1, 0, d1);
+        Assert.assertTrue("\nOriginal:\n" + result1 + "New:\n" + result2, result1.isEquivalentTo(result2));
+    }
 
     @Test
     public void test101_001SameConstantSubscripts1D() {
@@ -497,5 +505,7 @@ public class FourierMotzkinDependenceTesterTest {
         Direction[] d = { Direction.ANY };
         Assert.assertTrue(tester.test(lb, ub, wc, rc, 0, d));
     }
+    
+    
 
 }

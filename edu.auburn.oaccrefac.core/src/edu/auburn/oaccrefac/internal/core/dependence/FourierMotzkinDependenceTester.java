@@ -19,6 +19,7 @@ public class FourierMotzkinDependenceTester {
      * readCoefficients constant first, then induction var coeffs, then scalar coeffs
      */
     
+    //TODO see if this is even worth it in practice
     //used to cache the matrix so it won't be regenerated every time we try to
     //test on the same inputs
     //direction vector will usually be different, so we don't cache the 
@@ -66,6 +67,7 @@ public class FourierMotzkinDependenceTester {
         }
 
         FourierMotzkinEliminator el = new FourierMotzkinEliminator();
+        
         Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, numScalars,
                 direction);
         
@@ -105,17 +107,17 @@ public class FourierMotzkinDependenceTester {
 
     public Matrix generateDependenceMatrix(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients,
             int[][] readCoefficients, int numScalars, Direction[] direction) {
-
+        
         Matrix m = new Matrix();
         
-        //if we aren't using the same values, the cached matrix will be different, 
-        //so we get the correct one
+//        if we aren't using the same values, the cached matrix will be different, 
+//        so we get the correct one
         if(lowerBounds != lastLB || 
                 upperBounds != lastUB || 
                 writeCoefficients != lastWC || 
                 readCoefficients != lastRC || 
-                numScalars != lastNS) {        
-
+                numScalars != lastNS) {
+            
             // get the inequalities from the subscripts
             for (int i = 0; i < writeCoefficients.length; i++) {
                 // get coefficients from induction vars
@@ -160,15 +162,16 @@ public class FourierMotzkinDependenceTester {
                 m.addRowAtIndex(m.getNumRows(), row3);
                 m.addRowAtIndex(m.getNumRows(), row4);
             }
-            lastM = m;
+            lastM = m.cloneMatrix();
             lastLB = lowerBounds;
             lastUB = upperBounds;
             lastWC = writeCoefficients;
             lastRC = readCoefficients;
             lastNS = numScalars;
+
         }
         else /*if the cached matrix is correct*/ {
-            m = lastM;
+            m = lastM.cloneMatrix();
         }
 
         // get the inequalities from the dependence direction vector

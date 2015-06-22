@@ -83,12 +83,12 @@ public class DirectionHierarchyTesterTest {
         ex.add(expectedVector);
         DirectionHierarchyTester tester = new DirectionHierarchyTester(lb, ub, wc, rc, 0);
         Set<Direction[]> actual = tester.getPossibleDependenceDirections();
-        printResults(ex, actual);
+        //printResults(ex, actual);
         Assert.assertTrue(containsAll(getStringsFromDVs(actual), getStringsFromDVs(ex)));
         Assert.assertTrue(actual.size() == expectedSize);
     }
     
-    private void printResults(Set<Direction[]> actual, Set<Direction[]> expected) {
+    private void printResults(Set<Direction[]> expected, Set<Direction[]> actual) {
         System.out.println("--------------------");
         System.out.println("Expected: ");
         ps(expected);
