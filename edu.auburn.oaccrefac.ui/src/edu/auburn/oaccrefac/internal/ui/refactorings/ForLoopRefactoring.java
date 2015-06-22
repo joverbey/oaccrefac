@@ -206,10 +206,13 @@ public abstract class ForLoopRefactoring extends CRefactoring {
                     int forStmtStart = forStmtLocation.getNodeOffset();
                     int forStmtEnd = forStmtStart + forStmtLocation.getNodeLength();
 
-                    if (forStmtStart <= selectionStart && selectionEnd <= forStmtEnd
-                            || selectionStart <= forStmtStart && forStmtEnd <= selectionEnd) {
+                    if (selectionStart <= forStmtStart && forStmtEnd <= selectionEnd) {
                         loop = for_stmt;
-                        // Check nested loops
+                        // Selection encloses this loop; do not check nested loops
+                        return PROCESS_ABORT;
+                    } else if (forStmtStart <= selectionStart && selectionEnd <= forStmtEnd) {
+                        loop = for_stmt;
+                        // Selection is inside this loop; check nested loops
                         return PROCESS_CONTINUE;
                     } else {
                         // Otherwise skip this statement
@@ -224,11 +227,11 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return v.loop;
     }
 
-    protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, IProgressMonitor pm) {
+    protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, IProgressMonitor pm, IASTStatement... statements) {
         try {
-            return new DependenceAnalysis(pm, getLoop());
+            return new DependenceAnalysis(pm, statements);
         } catch (DependenceTestFailure e) {
-            status.addError("Dependences in the selected loop could not be analyzed.  " + e.getMessage());
+            status.addError("Dependences could not be analyzed.  " + e.getMessage());
             return null;
         }
 

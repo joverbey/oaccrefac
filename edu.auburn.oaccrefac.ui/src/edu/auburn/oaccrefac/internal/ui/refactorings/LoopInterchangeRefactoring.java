@@ -1,6 +1,10 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -8,9 +12,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.core.dependence.Direction;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.InterchangeLoops;
 
 /**
@@ -42,18 +48,77 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        IASTForStatement xchng = ASTUtil.findDepth(getLoop(), IASTForStatement.class, m_depth);
-        if (xchng == null) {
-            status.addFatalError("Could not find loop at depth " + m_depth);
+        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(getLoop());
+        List<IASTForStatement> headers = forLoop.getPerfectLoopNestHeaders();
+        if (m_depth == 0) {
+            status.addFatalError("A loop cannot be interchanged with itself!");
+            return;
+        } else if (m_depth < 0 || m_depth >= headers.size()) {
+            status.addFatalError("There is no for-loop at depth " + m_depth);
             return;
         }
 
-        @SuppressWarnings("unused")
-        DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
-        // if (dependenceAnalysis != null && dependenceAnalysis.()) {
-        // status.addError("This loop cannot be parallelized because it carries a dependence.",
-        // getLocation(getLoop()));
-        // }
+        int numEnclosingLoops = countEnclosingLoops(getLoop());
+
+        DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm, getLoop());
+        if (dependenceAnalysis != null && !isInterchangeValid(numEnclosingLoops, m_depth + numEnclosingLoops,
+                dependenceAnalysis.getDependences())) {
+            status.addError("Interchanging the selected loop with the loop at depth " + m_depth
+                    + " will change the dependence structure of the loop nest.");
+            return;
+        }
+    }
+
+    private boolean isInterchangeValid(int i, int j, Set<DataDependence> dependences) {
+        for (DataDependence dep : dependences) {
+            Direction[] dirVec = dep.getDirectionVector();
+            if (isValid(dirVec) && !isValid(swap(i, j, dirVec))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isValid(Direction[] dirVec) {
+        for (Direction dir : dirVec) {
+            switch (dir) {
+            case EQ:
+                continue;
+            case LT:
+            case LE:
+            case ANY:
+                return true;
+            case GT:
+            case GE:
+                return false;
+            default:
+                throw new IllegalStateException();
+            }
+        }
+        return true;
+    }
+
+    private Direction[] swap(int i, int j, Direction[] dirVec) {
+        if (i < 0 || j < 0 || i >= dirVec.length || j >= dirVec.length) {
+            throw new IllegalArgumentException();
+        }
+        
+        Direction[] result = new Direction[dirVec.length];
+        System.arraycopy(dirVec, 0, result, 0, dirVec.length);
+        Direction tmp = result[i];
+        result[i] = result[j];
+        result[j] = tmp;
+        return result;
+    }
+
+    private int countEnclosingLoops(IASTNode outsideOf) {
+        int result = 0;
+        for (IASTNode node = outsideOf.getParent(); node != null; node = node.getParent()) {
+            if (node instanceof IASTForStatement) {
+                result++;
+            }
+        }
+        return result;
     }
 
     @Override
