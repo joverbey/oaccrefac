@@ -319,18 +319,6 @@ public class ForLoopUtil {
             return false;
         }
     }
-    
-    //TODO migrate to ASTUtil for now
-    public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
-        List<IBinding> result = new ArrayList<IBinding>(loops.size());
-        for (IASTForStatement forStmt : loops) {
-            IBinding variable = getIndexVariable(forStmt);
-            if (variable != null) {
-                result.add(variable);
-            }
-        }
-        return result;
-    }
 
     //FIXME fails to handle cases where the lower bound is not 0
     /** MIGRATED
@@ -357,6 +345,18 @@ public class ForLoopUtil {
         return ub;
     }
 
+    //TODO migrate to ASTUtil for now
+    public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
+        List<IBinding> result = new ArrayList<IBinding>(loops.size());
+        for (IASTForStatement forStmt : loops) {
+            IBinding variable = getIndexVariable(forStmt);
+            if (variable != null) {
+                result.add(variable);
+            }
+        }
+        return result;
+    }
+    
     private ForLoopUtil() {
     }
 }
