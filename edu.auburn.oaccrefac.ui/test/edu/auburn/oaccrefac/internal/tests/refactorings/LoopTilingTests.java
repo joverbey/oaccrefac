@@ -35,7 +35,13 @@ public class LoopTilingTests extends RefactoringTest<LoopTilingRefactoring> {
     @Override
     protected void configureRefactoring(LoopTilingRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-         //String stripFactor = markerFields.removeFirst();
-         //refactoring.setStripFactor(Integer.parseInt(stripFactor));
+        String stripDepth = markerFields.removeFirst();
+        refactoring.setStripMineDepth(Integer.parseInt(stripDepth));
+        
+        String stripFactor = markerFields.removeFirst();
+        refactoring.setStripFactor(Integer.parseInt(stripFactor));
+        
+        String propagateInterchange = markerFields.removeFirst();
+        refactoring.setPropagateInterchange(Integer.parseInt(propagateInterchange));
     }
 }

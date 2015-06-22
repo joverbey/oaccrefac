@@ -1,4 +1,5 @@
-
+//LEGEND:
+// Start line, Start char, End line, End char, Strip Depth, Strip Factor, Propagate Interchange, pass/fail
 int main() {
 
 	int array[10][20];

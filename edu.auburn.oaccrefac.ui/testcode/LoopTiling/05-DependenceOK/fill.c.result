@@ -1,3 +1,5 @@
+//LEGEND:
+// Start line, Start char, End line, End char, Strip Depth, Strip Factor, Propagate Interchange, pass/fail
 #include <stdio.h>
 #include <stdlib.h>
 

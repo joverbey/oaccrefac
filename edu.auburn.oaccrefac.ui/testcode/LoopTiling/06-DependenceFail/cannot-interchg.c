@@ -1,3 +1,5 @@
+//LEGEND:
+// Start line, Start char, End line, End char, Strip Depth, Strip Factor, Propagate Interchange, pass/fail
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,7 +12,7 @@ int main(void) {
 		}
 	}
 
-	for (int i = 0; i < 10; i++) { /*<<<<< 13,1,18,1,1,2,-1,fail */
+	for (int i = 0; i < 10; i++) { /*<<<<< 15,1,20,1,1,2,-1,fail */
 		for (int j = 0; j < 10; j++) {
 			a[i][j] = a[i][j] * 100 + a[i-1][j+1];
 		}
