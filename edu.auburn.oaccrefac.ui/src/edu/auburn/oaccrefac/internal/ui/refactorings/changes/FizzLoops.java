@@ -7,7 +7,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
 public class FizzLoops extends CompoundModify {
 
@@ -27,7 +27,7 @@ public class FizzLoops extends CompoundModify {
         
         IASTStatement body = m_loop.getBody();
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTNode insert_before = ASTUtil.getNextSibling(m_loop);
+        IASTNode insert_before = ForLoopUtil.getNextSibling(m_loop);
         IASTNode[] chilluns = body.getChildren();
         
         /*Over here, we are looking for all the statements in the body of for-loop

@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 import edu.auburn.oaccrefac.internal.core.Pair;
 import edu.auburn.oaccrefac.internal.core.dependence.DirectionHierarchyTester;
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
@@ -85,7 +85,7 @@ public class DependenceAnalysis {
                         dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                     } else {
                         List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
-                        List<IBinding> indexVars = ASTUtil.getLoopIndexVariables(commonLoops);
+                        List<IBinding> indexVars = ForLoopUtil.getLoopIndexVariables(commonLoops);
                         Set<IBinding> otherVars = collectAllVariables(v1.getLinearSubscriptExpressions(),
                                 v2.getLinearSubscriptExpressions());
                         otherVars.removeAll(indexVars);
@@ -100,9 +100,8 @@ public class DependenceAnalysis {
                         int[] lowerBounds = fillArray(commonLoops.size(), Integer.MIN_VALUE + 1);
                         int[] upperBounds = fillArray(commonLoops.size(), Integer.MAX_VALUE - 1);
                         for (int i = 0; i < commonLoops.size(); i++) {
-                            ForStatementInquisitor thisLoop = ForStatementInquisitor.getInquisitor(commonLoops.get(i));
-                            lowerBounds[i] = thisLoop.getLowerBound();
-                            upperBounds[i] = thisLoop.getInclusiveUpperBound();
+                            lowerBounds[i] = ForLoopUtil.getLowerBound(commonLoops.get(i));
+                            upperBounds[i] = ForLoopUtil.getInclusiveUpperBound(commonLoops.get(i));
                         }
 
                         for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
@@ -168,8 +167,7 @@ public class DependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTForStatement stmt) throws DependenceTestFailure {
-        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(stmt);
-        if (!forLoop.isCountedLoop()) {
+        if (!ForLoopUtil.isCountedLoop(stmt)) {
             throw unsupported(stmt);
         }
 

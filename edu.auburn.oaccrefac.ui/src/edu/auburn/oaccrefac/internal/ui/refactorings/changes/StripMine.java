@@ -13,7 +13,6 @@ import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -21,38 +20,40 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 public class StripMine extends ForLoopChange {
     
     private int m_stripFactor;
-    private IScope m_scope;
-    private IASTExpression m_upperBoundExpression;
     
-    public StripMine(IASTForStatement loop, int stripFactor, 
-            IASTExpression upperBound, IScope scope) {
+    public StripMine(IASTForStatement loop, int stripFactor) {
         super(loop);
         m_stripFactor = stripFactor;
-        m_scope = scope;
-        m_upperBoundExpression = upperBound;
     }
 
     @Override
     public IASTForStatement doChange(IASTForStatement loop) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTForStatement inner = loop.copy();
+        
+        IASTExpression upperBound = null;
+        if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
+            IASTBinaryExpression cond_be = (IASTBinaryExpression) getOriginal().getConditionExpression();
+            upperBound = (IASTExpression)cond_be.getOperand2().copy();
+        } else {
+            throw new UnsupportedOperationException("Non-binary conditional statements unsupported");
+        }
 
-        IASTName counter_name = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);  
+        IASTName counter_name = ASTUtil.findOne(getOriginal().getInitializerStatement(), IASTName.class);  
         String counter_str = new String(counter_name.getSimpleID());
-        GenerateInitializer gi = new GenerateInitializer(loop, 
-                counter_str, m_scope);
-        gi.change();
+        GenerateInitializer gi = new GenerateInitializer(loop, counter_str, getOriginal().getScope());
+        loop = gi.change();
         
         loop.setConditionExpression(factory.newBinaryExpression(IASTBinaryExpression.op_lessThan, 
                 factory.newIdExpression(gi.getGeneratedName()), 
-                m_upperBoundExpression));
+                upperBound));
         
         loop.setIterationExpression(factory.newBinaryExpression(IASTBinaryExpression.op_plusAssign, 
                 factory.newIdExpression(gi.getGeneratedName()), 
                 factory.newLiteralExpression(
                         IASTLiteralExpression.lk_integer_constant, m_stripFactor+"")));
         
-        modifyInnerLoop(inner, gi.getGeneratedName(), factory);
+        modifyInnerLoop(inner, gi.getGeneratedName(), upperBound, factory);
         IASTCompoundStatement innercompound = factory.newCompoundStatement();
         innercompound.addStatement(inner);
         loop.setBody(innercompound);
@@ -60,10 +61,11 @@ public class StripMine extends ForLoopChange {
     }
 
 
-    private void modifyInnerLoop(IASTForStatement loop, IASTName outer_counter_name, ICNodeFactory factory) {
+    private void modifyInnerLoop(IASTForStatement loop, IASTName outer_counter_name, 
+            IASTExpression upperBound, ICNodeFactory factory) {
         IASTIdExpression outer_idexp = factory.newIdExpression(outer_counter_name);
         modifyInitializer(loop.getInitializerStatement(), outer_idexp);
-        modifyCondition(loop, outer_idexp, factory);
+        modifyCondition(loop, outer_idexp, upperBound, factory);
     }
 
     private void modifyInitializer(IASTNode tree, IASTIdExpression to_set) {
@@ -98,7 +100,7 @@ public class StripMine extends ForLoopChange {
     }
     
     private void modifyCondition(IASTForStatement loop, IASTIdExpression outer_idexp,
-            ICNodeFactory factory) {
+            IASTExpression upperBound, ICNodeFactory factory) {
         IASTExpression conditionExpression = loop.getConditionExpression();
         
         IASTBinaryExpression upperbound_check = null;
@@ -119,7 +121,7 @@ public class StripMine extends ForLoopChange {
         mine_check.setOperand2(plusfactor);
 
         upperbound_check.setOperator(IASTBinaryExpression.op_lessThan);
-        upperbound_check.setOperand2(m_upperBoundExpression);
+        upperbound_check.setOperand2(upperBound);
         
         IASTBinaryExpression logicand = factory.newBinaryExpression(
                 IASTBinaryExpression.op_logicalAnd, 
