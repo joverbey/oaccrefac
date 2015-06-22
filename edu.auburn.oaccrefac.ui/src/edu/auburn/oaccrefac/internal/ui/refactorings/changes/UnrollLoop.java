@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
 public class UnrollLoop extends CompoundModify {
 
@@ -85,7 +86,7 @@ public class UnrollLoop extends CompoundModify {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTName counter_name = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
         IScope scope = m_loop.getScope().getParent(); //DOMException
-        if (!ASTUtil.isNameInScope(counter_name, scope)) {
+        if (!ForLoopUtil.isNameInScope(counter_name, scope)) {
             insertBefore(loop.getInitializerStatement(), m_loop);
             loop.setInitializerStatement(factory.newNullStatement());
         }

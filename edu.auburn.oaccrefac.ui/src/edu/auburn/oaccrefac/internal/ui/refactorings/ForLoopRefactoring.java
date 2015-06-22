@@ -3,8 +3,6 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
-import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
-import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -37,7 +35,7 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 
 /**
  * Class is meant to be an abstract base class for all ForLoop transformation refactorings. It includes all methods that
@@ -117,32 +115,25 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             return initStatus;
         }
 
-        String msg = String.format("Selected loop (line %d) is: %s",
-                m_forloop.getFileLocation().getStartingLineNumber(), ASTUtil.summarize(m_forloop));
+        String msg = String.format("Selected loop (line %d) is: %s", m_forloop.getFileLocation().getStartingLineNumber(),
+                ASTUtil.summarize(m_forloop));
         initStatus.addInfo(msg, getLocation(m_forloop));
 
-        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(m_forloop);
-
         pm.subTask("Checking initial conditions...");
-        if (!forLoop.isCountedLoop()) {
+        if (!ForLoopUtil.isCountedLoop(m_forloop)) {
             initStatus.addFatalError("Loop form not supported!", getLocation(m_forloop));
             return initStatus;
         }
 
         doCheckInitialConditions(initStatus, progress.newChild(1));
 
-        if (containsBreakorContinue(m_forloop)) {
+        if (ForLoopUtil.containsBreakorContinue(m_forloop)) {
             initStatus.addFatalError(
                     "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
         }
 
         pm.subTask("Done checking initial conditions");
         return initStatus;
-    }
-
-    private boolean containsBreakorContinue(IASTForStatement forStmt) {
-        return !ASTUtil.find(forStmt, IASTBreakStatement.class).isEmpty()
-                || !ASTUtil.find(forStmt, IASTContinueStatement.class).isEmpty();
     }
 
     protected RefactoringStatusContext getLocation(IASTNode node) {
@@ -152,7 +143,8 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     }
 
     @Override
-    protected RefactoringStatus checkFinalConditions(IProgressMonitor pm, CheckConditionsContext checkContext)
+    protected RefactoringStatus checkFinalConditions(IProgressMonitor pm, 
+            CheckConditionsContext checkContext) 
             throws CoreException, OperationCanceledException {
         RefactoringStatus result = new RefactoringStatus();
         pm.subTask("Determining if transformation can be safely performed...");
@@ -160,11 +152,9 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return result;
     };
 
-    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-    }
+    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {}
 
-    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-    }
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {}
 
     /**
      * Indexes the project if the project has not already been indexed. Something to do with references???

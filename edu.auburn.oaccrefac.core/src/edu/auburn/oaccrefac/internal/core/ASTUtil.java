@@ -22,7 +22,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
 import org.eclipse.cdt.core.parser.DefaultLogService;
 import org.eclipse.cdt.core.parser.FileContent;
@@ -70,47 +69,6 @@ public class ASTUtil {
             }
         }
         return null;
-    }
-
-    /**
-     * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
-     * next sibling after itself with respect to its parent.
-     * 
-     * @param n
-     *            node in which to find next sibling
-     * @return IASTNode of next sibling or null if last child
-     */
-    public static IASTNode getNextSibling(IASTNode n) {
-        if (n.getParent() != null) {
-            IASTNode[] chilluns = n.getParent().getChildren();
-            for (int i = 0; i < chilluns.length; i++) {
-                if (n == chilluns[i] && i < (chilluns.length - 1)) {
-                    return chilluns[i + 1];
-                }
-            }
-        }
-        return null;
-    }
-
-    public static boolean isNameInScope(IASTName varname, IScope scope) {
-        IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
-        if (bindings.length > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
-        List<IBinding> result = new ArrayList<IBinding>(loops.size());
-        for (IASTForStatement forStmt : loops) {
-            ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(forStmt);
-            IBinding variable = loop.getIndexVariable();
-            if (variable != null) {
-                result.add(variable);
-            }
-        }
-        return result;
     }
 
     public static IASTTranslationUnit translationUnitForString(String string) throws CoreException {
