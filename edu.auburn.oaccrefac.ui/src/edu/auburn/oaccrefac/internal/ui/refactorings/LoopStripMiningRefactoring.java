@@ -2,7 +2,6 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
@@ -44,18 +43,8 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {        
-        //Get copy of original loop
-        IASTForStatement originalLoop = getLoop();
-        IASTForStatement loop = originalLoop.copy();
-        IASTExpression originalCondition = originalLoop.getConditionExpression();
-        IASTExpression ub = null;
-        if (originalCondition instanceof IASTBinaryExpression) {
-            ub = ((IASTBinaryExpression)originalCondition).getOperand2().copy();
-        }
-        
-        StripMine stripmine_change = new StripMine(loop, m_stripFactor, 
-                ub, originalLoop.getScope());
-        rewriter.replace(originalLoop, stripmine_change.change(), null);
+        StripMine stripmine_change = new StripMine(getLoop(), m_stripFactor);
+        rewriter.replace(getLoop(), stripmine_change.change(), null);
     }
     
     /**

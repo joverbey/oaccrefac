@@ -125,7 +125,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
         // Get the top level loop and the loop to refactor.
         IASTForStatement loop = getLoop();
-        InterchangeLoops inter = new InterchangeLoops(loop.copy(), m_depth);
+        InterchangeLoops inter = new InterchangeLoops(loop, m_depth);
         rewriter.replace(getLoop(), inter.change(), null);
     }
 

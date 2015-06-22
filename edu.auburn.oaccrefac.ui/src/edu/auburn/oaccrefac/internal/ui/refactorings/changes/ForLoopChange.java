@@ -13,13 +13,10 @@ public abstract class ForLoopChange {
     private IASTForStatement m_loop;
     
     public ForLoopChange(IASTForStatement loop) {
-        if (!loop.isFrozen()) {
+        if (loop != null) {
             m_loop = loop;
         } else {
-            throw new IllegalStateException("Error attempting"
-                    + "to make a ForLoopChange object with"
-                    + "a frozen node. Use node.copy() to create"
-                    + "an unfrozen copy of the node first.");
+            throw new IllegalStateException("Cannot change a null object");
         }
     }
     
@@ -39,10 +36,12 @@ public abstract class ForLoopChange {
      */
     public final IASTForStatement change() {
         if (m_loop != null) {
-            return doChange(m_loop);
+            return doChange(m_loop.copy());
         } else {
             return null;
         }
     }
+    
+    public IASTForStatement getOriginal() { return m_loop; }
     
 }

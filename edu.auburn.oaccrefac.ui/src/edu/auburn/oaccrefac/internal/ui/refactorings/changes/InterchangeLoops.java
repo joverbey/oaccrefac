@@ -27,7 +27,7 @@ public class InterchangeLoops extends ForLoopChange {
     @Override
     public IASTForStatement doChange(IASTForStatement loop) {
         
-        IASTForStatement temp = loop.copy();
+        IASTForStatement temp = getOriginal().copy();
         IASTForStatement xchng = loop;
         xchng = ASTUtil.findDepth(xchng, IASTForStatement.class, m_depth);
         if (xchng == null) {

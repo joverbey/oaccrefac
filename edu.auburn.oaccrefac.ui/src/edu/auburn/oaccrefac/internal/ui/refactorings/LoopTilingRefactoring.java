@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -8,7 +9,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.StripMine;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
@@ -72,7 +75,8 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-
+        IASTForStatement toMine = ASTUtil.findDepth(getLoop(), IASTForStatement.class, m_depth);
+        StripMine sm = new StripMine(toMine, m_stripFactor);
     }
 
 }
