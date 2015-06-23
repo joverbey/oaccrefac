@@ -10,7 +10,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.StripMine;
 
 /**
@@ -36,7 +36,7 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        if (!ForLoopUtil.isPerfectLoopNest(getLoop())) {
+        if (!ForStatementInquisitor.getInquisitor(getLoop()).isPerfectLoopNest()) {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
         }
     }
