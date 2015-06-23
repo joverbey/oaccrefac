@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.internal.core;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +32,12 @@ public class ForStatementInquisitor {
         return new ForStatementInquisitor(statement);
     }
 
-    private IASTForStatement statement;
+    private final IASTForStatement statement;
+
+    //checking whether the loop is counted is expensive and frequent, 
+    //so we cache the result per loop here
+    private static HashMap<IASTForStatement, Boolean> counted = new HashMap<IASTForStatement, Boolean>();
+    
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
             // Constant upper bound
@@ -71,34 +77,42 @@ public class ForStatementInquisitor {
      * @throws CoreException
      */
     public boolean isCountedLoop() {
-        class LiteralReplacer extends ASTVisitor {
-            public LiteralReplacer() {
-                shouldVisitExpressions = true;
-            }
-
-            @Override
-            public int visit(IASTExpression expr) {
-                if (expr instanceof IASTLiteralExpression && expr.getParent() != null) {
-                    IASTLiteralExpression literal = (IASTLiteralExpression) expr;
-                    if (literal.getParent() instanceof IASTBinaryExpression)
-                        ((IASTBinaryExpression) literal.getParent()).setOperand2(new ArbitraryIntegerConstant());
-                    else if (literal.getParent() instanceof IASTEqualsInitializer)
-                        ((IASTEqualsInitializer) literal.getParent())
-                                .setInitializerClause(new ArbitraryIntegerConstant());
+        if(counted.containsKey(statement)) {
+            return counted.get(statement);
+        }
+        else {
+            class LiteralReplacer extends ASTVisitor {
+                public LiteralReplacer() {
+                    shouldVisitExpressions = true;
                 }
-                return PROCESS_CONTINUE;
-            }
-        }
 
-        for (String pattern : patterns) {
-            IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
-            IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
-            patternAST.accept(new LiteralReplacer());
-            patternAST.setBody(new ArbitraryStatement());
-            if (ASTMatcher.unify(patternAST, statement) != null)
-                return true;
+                @Override
+                public int visit(IASTExpression expr) {
+                    if (expr instanceof IASTLiteralExpression && expr.getParent() != null) {
+                        IASTLiteralExpression literal = (IASTLiteralExpression) expr;
+                        if (literal.getParent() instanceof IASTBinaryExpression)
+                            ((IASTBinaryExpression) literal.getParent()).setOperand2(new ArbitraryIntegerConstant());
+                        else if (literal.getParent() instanceof IASTEqualsInitializer)
+                            ((IASTEqualsInitializer) literal.getParent())
+                                    .setInitializerClause(new ArbitraryIntegerConstant());
+                    }
+                    return PROCESS_CONTINUE;
+                }
+            }
+
+            for (String pattern : patterns) {
+                IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
+                IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
+                patternAST.accept(new LiteralReplacer());
+                patternAST.setBody(new ArbitraryStatement());
+                if (ASTMatcher.unify(patternAST, statement) != null) {
+                    counted.put(statement, true);
+                    return true;
+                }
+            }
+            counted.put(statement, false);
+            return false;
         }
-        return false;
     }
 
     /**
