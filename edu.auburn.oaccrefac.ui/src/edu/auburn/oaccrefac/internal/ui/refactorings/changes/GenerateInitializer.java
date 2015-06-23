@@ -12,7 +12,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
-import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class GenerateInitializer extends ForLoopChange {
 
@@ -106,8 +106,8 @@ public class GenerateInitializer extends ForLoopChange {
         int diffcounter = 0;
         String gen_str = m_base+"_"+diffcounter;
         m_name = factory.newName(gen_str.toCharArray());
-        while (ForLoopUtil.isNameInScope(m_name, m_scope)
-                || ForLoopUtil.isNameInScope(m_name, loop.getScope())) {
+        while (ASTUtil.isNameInScope(m_name, m_scope)
+                || ASTUtil.isNameInScope(m_name, loop.getScope())) {
             diffcounter++;
             gen_str = m_base+"_"+diffcounter;
             m_name = factory.newName(gen_str.toCharArray());
