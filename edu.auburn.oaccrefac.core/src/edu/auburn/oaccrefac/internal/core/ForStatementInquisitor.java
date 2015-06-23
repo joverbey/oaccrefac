@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.core;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,9 +33,7 @@ public class ForStatementInquisitor {
 
     private final IASTForStatement statement;
 
-    //checking whether the loop is counted is expensive and frequent, 
-    //so we cache the result per loop here
-    private static HashMap<IASTForStatement, Boolean> counted = new HashMap<IASTForStatement, Boolean>();
+    private boolean counted;
     
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
@@ -58,10 +55,42 @@ public class ForStatementInquisitor {
             "for (int i = 0; i <= j.k; i=i+1) ;", };
 
     private ForStatementInquisitor(IASTForStatement statement) {
-        // TODO decide if we want to call ForLoopUtil methods here initially
-        // and store results in fields or if we should do it on the fly
-        // when the information is needed
         this.statement = statement;
+        
+        //cache whether or not the loop is counted for performance
+        class LiteralReplacer extends ASTVisitor {
+            public LiteralReplacer() {
+                shouldVisitExpressions = true;
+            }
+
+            @Override
+            public int visit(IASTExpression expr) {
+                if (expr instanceof IASTLiteralExpression && expr.getParent() != null) {
+                    IASTLiteralExpression literal = (IASTLiteralExpression) expr;
+                    if (literal.getParent() instanceof IASTBinaryExpression)
+                        ((IASTBinaryExpression) literal.getParent()).setOperand2(new ArbitraryIntegerConstant());
+                    else if (literal.getParent() instanceof IASTEqualsInitializer)
+                        ((IASTEqualsInitializer) literal.getParent())
+                                .setInitializerClause(new ArbitraryIntegerConstant());
+                }
+                return PROCESS_CONTINUE;
+            }
+        }
+        boolean countedInitialized = false;
+        for (String pattern : patterns) {
+            IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
+            IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
+            patternAST.accept(new LiteralReplacer());
+            patternAST.setBody(new ArbitraryStatement());
+            if (ASTMatcher.unify(patternAST, statement) != null) {
+                counted = true;
+                countedInitialized = true;
+                break;
+            }
+        }
+        if(!countedInitialized) {
+            counted = false;
+        }
     }
 
     /**
@@ -77,42 +106,7 @@ public class ForStatementInquisitor {
      * @throws CoreException
      */
     public boolean isCountedLoop() {
-        if(counted.containsKey(statement)) {
-            return counted.get(statement);
-        }
-        else {
-            class LiteralReplacer extends ASTVisitor {
-                public LiteralReplacer() {
-                    shouldVisitExpressions = true;
-                }
-
-                @Override
-                public int visit(IASTExpression expr) {
-                    if (expr instanceof IASTLiteralExpression && expr.getParent() != null) {
-                        IASTLiteralExpression literal = (IASTLiteralExpression) expr;
-                        if (literal.getParent() instanceof IASTBinaryExpression)
-                            ((IASTBinaryExpression) literal.getParent()).setOperand2(new ArbitraryIntegerConstant());
-                        else if (literal.getParent() instanceof IASTEqualsInitializer)
-                            ((IASTEqualsInitializer) literal.getParent())
-                                    .setInitializerClause(new ArbitraryIntegerConstant());
-                    }
-                    return PROCESS_CONTINUE;
-                }
-            }
-
-            for (String pattern : patterns) {
-                IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
-                IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
-                patternAST.accept(new LiteralReplacer());
-                patternAST.setBody(new ArbitraryStatement());
-                if (ASTMatcher.unify(patternAST, statement) != null) {
-                    counted.put(statement, true);
-                    return true;
-                }
-            }
-            counted.put(statement, false);
-            return false;
-        }
+        return counted;
     }
 
     /**

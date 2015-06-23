@@ -1,7 +1,6 @@
 package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import edu.auburn.oaccrefac.core.dependence.Direction;
