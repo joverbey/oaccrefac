@@ -104,7 +104,7 @@ public class ASTUtil {
     public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
         List<IBinding> result = new ArrayList<IBinding>(loops.size());
         for (IASTForStatement forStmt : loops) {
-            ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(forStmt);
+            ForStatementInquisitor loop = InquisitorFactory.getInquisitor(forStmt);
             IBinding variable = loop.getIndexVariable();
             if (variable != null) {
                 result.add(variable);
