@@ -13,7 +13,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FuseLoops;
 
 /**
@@ -44,8 +43,8 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
         loop = getLoop();
         boolean found = false;
         IASTNode newnode = loop;
-        while (ForLoopUtil.getNextSibling(newnode) != null && !found) {
-            newnode = ForLoopUtil.getNextSibling(newnode);
+        while (ASTUtil.getNextSibling(newnode) != null && !found) {
+            newnode = ASTUtil.getNextSibling(newnode);
             nxtloop = findLoop(newnode);
             found = (nxtloop != null);
         }

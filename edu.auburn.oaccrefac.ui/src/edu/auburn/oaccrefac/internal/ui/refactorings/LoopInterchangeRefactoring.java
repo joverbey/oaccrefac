@@ -15,7 +15,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.Direction;
-import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.InterchangeLoops;
 
@@ -35,7 +34,8 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        if (!ForLoopUtil.isPerfectLoopNest(getLoop())) {
+        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(getLoop());
+        if (!forLoop.isPerfectLoopNest()) {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
         }
     }
@@ -102,7 +102,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
         if (i < 0 || j < 0 || i >= dirVec.length || j >= dirVec.length) {
             throw new IllegalArgumentException();
         }
-        
+
         Direction[] result = new Direction[dirVec.length];
         System.arraycopy(dirVec, 0, result, 0, dirVec.length);
         Direction tmp = result[i];
