@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
@@ -20,6 +21,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
+import org.eclipse.cdt.core.formatter.CodeFormatter;
 import org.eclipse.cdt.core.parser.DefaultLogService;
 import org.eclipse.cdt.core.parser.FileContent;
 import org.eclipse.cdt.core.parser.IParserLogService;
@@ -28,6 +30,11 @@ import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
 import org.junit.Assert;
 
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
@@ -259,6 +266,21 @@ public class ASTUtil {
         } catch (ExpansionOverlapsBoundaryException e) {
             return "<error>";
         }
+    }
+    
+    public static String format(String source) {
+        CodeFormatter cf = ToolFactory.createDefaultCodeFormatter(null);
+        TextEdit edit = cf.format(CodeFormatter.K_STATEMENTS, 
+                source, 0, source.length(), 0, null);
+        IDocument doc = new Document(source);
+        try {
+            edit.apply(doc);
+        } catch (MalformedTreeException e) {
+            e.printStackTrace();
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        return doc.get();
     }
 
     /**

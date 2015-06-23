@@ -11,6 +11,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForLoopUtil;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.InterchangeLoops;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.StripMine;
 
 /**
@@ -75,8 +76,14 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        IASTForStatement toMine = ASTUtil.findDepth(getLoop(), IASTForStatement.class, m_depth);
-        StripMine sm = new StripMine(toMine, m_stripFactor);
+        StripMine sm = new StripMine(getLoop(), m_stripFactor, m_depth);
+        IASTForStatement refactored = sm.change();
+//        for (int i = 0; (i < m_propagate && m_depth-i > 0); i++) {
+//            IASTForStatement toInterchange = ASTUtil.findDepth(refactored, IASTForStatement.class, m_depth-i-1);
+//            InterchangeLoops il = new InterchangeLoops(toInterchange, m_depth-i);
+//            refactored = il.change();
+//        }
+        rewriter.replace(getLoop(), refactored, null);
     }
 
 }

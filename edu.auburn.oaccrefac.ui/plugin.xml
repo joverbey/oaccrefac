@@ -63,6 +63,14 @@
                toolbarPath="oaccrefac_group"
                tooltip="Rearranges a loop into doubly-nested loops">
          </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.LoopTilingDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.LoopTilingDelegate"
+               label="&amp;Tiling"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="Tiles the iteration ordering of nested loop">
+         </action>
       </actionSet>
    </extension>
 

@@ -20,16 +20,19 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 public class StripMine extends ForLoopChange {
     
     private int m_stripFactor;
+    private int m_depth;
     
-    public StripMine(IASTForStatement loop, int stripFactor) {
+    public StripMine(IASTForStatement loop, int stripFactor, int depth) {
         super(loop);
         m_stripFactor = stripFactor;
+        m_depth = depth;
     }
 
     @Override
     public IASTForStatement doChange(IASTForStatement loop) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTForStatement inner = loop.copy();
+        
+        IASTForStatement inner = ASTUtil.findDepth(loop, IASTForStatement.class, m_depth).copy();
         
         IASTExpression upperBound = null;
         if (loop.getConditionExpression() instanceof IASTBinaryExpression) {

@@ -43,7 +43,7 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {        
-        StripMine stripmine_change = new StripMine(getLoop(), m_stripFactor);
+        StripMine stripmine_change = new StripMine(getLoop(), m_stripFactor, 0);
         rewriter.replace(getLoop(), stripmine_change.change(), null);
     }
     
