@@ -3,7 +3,7 @@ package edu.auburn.oaccrefac.internal.ui;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -20,7 +20,7 @@ public class NumberInputComposite extends Composite {
     
     public NumberInputComposite(Composite parent, int style) {
         super(parent, style);
-        setLayout(new RowLayout());
+        setLayout(new GridLayout(2, false));
         m_label = new Label(this, SWT.NONE);
         m_inputText = new Text(this, SWT.LEFT | SWT.BORDER);
         

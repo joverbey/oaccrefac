@@ -4,8 +4,8 @@ import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 
 import edu.auburn.oaccrefac.internal.ui.NumberInputComposite.ValueChangedListener;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopTilingRefactoring;
@@ -35,8 +35,10 @@ public class LoopTilingWizard extends RefactoringWizard {
 
         @Override
         public void createControl(Composite parent) {
+            parent.setLayout(new GridLayout());
+            
             Composite c = new Composite(parent, SWT.NONE);
-            c.setLayout(new ColumnLayout());
+            c.setLayout(new GridLayout());
             
             NumberInputComposite stripDepth = new NumberInputComposite(c, SWT.NONE);
             stripDepth.setLabelText("Strip Depth: ");
@@ -68,6 +70,7 @@ public class LoopTilingWizard extends RefactoringWizard {
             setControl(c);
             setTitle(getName());
             setPageComplete(true);
+            parent.layout();
         }
     }
 }
