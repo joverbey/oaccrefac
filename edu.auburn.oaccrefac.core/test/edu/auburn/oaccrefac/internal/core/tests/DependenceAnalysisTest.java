@@ -138,6 +138,38 @@ public class DependenceAnalysisTest extends TestCase {
         assertDependencesEqual(expected, stmt);
     }
 
+    public void testScalability() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{" + //
+                "        int kx, ky, n = 10, nl1, nl2, sig;\n" +
+                "        int a11, a12, a13, a21, a22, a23, a31, a32, a33;\n" +
+                "        int du1[1000], du2[1000], du3[1000];\n" +
+                "        int du1[1000], du2[1000], du3[1000];\n" +
+                "        int u1[1000][1000][1000], u2[1000][1000][1000], u3[1000][1000][1000];\n" +
+                "        for ( kx=1 ; kx<3 ; kx++ ) /*<<<<< 1294, 9, 1311, 13, Kernel8outer */\n" + 
+                "        {\n" + 
+                "\n" + 
+                "           for ( ky=1 ; ky<n ; ky++ ) /*<<<<< 1297, 12, 1311, 13, Kernel8inner */\n" + 
+                "           {\n" + 
+                "              du1[ky] = u1[nl1][ky+1][kx] - u1[nl1][ky-1][kx];\n" + 
+                "              du2[ky] = u2[nl1][ky+1][kx] - u2[nl1][ky-1][kx];\n" + 
+                "              du3[ky] = u3[nl1][ky+1][kx] - u3[nl1][ky-1][kx];\n" + 
+                "              u1[nl2][ky][kx]=\n" + 
+                "                 u1[nl1][ky][kx]+a11*du1[ky]+a12*du2[ky]+a13*du3[ky] + sig*\n" + 
+                "                  (u1[nl1][ky][kx+1]-2.0*u1[nl1][ky][kx]+u1[nl1][ky][kx-1]);\n" + 
+                "              u2[nl2][ky][kx]=\n" + 
+                "                 u2[nl1][ky][kx]+a21*du1[ky]+a22*du2[ky]+a23*du3[ky] + sig*\n" + 
+                "                  (u2[nl1][ky][kx+1]-2.0*u2[nl1][ky][kx]+u2[nl1][ky][kx-1]);\n" + 
+                "              u3[nl2][ky][kx]=\n" + 
+                "                 u3[nl1][ky][kx]+a31*du1[ky]+a32*du2[ky]+a33*du3[ky] + sig*\n" + 
+                "                  (u3[nl1][ky][kx+1]-2.0*u3[nl1][ky][kx]+u3[nl1][ky][kx-1]);\n" + 
+                "           }\n" + 
+                "        }\n" + 
+                "}");
+        for (int i = 0; i < 30; i++) {
+            assertTrue(new DependenceAnalysis(new NullProgressMonitor(), stmt).getDependences().size() > 0);
+        }
+    }
+
     private void assertDependencesEqual(String[] expectedStrings, IASTStatement stmt) throws DependenceTestFailure {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 

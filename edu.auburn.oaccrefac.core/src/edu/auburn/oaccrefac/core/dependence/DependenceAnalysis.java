@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 import edu.auburn.oaccrefac.internal.core.Pair;
 import edu.auburn.oaccrefac.internal.core.dependence.DirectionHierarchyTester;
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
@@ -100,7 +101,7 @@ public class DependenceAnalysis {
                         int[] lowerBounds = fillArray(commonLoops.size(), Integer.MIN_VALUE + 1);
                         int[] upperBounds = fillArray(commonLoops.size(), Integer.MAX_VALUE - 1);
                         for (int i = 0; i < commonLoops.size(); i++) {
-                            ForStatementInquisitor thisLoop = ForStatementInquisitor.getInquisitor(commonLoops.get(i));
+                            ForStatementInquisitor thisLoop = InquisitorFactory.getInquisitor(commonLoops.get(i));
                             lowerBounds[i] = thisLoop.getLowerBound();
                             upperBounds[i] = thisLoop.getInclusiveUpperBound();
                         }
@@ -168,7 +169,7 @@ public class DependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTForStatement stmt) throws DependenceTestFailure {
-        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(stmt);
+        ForStatementInquisitor forLoop = InquisitorFactory.getInquisitor(stmt);
         if (!forLoop.isCountedLoop()) {
             throw unsupported(stmt);
         }

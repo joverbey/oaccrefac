@@ -31,7 +31,10 @@ public class ForStatementInquisitor {
         return new ForStatementInquisitor(statement);
     }
 
-    private IASTForStatement statement;
+    private final IASTForStatement statement;
+
+    private boolean counted;
+    
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
             // Constant upper bound
@@ -52,25 +55,9 @@ public class ForStatementInquisitor {
             "for (int i = 0; i <= j.k; i=i+1) ;", };
 
     private ForStatementInquisitor(IASTForStatement statement) {
-        // TODO decide if we want to call ForLoopUtil methods here initially
-        // and store results in fields or if we should do it on the fly
-        // when the information is needed
         this.statement = statement;
-    }
-
-    /**
-     * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
-     * string into a corresponding AST and then uses a pattern matching utility to match if the pattern is loosely
-     * synonymous to the matchee. (Basically, we have to check some pre-conditions before refactoring or else we could
-     * run into some hairy cases such as an array subscript expression being in the initializer statement...which would
-     * be a nightmare to refactor).
-     * 
-     * @param matchee
-     *            -- tree or AST to match
-     * @return Boolean describing whether the matchee matches any supported pattern
-     * @throws CoreException
-     */
-    public boolean isCountedLoop() {
+        
+        //cache whether or not the loop is counted for performance
         class LiteralReplacer extends ASTVisitor {
             public LiteralReplacer() {
                 shouldVisitExpressions = true;
@@ -89,16 +76,37 @@ public class ForStatementInquisitor {
                 return PROCESS_CONTINUE;
             }
         }
-
+        boolean countedInitialized = false;
         for (String pattern : patterns) {
             IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
             patternAST.accept(new LiteralReplacer());
             patternAST.setBody(new ArbitraryStatement());
-            if (ASTMatcher.unify(patternAST, statement) != null)
-                return true;
+            if (ASTMatcher.unify(patternAST, statement) != null) {
+                counted = true;
+                countedInitialized = true;
+                break;
+            }
         }
-        return false;
+        if(!countedInitialized) {
+            counted = false;
+        }
+    }
+
+    /**
+     * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
+     * string into a corresponding AST and then uses a pattern matching utility to match if the pattern is loosely
+     * synonymous to the matchee. (Basically, we have to check some pre-conditions before refactoring or else we could
+     * run into some hairy cases such as an array subscript expression being in the initializer statement...which would
+     * be a nightmare to refactor).
+     * 
+     * @param matchee
+     *            -- tree or AST to match
+     * @return Boolean describing whether the matchee matches any supported pattern
+     * @throws CoreException
+     */
+    public boolean isCountedLoop() {
+        return counted;
     }
 
     /**
