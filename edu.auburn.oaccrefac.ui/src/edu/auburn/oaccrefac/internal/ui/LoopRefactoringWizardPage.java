@@ -27,8 +27,6 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
 
     @Override
     public void createControl(Composite parent) {
-        parent.setLayout(new GridLayout());
-        
         Composite c = new Composite(parent, SWT.NONE);
         c.setLayout(new GridLayout());
         
@@ -41,7 +39,6 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         setControl(c);
         setTitle(getName());
         setPageComplete(true);
-        parent.layout();
     }
 
 }
