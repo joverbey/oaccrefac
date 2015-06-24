@@ -121,10 +121,9 @@ public class StripMine extends ForLoopChange {
             mine_check = (IASTBinaryExpression)conditionExpression.copy();
         }
         
-        int adjustedFactor = m_stripFactor - 1;
         IASTLiteralExpression factorliteral = factory.newLiteralExpression(
                 IASTLiteralExpression.lk_integer_constant, 
-                adjustedFactor+"");
+                m_stripFactor+"");
         IASTBinaryExpression plusfactor = factory.newBinaryExpression(
                 IASTBinaryExpression.op_plus, 
                 outer_idexp, 

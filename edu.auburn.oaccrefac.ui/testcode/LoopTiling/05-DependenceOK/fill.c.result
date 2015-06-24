@@ -14,8 +14,8 @@ int main(void) {
 
 	for (int j_0 = 0; j_0 < 10; j_0 += 2) {
 		for (int i = 1; i < 10; i++) {
-			for (int j = j_0; (j < j_0 && j_0 < 10); j++) {
-				a[i][j] = a[i-1][j];
+			for (int j = j_0; (j < j_0 + 2 && j < 10); j++) {
+				a[i][j] = a[i - 1][j];
 			}
 		}
 	}
