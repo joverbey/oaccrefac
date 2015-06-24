@@ -25,7 +25,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopTilingRefactoring;
 public class LoopTilingTests extends RefactoringTest<LoopTilingRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/LoopStripMining");
+        return generateParameters("testcode/LoopTiling");
     }
 
     public LoopTilingTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
