@@ -35,7 +35,7 @@ public class StripMine extends ForLoopChange {
         IASTForStatement inner = outer.copy();
         
         //Get expressions that we will need...
-        IASTExpression upperBound = getUpperBoundExpression(loop);
+        IASTExpression upperBound = getUpperBoundExpression(outer);
         IASTName counter_name = ASTUtil.findOne(outer.getInitializerStatement(), IASTName.class);  
         String counter_str = new String(counter_name.getSimpleID());
         
@@ -63,8 +63,8 @@ public class StripMine extends ForLoopChange {
     private IASTExpression getUpperBoundExpression(IASTForStatement loop) {
         IASTExpression ub = null;
         if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
-            IASTBinaryExpression cond_be = (IASTBinaryExpression) getOriginal().getConditionExpression();
-            ub = (IASTExpression)cond_be.getOperand2().copy();
+            IASTBinaryExpression cond_be = (IASTBinaryExpression) loop.getConditionExpression();
+            ub = (IASTExpression)cond_be.getOperand2();
         } else {
             throw new UnsupportedOperationException("Non-binary conditional statements unsupported");
         }
