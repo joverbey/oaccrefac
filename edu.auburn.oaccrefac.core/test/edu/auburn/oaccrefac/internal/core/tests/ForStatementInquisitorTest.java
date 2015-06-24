@@ -66,6 +66,42 @@ public class ForStatementInquisitorTest {
     }
     
     @Test
+    public void test_areAllInnermostStatementsValidAsgtBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) i=i-1;");
+        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
+    public void test_areAllInnermostStatementsValidEmptyCompBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) {}");
+        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
+    public void test_areAllInnermostStatementsValidForBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) for(j=0;j<10;j++);");
+        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
+    public void test_areAllInnermostStatementsValidForCompBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++) {i=6;} }");
+        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
+    public void test_areAllInnermostStatementsValidNullCompBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { ; }");
+        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
+    public void test_areAllInnermostStatementsValidBadCompBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { printf(); }");
+        Assert.assertFalse(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
     public void test_getInnermostLoopBody() {
         ForStatementInquisitor inq = getInq(basic);
         Assert.assertTrue(inq.getInnermostLoopBody() == inq.getStatement().getBody());
@@ -103,5 +139,28 @@ public class ForStatementInquisitorTest {
         Assert.assertTrue(inq.isPerfectLoopNest());
     }
     
+    @Test
+    public void test_isPerfectLoopNestNested() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) for(j=0;j<10;j++);");
+        Assert.assertTrue(inq.isPerfectLoopNest());
+    }
+    
+    @Test
+    public void test_isPerfectLoopNestCompFor() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++); }");
+        Assert.assertTrue(inq.isPerfectLoopNest());
+    }
+    
+    @Test
+    public void test_isPerfectLoopNestCompNotFor() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { i=j; }");
+        Assert.assertTrue(inq.isPerfectLoopNest());
+    }
+    
+    @Test
+    public void test_isPerfectLoopNestComp() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++); }");
+        Assert.assertTrue(inq.isPerfectLoopNest());
+    }
 
 }

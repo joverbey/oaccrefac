@@ -234,10 +234,12 @@ public class ForStatementInquisitor {
             return true;
         }
         else { // neither compound nor for statement - body is the only statement
-            if (body instanceof IASTBinaryExpression) {
-                if (((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
-                    return true;
-                }
+            if (body instanceof IASTExpressionStatement) {
+                if(body.getChildren()[0] instanceof IASTBinaryExpression) {
+                    if (((IASTBinaryExpression) body.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
+                        return true;
+                    }   
+                }                
             }
             // either not binary or not an assignment
             return false;
