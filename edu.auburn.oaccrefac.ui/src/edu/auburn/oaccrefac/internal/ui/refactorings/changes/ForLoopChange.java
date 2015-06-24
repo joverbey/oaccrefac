@@ -36,7 +36,11 @@ public abstract class ForLoopChange {
      */
     public final IASTForStatement change() {
         if (m_loop != null) {
-            return doChange(m_loop.copy());
+            if (m_loop.isFrozen()) {
+                return doChange(m_loop.copy());
+            } else {
+                return doChange(m_loop);
+            }
         } else {
             return null;
         }

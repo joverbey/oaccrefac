@@ -75,13 +75,13 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
         StripMine sm = new StripMine(getLoop(), m_stripFactor, m_depth);
-        IASTForStatement refactored = sm.change();
+        IASTForStatement stripMined = sm.change();
+        rewriter.replace(getLoop(), stripMined, null);
 //        for (int i = 0; (i < m_propagate && m_depth-i > 0); i++) {
 //            IASTForStatement toInterchange = ASTUtil.findDepth(refactored, IASTForStatement.class, m_depth-i-1);
 //            InterchangeLoops il = new InterchangeLoops(toInterchange, m_depth-i);
 //            refactored = il.change();
 //        }
-        rewriter.replace(getLoop(), refactored, null);
     }
 
 }

@@ -33,18 +33,25 @@ public class LoopInterchangeDelegate extends RefactoringActionDelegate {
     public RefactoringWizard createWizard(Refactoring refactoring) {
         if (!(refactoring instanceof LoopInterchangeRefactoring))
             throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
-        final LoopInterchangeRefactoring refac = (LoopInterchangeRefactoring) refactoring;
         LoopRefactoringWizard harryP = new LoopRefactoringWizard(refactoring, 
                 "Loop Interchange Refactoring");
         LoopRefactoringWizardPage page = new LoopRefactoringWizardPage("LoopInterchange");
-        page.addNumberInputControl("Interchange Depth: ", new ValueChangedListener() {
-            @Override
-            public void valueChanged(int value) {
-                refac.setExchangeDepth(value);
-            }
-        });
+        page.addNumberInputControl("Interchange Depth: ", 
+                new ChangedExchange((LoopInterchangeRefactoring)refactoring));
         harryP.addRefactoringPage(page);
         return harryP;
+    }
+    
+    private class ChangedExchange implements ValueChangedListener {
+        LoopInterchangeRefactoring m_refactoring;
+        public ChangedExchange(LoopInterchangeRefactoring refactoring) {
+            m_refactoring = refactoring;
+        }
+        @Override
+        public void valueChanged(int value) {
+            m_refactoring.setExchangeDepth(value);
+        }
+        
     }
 
 }

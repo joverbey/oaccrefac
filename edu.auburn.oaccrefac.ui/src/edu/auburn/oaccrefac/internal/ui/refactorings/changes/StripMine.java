@@ -30,28 +30,25 @@ public class StripMine extends ForLoopChange {
 
     @Override
     public IASTForStatement doChange(IASTForStatement loop) {
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        //Set up which loops we need to deal with
+        IASTForStatement outer = ASTUtil.findDepth(loop, IASTForStatement.class, m_depth);
+        IASTForStatement inner = outer.copy();
         
-        IASTForStatement inner = ASTUtil.findDepth(loop, IASTForStatement.class, m_depth).copy();
-        
-        IASTExpression upperBound = null;
-        if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
-            IASTBinaryExpression cond_be = (IASTBinaryExpression) getOriginal().getConditionExpression();
-            upperBound = (IASTExpression)cond_be.getOperand2().copy();
-        } else {
-            throw new UnsupportedOperationException("Non-binary conditional statements unsupported");
-        }
-
-        IASTName counter_name = ASTUtil.findOne(getOriginal().getInitializerStatement(), IASTName.class);  
+        //Get expressions that we will need...
+        IASTExpression upperBound = getUpperBoundExpression(loop);
+        IASTName counter_name = ASTUtil.findOne(outer.getInitializerStatement(), IASTName.class);  
         String counter_str = new String(counter_name.getSimpleID());
-        GenerateInitializer gi = new GenerateInitializer(loop, counter_str, getOriginal().getScope());
-        loop = gi.change();
         
-        loop.setConditionExpression(factory.newBinaryExpression(IASTBinaryExpression.op_lessThan, 
+        //Generate initializer for outer loop
+        GenerateInitializer gi = new GenerateInitializer(outer, counter_str, getOriginal().getScope());
+        outer = gi.change();
+        
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        outer.setConditionExpression(factory.newBinaryExpression(IASTBinaryExpression.op_lessThan, 
                 factory.newIdExpression(gi.getGeneratedName()), 
                 upperBound));
         
-        loop.setIterationExpression(factory.newBinaryExpression(IASTBinaryExpression.op_plusAssign, 
+        outer.setIterationExpression(factory.newBinaryExpression(IASTBinaryExpression.op_plusAssign, 
                 factory.newIdExpression(gi.getGeneratedName()), 
                 factory.newLiteralExpression(
                         IASTLiteralExpression.lk_integer_constant, m_stripFactor+"")));
@@ -59,8 +56,19 @@ public class StripMine extends ForLoopChange {
         modifyInnerLoop(inner, gi.getGeneratedName(), upperBound, factory);
         IASTCompoundStatement innercompound = factory.newCompoundStatement();
         innercompound.addStatement(inner);
-        loop.setBody(innercompound);
+        outer.setBody(innercompound);
         return loop;
+    }
+
+    private IASTExpression getUpperBoundExpression(IASTForStatement loop) {
+        IASTExpression ub = null;
+        if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
+            IASTBinaryExpression cond_be = (IASTBinaryExpression) getOriginal().getConditionExpression();
+            ub = (IASTExpression)cond_be.getOperand2().copy();
+        } else {
+            throw new UnsupportedOperationException("Non-binary conditional statements unsupported");
+        }
+        return ub;
     }
 
 
