@@ -35,9 +35,9 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
             throw new ClassCastException("Refactoring not LoopTilingRefactoring!");
         
         final LoopTilingRefactoring refac = (LoopTilingRefactoring) refactoring;
-        LoopRefactoringWizard harryP = new LoopRefactoringWizard(refactoring, 
+        LoopRefactoringWizard malfoy = new LoopRefactoringWizard(refactoring, 
                 "Loop Tiling Refactoring");
-        LoopRefactoringWizardPage page = new LoopRefactoringWizardPage("LoopTiling");
+        LoopRefactoringWizardPage page = malfoy.getInputPage();
         page.addNumberInputControl("Strip Depth: ", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
@@ -58,8 +58,7 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
                         refac.setPropagateInterchange(value);
                     }
         });
-        harryP.addRefactoringPage(page);
-        return harryP;
+        return malfoy;
     }
 
 }

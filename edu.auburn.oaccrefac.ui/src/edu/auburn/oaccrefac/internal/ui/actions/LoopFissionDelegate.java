@@ -9,8 +9,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
-import edu.auburn.oaccrefac.internal.ui.LoopFissionWizard;
+import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizard;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFissionRefactoring;
+import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopFissionDelegate extends RefactoringActionDelegate {
@@ -29,8 +30,10 @@ public class LoopFissionDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopFissionRefactoring))
-            throw new ClassCastException("Refactoring doesn't support LoopFissionRefactoring!");
-        return new LoopFissionWizard((LoopFissionRefactoring) refactoring);
+        if (!(refactoring instanceof LoopFusionRefactoring))
+            throw new ClassCastException("Refactoring not LoopFusionRefactoring!");
+        LoopRefactoringWizard tomRiddle = 
+                new LoopRefactoringWizard(refactoring, "LoopFusionRefactoring");
+        return tomRiddle;
     }
 }

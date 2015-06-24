@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
-import edu.auburn.oaccrefac.internal.ui.LoopFusionWizard;
+import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizard;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
 
 @SuppressWarnings("restriction")
@@ -30,7 +30,9 @@ public class LoopFusionDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         if (!(refactoring instanceof LoopFusionRefactoring))
-            throw new ClassCastException("Refactoring doesn't support LoopFusionRefactoring!");
-        return new LoopFusionWizard((LoopFusionRefactoring) refactoring);
+            throw new ClassCastException("Refactoring not LoopFusionRefactoring!");
+        LoopRefactoringWizard dumbledore = 
+                new LoopRefactoringWizard(refactoring, "LoopFusionRefactoring");
+        return dumbledore;
     }
 }

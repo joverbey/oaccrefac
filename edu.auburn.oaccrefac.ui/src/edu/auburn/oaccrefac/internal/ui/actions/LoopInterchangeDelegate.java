@@ -10,7 +10,6 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizard;
-import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizardPage;
 import edu.auburn.oaccrefac.internal.ui.NumberInputComposite.ValueChangedListener;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopInterchangeRefactoring;
 
@@ -35,23 +34,15 @@ public class LoopInterchangeDelegate extends RefactoringActionDelegate {
             throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
         LoopRefactoringWizard harryP = new LoopRefactoringWizard(refactoring, 
                 "Loop Interchange Refactoring");
-        LoopRefactoringWizardPage page = new LoopRefactoringWizardPage("LoopInterchange");
-        page.addNumberInputControl("Interchange Depth: ", 
-                new ChangedExchange((LoopInterchangeRefactoring)refactoring));
-        harryP.addRefactoringPage(page);
+        final LoopInterchangeRefactoring refac = (LoopInterchangeRefactoring) refactoring;
+        harryP.getInputPage().addNumberInputControl("Interchange Depth: ", 
+                new ValueChangedListener() {
+                    @Override
+                    public void valueChanged(int value) {
+                        refac.setExchangeDepth(value);
+                    }
+                });
         return harryP;
-    }
-    
-    private class ChangedExchange implements ValueChangedListener {
-        LoopInterchangeRefactoring m_refactoring;
-        public ChangedExchange(LoopInterchangeRefactoring refactoring) {
-            m_refactoring = refactoring;
-        }
-        @Override
-        public void valueChanged(int value) {
-            m_refactoring.setExchangeDepth(value);
-        }
-        
     }
 
 }
