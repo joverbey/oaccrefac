@@ -1,6 +1,8 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
@@ -15,7 +17,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 public class ForStatementInquisitorTest {
 
     String basic = "for(int i = 0; i < 10; i++);";
-    String infinite = "for(;;);";
+    String uncounted = "for(;;);";
     
     private ForStatementInquisitor getInq(String code) {
         IASTStatement stmt;
@@ -34,9 +36,21 @@ public class ForStatementInquisitorTest {
     }
     
     @Test
+    public void test_isNotCountedLoop() {
+        ForStatementInquisitor inq = getInq(uncounted);
+        Assert.assertFalse(inq.isCountedLoop());
+    }
+    
+    @Test
     public void test_getIndexVariable() {
         ForStatementInquisitor inq = getInq(basic);
         Assert.assertEquals(inq.getIndexVariable().getName(), "i");
+    }
+    
+    @Test
+    public void test_noIndexVariable() {
+        ForStatementInquisitor inq = getInq(uncounted);
+        Assert.assertEquals(inq.getIndexVariable(), null);
     }
     
     @Test
@@ -55,6 +69,26 @@ public class ForStatementInquisitorTest {
     public void test_getInnermostLoopBody() {
         ForStatementInquisitor inq = getInq(basic);
         Assert.assertTrue(inq.getInnermostLoopBody() == inq.getStatement().getBody());
+    }
+    
+    @Test
+    public void test_getInnermostLoopBodyForStmt() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) for(j=0;j<10;j++);");
+        Assert.assertTrue(inq.getInnermostLoopBody() instanceof IASTNullStatement);
+    }
+    
+    @Test
+    public void test_getInnermostLoopBodyCompStmt() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) for(j=0;j<10;j++) {i=j;}");
+        Assert.assertTrue(inq.getInnermostLoopBody() instanceof IASTCompoundStatement);
+        Assert.assertTrue(inq.getInnermostLoopBody().getRawSignature().equals("{i=j;}"));
+    }
+    
+    @Test
+    public void test_getInnermostLoopBodyCompStmtWithFor() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++) {i=j;} }");
+        Assert.assertTrue(inq.getInnermostLoopBody() instanceof IASTCompoundStatement);
+        Assert.assertTrue(inq.getInnermostLoopBody().getRawSignature().equals("{i=j;}"));
     }
     
     @Test
