@@ -33,6 +33,10 @@ public class ForStatementInquisitor {
 
     private final IASTForStatement statement;
 
+    public IASTForStatement getStatement() {
+        return statement;
+    }
+
     private boolean counted;
     
     // Patterns of for loops that are acceptable to refactor...
@@ -141,7 +145,7 @@ public class ForStatementInquisitor {
         return nameFinder.name.resolveBinding();
     }
 
-    // FIXME fails to handle cases where there lower bound is not 0
+    // FIXME fails to handle cases where the lower bound is not 0
     public int getLowerBound() {
         return 0;
     }
@@ -171,7 +175,6 @@ public class ForStatementInquisitor {
     public IASTStatement getInnermostLoopBody() {
         return getInnermostLoopBody(statement);
     }
-
     private IASTStatement getInnermostLoopBody(IASTForStatement outerLoop) {
         IASTStatement body = outerLoop.getBody();
         if (body instanceof IASTForStatement) {
@@ -198,7 +201,6 @@ public class ForStatementInquisitor {
     public boolean areAllInnermostStatementsValid() {
         return areAllInnermostStatementsValid(statement);
     }
-
     private boolean areAllInnermostStatementsValid(IASTForStatement outerLoop) {
         IASTNode body = outerLoop.getBody();
         if (body instanceof IASTCompoundStatement) {
@@ -228,7 +230,10 @@ public class ForStatementInquisitor {
             }
         } else if (body instanceof IASTForStatement) {
             return areAllInnermostStatementsValid((IASTForStatement) body);
-        } else { // neither compound nor for statement - body is the only statement
+        } else if(body instanceof IASTNullStatement) {
+            return true;
+        }
+        else { // neither compound nor for statement - body is the only statement
             if (body instanceof IASTBinaryExpression) {
                 if (((IASTBinaryExpression) body).getOperator() == IASTBinaryExpression.op_assign) {
                     return true;
@@ -242,7 +247,6 @@ public class ForStatementInquisitor {
     public List<IASTForStatement> getPerfectLoopNestHeaders() {
         return getPerfectLoopNestHeaders(statement);
     }
-
     private static List<IASTForStatement> getPerfectLoopNestHeaders(IASTForStatement outerLoop) {
         List<IASTForStatement> result = new LinkedList<IASTForStatement>();
         result.add(outerLoop);
@@ -261,7 +265,6 @@ public class ForStatementInquisitor {
     public boolean isPerfectLoopNest() {
         return isPerfectLoopNest(statement);
     }
-
     private boolean isPerfectLoopNest(IASTForStatement outerLoop) {
         if (!doesForLoopContainForLoopChild(outerLoop)) {
             return true;

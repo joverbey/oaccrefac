@@ -12,7 +12,7 @@ package edu.auburn.oaccrefac.core.dependence;
 
 /**
  * Enumeration representing the possible entries in a direction vector:
- * &quot;&lt;&quot, &quot;=&quot;, or &quot;&gt;&quot;.
+ * &quot;&lt;&quot, &quot;=&quot;, &quot;&gt;&quot;, &quot;&le;&quot;, or &quot;&ge;&quot;.
  * <p>
  * A special value &quot;*&quot, used to indicate &quot;any direction&quot;
  * in the Banerjee Inequality, is also provided.

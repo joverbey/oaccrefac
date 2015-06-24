@@ -3,8 +3,7 @@ package edu.auburn.oaccrefac.core.dependence;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
 /**
- * Class to encapsulate a data dependence any complex calculations determining dependence information are performed
- * primarily in other classes; this one is simply a container for information
+ * Container for information about a single data dependence
  * 
  * @author Alexander Calvert
  * @author Jeff Overbey
