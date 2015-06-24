@@ -18,18 +18,6 @@ public class FourierMotzkinDependenceTester {
      * readCoefficients constant first, then induction var coeffs, then scalar coeffs
      */
     
-    //TODO see if this is even worth it in practice
-    //used to cache the matrix so it won't be regenerated every time we try to
-    //test on the same inputs
-    //direction vector will usually be different, so we don't cache the 
-    //portion of the matrix that includes that
-    private int[] lastLB = null;
-    private int[] lastUB = null;
-    private int[][] lastWC = null;
-    private int[][] lastRC = null;
-    private int lastNS = -1;
-    private Matrix lastM = null;
-    
     public boolean test(int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients,
             int numScalars, Direction[] direction) {
 
@@ -108,69 +96,49 @@ public class FourierMotzkinDependenceTester {
             int[][] readCoefficients, int numScalars, Direction[] direction) {
         
         Matrix m = new Matrix();
-        
-//        if we aren't using the same values, the cached matrix will be different, 
-//        so we get the correct one
-        if(lowerBounds != lastLB || 
-                upperBounds != lastUB || 
-                writeCoefficients != lastWC || 
-                readCoefficients != lastRC || 
-                numScalars != lastNS) {
-            
-            // get the inequalities from the subscripts
-            for (int i = 0; i < writeCoefficients.length; i++) {
-                // get coefficients from induction vars
-                ArrayList<Double> row = new ArrayList<Double>();
-                for (int j = 1; j < writeCoefficients[i].length - numScalars; j++) {
-                    row.add((double) writeCoefficients[i][j]);
-                }
-                for (int j = 1; j < readCoefficients[i].length - numScalars; j++) {
-                    row.add((double) -readCoefficients[i][j]);
-                }
-                // get coefficients from scalars
-                for (int j = writeCoefficients[i].length - numScalars; j < writeCoefficients[i].length; j++) {
-                    row.add((double) (writeCoefficients[i][j] - readCoefficients[i][j]));
-                }
-                // get coefficients from constants
-                row.add((double) (readCoefficients[i][0] - writeCoefficients[i][0]));
-                m.addRowAtIndex(m.getNumRows(), listToPrimitiveArray(row));
-                m.addRowAtIndex(m.getNumRows(), negate(listToPrimitiveArray(row)));
+        // get the inequalities from the subscripts
+        for (int i = 0; i < writeCoefficients.length; i++) {
+            // get coefficients from induction vars
+            ArrayList<Double> row = new ArrayList<Double>();
+            for (int j = 1; j < writeCoefficients[i].length - numScalars; j++) {
+                row.add((double) writeCoefficients[i][j]);
             }
-    
-            // get the inequalities from the loop bounds
-            // -i_d1 <= -l1; -1 0 0 ... -l1
-            // i_d1 <= u1; 1 0 0 ... u1
-            // -i_u1 <= -l1; 0 -1 0 ... -l1
-            // i_u1 <= u1; 0 1 0 ... u1
-            // ...
-            for (int i = 0; i < lowerBounds.length; i++) {
-                double[] row1 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                double[] row2 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                double[] row3 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                double[] row4 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row1[2 * i] = -1;
-                row1[row1.length - 1] = -lowerBounds[i];
-                row2[2 * i] = 1;
-                row2[row2.length - 1] = upperBounds[i];
-                row3[2 * i + 1] = -1;
-                row3[row3.length - 1] = -lowerBounds[i];
-                row4[2 * i + 1] = 1;
-                row4[row4.length - 1] = upperBounds[i];
-                m.addRowAtIndex(m.getNumRows(), row1);
-                m.addRowAtIndex(m.getNumRows(), row2);
-                m.addRowAtIndex(m.getNumRows(), row3);
-                m.addRowAtIndex(m.getNumRows(), row4);
+            for (int j = 1; j < readCoefficients[i].length - numScalars; j++) {
+                row.add((double) -readCoefficients[i][j]);
             }
-            lastM = m.cloneMatrix();
-            lastLB = lowerBounds;
-            lastUB = upperBounds;
-            lastWC = writeCoefficients;
-            lastRC = readCoefficients;
-            lastNS = numScalars;
-
+            // get coefficients from scalars
+            for (int j = writeCoefficients[i].length - numScalars; j < writeCoefficients[i].length; j++) {
+                row.add((double) (writeCoefficients[i][j] - readCoefficients[i][j]));
+            }
+            // get coefficients from constants
+            row.add((double) (readCoefficients[i][0] - writeCoefficients[i][0]));
+            m.addRowAtIndex(m.getNumRows(), listToPrimitiveArray(row));
+            m.addRowAtIndex(m.getNumRows(), negate(listToPrimitiveArray(row)));
         }
-        else /*if the cached matrix is correct*/ {
-            m = lastM.cloneMatrix();
+
+        // get the inequalities from the loop bounds
+        // -i_d1 <= -l1; -1 0 0 ... -l1
+        // i_d1 <= u1; 1 0 0 ... u1
+        // -i_u1 <= -l1; 0 -1 0 ... -l1
+        // i_u1 <= u1; 0 1 0 ... u1
+        // ...
+        for (int i = 0; i < lowerBounds.length; i++) {
+            double[] row1 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
+            double[] row2 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
+            double[] row3 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
+            double[] row4 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
+            row1[2 * i] = -1;
+            row1[row1.length - 1] = -lowerBounds[i];
+            row2[2 * i] = 1;
+            row2[row2.length - 1] = upperBounds[i];
+            row3[2 * i + 1] = -1;
+            row3[row3.length - 1] = -lowerBounds[i];
+            row4[2 * i + 1] = 1;
+            row4[row4.length - 1] = upperBounds[i];
+            m.addRowAtIndex(m.getNumRows(), row1);
+            m.addRowAtIndex(m.getNumRows(), row2);
+            m.addRowAtIndex(m.getNumRows(), row3);
+            m.addRowAtIndex(m.getNumRows(), row4);
         }
 
         // get the inequalities from the dependence direction vector
