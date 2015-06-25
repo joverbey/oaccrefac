@@ -25,7 +25,8 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopInterchangeRefactoring;
 public class LoopInterchangeTests extends RefactoringTest<LoopInterchangeRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/LoopInterchange");
+        Iterable<Object[]> params = generateParameters("testcode/LoopInterchange");
+        return params;
     }
 
     public LoopInterchangeTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
