@@ -244,7 +244,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             status.addError("Dependences could not be analyzed.  " + e.getMessage());
             return null;
         }
-
     }
 
     // *************************************************************************

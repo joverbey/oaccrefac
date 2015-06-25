@@ -14,8 +14,12 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public class StripMine extends ForLoopChange {
     
@@ -26,6 +30,30 @@ public class StripMine extends ForLoopChange {
         super(loop);
         m_stripFactor = stripFactor;
         m_depth = depth;
+    }
+    
+    @Override
+    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(getOriginal());
+        
+        if (m_stripFactor <= 0) {
+            init.addFatalError("Invalid strip factor (<= 0).");
+            return init;
+        }
+        
+        if (m_depth < 0 || m_depth >= inq.getPerfectLoopNestHeaders().size()) {
+            init.addFatalError("There is no for-loop at depth " + m_depth);
+            return init;
+        }
+        
+        int iterator = inq.getIterationFactor(m_depth);
+        if (m_stripFactor % iterator != 0 || m_stripFactor <= iterator) {
+            init.addFatalError("Strip mine factor must be greater than and "
+                    + "divisible by the intended loop's iteration factor.");
+            return init;
+        }
+        
+        return init;
     }
 
     @Override
@@ -40,7 +68,11 @@ public class StripMine extends ForLoopChange {
         String counter_str = new String(counter_name.getSimpleID());
         
         //Generate initializer for outer loop
-        GenerateInitializer gi = new GenerateInitializer(outer, counter_str, getOriginal().getScope());
+        GenerateInitializer gi = new GenerateInitializer(outer, 
+                getOriginal().getScope(), counter_str, null);
+        if (gi.checkConditions(new RefactoringStatus()).hasFatalError()) {
+            throw new OperationCanceledException("Error handling generating initializer!");
+        }
         outer = gi.change();
         
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();

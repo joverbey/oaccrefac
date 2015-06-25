@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
@@ -20,69 +21,48 @@ public class GenerateInitializer extends ForLoopChange {
     private IScope m_scope;
     private IASTName m_name;
     private IASTInitializerClause m_equalsInitializer;
-    
-    public GenerateInitializer(IASTForStatement loop, IScope scope) {
+
+    public GenerateInitializer(IASTForStatement loop, IScope scope, 
+            String base, IASTInitializerClause clause) {
         super(loop);
-        m_base = "";
-        if (scope != null) {
-            m_scope = scope;
-        }
+        m_base = base;
+        m_scope = scope;
+        m_equalsInitializer = clause;
         m_name = null;
     }
-    
-    public GenerateInitializer(IASTForStatement loop, String base, IScope scope) {
-        super(loop);
-        if (base != null) {
-            m_base = base;
-        } else {
+
+    @Override
+    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        
+        if (m_scope == null) {
+            init.addFatalError("Generate Initializer -- Error: input scope cannot"
+                    + "be null!");
+            return init;
+        }
+        
+        //If the base string is null, generate a default one and warn client in status
+        if (m_base == null) {
+            init.addWarning("Generate Initializer -- Warning: Base string argument"
+                    + "is null, generating default blank base string");
             m_base = "";
         }
-        if (scope != null) {
-            m_scope = scope;
-        } else {
-            throw new IllegalArgumentException("Scope cannot be null");
+        
+        //If the equals initializer is null, we will just add
+        //a default initializer, but warn client in status
+        if (m_equalsInitializer == null) {
+            init.addWarning("Generate Initializer -- Warning: Equals initializer"
+                    + "null, generating default initializer of literal 0.");
+            m_equalsInitializer = factory.newLiteralExpression(
+                IASTLiteralExpression.lk_integer_constant, "0");
         }
-        m_name = null;
-    }
-    
-    public GenerateInitializer(IASTForStatement loop, String base, 
-            IASTInitializerClause clause, IScope scope) {
-        super(loop);
-        if (base != null) {
-            m_base = base;
-        } else {
-            m_base = "";
-        }
-        if (scope != null) {
-            m_scope = scope;
-        } else {
-            throw new IllegalArgumentException("Scope cannot be null");
-        }
-        m_name = null;
-        m_equalsInitializer = clause;
-    }
-    
-    public GenerateInitializer(IASTForStatement loop, 
-            IASTInitializerClause clause, IScope scope) {
-        super(loop);
-        m_base = "";
-        if (scope != null) {
-            m_scope = scope;
-        } else {
-            throw new IllegalArgumentException("Scope cannot be null");
-        }
-        m_name = null;
-        m_equalsInitializer = clause;
+        
+        return init;
     }
 
     @Override
     public IASTForStatement doChange(IASTForStatement loop) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        
-        if (m_equalsInitializer == null) {
-            m_equalsInitializer = factory.newLiteralExpression(
-                IASTLiteralExpression.lk_integer_constant, "0");
-        }
         
         IASTEqualsInitializer initializer = factory.newEqualsInitializer(m_equalsInitializer);
         IASTDeclarator declarator = factory.newDeclarator(generateName(loop));

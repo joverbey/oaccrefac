@@ -300,4 +300,30 @@ public class ForStatementInquisitor {
         // If we've aborted, it's because we found a for statement
         return !loop.getBody().accept(new Visitor());
     }
+    
+    /**
+     * Method returns the number in which a loop iterates by.
+     * @param depth -- loop depth in which to query
+     * @return integer describing linear loop's iterator
+     *          returns -1 if invalid depth
+     */
+    public int getIterationFactor(int depth) {
+        IASTForStatement header = ASTUtil.findDepth(statement, IASTForStatement.class, depth);
+        if (header == null) {
+            return -1;
+        }
+        IASTExpression iterationExpression = header.getIterationExpression();
+        
+        //Based on our accepted patterns, the only literal in this expression
+        //should be how the linear iteration is depicted. For now, find the
+        //only literal expression in this and return it.
+        IASTLiteralExpression literal = ASTUtil.findOne(iterationExpression, 
+                IASTLiteralExpression.class);
+        if (literal != null) {
+            return Integer.parseInt(new String(literal.getValue()));
+        } else {
+            //Otherwise, return one. Generic iterator.
+            return 1;
+        }
+    }
 }
