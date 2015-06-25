@@ -1,5 +1,8 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
@@ -102,6 +105,12 @@ public class ForStatementInquisitorTest {
     }
     
     @Test
+    public void test_areAllInnermostStatementsValidBadSimpleBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) printf();");
+        Assert.assertFalse(inq.areAllInnermostStatementsValid());
+    }
+    
+    @Test
     public void test_getInnermostLoopBody() {
         ForStatementInquisitor inq = getInq(basic);
         Assert.assertTrue(inq.getInnermostLoopBody() == inq.getStatement().getBody());
@@ -132,6 +141,24 @@ public class ForStatementInquisitorTest {
         ForStatementInquisitor inq = getInq(basic);
         Assert.assertTrue(inq.getPerfectLoopNestHeaders().get(0) == inq.getStatement());
     }
+
+    @Test
+    public void test_getPerfectLoopNestHeadersCompBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++); }");
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        Assert.assertTrue(headers.size() == 2);
+        Assert.assertTrue(headers.get(0).getRawSignature().equals("for(i=0;i<10;i++) { for(j=0;j<10;j++); }"));
+        Assert.assertTrue(headers.get(1).getRawSignature().equals("for(j=0;j<10;j++);"));
+    }
+    
+    @Test
+    public void test_getPerfectLoopNestHeadersForBody() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) for(j=0;j<10;j++);");
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        Assert.assertTrue(headers.size() == 2);
+        Assert.assertTrue(headers.get(0).getRawSignature().equals("for(i=0;i<10;i++) for(j=0;j<10;j++);"));
+        Assert.assertTrue(headers.get(1).getRawSignature().equals("for(j=0;j<10;j++);"));
+    }
     
     @Test
     public void test_isPerfectLoopNest() {
@@ -161,6 +188,12 @@ public class ForStatementInquisitorTest {
     public void test_isPerfectLoopNestComp() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++); }");
         Assert.assertTrue(inq.isPerfectLoopNest());
+    }
+    
+    @Test
+    public void test_isNotPerfectLoopNestComp() {
+        ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { x=1; for(j=0;j<10;j++); }");
+        Assert.assertFalse(inq.isPerfectLoopNest());
     }
 
 }
