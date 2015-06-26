@@ -14,6 +14,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
@@ -33,7 +34,13 @@ public class UnrollLoop extends CompoundModify {
     }
     
     @Override
-    protected IASTCompoundStatement doChange() {
+    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+        // TODO ...
+        return null;
+    }
+    
+    @Override
+    protected void modifyCompound() {
         EnsureCompoundBody bodyChange = new EnsureCompoundBody(m_loop.copy());
         IASTForStatement loop = bodyChange.change();
         IASTCompoundStatement body_compound = (IASTCompoundStatement) loop.getBody();
@@ -78,7 +85,6 @@ public class UnrollLoop extends CompoundModify {
         //Unroll the loop however many times specified.
         unroll((IASTCompoundStatement) body_compound);
         replace(m_loop, loop);
-        return super.doChange();
     }
     
     private void adjustInit(IASTForStatement loop) throws DOMException {

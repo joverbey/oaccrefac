@@ -6,6 +6,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
@@ -23,7 +24,13 @@ public class FizzLoops extends CompoundModify {
     }
     
     @Override
-    protected IASTCompoundStatement doChange() {
+    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+        //TODO ...
+        return init;
+    }
+    
+    @Override
+    protected void modifyCompound() {
         
         IASTStatement body = m_loop.getBody();
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
@@ -52,8 +59,6 @@ public class FizzLoops extends CompoundModify {
             if (chilluns.length>0) {
                 remove(m_loop);
             }
-        
-        return super.doChange();
     }
 
 }

@@ -6,6 +6,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 public class FuseLoops extends CompoundModify {
 
@@ -24,7 +25,13 @@ public class FuseLoops extends CompoundModify {
     }
     
     @Override
-    protected IASTCompoundStatement doChange() {
+    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+        // TODO ...
+        return null;
+    }
+    
+    @Override
+    protected void modifyCompound() {
         IASTStatement body = m_first.getBody();
         IASTCompoundStatement body_compound = convertIntoCompound(body);
         IASTStatement loopbody = m_second.getBody();
@@ -34,7 +41,6 @@ public class FuseLoops extends CompoundModify {
         newFor.setBody(body_compound);
         replace(m_first, newFor);
         remove(m_second);
-        return super.doChange();
     }
     
     private IASTCompoundStatement convertIntoCompound(IASTStatement bdy)
@@ -56,7 +62,6 @@ public class FuseLoops extends CompoundModify {
         for (IASTNode childz : loopbody.getChildren()) {
             body_compound.addStatement((IASTStatement) childz.copy());
         }
-
     }
 
 }

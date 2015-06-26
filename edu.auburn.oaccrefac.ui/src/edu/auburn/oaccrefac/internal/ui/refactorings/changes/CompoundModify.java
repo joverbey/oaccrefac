@@ -2,17 +2,36 @@ package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
 
 import java.util.LinkedList;
 
+import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
-public class CompoundModify extends CompoundChange {
+public abstract class CompoundModify extends CompoundChange {
 
-    public CompoundModify(IASTCompoundStatement compound) {
-        super(compound);
+    private LinkedList<IASTStatement> m_chilluns;
+
+    public CompoundModify(IASTCompoundStatement compoundStatement) {
+        super(compoundStatement);
+        m_chilluns = new LinkedList<IASTStatement>();
+        for (IASTStatement child : compoundStatement.getStatements())
+            m_chilluns.add(child);
     }
+    
+    protected IASTCompoundStatement rebuildCompound() {
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTCompoundStatement newCompound = factory.newCompoundStatement();
+        for (IASTStatement child : m_chilluns) {
+            newCompound.addStatement(child.copy());
+        }
+        return newCompound;
+    }
+    
+    protected abstract void modifyCompound();
 
     @Override
-    protected IASTCompoundStatement doChange() {
+    protected IASTCompoundStatement doChange(IASTCompoundStatement toChange) {
+        modifyCompound();
         return rebuildCompound();
     }
     
@@ -88,6 +107,10 @@ public class CompoundModify extends CompoundChange {
             chilluns.remove(index+1);
         }
         return statement;
+    }
+    
+    protected final LinkedList<IASTStatement> getStatementList() {
+        return m_chilluns;
     }
 
 }
