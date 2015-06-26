@@ -1,6 +1,7 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -8,26 +9,38 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
+
 public class FuseLoops extends CompoundModify {
 
     private IASTForStatement m_first;
     private IASTForStatement m_second;
     
-    public FuseLoops(IASTCompoundStatement compound, 
-            IASTForStatement first, IASTForStatement second) {
+    public FuseLoops(IASTCompoundStatement compound, IASTForStatement first) {
         super(compound);
-        if (first != null && second != null) {
-            m_first = first;
-            m_second = second;
-        } else {
-            throw new IllegalArgumentException("Cannot fuse with null loop");
-        }
+        m_first = first;
     }
     
     @Override
     protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
-        // TODO ...
-        return null;
+        if (m_first == null) {
+            init.addFatalError("Loop cannot be null!");
+            return init;
+        }
+        
+        // This gets the selected loop to re-factor.
+        boolean found = false;
+        IASTNode newnode = m_first;
+        while (ASTUtil.getNextSibling(newnode) != null && !found) {
+            newnode = ASTUtil.getNextSibling(newnode);
+            m_second = findLoop(newnode);
+            found = (m_second != null);
+        }
+
+        if (!found) {
+            init.addFatalError("There is no for loop for fusion to be possible.");
+        }
+        return init;
     }
     
     @Override
@@ -62,6 +75,30 @@ public class FuseLoops extends CompoundModify {
         for (IASTNode childz : loopbody.getChildren()) {
             body_compound.addStatement((IASTStatement) childz.copy());
         }
+    }
+    
+    private IASTForStatement findLoop(IASTNode tree) {
+        class LoopFinder extends ASTVisitor {
+            private IASTForStatement forloop = null;
+
+            public LoopFinder() {
+                shouldVisitStatements = true;
+            }
+
+            @Override
+            public int visit(IASTStatement visitor) {
+                if (visitor instanceof IASTForStatement) {
+                    forloop = (IASTForStatement) visitor;
+                    return ASTVisitor.PROCESS_ABORT;
+                } else {
+                    return ASTVisitor.PROCESS_CONTINUE;
+                }
+            }
+        }
+
+        LoopFinder finder = new LoopFinder();
+        tree.accept(finder);
+        return finder.forloop;
     }
 
 }

@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
@@ -25,18 +26,29 @@ public class UnrollLoop extends CompoundModify {
     
     public UnrollLoop(IASTCompoundStatement compound, IASTForStatement loop, int unrollFactor) {
         super(compound);
-        if (loop != null) {
-            m_loop = loop;
-        } else {
-            throw new IllegalArgumentException("Cannot unroll null loop!");
-        }
+        m_loop = loop;
         m_unrollFactor = unrollFactor;
     }
     
     @Override
     protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
-        // TODO ...
-        return null;
+        if (m_loop == null) {
+            init.addFatalError("Loop cannot be null!");
+            return init;
+        }
+        
+        if (m_unrollFactor <= 0) {
+            init.addFatalError("Invalid loop unroll factor! (<= 0)");
+            return init;
+        }
+        
+        IASTStatement body = m_loop.getBody();
+        //if the body is empty, exit out -- pointless to unroll.
+        if (body == null || body instanceof IASTNullStatement) {
+            init.addFatalError("Loop body is empty -- nothing to unroll!");
+            return init;
+        }
+        return init;
     }
     
     @Override

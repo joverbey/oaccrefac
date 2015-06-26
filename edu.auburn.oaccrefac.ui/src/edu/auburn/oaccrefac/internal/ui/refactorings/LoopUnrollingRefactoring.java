@@ -2,8 +2,6 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -12,6 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.UnrollLoop;
 
 /**
@@ -29,38 +28,32 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.changes.UnrollLoop;
  *  						|  }
  * (Example taken from Wikipedia's webpage on loop unrolling)
  */
-@SuppressWarnings("restriction")
 public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
     private int m_unrollFactor;
+    private Change<?> m_unrollChange;
     
 	public LoopUnrollingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
 	}
 
     public void setUnrollFactor(int toSet) {
-        if (toSet >= 0) {
-            m_unrollFactor = toSet;
-        } else {
-            throw new IllegalArgumentException("Unroll factor <= 0");
-        }
+        m_unrollFactor = toSet;
     }
     
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        IASTStatement body = getLoop().getBody();
-        //if the body is empty, exit out -- pointless to unroll.
-        if (body == null || body instanceof IASTNullStatement)
-            initStatus.addFatalError("Loop body is empty -- nothing to unroll!");
+    protected void doCheckFinalConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
+        IASTForStatement loop = getLoop();
+        IASTCompoundStatement enclosingCompound = 
+                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
+        m_unrollChange = new UnrollLoop(enclosingCompound, loop, m_unrollFactor);
+        m_unrollChange.setProgressMonitor(pm);
+        m_unrollChange.checkConditions(initStatus);
     };
 
 	@Override
 	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
-        IASTForStatement loop = getLoop();
-        IASTCompoundStatement enclosingCompound = 
-                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
-        UnrollLoop ul = new UnrollLoop(enclosingCompound, loop, m_unrollFactor);
-        rewriter.replace(enclosingCompound, ul.change(), null);
+        rewriter.replace(m_unrollChange.getOriginal(), m_unrollChange.change(), null);
 	}
 
 }

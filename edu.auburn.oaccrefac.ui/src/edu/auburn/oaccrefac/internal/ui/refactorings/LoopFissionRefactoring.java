@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FizzLoops;
 
 /**
@@ -27,6 +28,9 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FizzLoops;
  */
 public class LoopFissionRefactoring extends ForLoopRefactoring {
 
+    //I've always wanted to use a question mark like this.
+    private Change<?> m_fizzChange;
+    
     public LoopFissionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
@@ -35,18 +39,16 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         // This gets the selected loop to re-factor and checks if the body is compound statement only..
         IASTForStatement loop = getLoop();
-        if (!(loop.getBody() instanceof IASTCompoundStatement)) {
-            initStatus.addFatalError("The loop fission requires to have a compound body.");
-        }
+        IASTCompoundStatement enclosingCompound = 
+                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
+        m_fizzChange = new FizzLoops(enclosingCompound, loop);
+        m_fizzChange.setProgressMonitor(pm);
+        m_fizzChange.checkConditions(initStatus);
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        IASTForStatement loop = getLoop();
-        IASTCompoundStatement enclosingCompound = 
-                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
-        FizzLoops fl = new FizzLoops(enclosingCompound, loop);
-        rewriter.replace(enclosingCompound, fl.change(), null);
+        rewriter.replace(m_fizzChange.getOriginal(), m_fizzChange.change(), null);
     }
 
 }

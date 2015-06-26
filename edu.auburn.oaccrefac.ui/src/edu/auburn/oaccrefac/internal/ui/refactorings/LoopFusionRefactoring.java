@@ -1,10 +1,7 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -13,6 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FuseLoops;
 
 /**
@@ -30,8 +28,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FuseLoops;
  */
 public class LoopFusionRefactoring extends ForLoopRefactoring {
 
-    private IASTForStatement nxtloop = null;
-    private IASTForStatement loop = null;
+    private Change<?> m_fuseLoops;
 
     public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -39,52 +36,17 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        // This gets the selected loop to re-factor.
-        loop = getLoop();
-        boolean found = false;
-        IASTNode newnode = loop;
-        while (ASTUtil.getNextSibling(newnode) != null && !found) {
-            newnode = ASTUtil.getNextSibling(newnode);
-            nxtloop = findLoop(newnode);
-            found = (nxtloop != null);
-        }
-
-        if (!found) {
-            initStatus.addFatalError("There is no for loop for fusion to be possible.");
-        }
+        IASTForStatement loop = getLoop();
+        IASTCompoundStatement enclosingCompound = 
+                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
+        m_fuseLoops = new FuseLoops(enclosingCompound, loop);
+        m_fuseLoops.setProgressMonitor(pm);
+        m_fuseLoops.checkConditions(initStatus);
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        IASTForStatement loop = getLoop();
-        IASTCompoundStatement enclosingCompound = 
-                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
-        FuseLoops fl = new FuseLoops(enclosingCompound, loop, nxtloop);
-        rewriter.replace(enclosingCompound, fl.change(), null);
-    }
-
-    private IASTForStatement findLoop(IASTNode tree) {
-        class LoopFinder extends ASTVisitor {
-            private IASTForStatement forloop = null;
-
-            public LoopFinder() {
-                shouldVisitStatements = true;
-            }
-
-            @Override
-            public int visit(IASTStatement visitor) {
-                if (visitor instanceof IASTForStatement) {
-                    forloop = (IASTForStatement) visitor;
-                    return ASTVisitor.PROCESS_ABORT;
-                } else {
-                    return ASTVisitor.PROCESS_CONTINUE;
-                }
-            }
-        }
-
-        LoopFinder finder = new LoopFinder();
-        tree.accept(finder);
-        return finder.forloop;
+        rewriter.replace(m_fuseLoops.getOriginal(), m_fuseLoops.change(), null);
     }
 
 }

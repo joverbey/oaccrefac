@@ -12,30 +12,41 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class FizzLoops extends CompoundModify {
 
+    private IASTForStatement m_orignalLoop;
     private IASTForStatement m_loop;
     
     public FizzLoops(IASTCompoundStatement compound, IASTForStatement loop) {
         super(compound);
-        if (loop != null) {
-            m_loop = loop;
-        } else {
-            throw new IllegalArgumentException("Cannot fizz null loop!");
-        }
+        m_orignalLoop = loop;
+        m_loop = loop;
     }
     
     @Override
     protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
-        //TODO ...
+        if (m_orignalLoop == null) {
+            init.addFatalError("Loop argument is null!");
+            return init;
+        }
+        // This gets the selected loop to re-factor and checks if the body is compound statement only..
+        if (!(m_orignalLoop.getBody() instanceof IASTCompoundStatement)) {
+            init.addFatalError("Useless to apply fission on one statement loops.");
+            return init;
+        } 
+        
+        if (m_orignalLoop.isFrozen()) {
+            init.addWarning("For loop is frozen. Creating copy to modify.");
+            m_loop = m_orignalLoop.copy();
+        }
         return init;
     }
     
     @Override
     protected void modifyCompound() {
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         
         IASTStatement body = m_loop.getBody();
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTNode insert_before = ASTUtil.getNextSibling(m_loop);
         IASTNode[] chilluns = body.getChildren();
+        IASTNode insert_before = ASTUtil.getNextSibling(m_orignalLoop);
         
         /*Over here, we are looking for all the statements in the body of for-loop
          *which can be put into individual for-loop of their own.
@@ -43,9 +54,9 @@ public class FizzLoops extends CompoundModify {
         for (IASTNode child : chilluns) {
             IASTStatement stmt = (IASTStatement) (child.copy());
             IASTForStatement newForLoop = factory.newForStatement
-                    (m_loop.getInitializerStatement().copy(), 
-                            m_loop.getConditionExpression().copy(), 
-                            m_loop.getIterationExpression().copy(), 
+                    (m_loop.getInitializerStatement(), 
+                            m_loop.getConditionExpression(), 
+                            m_loop.getIterationExpression(), 
                             stmt);
             if (insert_before != null && insert_before instanceof IASTStatement) {
                 insertBefore(newForLoop, (IASTStatement) insert_before);
@@ -53,12 +64,12 @@ public class FizzLoops extends CompoundModify {
                 append(newForLoop);
             }
         }
-            /*This check is to make sure that compound body is not empty. 
-             * If yes, it'll not perform re-factoring.
-             */
-            if (chilluns.length>0) {
-                remove(m_loop);
-            }
+        /*This check is to make sure that compound body is not empty. 
+         * If yes, it'll not perform re-factoring.
+         */
+        if (chilluns.length>0) {
+            remove(m_orignalLoop);
+        }
     }
 
 }
