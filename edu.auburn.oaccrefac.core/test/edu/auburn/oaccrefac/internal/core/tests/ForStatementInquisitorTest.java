@@ -1,11 +1,13 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
@@ -196,4 +198,89 @@ public class ForStatementInquisitorTest {
         Assert.assertFalse(inq.isPerfectLoopNest());
     }
 
+    @Test
+    public void test_getLeadingPragmasNone() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "int x;\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
+        List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
+        Assert.assertTrue(prags.size() == 0);
+    }
+    
+    @Test
+    public void test_getLeadingPragmasOne() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
+        List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
+    }
+    
+    @Test
+    public void test_getLeadingPragmasTwo() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "#pragma two\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
+        List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
+        Assert.assertTrue(prags.size() == 2);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
+        Assert.assertTrue(prags.get(1).getRawSignature().equals("#pragma two"));
+    }
+   
+    @Test
+    public void test_getLeadingPragmasSplit() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "int x;\n"
+                + "#pragma two\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
+        List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma two"));
+    }
+    
+    @Test
+    public void test_getLeadingPragmasNested() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "for(i=0;i<10;i++) {\n"
+                + "  #pragma two\n"
+                + "  int x;\n"
+                + "  #pragma three\n"
+                + "  for(j=0;j<10;j++) {\n"
+                + "  }\n"
+                + "}\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
+        List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
+        loop = ASTUtil.findOne(loop.getBody(), IASTForStatement.class);
+        inq = InquisitorFactory.getInquisitor(loop);
+        prags = inq.getLeadingPragmas();
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma three"));
+        
+    }
+    
 }
