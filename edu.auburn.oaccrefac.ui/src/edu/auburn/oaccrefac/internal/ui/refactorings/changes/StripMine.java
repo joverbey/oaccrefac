@@ -73,7 +73,7 @@ public class StripMine extends ForLoopChange {
         if (gi.checkConditions(new RefactoringStatus()).hasFatalError()) {
             throw new OperationCanceledException("Error handling generating initializer!");
         }
-        outer = gi.change();
+        outer = gi.change(this);
         
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         outer.setConditionExpression(factory.newBinaryExpression(IASTBinaryExpression.op_lessThan, 

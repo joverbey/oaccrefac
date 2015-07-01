@@ -46,7 +46,8 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        rewriter.replace(m_fuseLoops.getOriginal(), m_fuseLoops.change(), null);
+        rewriter = m_fuseLoops.change(rewriter);
+        //rewriter.replace(m_fuseLoops.getOriginal(), m_fuseLoops.change(), null);
     }
 
 }

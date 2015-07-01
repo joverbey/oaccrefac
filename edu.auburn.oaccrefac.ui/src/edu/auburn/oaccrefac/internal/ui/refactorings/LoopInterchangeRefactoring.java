@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.InterchangeLoops;
 
 /**
@@ -17,7 +18,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.changes.InterchangeLoops;
 public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     private int m_depth;
-    private InterchangeLoops change;
+    private Change<?> inter;
 
     public LoopInterchangeRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -30,14 +31,15 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        change = new InterchangeLoops(getLoop(), m_depth);
-        change.setProgressMonitor(pm);
-        change.checkConditions(status);
+        inter = new InterchangeLoops(getLoop(), m_depth);
+        inter.setProgressMonitor(pm);
+        inter.checkConditions(status);
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        rewriter.replace(getLoop(), change.change(), null);
+        rewriter = inter.change(rewriter); //inter...change... clever, right?
+        //rewriter.replace(getLoop(), change.change(), null);
     }
 
 }

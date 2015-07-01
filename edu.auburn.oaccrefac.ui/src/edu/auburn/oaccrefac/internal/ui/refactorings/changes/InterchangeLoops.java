@@ -151,7 +151,7 @@ public class InterchangeLoops extends ForLoopChange {
         right.setConditionExpression(temp.getConditionExpression());
         right.setIterationExpression(temp.getIterationExpression());
 
-        loop.getTranslationUnit().getAllPreprocessorStatements()[0].getFileLocation();
+        //loop.getTranslationUnit().getAllPreprocessorStatements()[0].getFileLocation();
         
         return loop;
     }

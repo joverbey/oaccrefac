@@ -7,12 +7,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
 import edu.auburn.oaccrefac.internal.ui.refactorings.changes.StripMine;
 
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
     private int m_stripFactor;
-    private StripMine change;
+    private Change<?> stripMine;
     
     public LoopStripMiningRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -26,14 +27,15 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        change = new StripMine(getLoop(), m_stripFactor, 0);
-        change.setProgressMonitor(pm);
-        change.checkConditions(status);
+        stripMine = new StripMine(getLoop(), m_stripFactor, 0);
+        stripMine.setProgressMonitor(pm);
+        stripMine.checkConditions(status);
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {        
-        rewriter.replace(getLoop(), change.change(), null);
+        rewriter = stripMine.change(rewriter);
+        //rewriter.replace(getLoop(), change.change(), null);
     }
     
 }

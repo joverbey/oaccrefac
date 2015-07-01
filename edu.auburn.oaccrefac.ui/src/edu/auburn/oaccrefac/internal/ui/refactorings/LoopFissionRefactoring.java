@@ -48,7 +48,8 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        rewriter.replace(m_fizzChange.getOriginal(), m_fizzChange.change(), null);
+        rewriter = m_fizzChange.change(rewriter);
+        //rewriter.replace(m_fizzChange.getOriginal(), m_fizzChange.change(), null);
     }
 
 }

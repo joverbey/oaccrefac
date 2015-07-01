@@ -54,7 +54,7 @@ public class UnrollLoop extends CompoundModify {
     @Override
     protected void modifyCompound() {
         EnsureCompoundBody bodyChange = new EnsureCompoundBody(m_loop.copy());
-        IASTForStatement loop = bodyChange.change();
+        IASTForStatement loop = bodyChange.change(this);
         IASTCompoundStatement body_compound = (IASTCompoundStatement) loop.getBody();
         
         //if the init statement is a declaration,

@@ -53,7 +53,8 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
 	@Override
 	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
-        rewriter.replace(m_unrollChange.getOriginal(), m_unrollChange.change(), null);
+        rewriter = m_unrollChange.change(rewriter);
+	    //rewriter.replace(m_unrollChange.getOriginal(), m_unrollChange.change(), null);
 	}
 
 }
