@@ -1,16 +1,14 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
@@ -18,6 +16,7 @@ import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.Direction;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public class InterchangeLoops extends ForLoopChange {
 
@@ -151,53 +150,9 @@ public class InterchangeLoops extends ForLoopChange {
         right.setConditionExpression(temp.getConditionExpression());
         right.setIterationExpression(temp.getIterationExpression());
 
-        //loop.getTranslationUnit().getAllPreprocessorStatements()[0].getFileLocation();
-        
         return loop;
     }
 
-    private List<IASTPreprocessorPragmaStatement> getLeadingPragmas(IASTForStatement loop) {
-        int loopLoc = loop.getFileLocation().getNodeOffset();
-        int precedingStmtOffset = getNearestPrecedingStatementOffset(loop);
-        List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
-        for(IASTPreprocessorStatement pre : loop.getTranslationUnit().getAllPreprocessorStatements()) {
-            if(pre instanceof IASTPreprocessorPragmaStatement &&
-                    ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < loopLoc &&
-                    ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() > precedingStmtOffset) {
-                pragmas.add((IASTPreprocessorPragmaStatement) pre);
-            }
-        }
-        return pragmas;
-    }
     
-    private int getNearestPrecedingStatementOffset(IASTStatement stmt) {
-        
-        class OffsetFinder extends ASTVisitor {
-            
-            //the offset of the nearest lexical predecessor of the given node
-            int finalOffset;
-            int thisOffset;
-            
-            public OffsetFinder(int offset) {
-                shouldVisitStatements = true;
-                this.thisOffset = offset;
-            }
-
-            @Override
-            public int visit(IASTStatement stmt) {
-                int foundOffset = stmt.getFileLocation().getNodeOffset();
-                if(thisOffset - foundOffset < finalOffset && foundOffset < thisOffset) {
-                    this.finalOffset = foundOffset;
-                }
-                return PROCESS_CONTINUE;
-            }
-            
-        }
-        
-        OffsetFinder finder = new OffsetFinder(stmt.getFileLocation().getNodeOffset());
-        IASTFunctionDefinition containingFunc = ASTUtil.findNearestAncestor(stmt, IASTFunctionDefinition.class);
-        containingFunc.accept(finder);
-        return finder.finalOffset;
-    }
     
 }
