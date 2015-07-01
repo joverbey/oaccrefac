@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -8,10 +7,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.InterchangeLoops;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.StripMine;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
+import edu.auburn.oaccrefac.internal.ui.refactorings.changes.TileLoops;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
@@ -27,6 +24,8 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
     private int m_stripFactor;
     private int m_propagate;
     
+    private Change<?> m_tileChange;
+    
     public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
         m_depth = 0;
@@ -35,30 +34,10 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        if (!ForStatementInquisitor.getInquisitor(getLoop()).isPerfectLoopNest()) {
-            status.addFatalError("Only perfectly nested loops can be interchanged.");
-        }
-    }
-
-    @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        @SuppressWarnings("unused")
-        DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
-        // if (dependenceAnalysis != null && dependenceAnalysis.()) {
-        // status.addError("This loop cannot be parallelized because it carries a dependence.",
-        // getLocation(getLoop()));
-        // }
-        
-        //Check to make sure the depth is valid
-        if (m_depth < 1) {
-            status.addFatalError("Strip mine depth cannot be less than 1 (must occur to"
-                    + "a nested loop to tile.)");
-        }
-        if (m_stripFactor < 1) {
-            status.addFatalError("Strip factor must be greater than 1 for refactoring to"
-                    + "be of any use. Exiting...");
-        }
+        m_tileChange = new TileLoops(getLoop(), 
+                m_depth, m_stripFactor, m_propagate);
+        m_tileChange.checkConditions(status, pm);
     }
     
     public void setStripMineDepth(int depth) {
@@ -75,20 +54,7 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        //TODO ...
-//        StripMine sm = new StripMine(getLoop(), m_stripFactor, m_depth);
-//        IASTForStatement refactored = sm.change();
-//        if (m_propagate < 0) {
-//            for (int i = 0; (m_depth-i > 0); i++) {
-//                InterchangeLoops il = new InterchangeLoops(refactored, m_depth-i, m_depth-i-1);
-//                refactored = il.change();
-//            }
-//        } else {
-//            for (int i = 0; (i < m_propagate && m_depth-i > 0); i++) {
-//                InterchangeLoops il = new InterchangeLoops(refactored, m_depth-i, m_depth-i-1);
-//                refactored = il.change();
-//            }
-//        }
+        rewriter = m_tileChange.change(rewriter);
 //        rewriter.replace(getLoop(), refactored, null);
     }
 }

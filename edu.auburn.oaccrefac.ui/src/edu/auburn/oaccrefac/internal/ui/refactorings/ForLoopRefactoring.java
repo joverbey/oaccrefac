@@ -2,13 +2,10 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
-import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -251,7 +248,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
     @Override
     protected RefactoringDescriptor getRefactoringDescriptor() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -261,20 +257,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
     protected IASTTranslationUnit getAST() {
         return m_ast;
-    }
-
-    protected IASTLiteralExpression getUpperBound() {
-        IASTExpression cond = m_forloop.getConditionExpression();
-        if (cond instanceof IASTBinaryExpression) {
-            IASTBinaryExpression binary_cond = (IASTBinaryExpression) cond;
-            return (IASTLiteralExpression) (binary_cond.getChildren()[1]);
-        } else {
-            return null;
-        }
-    }
-
-    protected int getUpperBoundValue() {
-        return Integer.parseInt(new String(getUpperBound().getValue()));
     }
 
     // *************************************************************************
