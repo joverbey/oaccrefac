@@ -85,12 +85,25 @@ public abstract class Change<T extends IASTNode> {
         if (m_node.isFrozen()) {
             argNode = (T) m_node.copy(CopyStyle.withLocations);
         }
-        
-        mapPreprocessors(m_node);
-        replacePreprocessors(m_node, argNode);
+        for(IASTNode child : m_node.getChildren()) {
+            mapPreprocessors(child);    
+        }
+        //TODO be sure the iteration happens in the same order for the original and the copy
+        for(int i = 0; i < m_node.getChildren().length; i++) {
+            replacePreprocessors(m_node.getChildren()[i], argNode.getChildren()[i]);
+        }
         changed = doChange(argNode);
         rewriter = rewriter.replace(getOriginal(), changed, null);
-        rewriter = insertPreprocessors(rewriter);
+        changed.setParent(m_node.getParent());
+        for(IASTNode key : m_pp_context.keySet()) {
+            List<String> prags = m_pp_context.get(key);
+            for(String prag : prags) {
+                IASTNode pragNode = rewriter.createLiteralNode(prag);
+                System.out.println(key.getParent());
+                System.out.println(key);
+                rewriter.insertBefore(key.getParent(), key, pragNode, null);
+            }
+        }
         return rewriter;
     }
     
@@ -122,65 +135,39 @@ public abstract class Change<T extends IASTNode> {
         node.accept(pop);
         setPreprocessorContext(pop.pp_map);
     }
-    
+    //TODO make this work
     protected final void replacePreprocessors(IASTNode original, IASTNode copy) {
-        if(original == copy) {
-            return;
-        }
+
+        //go over copy tree mapping originals to copies
+        //go over entire m_pp map replacing originals with copies
         
-        class Remapper extends ASTVisitor {
+        class OrigCopyMapper extends ASTVisitor {
             
-            IASTNode original;
-            IASTNode copy;
+            public Map<IASTNode, IASTNode> nodes = new HashMap<IASTNode, IASTNode>(); 
             
-            public Remapper(IASTNode original, IASTNode copy) {
+            public OrigCopyMapper() {
                 shouldVisitStatements = true;
-                this.original = original;
-                this.copy = copy;
             }
             
             @Override
             public int visit(IASTStatement stmt) {
-                
-                //find corresponding node in copy
-                class CopyFinder extends ASTVisitor {
-                    
-                    IASTStatement foundCopy = null;
-                    IASTNode original;
-                    
-                    public CopyFinder(IASTNode original) {
-                        shouldVisitStatements = true;
-                        this.original = original;
-                    }
-                    
-                    @Override
-                    public int visit(IASTStatement stmt) {
-                        if(stmt.getOriginalNode() == original) {
-                            foundCopy = stmt;
-                            System.out.println("found copy: " + stmt + " of original: " + original);
-                            return PROCESS_ABORT;
-                        }
-                        return PROCESS_CONTINUE;
-                    }
-                }
-                
-                //replace original map key with copy
-                List<String> prags = m_pp_context.get(stmt);
-                if(prags != null) {
-                    System.out.println("searching for copy of " + original);
-                    m_pp_context.remove(prags);
-                    CopyFinder cf = new CopyFinder(original);
-                    copy.accept(cf);
-                    m_pp_context.put(cf.foundCopy, prags);
-                }
+                nodes.put(stmt.getOriginalNode(), stmt);
                 return PROCESS_CONTINUE;
-                
             }
             
         }
-
-        Remapper remapper = new Remapper(original, copy);
-        original.accept(remapper);
+       
+        OrigCopyMapper mapper = new OrigCopyMapper();
+        copy.accept(mapper);
+        Map<IASTNode, List<String>> contextCopy = new HashMap<IASTNode, List<String>>();
+        for(IASTNode orig : m_pp_context.keySet()) {
+            List<String> prag = m_pp_context.get(orig);
+            IASTNode copiedNode = mapper.nodes.get(orig);
+            if(prag != null && copiedNode != null) {
+                contextCopy.put(copiedNode, prag);
+            }
+        }
+        m_pp_context = contextCopy;
         
     }
     
