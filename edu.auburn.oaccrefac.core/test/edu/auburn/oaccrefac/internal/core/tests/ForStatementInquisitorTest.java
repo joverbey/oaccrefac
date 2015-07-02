@@ -61,7 +61,7 @@ public class ForStatementInquisitorTest {
     @Test
     public void test_getInclusiveUpperBound() {
         ForStatementInquisitor inq = getInq(basic);
-        Assert.assertEquals(inq.getInclusiveUpperBound(), 9);
+        Assert.assertEquals(inq.getInclusiveUpperBound().longValue(), 9);
     }
     
     @Test
