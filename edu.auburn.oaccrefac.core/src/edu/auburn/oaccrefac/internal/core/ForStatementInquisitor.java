@@ -1,6 +1,8 @@
 package edu.auburn.oaccrefac.internal.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -344,7 +346,14 @@ public class ForStatementInquisitor {
                 pragmas.add((IASTPreprocessorPragmaStatement) pre);
             }
         }
-        //Collections.sort(...)
+        Collections.sort(pragmas, new Comparator<IASTPreprocessorPragmaStatement>() {
+
+            @Override
+            public int compare(IASTPreprocessorPragmaStatement o1, IASTPreprocessorPragmaStatement o2) {
+                return o1.getFileLocation().getNodeOffset() - o2.getFileLocation().getNodeOffset();
+            }
+            
+        });
         return pragmas;
     }
     
