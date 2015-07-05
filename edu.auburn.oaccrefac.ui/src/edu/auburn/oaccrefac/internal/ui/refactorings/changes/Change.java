@@ -5,13 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.ASTNodeProperty;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -50,7 +53,7 @@ public abstract class Change<T extends IASTNode> {
         
         return doCheckConditions(init);
     }
-    
+
     protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, 
             IProgressMonitor pm, IASTStatement... statements) {
         try {
@@ -82,31 +85,32 @@ public abstract class Change<T extends IASTNode> {
     public final ASTRewrite change(ASTRewrite rewriter) {
         IASTNode changed = null;
         T argNode = m_node;
+        IASTNode parent = argNode.getParent();
         if (m_node.isFrozen()) {
-            argNode = (T) m_node.copy(CopyStyle.withLocations);
+            //need locations to use getOriginalNode() for some reason...
+            parent = argNode.getParent().copy(CopyStyle.withLocations);
+            for(IASTNode child : parent.getChildren()) {
+                if(child.getOriginalNode() == m_node) {
+                    argNode = (T) child;
+                    break;
+                }
+            }
         }
-        for(IASTNode child : m_node.getChildren()) {
-            mapPreprocessors(child);    
-        }
-        //TODO be sure the iteration happens in the same order for the original and the copy
-        for(int i = 0; i < m_node.getChildren().length; i++) {
-            replacePreprocessors(m_node.getChildren()[i], argNode.getChildren()[i]);
-        }
+        mapPreprocessors(m_node);
+        replacePreprocessors(argNode);
         changed = doChange(argNode);
-        rewriter = rewriter.replace(getOriginal(), changed, null);
-        changed.setParent(m_node.getParent());
+        rewriter = rewriter.replace(getOriginal().getParent(), changed.getParent(), null);
         for(IASTNode key : m_pp_context.keySet()) {
             List<String> prags = m_pp_context.get(key);
             for(String prag : prags) {
                 IASTNode pragNode = rewriter.createLiteralNode(prag);
-                System.out.println(key.getParent());
-                System.out.println(key);
                 rewriter.insertBefore(key.getParent(), key, pragNode, null);
             }
         }
         return rewriter;
     }
     
+    //maps the preprocessor statements for the node and its children to the appropriate nodes
     protected final void mapPreprocessors(IASTNode node) {
         class PPMapPopulator extends ASTVisitor {
             
@@ -135,8 +139,9 @@ public abstract class Change<T extends IASTNode> {
         node.accept(pop);
         setPreprocessorContext(pop.pp_map);
     }
-    //TODO make this work
-    protected final void replacePreprocessors(IASTNode original, IASTNode copy) {
+    
+    //replaces the nodes in the current node-preprocessor map with the node copies from the given tree
+    protected final void replacePreprocessors(IASTNode copy) {
 
         //go over copy tree mapping originals to copies
         //go over entire m_pp map replacing originals with copies
@@ -171,6 +176,7 @@ public abstract class Change<T extends IASTNode> {
         
     }
     
+    //uses the rewrites and current node-preprocessor map add preprocessor statements into the tree
     protected final ASTRewrite insertPreprocessors(ASTRewrite rewriter) {
         for(IASTNode key : m_pp_context.keySet()) {
             List<String> prags = m_pp_context.get(key);
