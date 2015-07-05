@@ -5,16 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.cdt.core.dom.ast.ASTNodeProperty;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTASMDeclaration;
 import org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTDeclarationStatement;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTDeclarator;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTName;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration;
+import org.eclipse.cdt.internal.core.dom.rewrite.ASTLiteralNode;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -100,13 +105,7 @@ public abstract class Change<T extends IASTNode> {
         replacePreprocessors(argNode);
         changed = doChange(argNode);
         rewriter = rewriter.replace(getOriginal().getParent(), changed.getParent(), null);
-        for(IASTNode key : m_pp_context.keySet()) {
-            List<String> prags = m_pp_context.get(key);
-            for(String prag : prags) {
-                IASTNode pragNode = rewriter.createLiteralNode(prag);
-                rewriter.insertBefore(key.getParent(), key, pragNode, null);
-            }
-        }
+        insertPreprocessors(rewriter);
         return rewriter;
     }
     
@@ -177,15 +176,15 @@ public abstract class Change<T extends IASTNode> {
     }
     
     //uses the rewrites and current node-preprocessor map add preprocessor statements into the tree
-    protected final ASTRewrite insertPreprocessors(ASTRewrite rewriter) {
+    protected final void insertPreprocessors(ASTRewrite rewriter) {
         for(IASTNode key : m_pp_context.keySet()) {
             List<String> prags = m_pp_context.get(key);
+            //FIXME currently inserts regular nodes in unexpected places, ignores literal nodes
             for(String prag : prags) {
-                IASTNode pragNode = rewriter.createLiteralNode(prag);
-                rewriter.insertBefore(key.getParent(), key, pragNode, null);
+                rewriter.insertBefore(key.getParent(), key, rewriter.createLiteralNode(prag), null);
+                //rewriter.insertBefore(key.getParent(), key, new CASTNullStatement(), null);
             }
         }
-        return rewriter;
     }
 
     /**
