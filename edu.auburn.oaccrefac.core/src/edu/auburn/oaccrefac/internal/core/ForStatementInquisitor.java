@@ -156,20 +156,19 @@ public class ForStatementInquisitor {
         return 0;
     }
 
-    public int getInclusiveUpperBound() {
+    public Long getInclusiveUpperBound() {
         IASTBinaryExpression condExpr = (IASTBinaryExpression) statement.getConditionExpression();
         IASTExpression ubExpr = condExpr.getOperand2();
-        int ub = Integer.MAX_VALUE - 1;
 
         IASTFunctionDefinition enclosingFunction = ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class);
         Long newUB = new ConstantPropagation(enclosingFunction).evaluate(ubExpr);
-        if (newUB != null && Integer.MIN_VALUE + 1 <= newUB.longValue() && newUB.longValue() <= Integer.MAX_VALUE - 1)
-            ub = (int) newUB.longValue();
+        if (newUB == null)
+            return null;
 
         if (condExpr.getOperator() == IASTBinaryExpression.op_lessThan)
-            ub--;
+            newUB = newUB.longValue() - 1;
 
-        return ub;
+        return newUB;
     }
 
     /**
