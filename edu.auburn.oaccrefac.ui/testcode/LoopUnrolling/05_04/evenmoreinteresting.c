@@ -6,7 +6,7 @@ int main() {
     int m = (12 + k) % l;
     char a[30];
     int n = m + 12;
-    for (int i = 0; i < n; i++) { /*<<<<< 5,1,8,1,2,pass*/
+    for (int i = 0; i < n; i++) { /*<<<<< 9,1,12,1,2,pass*/
         a[i] = '\0';
     }
 

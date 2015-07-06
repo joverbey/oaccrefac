@@ -1,0 +1,13 @@
+/*
+ * Test should demonstrate refactoring for divisible
+ * factors under different upper bound inequalities.
+ */
+int main() {
+	char a[10];
+	int i = 0;
+	for (; i < (9 + 1); i++) {
+		a[i] = '\0';
+		i++;
+		a[i] = '\0';
+	}
+}

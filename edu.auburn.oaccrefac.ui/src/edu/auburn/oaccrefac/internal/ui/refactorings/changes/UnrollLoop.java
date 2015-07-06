@@ -8,21 +8,25 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class UnrollLoop extends CompoundModify {
 
     private IASTForStatement m_loop;
     private int m_unrollFactor;
+    private Long m_upperBound;
     
     public UnrollLoop(IASTCompoundStatement compound, IASTForStatement loop, int unrollFactor) {
         super(compound);
@@ -39,6 +43,17 @@ public class UnrollLoop extends CompoundModify {
         
         if (m_unrollFactor <= 0) {
             init.addFatalError("Invalid loop unroll factor! (<= 0)");
+            return init;
+        }
+        
+        //If the upper bound is not a constant, we cannot do loop unrolling
+        IASTFunctionDefinition enclosing = 
+                ASTUtil.findNearestAncestor(getOriginal(), IASTFunctionDefinition.class);
+        ConstantPropagation constantprop_ub = new ConstantPropagation(enclosing);
+        IASTExpression ub_expr = ((IASTBinaryExpression)m_loop.getConditionExpression()).getOperand2();
+        m_upperBound = constantprop_ub.evaluate(ub_expr);
+        if (m_upperBound == null) {
+            init.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
             return init;
         }
         
@@ -70,10 +85,12 @@ public class UnrollLoop extends CompoundModify {
         
         //get the loop upper bound from AST, if the 
         //conditional statement is '<=', change it
-        int upper = getUpperBoundValue();
-        if (conditionLE(loop)) {
+        int upper = m_upperBound.intValue();
+        if (isConditionLE(loop)) {
             upper = upper + 1;
-            adjustCondition(loop, upper);
+            ((IASTBinaryExpression) loop.getConditionExpression())
+                    .setOperator(IASTBinaryExpression.op_lessThan);
+            adjustCondition(loop, 1, IASTBinaryExpression.op_plus);
         }
         
         //Number of extra iterations to add after loop. Also
@@ -83,14 +100,9 @@ public class UnrollLoop extends CompoundModify {
         if (extras != 0) { //not divisible...
             addTrailer(upper, extras, body_compound);
             
-            //re-adjust upper because now we
-            //will treat the actual loop as if
-            //it were divisible
-            upper = upper - extras;
-            
             //This also means we need to change the
             //loop's actual upper bound
-            setUpperBound(loop, upper);
+            adjustCondition(loop, extras, IASTBinaryExpression.op_minus);
         }
         
       //Now non-divisible loops are now treated as divisible loops.
@@ -116,21 +128,20 @@ public class UnrollLoop extends CompoundModify {
         return false;
     }
     
-    private void adjustCondition(IASTForStatement loop, int newUpper) {
+    private void adjustCondition(IASTForStatement loop, int amount, int binaryOp) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
-        
-        IASTLiteralExpression newUpperLiteral = factory.newLiteralExpression(
-                IASTLiteralExpression.lk_integer_constant, 
-                newUpper+"");
-        IASTBinaryExpression new_cond = factory.newBinaryExpression(
-                IASTBinaryExpression.op_lessThan, 
-                be.getOperand1().copy(), 
-                newUpperLiteral);
-        loop.setConditionExpression(new_cond);
+        IASTExpression cond_rightSide = be.getOperand2();
+        IASTLiteralExpression amtLit = factory.newLiteralExpression(
+                IASTLiteralExpression.lk_integer_constant, amount+"");
+        IASTBinaryExpression newBinaryOp = factory.newBinaryExpression(
+                binaryOp, cond_rightSide, amtLit);
+        IASTUnaryExpression parenth = factory.newUnaryExpression(
+                IASTUnaryExpression.op_bracketedPrimary, newBinaryOp);
+        be.setOperand2(parenth);
     }
 
-    private boolean conditionLE(IASTForStatement loop) {
+    private boolean isConditionLE(IASTForStatement loop) {
         //Check to see if the loop condition statement has '<=' operator
         if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
             IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
@@ -139,17 +150,6 @@ public class UnrollLoop extends CompoundModify {
             }
         }
         return false;
-    }
-    
-    private void setUpperBound(IASTForStatement loop, int newUpperBound) {
-        //Get a factory and create a new node to replace old one
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTLiteralExpression newExpr = factory.newLiteralExpression(
-                IASTLiteralExpression.lk_integer_constant, 
-                new Integer(newUpperBound).toString());
-        
-        IASTBinaryExpression cond = (IASTBinaryExpression) loop.getConditionExpression();
-        cond.setOperand2(newExpr);
     }
     
     private void unroll(IASTCompoundStatement body) {   
@@ -188,20 +188,6 @@ public class UnrollLoop extends CompoundModify {
             }
         }
         insertAfter(iter_exprstmt, m_loop);
-    }
-    
-    protected IASTLiteralExpression getUpperBound() {
-        IASTExpression cond = m_loop.getConditionExpression();
-        if (cond instanceof IASTBinaryExpression) {
-            IASTBinaryExpression binary_cond = (IASTBinaryExpression) cond;
-            return (IASTLiteralExpression) (binary_cond.getChildren()[1]);
-        } else {
-            return null;
-        }
-    }
-
-    protected int getUpperBoundValue() {
-        return Integer.parseInt(new String(getUpperBound().getValue()));
     }
 
 
