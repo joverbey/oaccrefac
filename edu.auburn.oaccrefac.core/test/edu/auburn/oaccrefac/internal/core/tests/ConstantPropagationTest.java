@@ -172,6 +172,22 @@ public class ConstantPropagationTest extends TestCase {
         check(program, expectedValues);
     }
 
+    public void testForUnroll() throws CoreException {
+        String program = "int main() {\n" + 
+                /* 2 */ "    int a[10];\n" + 
+                /* 3 */ "    int n = 10;\n" + 
+                /* 4 */ "    for (int i = 0; i < n; i++) {\n" + 
+                /* 5 */ "        a[i] = 0;\n" + 
+                /* 6 */ "    }\n" + 
+                /* 7 */ "}";
+        String[] expectedValues = { //
+                "Line 3: n = 10", //
+                "Line 4: i = 0", //
+                "Line 4: n = 10", //
+        };
+        check(program, expectedValues);
+    }
+
     private void check(String program, String[] expectedValues) throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(program);
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
