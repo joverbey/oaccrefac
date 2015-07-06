@@ -1,18 +1,33 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTASMDeclaration;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTDeclarationStatement;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTDeclarator;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTName;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration;
+import org.eclipse.cdt.internal.core.dom.rewrite.ASTLiteralNode;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public abstract class Change<T extends IASTNode> {
 
@@ -43,7 +58,7 @@ public abstract class Change<T extends IASTNode> {
         
         return doCheckConditions(init);
     }
-    
+
     protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, 
             IProgressMonitor pm, IASTStatement... statements) {
         try {
@@ -74,27 +89,104 @@ public abstract class Change<T extends IASTNode> {
     @SuppressWarnings("unchecked")
     public final ASTRewrite change(ASTRewrite rewriter) {
         IASTNode changed = null;
+        T argNode = m_node;
+        IASTNode parent = argNode.getParent();
         if (m_node.isFrozen()) {
-            changed = doChange((T) m_node.copy());
-        } else {
-            changed = doChange(m_node);
+            //need locations to use getOriginalNode() for some reason...
+            parent = argNode.getParent().copy(CopyStyle.withLocations);
+            for(IASTNode child : parent.getChildren()) {
+                if(child.getOriginalNode() == m_node) {
+                    argNode = (T) child;
+                    break;
+                }
+            }
         }
-        //TODO initialize preprocessor map...
-        rewriter = rewriter.replace(getOriginal(), changed, null);
-        rewriter = replacePreprocessors(rewriter);
+        mapPreprocessors(m_node);
+        replacePreprocessors(argNode);
+        changed = doChange(argNode);
+        rewriter = rewriter.replace(getOriginal().getParent(), changed.getParent(), null);
+        insertPreprocessors(rewriter);
         return rewriter;
     }
     
-    protected final void replacePreprocessors(IASTNode replace, IASTNode replaceWith) {
-        //TODO ... check map and replace preprocessors ...
+    //maps the preprocessor statements for the node and its children to the appropriate nodes
+    protected final void mapPreprocessors(IASTNode node) {
+        class PPMapPopulator extends ASTVisitor {
+            
+            public Map<IASTNode, List<String>> pp_map = new HashMap<IASTNode, List<String>>();
+            
+            public PPMapPopulator() {
+                shouldVisitStatements = true;
+            }
+            
+            @Override
+            public int visit(IASTStatement stmt) {
+                //TODO handle compound statements as well as for loops
+                List<String> pragSigs = new ArrayList<String>();
+                if(stmt instanceof IASTForStatement) {
+                    ForStatementInquisitor inq = InquisitorFactory.getInquisitor((IASTForStatement) stmt);
+                    for(IASTPreprocessorPragmaStatement prag : inq.getLeadingPragmas()) {
+                         pragSigs.add(prag.getRawSignature());
+                    }
+                }
+                pp_map.put(stmt, pragSigs);
+                return PROCESS_CONTINUE;
+            }     
+        }
+        
+        PPMapPopulator pop = new PPMapPopulator();
+        node.accept(pop);
+        setPreprocessorContext(pop.pp_map);
     }
     
-    protected final ASTRewrite replacePreprocessors(ASTRewrite rewriter) {
-        //TODO ...do replacements...
-        //rewriter = rewriter.insertBefore(...);
-        return rewriter;
+    //replaces the nodes in the current node-preprocessor map with the node copies from the given tree
+    protected final void replacePreprocessors(IASTNode copy) {
+
+        //go over copy tree mapping originals to copies
+        //go over entire m_pp map replacing originals with copies
+        
+        class OrigCopyMapper extends ASTVisitor {
+            
+            public Map<IASTNode, IASTNode> nodes = new HashMap<IASTNode, IASTNode>(); 
+            
+            public OrigCopyMapper() {
+                shouldVisitStatements = true;
+            }
+            
+            @Override
+            public int visit(IASTStatement stmt) {
+                nodes.put(stmt.getOriginalNode(), stmt);
+                return PROCESS_CONTINUE;
+            }
+            
+        }
+       
+        OrigCopyMapper mapper = new OrigCopyMapper();
+        copy.accept(mapper);
+        Map<IASTNode, List<String>> contextCopy = new HashMap<IASTNode, List<String>>();
+        for(IASTNode orig : m_pp_context.keySet()) {
+            List<String> prag = m_pp_context.get(orig);
+            IASTNode copiedNode = mapper.nodes.get(orig);
+            if(prag != null && copiedNode != null) {
+                contextCopy.put(copiedNode, prag);
+            }
+        }
+        m_pp_context = contextCopy;
+        
     }
     
+    //uses the rewrites and current node-preprocessor map add preprocessor statements into the tree
+    protected final void insertPreprocessors(ASTRewrite rewriter) {
+        for(IASTNode key : m_pp_context.keySet()) {
+            List<String> prags = m_pp_context.get(key);
+            //FIXME currently inserts regular nodes in unexpected places, ignores literal nodes
+            for(String prag : prags) {
+                rewriter.insertBefore(key.getParent(), key, rewriter.createLiteralNode(prag), null);
+                //rewriter.insertBefore(key.getParent(), key, new CASTNullStatement(), null);
+            }
+        }
+    }
+
     /**
      * Abstract method describes the implementation that all changes must
      * define. This method takes in a loop and changes it in respect to

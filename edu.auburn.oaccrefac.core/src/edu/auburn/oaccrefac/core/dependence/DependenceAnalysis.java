@@ -103,7 +103,9 @@ public class DependenceAnalysis {
                         for (int i = 0; i < commonLoops.size(); i++) {
                             ForStatementInquisitor thisLoop = InquisitorFactory.getInquisitor(commonLoops.get(i));
                             lowerBounds[i] = thisLoop.getLowerBound();
-                            upperBounds[i] = thisLoop.getInclusiveUpperBound();
+                            Long ub = thisLoop.getInclusiveUpperBound();
+                            if (ub != null && Integer.MIN_VALUE+1 <= ub.longValue() && ub.longValue() <= Integer.MAX_VALUE-1)
+                                upperBounds[i] = (int)ub.longValue();
                         }
 
                         for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
