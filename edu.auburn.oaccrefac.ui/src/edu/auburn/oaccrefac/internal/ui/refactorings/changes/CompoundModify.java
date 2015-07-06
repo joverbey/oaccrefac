@@ -18,7 +18,7 @@ public abstract class CompoundModify extends CompoundChange {
             m_chilluns.add(child);
     }
     
-    protected IASTCompoundStatement rebuildCompound() {
+    protected final IASTCompoundStatement rebuildCompound() {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTCompoundStatement newCompound = factory.newCompoundStatement();
         for (IASTStatement child : m_chilluns) {
@@ -30,7 +30,7 @@ public abstract class CompoundModify extends CompoundChange {
     protected abstract void modifyCompound();
 
     @Override
-    protected IASTCompoundStatement doChange(IASTCompoundStatement toChange) {
+    protected final IASTCompoundStatement doChange(IASTCompoundStatement toChange) {
         modifyCompound();
         return rebuildCompound();
     }

@@ -3,40 +3,41 @@ package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-
 public class FizzLoops extends CompoundModify {
-
-    private IASTForStatement m_orignalLoop;
+    
     private IASTForStatement m_loop;
     
     public FizzLoops(IASTCompoundStatement compound, IASTForStatement loop) {
         super(compound);
-        m_orignalLoop = loop;
         m_loop = loop;
     }
     
     @Override
     protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
-        if (m_orignalLoop == null) {
-            init.addFatalError("Loop argument is null!");
+        //If the loop doesn't have children, bail. Save some
+        //energy by not doing the refactoring.
+        if (!(m_loop.getBody() instanceof IASTCompoundStatement)) {
+            init.addFatalError("Body does not have any statements"
+                    + " therefore, loop fission is useless.");
             return init;
         }
-        // This gets the selected loop to re-factor and checks if the body is compound statement only..
-        if (!(m_orignalLoop.getBody() instanceof IASTCompoundStatement)) {
-            init.addFatalError("Useless to apply fission on one statement loops.");
-            return init;
-        } 
         
-        if (m_orignalLoop.isFrozen()) {
-            init.addWarning("For loop is frozen. Creating copy to modify.");
-            m_loop = m_orignalLoop.copy();
+        if (m_loop.getBody().getChildren().length < 2) {
+            init.addWarning("Warning: Loop fission refactoring is "
+                    + "useless with less than two statements in body.");
         }
+        
+        //If the loop is frozen, we unfreeze, replace, and work with replacement
+        if (m_loop.isFrozen()) {
+            IASTForStatement copy = m_loop.copy();
+            this.replace(m_loop, copy);
+            m_loop = copy;
+        }
+        
         return init;
     }
     
@@ -44,31 +45,26 @@ public class FizzLoops extends CompoundModify {
     protected void modifyCompound() {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         
-        IASTStatement body = m_loop.getBody();
-        IASTNode[] chilluns = body.getChildren();
-        IASTNode insert_before = ASTUtil.getNextSibling(m_orignalLoop);
+        //Ensured from precondition...
+        IASTCompoundStatement body = (IASTCompoundStatement) m_loop.getBody();
         
-        /*Over here, we are looking for all the statements in the body of for-loop
-         *which can be put into individual for-loop of their own.
+        /*
+         * Over here, we are looking for all the statements in the body of for-loop
+         * which can be put into individual for-loop of their own.
          */
-        for (IASTNode child : chilluns) {
-            IASTStatement stmt = (IASTStatement) (child.copy());
+        for (IASTStatement child : body.getStatements()) {
             IASTForStatement newForLoop = factory.newForStatement
                     (m_loop.getInitializerStatement(), 
                             m_loop.getConditionExpression(), 
                             m_loop.getIterationExpression(), 
-                            stmt);
-            if (insert_before != null && insert_before instanceof IASTStatement) {
-                insertBefore(newForLoop, (IASTStatement) insert_before);
-            } else {
-                append(newForLoop);
-            }
+                            child);
+            EnsureCompoundBody check = new EnsureCompoundBody(newForLoop);
+            this.insertAfter(newForLoop, check.change(this));
         }
-        /*This check is to make sure that compound body is not empty. 
-         * If yes, it'll not perform re-factoring.
-         */
-        if (chilluns.length>0) {
-            remove(m_orignalLoop);
+        
+        //Remove the old loop from the statement list
+        if (body.getStatements().length > 0) {
+            this.remove(m_loop);
         }
     }
 
