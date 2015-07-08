@@ -1,68 +1,45 @@
-package edu.auburn.oaccrefac.internal.ui.refactorings.changes;
+package edu.auburn.oaccrefac.core.change;
 
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.dependence.DataDependence;
-import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.core.dependence.Direction;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
 public class InterchangeLoops extends ForLoopChange {
 
-    private int m_exchange;
-    private int m_depth;
-    
-    /**
-     * for (int i = 0 ...)   <--- depth 0
-     *      for (int j = 0 ...)  <--- depth 1
-     *          for (int k = 0 ...)  <--- depth 2
-     * @param first
-     * @param depth
-     */
-    public InterchangeLoops(IASTForStatement first, int depth) {
-        super(first);
-        m_depth = depth;
-        m_exchange = 0;
-        if (m_depth < 0) {
-            throw new IllegalArgumentException("Depth cannot be less than 0.");
-        }
-    }
-    
-    public InterchangeLoops(IASTForStatement first, int depth, int toExchangeWith) {
-        super(first);
-        m_depth = depth;
-        m_exchange = toExchangeWith;
-        if (m_depth < 0) {
-            throw new IllegalArgumentException("Depth cannot be less than 0.");
+    private IASTForStatement m_second;
+
+    public InterchangeLoops(ASTRewrite rewriter,
+            IASTForStatement first, IASTForStatement second) {
+        super(rewriter, first);
+        if (second != null) {
+            m_second = second;
+        } else {
+            throw new IllegalArgumentException("Target loop cannot be null!");
         }
     }
     
     @Override
     protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
-        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(getOriginal());
-        if (!forLoop.isPerfectLoopNest()) {
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoopToChange());
+        if (!inq.isPerfectLoopNest()) {
             init.addFatalError("Only perfectly nested loops can be interchanged.");
             return init;
         }
         
-        List<IASTForStatement> headers = forLoop.getPerfectLoopNestHeaders();
-        if (m_depth < 0 || m_depth >= headers.size()) {
-            init.addFatalError("There is no for-loop at depth " + m_depth);
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        if (!headers.contains(m_second)) {
+            init.addFatalError("Second loop is not within headers of first");
             return init;
         }
         
-        if (m_exchange < 0 || m_exchange >= headers.size()) {
-            init.addFatalError("There is no for-loop at exchange depth:" + m_exchange);
-            return init;
-        }
-        
-        
+        /*
+         * TODO and FIXME
+         * We need to put this in a seperate algorithm for reusability...
+         * 
         int numEnclosingLoops = countEnclosingLoops(getOriginal());
         DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(
                 init, getProgressMonitor(), getOriginal());
@@ -73,10 +50,12 @@ public class InterchangeLoops extends ForLoopChange {
                         + "depth " + m_depth + " will change the dependence structure "
                         + "of the loop nest.");
         }
+        */
         
         return init;
     }
     
+    /*
     private int countEnclosingLoops(IASTNode outsideOf) {
         int result = 0;
         for (IASTNode node = outsideOf.getParent(); node != null; node = node.getParent()) {
@@ -128,24 +107,12 @@ public class InterchangeLoops extends ForLoopChange {
         result[j] = tmp;
         return result;
     }
-    
+    */
 
     @Override
-    public IASTForStatement doChange(IASTForStatement loop) {
-        
-        IASTForStatement left = ASTUtil.findDepth(loop, IASTForStatement.class, m_exchange);
-        IASTForStatement right = ASTUtil.findDepth(loop, IASTForStatement.class, m_depth);
-        IASTForStatement temp = left.copy();
-        
-        left.setInitializerStatement(right.getInitializerStatement());
-        left.setConditionExpression(right.getConditionExpression());
-        left.setIterationExpression(right.getIterationExpression());
-        
-        right.setInitializerStatement(temp.getInitializerStatement());
-        right.setConditionExpression(temp.getConditionExpression());
-        right.setIterationExpression(temp.getIterationExpression());
-
-        return loop;
+    public ASTRewrite doChange(ASTRewrite rewriter) {
+        IASTForStatement first = getLoopToChange();
+        return this.exchangeLoopHeaders(rewriter, first, m_second);
     }
 
     

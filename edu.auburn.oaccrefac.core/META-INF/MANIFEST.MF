@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: edu.auburn.oaccrefac.internal.core.Activator
 Bundle-Vendor: Auburn University
 Require-Bundle: org.eclipse.ui,
+ org.eclipse.ltk.core.refactoring,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.cdt.core,
@@ -18,6 +19,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: edu.auburn.oaccrefac.core.dataflow,
  edu.auburn.oaccrefac.core.dependence,
+ edu.auburn.oaccrefac.core.change,
  edu.auburn.oaccrefac.internal.core,
  edu.auburn.oaccrefac.internal.core.constprop,
  edu.auburn.oaccrefac.internal.core.dependence,
