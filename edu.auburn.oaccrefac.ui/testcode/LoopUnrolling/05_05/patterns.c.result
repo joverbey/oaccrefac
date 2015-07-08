@@ -1,11 +1,11 @@
 
 int main() {
 	int n = 9;
-	int a[n];
+	int a;
 	int i = 0;
 	for (; i < (n + 1); i++) {
-		a[i] = '\0';
+		a = 0;
 		i++;
-		a[i] = '\0';
+		a = 0;
 	}
 }

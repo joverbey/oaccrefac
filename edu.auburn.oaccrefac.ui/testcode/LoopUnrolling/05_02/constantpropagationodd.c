@@ -1,10 +1,10 @@
 
 int main() {
 
-    char a[20];
+    int a;
     int n = 11;
     for (int i = 0; i < n; i++) { /*<<<<< 6,1,9,1,2,pass*/
-        a[i] = '\0';
+        a = 0;
     }
 
 }

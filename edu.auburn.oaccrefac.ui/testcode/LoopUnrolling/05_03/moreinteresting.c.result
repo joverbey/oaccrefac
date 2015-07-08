@@ -1,12 +1,12 @@
 
 int main() {
 	int m = 12;
-	char a[30];
+	int a;
 	int n = m + 12;
 	int i = 0;
 	for (; i < n; i++) {
-		a[i] = '\0';
+		a = 0;
 		i++;
-		a[i] = '\0';
+		a = 0;
 	}
 }
