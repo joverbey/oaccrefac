@@ -291,16 +291,20 @@ public class ExpressionEvaluator {
             if (op == IASTBinaryExpression.op_assign) {
                 IASTName lhsName = ASTUtil.getIdExpression(exp.getOperand1());
                 Long rhsValue = evaluate(exp.getOperand2());
-                if (lhsName != null && rhsValue != null) {
-                    IBinding binding = lhsName.resolveBinding();
-                    if (env == null)
-                        env = ConstEnv.EMPTY;
-                    if (ConstantPropagation.canTrackConstantValues(binding)
-                            && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
-                        env = env.set(binding, rhsValue);
-                        constValuedNames.put(lhsName, rhsValue);
+                if (rhsValue != null) {
+                    if (lhsName != null) {
+                        IBinding binding = lhsName.resolveBinding();
+                        if (env == null)
+                            env = ConstEnv.EMPTY;
+                        if (ConstantPropagation.canTrackConstantValues(binding)
+                                && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
+                            env = env.set(binding, rhsValue);
+                            constValuedNames.put(lhsName, rhsValue);
+                        }
+                        return rhsValue;
+                    } else if (ASTUtil.getMultidimArrayAccess(exp.getOperand1()) != null) {
+                        return rhsValue;
                     }
-                    return rhsValue;
                 }
             }
             env = ConstEnv.EMPTY;
