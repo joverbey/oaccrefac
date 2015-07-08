@@ -172,7 +172,7 @@ public class ConstantPropagationTest extends TestCase {
         check(program, expectedValues);
     }
 
-    public void testForUnroll() throws CoreException {
+    public void testArrayWriteForUnroll() throws CoreException {
         String program = "int main() {\n" + 
                 /* 2 */ "    int a[10];\n" + 
                 /* 3 */ "    int n = 10;\n" + 
@@ -184,6 +184,27 @@ public class ConstantPropagationTest extends TestCase {
                 "Line 3: n = 10", //
                 "Line 4: i = 0", //
                 "Line 4: n = 10", //
+        };
+        check(program, expectedValues);
+    }
+
+    public void testNestedArrayWrite() throws CoreException {
+        String program = "int main() {\n" + 
+                /* 2 */ "    int a[10][20];\n" + 
+                /* 3 */ "    int n = 10, m = 20;\n" + 
+                /* 4 */ "    for (int i = 0; i < n; i++) {\n" + 
+                /* 5 */ "      for (int j = 0; j < m; j++) {\n" + 
+                /* 6 */ "        a[i][j] = 0;\n" + 
+                /* 7 */ "      }\n" + 
+                /* 8 */ "    }\n" + 
+                /* 9 */ "}";
+        String[] expectedValues = { //
+                "Line 3: n = 10", //
+                "Line 3: m = 20", //
+                "Line 4: i = 0", //
+                "Line 4: n = 10", //
+                "Line 5: j = 0", //
+                "Line 5: m = 20", //
         };
         check(program, expectedValues);
     }
