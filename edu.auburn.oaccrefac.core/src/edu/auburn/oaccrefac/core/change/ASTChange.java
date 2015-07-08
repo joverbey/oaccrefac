@@ -23,6 +23,17 @@ public abstract class ASTChange {
     //Internal preprocessor context map
     private Map<IASTNode, List<String> > m_pp_context;
     
+    private class MapCleaner extends ASTVisitor {
+        public MapCleaner() {
+            shouldVisitStatements = true;
+        }
+        @Override
+        public int visit(IASTStatement stmt) {
+            m_pp_context.remove(stmt);
+            return PROCESS_CONTINUE;
+        }
+    }
+    
     public ASTChange(ASTRewrite rewriter) {
         m_rewriter = rewriter;
         m_pp_context = new HashMap<>();
@@ -70,18 +81,7 @@ public abstract class ASTChange {
     
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
-        
-        class MapCleaner extends ASTVisitor {
-            public MapCleaner() {
-                shouldVisitStatements = true;
-            }
-            @Override
-            public int visit(IASTStatement stmt) {
-                m_pp_context.remove(stmt);
-                return PROCESS_CONTINUE;
-            }
-        }
-        
+              
         m_pp_context.put(replacement, m_pp_context.remove(node));
         node.accept(new MapCleaner());
         return rewriter.replace(node, replacement, null);
@@ -89,11 +89,12 @@ public abstract class ASTChange {
     
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
-                
+        
         return rewriter.insertBefore(parent, insertionPoint, newNode, null);
     }
     
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
+        node.accept(new MapCleaner());
         rewriter.remove(node, null);
     }
     
