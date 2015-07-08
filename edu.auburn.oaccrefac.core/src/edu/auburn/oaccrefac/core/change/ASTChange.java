@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
@@ -69,14 +70,31 @@ public abstract class ASTChange {
     
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
-        //Do stuff with pragma and comment context here.
+        
+        class MapCleaner extends ASTVisitor {
+            public MapCleaner() {
+                shouldVisitStatements = true;
+            }
+            @Override
+            public int visit(IASTStatement stmt) {
+                m_pp_context.remove(stmt);
+                return PROCESS_CONTINUE;
+            }
+        }
+        
+        m_pp_context.put(replacement, m_pp_context.remove(node));
+        node.accept(new MapCleaner());
         return rewriter.replace(node, replacement, null);
     }
     
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
-        //Do stuff with pragma and comment context here.
+                
         return rewriter.insertBefore(parent, insertionPoint, newNode, null);
+    }
+    
+    protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
+        rewriter.remove(node, null);
     }
     
     public void setRewriter(ASTRewrite rewriter) {
