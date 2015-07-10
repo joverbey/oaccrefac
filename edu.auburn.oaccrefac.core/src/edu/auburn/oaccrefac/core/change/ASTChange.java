@@ -73,6 +73,10 @@ public abstract class ASTChange {
     }
     
     public final ASTRewrite change() {
+        if (m_rewriter == null) {
+            throw new IllegalArgumentException("Rewriter cannot be null!");
+        }
+        
         return doChange(m_rewriter);
     }
 

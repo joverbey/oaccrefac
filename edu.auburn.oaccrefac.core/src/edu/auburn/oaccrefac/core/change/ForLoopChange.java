@@ -1,7 +1,10 @@
 package edu.auburn.oaccrefac.core.change;
 
+import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 
 /**
@@ -30,6 +33,20 @@ public abstract class ForLoopChange extends ASTChange {
             throw new IllegalArgumentException("Argument loop cannot be null!");
         }
         m_loop = newLoop;
+    }
+    
+    protected IASTCompoundStatement ensureCompoundBody(ASTRewrite rewriter, 
+            IASTForStatement loop) {
+        IASTStatement body = loop.getBody();
+        if (body instanceof IASTCompoundStatement) {
+            return (IASTCompoundStatement) body;
+        }
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTCompoundStatement cmpndBody = factory.newCompoundStatement();
+        //(should only be one statement otherwise)
+        cmpndBody.addStatement(body.copy());
+        rewriter = this.safeReplace(rewriter, body, cmpndBody);
+        return cmpndBody;
     }
     
     
