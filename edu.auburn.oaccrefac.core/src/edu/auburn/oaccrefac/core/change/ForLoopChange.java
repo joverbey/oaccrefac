@@ -2,6 +2,8 @@ package edu.auburn.oaccrefac.core.change;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.text.edits.DeleteEdit;
+import org.eclipse.text.edits.TextEditGroup;
 
 /**
  * This class defines the base strategy interface to be derived
