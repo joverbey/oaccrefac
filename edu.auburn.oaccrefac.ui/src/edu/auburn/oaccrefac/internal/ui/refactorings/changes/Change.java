@@ -121,7 +121,9 @@ public abstract class Change<T extends IASTNode> {
                          pragSigs.add(prag.getRawSignature());
                     }
                 }
-                pp_map.put(stmt, pragSigs);
+                if(!pragSigs.isEmpty()) {
+                    pp_map.put(stmt, pragSigs);
+                }
                 return PROCESS_CONTINUE;
             }     
         }
