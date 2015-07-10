@@ -1,15 +1,14 @@
 //LEGEND:
 // Start line, Start char, End line, End char, Strip Depth, Strip Factor, Propagate Interchange, pass/fail
 int main() {
-
 	int array[10][20];
 	for (int j_0 = 0; j_0 < 20; j_0 += 2) {
+		/*<<<<< 6,1,11,1,1,2,-1,pass*/
 		for (int i = 0; i < 10; i++) {
 			for (int j = j_0; (j < j_0 + 2 && j < 20); j++) {
 				array[i][j] = 0;
 			}
 		}
 	}
-
 	return 0;
 }

@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.core.change;
 
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 
@@ -31,7 +30,6 @@ public abstract class ForLoopChange extends ASTChange {
         }
         m_loop = newLoop;
     }
-    
     
     protected ASTRewrite exchangeLoopHeaders(ASTRewrite rewriter,
             IASTForStatement loop1, IASTForStatement loop2) {

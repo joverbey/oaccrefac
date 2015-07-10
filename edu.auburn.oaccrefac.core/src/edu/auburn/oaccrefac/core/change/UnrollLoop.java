@@ -63,136 +63,139 @@ public class UnrollLoop extends ForLoopChange {
     
     @Override
     protected ASTRewrite doChange(ASTRewrite rewriter) {
-        //IASTCompoundStatement body = this.ensureCompoundBody(rewriter);
+        IASTForStatement loop = this.getLoopToChange();
         
+        //if the init statement is a declaration, move the declaration 
+        //to outer scope if possible and continue...
+        if (ASTUtil.findOne(loop, IASTDeclarationStatement.class) != null)
+            adjustInit(rewriter, loop);
+        
+        //get the loop upper bound from AST, if the conditional statement is '<=', 
+        //change it and adjust the bound to include a +1.
+        int upper = m_upperBound.intValue();
+        int cond_offset = 0;
+        IASTBinaryExpression condition = 
+                (IASTBinaryExpression) loop.getConditionExpression();
+        if (condition.getOperator() == IASTBinaryExpression.op_lessEqual) {
+            upper = upper + 1;
+            cond_offset = cond_offset + 1;
+        }
+        
+        //Number of extra iterations to add after loop based on divisibility.
+        int extras = upper % m_unrollFactor;
+        if (extras != 0) {
+            addTrailer(rewriter, loop, upper, extras);
+            cond_offset = cond_offset - extras;
+        }
+        
+        offsetCondition(rewriter, condition, cond_offset);
+        
+        //Now non-divisible loops are now treated as divisible loops.
+        //Unroll the loop however many times specified.
+        unroll(rewriter, loop);
+        
+        return rewriter;
+    }
+        
+    private void adjustInit(ASTRewrite rewriter, IASTForStatement loop) {
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTName counter_name = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
+        try {
+            IScope scope = loop.getScope().getParent();
+            if (!ASTUtil.isNameInScope(counter_name, scope)) {
+                this.safeInsertBefore(rewriter, 
+                        loop.getParent(), loop, loop.getInitializerStatement().copy());
+                this.safeReplace(rewriter, 
+                        loop.getInitializerStatement(), factory.newNullStatement());
+            }
+        } catch (DOMException e) {
+            e.printStackTrace();
+        } //DOMException
+    }
+    
+    private void offsetCondition(ASTRewrite rewriter,
+            IASTBinaryExpression condition, int amount) {
+        
+        int operator = IASTBinaryExpression.op_plus;
+        if (amount < 0) {
+            operator = IASTBinaryExpression.op_minus;
+            amount = amount * -1;
+        }
+        IASTBinaryExpression condcopy = condition.copy();
+        condcopy.setOperator(IASTBinaryExpression.op_lessThan);
+        
+        if (amount > 0) {
+            IASTExpression cond_right = condcopy.getOperand2();
+    
+            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+            IASTLiteralExpression amtLit = factory.newLiteralExpression(
+                    IASTLiteralExpression.lk_integer_constant, amount+"");
+            
+            IASTBinaryExpression appendedOperation = factory.newBinaryExpression(
+                    operator, cond_right, amtLit);
+            IASTUnaryExpression parenth = factory.newUnaryExpression(
+                    IASTUnaryExpression.op_bracketedPrimary, appendedOperation);
+            condcopy.setOperand2(parenth);
+        }
+        
+        this.safeReplace(rewriter, condition, condcopy);
+    }
+    
+    private ASTRewrite addTrailer(ASTRewrite rewriter, IASTForStatement loop,
+            int upperBound, int extras) {
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTStatement body = loop.getBody();
+        IASTExpression iter_expr = loop.getIterationExpression();
+        IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
+        
+        IASTNode insertBefore = ASTUtil.getNextSibling(loop);
+        for (int i = 0; i < extras; i++) {
+            this.safeInsertBefore(rewriter, 
+                    loop.getParent(), insertBefore, iter_exprstmt);
+            
+            if (body instanceof IASTCompoundStatement) {
+                IASTStatement[] chilluns = ((IASTCompoundStatement) body).getStatements();
+                for (IASTStatement child : chilluns) {
+                    this.safeInsertBefore(rewriter, 
+                            loop.getParent(), insertBefore, child.copy());
+                }
+            } else {
+                this.safeInsertBefore(rewriter, 
+                        loop.getParent(), insertBefore, body.copy());
+            }
+        }
+        this.safeInsertBefore(rewriter, 
+                loop.getParent(), insertBefore, iter_exprstmt);
+        return rewriter;
+    }
+
+    private ASTRewrite unroll(ASTRewrite rewriter, IASTForStatement loop) {
+        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTExpression iter_expr = loop.getIterationExpression();
+        IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
+        
+        IASTStatement body = loop.getBody();
+        IASTNode[] chilluns = body.getChildren();
+        
+        IASTCompoundStatement newBody = factory.newCompoundStatement();
+        for (int i = 0; i < m_unrollFactor; i++) {
+            if (body instanceof IASTCompoundStatement) {
+                for (int j = 0; j < chilluns.length; j++) {
+                    if (chilluns[j] instanceof IASTStatement)
+                        newBody.addStatement((IASTStatement)chilluns[j].copy());
+                }
+            } else {
+                newBody.addStatement(body.copy());
+            }
+            if (i != m_unrollFactor-1) {
+                newBody.addStatement(iter_exprstmt);
+            }
+        }
+        
+        this.safeReplace(rewriter, body, newBody);
         
         return rewriter;
     }
     
-    /*
-    @Override
-    protected void modifyCompound() {
-        EnsureCompoundBody bodyChange = new EnsureCompoundBody(m_loop.copy());
-        IASTForStatement loop = bodyChange.change(this);
-        IASTCompoundStatement body_compound = (IASTCompoundStatement) loop.getBody();
-        
-        //if the init statement is a declaration,
-        //move the declaration to outer scope if
-        //possible and continue
-        if (isInitDeclaration(loop)) {
-            try {
-                adjustInit(loop);
-            } catch (DOMException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        //get the loop upper bound from AST, if the 
-        //conditional statement is '<=', change it
-        int upper = m_upperBound.intValue();
-        if (isConditionLE(loop)) {
-            upper = upper + 1;
-            ((IASTBinaryExpression) loop.getConditionExpression())
-                    .setOperator(IASTBinaryExpression.op_lessThan);
-            adjustCondition(loop, 1, IASTBinaryExpression.op_plus);
-        }
-        
-        //Number of extra iterations to add after loop. Also
-        //used to test if the loop is divisible by the unroll
-        //factor.
-        int extras = upper % m_unrollFactor;
-        if (extras != 0) { //not divisible...
-            addTrailer(upper, extras, body_compound);
-            
-            //This also means we need to change the
-            //loop's actual upper bound
-            adjustCondition(loop, extras, IASTBinaryExpression.op_minus);
-        }
-        
-      //Now non-divisible loops are now treated as divisible loops.
-        //Unroll the loop however many times specified.
-        unroll((IASTCompoundStatement) body_compound);
-        replace(m_loop, loop);
-    }
-    
-    private void adjustInit(IASTForStatement loop) throws DOMException {
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTName counter_name = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
-        IScope scope = m_loop.getScope().getParent(); //DOMException
-        if (!ASTUtil.isNameInScope(counter_name, scope)) {
-            insertBefore(loop.getInitializerStatement(), m_loop);
-            loop.setInitializerStatement(factory.newNullStatement());
-        }
-    }
-    
-    private boolean isInitDeclaration(IASTForStatement loop) {
-        IASTStatement init = loop.getInitializerStatement();
-        if (init instanceof IASTDeclarationStatement)
-            return true;
-        return false;
-    }
-    
-    private void adjustCondition(IASTForStatement loop, int amount, int binaryOp) {
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
-        IASTExpression cond_rightSide = be.getOperand2();
-        IASTLiteralExpression amtLit = factory.newLiteralExpression(
-                IASTLiteralExpression.lk_integer_constant, amount+"");
-        IASTBinaryExpression newBinaryOp = factory.newBinaryExpression(
-                binaryOp, cond_rightSide, amtLit);
-        IASTUnaryExpression parenth = factory.newUnaryExpression(
-                IASTUnaryExpression.op_bracketedPrimary, newBinaryOp);
-        be.setOperand2(parenth);
-    }
 
-    private boolean isConditionLE(IASTForStatement loop) {
-        //Check to see if the loop condition statement has '<=' operator
-        if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
-            IASTBinaryExpression be = (IASTBinaryExpression) loop.getConditionExpression();
-            if (be.getOperator() == IASTBinaryExpression.op_lessEqual) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private void unroll(IASTCompoundStatement body) {   
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTExpression iter_expr = m_loop.getIterationExpression();
-        IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
-        
-        //We do unroll-1 since the first unroll is considered the
-        //loop body itself without modifications. 
-        //(i.e. a loop unroll of 1 would be no changes)
-        IASTNode[] chilluns = body.getChildren();
-        for (int i = 0; i < (m_unrollFactor-1); i++) {
-            //Insert our loop iteration
-            body.addStatement(iter_exprstmt);
-            //insert all children in the braced compound expression
-            //before the first element
-            for (IASTNode child : chilluns) {
-                if (child instanceof IASTStatement) {
-                    body.addStatement((IASTStatement) child.copy()); 
-                }
-            }
-        }
-    }
-    
-    private void addTrailer(int upperBound, int extras, IASTStatement body) {
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        IASTExpression iter_expr = m_loop.getIterationExpression();
-        IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
-        
-        for (int i = 0; i < extras; i++) {
-            insertAfter(iter_exprstmt, m_loop);
-            IASTNode[] chilluns = body.getChildren();
-            for (int j = chilluns.length-1; j >=0; j--) {
-                if (chilluns[j] instanceof IASTStatement)
-                    insertAfter((IASTStatement) chilluns[j], m_loop);
-            }
-        }
-        insertAfter(iter_exprstmt, m_loop);
-    }
-
-    */
 }
