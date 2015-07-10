@@ -1,7 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -9,9 +7,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FuseLoops;
+import edu.auburn.oaccrefac.core.change.ASTChange;
+import edu.auburn.oaccrefac.core.change.FuseLoops;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -28,7 +25,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FuseLoops;
  */
 public class LoopFusionRefactoring extends ForLoopRefactoring {
 
-    private Change<?> m_fuseLoops;
+    private ASTChange m_fuseLoops;
 
     public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -36,17 +33,14 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        IASTForStatement loop = getLoop();
-        IASTCompoundStatement enclosingCompound = 
-                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
-        m_fuseLoops = new FuseLoops(enclosingCompound, loop);
-        m_fuseLoops.setProgressMonitor(pm);
-        m_fuseLoops.checkConditions(initStatus);
+        m_fuseLoops = new FuseLoops(null, getLoop());
+        m_fuseLoops.checkConditions(initStatus, pm);
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        rewriter = m_fuseLoops.change(rewriter);
+        m_fuseLoops.setRewriter(rewriter);
+        rewriter = m_fuseLoops.change();
         //rewriter.replace(m_fuseLoops.getOriginal(), m_fuseLoops.change(), null);
     }
 
