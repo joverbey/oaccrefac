@@ -9,9 +9,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.change.ASTChange;
+import edu.auburn.oaccrefac.core.change.FizzLoops;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FizzLoops;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -29,7 +29,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.changes.FizzLoops;
 public class LoopFissionRefactoring extends ForLoopRefactoring {
 
     //I've always wanted to use a question mark like this.
-    private Change<?> m_fizzChange;
+    private ASTChange m_fizzChange;
     
     public LoopFissionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -37,18 +37,14 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        // This gets the selected loop to re-factor and checks if the body is compound statement only..
-        IASTForStatement loop = getLoop();
-        IASTCompoundStatement enclosingCompound = 
-                ASTUtil.findNearestAncestor(loop, IASTCompoundStatement.class);
-        m_fizzChange = new FizzLoops(enclosingCompound, loop);
-        m_fizzChange.setProgressMonitor(pm);
-        m_fizzChange.checkConditions(initStatus);
+        m_fizzChange = new FizzLoops(null, getLoop());
+        m_fizzChange.checkConditions(initStatus, pm);
     }
 
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
-        rewriter = m_fizzChange.change(rewriter);
+        m_fizzChange.setRewriter(rewriter);
+        rewriter = m_fizzChange.change();
         //rewriter.replace(m_fizzChange.getOriginal(), m_fizzChange.change(), null);
     }
 
