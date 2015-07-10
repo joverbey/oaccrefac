@@ -45,7 +45,7 @@ public abstract class ForLoopChange extends ASTChange {
         IASTCompoundStatement cmpndBody = factory.newCompoundStatement();
         //(should only be one statement otherwise)
         cmpndBody.addStatement(body.copy());
-        rewriter = this.safeReplace(rewriter, body, cmpndBody);
+        this.setRewriter(this.safeReplace(rewriter, body, cmpndBody));
         return cmpndBody;
     }
     

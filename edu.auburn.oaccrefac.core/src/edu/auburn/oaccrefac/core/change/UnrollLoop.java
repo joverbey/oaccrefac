@@ -64,7 +64,6 @@ public class UnrollLoop extends ForLoopChange {
     @Override
     protected ASTRewrite doChange(ASTRewrite rewriter) {
         IASTForStatement loop = this.getLoopToChange();
-        IASTCompoundStatement body = this.ensureCompoundBody(rewriter, loop);
         
         //if the init statement is a declaration, move the declaration 
         //to outer scope if possible and continue...
@@ -85,7 +84,7 @@ public class UnrollLoop extends ForLoopChange {
         //Number of extra iterations to add after loop based on divisibility.
         int extras = upper % m_unrollFactor;
         if (extras != 0) {
-            addTrailer(rewriter, loop, upper, extras, body);
+            addTrailer(rewriter, loop, upper, extras);
             cond_offset = cond_offset - extras;
         }
         
@@ -93,7 +92,7 @@ public class UnrollLoop extends ForLoopChange {
         
         //Now non-divisible loops are now treated as divisible loops.
         //Unroll the loop however many times specified.
-        rewriter = unroll(rewriter, loop, body);
+        unroll(rewriter, loop);
         
         return rewriter;
     }
@@ -143,8 +142,9 @@ public class UnrollLoop extends ForLoopChange {
     }
     
     private ASTRewrite addTrailer(ASTRewrite rewriter, IASTForStatement loop,
-            int upperBound, int extras, IASTCompoundStatement body) {
+            int upperBound, int extras) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+        IASTStatement body = loop.getBody();
         IASTExpression iter_expr = loop.getIterationExpression();
         IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
         
@@ -153,10 +153,15 @@ public class UnrollLoop extends ForLoopChange {
             this.safeInsertBefore(rewriter, 
                     loop.getParent(), insertBefore, iter_exprstmt);
             
-            IASTStatement[] chilluns = body.getStatements();
-            for (int j = chilluns.length-1; j >=0; j--) {
+            if (body instanceof IASTCompoundStatement) {
+                IASTStatement[] chilluns = ((IASTCompoundStatement) body).getStatements();
+                for (IASTStatement child : chilluns) {
+                    this.safeInsertBefore(rewriter, 
+                            loop.getParent(), insertBefore, child.copy());
+                }
+            } else {
                 this.safeInsertBefore(rewriter, 
-                        loop.getParent(), insertBefore, chilluns[i].copy());
+                        loop.getParent(), insertBefore, body.copy());
             }
         }
         this.safeInsertBefore(rewriter, 
@@ -164,25 +169,30 @@ public class UnrollLoop extends ForLoopChange {
         return rewriter;
     }
 
-    private ASTRewrite unroll(ASTRewrite rewriter, 
-            IASTForStatement loop, IASTCompoundStatement body) {
+    private ASTRewrite unroll(ASTRewrite rewriter, IASTForStatement loop) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTExpression iter_expr = loop.getIterationExpression();
         IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
         
-        //We do unroll-1 since the first unroll is considered the
-        //loop body itself without modifications. 
-        //(i.e. a loop unroll of 1 would be no changes)
-        IASTStatement[] chilluns = body.getStatements();
-        for (int i = 0; i < (m_unrollFactor-1); i++) {
-            //(null ~ append at end of body)
-            this.safeInsertBefore(rewriter, 
-                    body, null, iter_exprstmt);
-            for (IASTNode child : chilluns) {
-                this.safeInsertBefore(rewriter, 
-                        body, null, child.copy());
+        IASTStatement body = loop.getBody();
+        IASTNode[] chilluns = body.getChildren();
+        
+        IASTCompoundStatement newBody = factory.newCompoundStatement();
+        for (int i = 0; i < m_unrollFactor; i++) {
+            if (body instanceof IASTCompoundStatement) {
+                for (int j = 0; j < chilluns.length; j++) {
+                    if (chilluns[j] instanceof IASTStatement)
+                        newBody.addStatement((IASTStatement)chilluns[j].copy());
+                }
+            } else {
+                newBody.addStatement(body.copy());
+            }
+            if (i != m_unrollFactor-1) {
+                newBody.addStatement(iter_exprstmt);
             }
         }
+        
+        this.safeReplace(rewriter, body, newBody);
         
         return rewriter;
     }

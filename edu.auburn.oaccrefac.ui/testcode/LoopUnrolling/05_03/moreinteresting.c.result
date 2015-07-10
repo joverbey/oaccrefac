@@ -1,12 +1,14 @@
 
 int main() {
-	int m = 12;
-	int a;
-	int n = m + 12;
+
+    int m = 12;
+    int a;
+    int n = m + 12;
 	int i = 0;
 	for (; i < n; i++) {
 		a = 0;
 		i++;
 		a = 0;
 	}
+
 }

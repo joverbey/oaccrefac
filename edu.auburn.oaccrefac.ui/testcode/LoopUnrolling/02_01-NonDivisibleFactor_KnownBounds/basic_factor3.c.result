@@ -3,9 +3,11 @@
  * loop unrolling factors.
  */
 int main() {
+
 	char a[15];
 	int i = 0;
-	for (; i < (14 - 2); i++) {
+	for (; i < (14 - 2); i++) /*<<<<< 8,5,9,21,3,pass*/
+	{
 		a[i] = '\0';
 		i++;
 		a[i] = '\0';
