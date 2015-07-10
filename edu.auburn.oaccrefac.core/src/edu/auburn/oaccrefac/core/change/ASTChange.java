@@ -1,42 +1,41 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.text.edits.InsertEdit;
+import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public abstract class ASTChange {
 
     private ASTRewrite m_rewriter;
+    private TextEditGroup teg;
     private IProgressMonitor m_pm;
     
     //Internal preprocessor context map
     private Map<IASTNode, List<String> > m_pp_context;
     
-    private class MapCleaner extends ASTVisitor {
-        public MapCleaner() {
-            shouldVisitStatements = true;
-        }
-        @Override
-        public int visit(IASTStatement stmt) {
-            m_pp_context.remove(stmt);
-            return PROCESS_CONTINUE;
-        }
-    }
-    
     public ASTChange(ASTRewrite rewriter) {
         m_rewriter = rewriter;
         m_pp_context = new HashMap<>();
+        teg = new TextEditGroup("refactoring");
     }
     
     public final RefactoringStatus checkConditions(RefactoringStatus init) {
@@ -85,21 +84,51 @@ public abstract class ASTChange {
     
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
-              
-        m_pp_context.put(replacement, m_pp_context.remove(node));
-        node.accept(new MapCleaner());
-        return rewriter.replace(node, replacement, null);
+        return rewriter.replace(node, replacement, teg);
     }
     
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
-        
-        return rewriter.insertBefore(parent, insertionPoint, newNode, null);
+        return rewriter.insertBefore(parent, insertionPoint, newNode, teg);
     }
     
+    /** Limited for now to for loops only, since getLeadingPragmas is in the ForLoopInquisitor */
+    protected void reassociatePragmas(IASTNode oldNode, IASTNode newNode) {
+        if(oldNode instanceof IASTForStatement && newNode instanceof IASTForStatement) {
+            List<String> prags = new ArrayList<String>();
+            for(IASTPreprocessorStatement pp : InquisitorFactory.getInquisitor((IASTForStatement) oldNode).getLeadingPragmas()) {
+                prags.add(pp.getRawSignature());
+            }
+            m_pp_context.put(newNode, prags);
+        }
+        else {
+            throw new UnsupportedOperationException("Currently only support pragmas on for loops");
+        }
+    }
+    
+    protected void insertPragma(String pragma, IASTNode node) {
+        if(!pragma.startsWith("#pragma")) {
+            throw new IllegalArgumentException("String is not a pragma");
+        }
+        m_pp_context.put(node, Arrays.asList(pragma + System.lineSeparator()));
+    }
+    
+    
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
-        node.accept(new MapCleaner());
-        rewriter.remove(node, null);
+        rewriter.remove(node, teg);
+    }
+    
+    protected void writePragmaChanges(ASTRewrite rewriter) {
+        Iterator<Entry<IASTNode, List<String>>> it = m_pp_context.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<IASTNode, List<String>> pair = it.next();
+            for(String prag : pair.getValue()) {
+                rewriter.insertBefore(
+                        pair.getKey().getParent(), 
+                        pair.getKey(), 
+                        rewriter.createLiteralNode(prag + System.lineSeparator()), null);
+            }
+        }
     }
     
     public void setRewriter(ASTRewrite rewriter) {
@@ -111,6 +140,7 @@ public abstract class ASTChange {
         m_pm = pm;
     }
     public IProgressMonitor getProgressMonitor() { return m_pm; }
+    
     protected void setPreprocessorContext(Map<IASTNode, List<String>> in) {
         if (in != null) {
             m_pp_context = in;

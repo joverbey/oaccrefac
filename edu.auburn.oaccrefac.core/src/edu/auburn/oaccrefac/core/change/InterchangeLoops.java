@@ -114,7 +114,6 @@ public class InterchangeLoops extends ForLoopChange {
     public ASTRewrite doChange(ASTRewrite rewriter) {
         IASTForStatement first = getLoopToChange();
         return this.exchangeLoopHeaders(rewriter, first, m_second);
-        //return this.safeReplace(rewriter, first, new CASTForStatement());
     }
 
     
