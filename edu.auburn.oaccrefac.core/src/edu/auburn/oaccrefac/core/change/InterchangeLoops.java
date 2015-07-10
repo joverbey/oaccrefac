@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
@@ -113,6 +114,7 @@ public class InterchangeLoops extends ForLoopChange {
     public ASTRewrite doChange(ASTRewrite rewriter) {
         IASTForStatement first = getLoopToChange();
         return this.exchangeLoopHeaders(rewriter, first, m_second);
+        //return this.safeReplace(rewriter, first, new CASTForStatement());
     }
 
     
