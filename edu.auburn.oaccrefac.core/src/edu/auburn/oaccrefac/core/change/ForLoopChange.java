@@ -57,7 +57,6 @@ public abstract class ForLoopChange extends ASTChange {
         this.reassociatePragmas(loop1, loop2);
         this.reassociatePragmas(loop2, loop1);
         this.writePragmaChanges(rewriter);
-        
         return rewriter;
     }
     

@@ -93,13 +93,6 @@ public abstract class ASTChange {
         return rewriter.insertBefore(parent, insertionPoint, newNode, m_teg);
     }
     
-    protected void insertPragma(String pragma, IASTNode node) {
-        if(!pragma.startsWith("#pragma")) {
-            throw new IllegalArgumentException("String is not a pragma");
-        }
-        m_pp_context.put(node, Arrays.asList(pragma + System.lineSeparator()));
-    }
-    
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
         rewriter.remove(node, m_teg);
     }
@@ -107,14 +100,30 @@ public abstract class ASTChange {
     /** Limited for now to for loops only, since getLeadingPragmas is in the ForLoopInquisitor */
     protected void reassociatePragmas(IASTNode oldNode, IASTNode newNode) {
         if(oldNode instanceof IASTForStatement && newNode instanceof IASTForStatement) {
-            List<String> prags = new ArrayList<String>();
+            List<String> prags = m_pp_context.containsKey(newNode)? 
+                    m_pp_context.get(newNode) : new ArrayList<String>(); 
+
             for(IASTPreprocessorStatement pp : InquisitorFactory.getInquisitor((IASTForStatement) oldNode).getLeadingPragmas()) {
                 prags.add(pp.getRawSignature());
             }
             m_pp_context.put(newNode, prags);
+            
         }
         else {
             throw new UnsupportedOperationException("Currently only support pragmas on for loops");
+        }
+    }
+    protected void insertPragma(String pragma, IASTNode node) {
+        if(!pragma.startsWith("#pragma")) {
+            throw new IllegalArgumentException("String is not a pragma");
+        }
+        if(m_pp_context.containsKey(node)) {
+            List<String> prags = m_pp_context.get(node);
+            prags.add(pragma);
+            m_pp_context.put(node, prags);
+        }
+        else {
+            m_pp_context.put(node, Arrays.asList(pragma));
         }
     }
     
@@ -149,7 +158,6 @@ public abstract class ASTChange {
             }
         }
         node.accept(new PragmaRemover());
-        
     }
     
     public void setRewriter(ASTRewrite rewriter) {
