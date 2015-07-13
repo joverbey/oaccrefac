@@ -12,6 +12,5 @@ int main() {
         	goto end;
     }
 
-end:
-	return 0;
+    end: return 0;
 }

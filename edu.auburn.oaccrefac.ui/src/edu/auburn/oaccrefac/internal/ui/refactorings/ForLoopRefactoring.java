@@ -6,6 +6,7 @@ import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -128,18 +129,19 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         doCheckInitialConditions(initStatus, progress.newChild(1));
 
-        if (containsBreakorContinue(m_forloop)) {
+        if (containsUnsupportedOp(m_forloop)) {
             initStatus.addFatalError(
-                    "Cannot refactor -- loop contains " + "iteration augment statement (break or continue)");
+                    "Cannot refactor -- loop contains " + "iteration augment statement (break or continue or goto)");
         }
 
         pm.subTask("Done checking initial conditions");
         return initStatus;
     }
 
-    private boolean containsBreakorContinue(IASTForStatement forStmt) {
+    private boolean containsUnsupportedOp(IASTForStatement forStmt) {
         return !ASTUtil.find(forStmt, IASTBreakStatement.class).isEmpty()
-                || !ASTUtil.find(forStmt, IASTContinueStatement.class).isEmpty();
+                || !ASTUtil.find(forStmt, IASTContinueStatement.class).isEmpty()
+                || !ASTUtil.find(forStmt, IASTGotoStatement.class).isEmpty();
     }
 
     protected RefactoringStatusContext getLocation(IASTNode node) {
