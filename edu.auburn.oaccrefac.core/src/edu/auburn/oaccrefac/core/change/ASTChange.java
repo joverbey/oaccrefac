@@ -1,28 +1,19 @@
 package edu.auburn.oaccrefac.core.change;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
-import org.eclipse.cdt.internal.core.dom.rewrite.ASTLiteralNode;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.InsertEdit;
-import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
@@ -90,7 +81,9 @@ public abstract class ASTChange {
     
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
-//        return rewriter.replace(node, replacement, m_teg);
+        ReplaceEdit re = new ReplaceEdit(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength(), replacement.getRawSignature());
+        m_teg.addTextEdit(re);
+        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
         return rewriter;
 
     }
@@ -98,29 +91,19 @@ public abstract class ASTChange {
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
 //        return rewriter.insertBefore(parent, insertionPoint, newNode, m_teg);
+        InsertEdit ie = new InsertEdit(insertionPoint.getFileLocation().getNodeOffset(), newNode.getRawSignature());
+        m_teg.addTextEdit(ie);
+        m_rewriter.insertBefore(insertionPoint.getTranslationUnit(), insertionPoint.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
         return rewriter;
     }
     
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
 //        rewriter.remove(node, m_teg);
+        DeleteEdit de = new DeleteEdit(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength());
+        m_teg.addTextEdit(de);
+        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
     }
     
-//    /** Limited for now to for loops only, since getLeadingPragmas is in the ForLoopInquisitor */
-//    protected void reassociatePragmas(IASTNode oldNode, IASTNode newNode) {
-//        if(oldNode instanceof IASTForStatement && newNode instanceof IASTForStatement) {
-//            List<String> prags = m_pp_context.containsKey(newNode)? 
-//                    m_pp_context.get(newNode) : new ArrayList<String>(); 
-//
-//            for(IASTPreprocessorStatement pp : InquisitorFactory.getInquisitor((IASTForStatement) oldNode).getLeadingPragmas()) {
-//                prags.add(pp.getRawSignature());
-//            }
-//            m_pp_context.put(newNode, prags);
-//            
-//        }
-//        else {
-//            throw new UnsupportedOperationException("Currently only support pragmas on for loops");
-//        }
-//    }
     protected String[] getPragmas(IASTNode node) {
         if(!(node instanceof IASTForStatement)) {
             throw new UnsupportedOperationException("Currently only support pragmas on for loops");
