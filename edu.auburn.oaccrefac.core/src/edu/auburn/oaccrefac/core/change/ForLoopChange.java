@@ -35,8 +35,7 @@ public abstract class ForLoopChange extends ASTChange {
     
     protected ASTRewrite exchangeLoopHeaders(ASTRewrite rewriter,
             IASTForStatement loop1, IASTForStatement loop2) {
-        this.removePragmas(loop1);
-        this.removePragmas(loop2);
+        this.deepRemovePragmas(loop1);
         this.safeReplace(rewriter,
                 loop1.getInitializerStatement(), 
                 loop2.getInitializerStatement());
