@@ -26,8 +26,12 @@ public abstract class ASTChange {
     private IProgressMonitor m_pm;
     private TextEditGroup m_teg;
     
+//    //Internal preprocessor context map
+//    private Map<IASTNode, List<String> > m_pp_context;
+    
     public ASTChange(ASTRewrite rewriter) {
         m_rewriter = rewriter;
+//        m_pp_context = new HashMap<>();
         m_teg = new TextEditGroup("edits");
     }
     
@@ -58,6 +62,9 @@ public abstract class ASTChange {
             throw new IllegalArgumentException("Rewriter cannot be null!");
         }
         
+        //Set this map to context's map
+//        this.setPreprocessorContext(context.getPreprocessorContext());
+
         return doChange(m_rewriter);
     }
     
@@ -91,6 +98,7 @@ public abstract class ASTChange {
     // FIXME if child is null, allow newNode to be first child of given parent node
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
+//        return rewriter.insertBefore(parent, insertionPoint, newNode, m_teg);
         InsertEdit ie = new InsertEdit(insertionPoint.getFileLocation().getNodeOffset(), newNode.getRawSignature());
         m_teg.addTextEdit(ie);
         m_rewriter.insertBefore(insertionPoint.getTranslationUnit(), insertionPoint.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
@@ -99,6 +107,7 @@ public abstract class ASTChange {
     }
     
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
+//        rewriter.remove(node, m_teg);
         DeleteEdit de = new DeleteEdit(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength());
         m_teg.addTextEdit(de);
         m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
@@ -169,5 +178,14 @@ public abstract class ASTChange {
         m_pm = pm;
     }
     public IProgressMonitor getProgressMonitor() { return m_pm; }
+    
+//    protected void setPreprocessorContext(Map<IASTNode, List<String>> in) {
+//        if (in != null) {
+//            m_pp_context = in;
+//        }
+//    }
+//    protected Map<IASTNode, List<String>> getPreprocessorContext() {
+//        return m_pp_context;
+//    }
     
 }
