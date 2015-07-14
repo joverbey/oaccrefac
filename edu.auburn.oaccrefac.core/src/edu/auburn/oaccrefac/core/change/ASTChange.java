@@ -86,7 +86,6 @@ public abstract class ASTChange {
         m_teg.addTextEdit(re);
         m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
         return rewriter;
-
     }
     
     // FIXME if child is null, allow newNode to be first child of given parent node
@@ -96,6 +95,7 @@ public abstract class ASTChange {
         m_teg.addTextEdit(ie);
         m_rewriter.insertBefore(insertionPoint.getTranslationUnit(), insertionPoint.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
         return rewriter;
+        
     }
     
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
