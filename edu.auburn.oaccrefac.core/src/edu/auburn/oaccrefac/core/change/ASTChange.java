@@ -35,12 +35,8 @@ public abstract class ASTChange {
     private IProgressMonitor m_pm;
     private TextEditGroup m_teg;
     
-//    //Internal preprocessor context map
-//    private Map<IASTNode, List<String> > m_pp_context;
-    
     public ASTChange(ASTRewrite rewriter) {
         m_rewriter = rewriter;
-//        m_pp_context = new HashMap<>();
         m_teg = new TextEditGroup("edits");
     }
     
@@ -71,9 +67,6 @@ public abstract class ASTChange {
             throw new IllegalArgumentException("Rewriter cannot be null!");
         }
         
-        //Set this map to context's map
-//        this.setPreprocessorContext(context.getPreprocessorContext());
-
         return doChange(m_rewriter);
     }
     
@@ -90,37 +83,18 @@ public abstract class ASTChange {
     
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
-//        return rewriter.replace(node, replacement, m_teg);
-        return rewriter;
+        return rewriter.replace(node, replacement, m_teg);
     }
     
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
-//        return rewriter.insertBefore(parent, insertionPoint, newNode, m_teg);
-        return rewriter;
-        
+        return rewriter.insertBefore(parent, insertionPoint, newNode, m_teg);
     }
     
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
-//        rewriter.remove(node, m_teg);
+        rewriter.remove(node, m_teg);
     }
     
-//    /** Limited for now to for loops only, since getLeadingPragmas is in the ForLoopInquisitor */
-//    protected void reassociatePragmas(IASTNode oldNode, IASTNode newNode) {
-//        if(oldNode instanceof IASTForStatement && newNode instanceof IASTForStatement) {
-//            List<String> prags = m_pp_context.containsKey(newNode)? 
-//                    m_pp_context.get(newNode) : new ArrayList<String>(); 
-//
-//            for(IASTPreprocessorStatement pp : InquisitorFactory.getInquisitor((IASTForStatement) oldNode).getLeadingPragmas()) {
-//                prags.add(pp.getRawSignature());
-//            }
-//            m_pp_context.put(newNode, prags);
-//            
-//        }
-//        else {
-//            throw new UnsupportedOperationException("Currently only support pragmas on for loops");
-//        }
-//    }
     protected String[] getPragmas(IASTNode node) {
         if(!(node instanceof IASTForStatement)) {
             throw new UnsupportedOperationException("Currently only support pragmas on for loops");
@@ -186,14 +160,5 @@ public abstract class ASTChange {
         m_pm = pm;
     }
     public IProgressMonitor getProgressMonitor() { return m_pm; }
-    
-//    protected void setPreprocessorContext(Map<IASTNode, List<String>> in) {
-//        if (in != null) {
-//            m_pp_context = in;
-//        }
-//    }
-//    protected Map<IASTNode, List<String>> getPreprocessorContext() {
-//        return m_pp_context;
-//    }
     
 }
