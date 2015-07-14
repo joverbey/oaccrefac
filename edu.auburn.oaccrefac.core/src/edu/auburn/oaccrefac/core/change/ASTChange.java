@@ -79,6 +79,7 @@ public abstract class ASTChange {
      * TODO fix everything that expects a new rewriter to be returned
      * TODO remove unused arguments (rewriters, parent nodes(?))
      * *********************/
+    // FIXME if replacement is null, either do nothing or remove node
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
         ReplaceEdit re = new ReplaceEdit(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength(), replacement.getRawSignature());
@@ -88,7 +89,7 @@ public abstract class ASTChange {
 
     }
     
-    // TODO if child is null, allow newNode to be first child of given parent node
+    // FIXME if child is null, allow newNode to be first child of given parent node
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
         InsertEdit ie = new InsertEdit(insertionPoint.getFileLocation().getNodeOffset(), newNode.getRawSignature());
