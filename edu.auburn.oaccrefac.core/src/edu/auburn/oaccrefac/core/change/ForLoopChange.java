@@ -52,13 +52,13 @@ public abstract class ForLoopChange extends ASTChange {
         this.safeReplace(rewriter,
                 loop2.getConditionExpression(), 
                 loop1.getConditionExpression());
-        this.safeReplace(rewriter,
+        rewriter = this.safeReplace(rewriter,
                 loop2.getIterationExpression(), 
                 loop1.getIterationExpression());
         this.insertPragmas(loop1, this.getPragmas(loop2));
         this.insertPragmas(loop2, this.getPragmas(loop1));
+        this.finalizePragmas(m_loop.getTranslationUnit());
         return rewriter;
     }
-    
     
 }
