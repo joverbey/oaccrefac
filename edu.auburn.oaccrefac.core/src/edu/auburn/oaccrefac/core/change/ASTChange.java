@@ -11,12 +11,18 @@ import java.util.Map.Entry;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.cdt.internal.core.dom.rewrite.ASTLiteralNode;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.text.edits.DeleteEdit;
+import org.eclipse.text.edits.InsertEdit;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
@@ -29,14 +35,9 @@ public abstract class ASTChange {
     private IProgressMonitor m_pm;
     private TextEditGroup m_teg;
     
-    
-    //Internal preprocessor context map
-    private Map<IASTNode, List<String> > m_pp_context;
-    
     public ASTChange(ASTRewrite rewriter) {
         m_rewriter = rewriter;
-        m_pp_context = new HashMap<>();
-        m_teg = new TextEditGroup("edits");  
+        m_teg = new TextEditGroup("edits");
     }
     
     public final RefactoringStatus checkConditions(RefactoringStatus init) {
@@ -66,9 +67,6 @@ public abstract class ASTChange {
             throw new IllegalArgumentException("Rewriter cannot be null!");
         }
         
-        //Set this map to context's map
-        this.setPreprocessorContext(context.getPreprocessorContext());
-
         return doChange(m_rewriter);
     }
     
@@ -97,50 +95,31 @@ public abstract class ASTChange {
         rewriter.remove(node, m_teg);
     }
     
-    /** Limited for now to for loops only, since getLeadingPragmas is in the ForLoopInquisitor */
-    protected void reassociatePragmas(IASTNode oldNode, IASTNode newNode) {
-        if(oldNode instanceof IASTForStatement && newNode instanceof IASTForStatement) {
-            List<String> prags = m_pp_context.containsKey(newNode)? 
-                    m_pp_context.get(newNode) : new ArrayList<String>(); 
-
-            for(IASTPreprocessorStatement pp : InquisitorFactory.getInquisitor((IASTForStatement) oldNode).getLeadingPragmas()) {
-                prags.add(pp.getRawSignature());
-            }
-            m_pp_context.put(newNode, prags);
-            
-        }
-        else {
+    protected String[] getPragmas(IASTNode node) {
+        if(!(node instanceof IASTForStatement)) {
             throw new UnsupportedOperationException("Currently only support pragmas on for loops");
         }
+        List<IASTPreprocessorPragmaStatement> p = InquisitorFactory.getInquisitor((IASTForStatement) node).getLeadingPragmas();
+        String[] pragCode = new String[p.size()];
+        for(int i = 0; i < pragCode.length; i++) {
+            pragCode[i] = p.get(i).getRawSignature();
+        }
+        return pragCode; 
     }
-    protected void insertPragma(String pragma, IASTNode node) {
-        if(!pragma.startsWith("#pragma")) {
-            throw new IllegalArgumentException("String is not a pragma");
+    protected void insertPragmas(IASTNode node, String... pragmas) {
+        if(!(node instanceof IASTForStatement)) {
+            throw new UnsupportedOperationException("Currently only support pragmas on for loops");
         }
-        if(m_pp_context.containsKey(node)) {
-            List<String> prags = m_pp_context.get(node);
-            prags.add(pragma);
-            m_pp_context.put(node, prags);
-        }
-        else {
-            m_pp_context.put(node, Arrays.asList(pragma));
-        }
-    }
-    
-    protected void writePragmaChanges(ASTRewrite rewriter) {
-        Iterator<Entry<IASTNode, List<String>>> it = m_pp_context.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<IASTNode, List<String>> pair = it.next();
-            for(String prag : pair.getValue()) {
-                rewriter.insertBefore(
-                        pair.getKey().getParent(), 
-                        pair.getKey(), 
-                        rewriter.createLiteralNode(prag + System.lineSeparator()), m_teg);
+        for(String pragma : pragmas) {
+            if(!pragma.startsWith("#pragma")) {
+                throw new IllegalArgumentException("String is not a pragma");
             }
+            InsertEdit ie = new InsertEdit(node.getFileLocation().getNodeOffset(), pragma + System.lineSeparator());
+            m_teg.addTextEdit(ie);
         }
+        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
     }
-    
-    protected void removeCurrentPragmas(IASTNode node) {
+    protected void deepRemovePragmas(IASTNode node) {
         class PragmaRemover extends ASTVisitor {
             
             public PragmaRemover() { 
@@ -150,14 +129,26 @@ public abstract class ASTChange {
             @Override
             public int visit(IASTStatement stmt) {
                 if(stmt instanceof IASTForStatement) {
-                    for(IASTNode pps : InquisitorFactory.getInquisitor((IASTForStatement) stmt).getLeadingPragmas()) {
-                        m_rewriter.remove(pps, null);
+                    for(IASTPreprocessorPragmaStatement prag : InquisitorFactory.getInquisitor((IASTForStatement) stmt).getLeadingPragmas()) {
+                        DeleteEdit de = new DeleteEdit(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + 1);
+                        m_teg.addTextEdit(de);
                     }
                 }
                 return PROCESS_CONTINUE;
             }
         }
         node.accept(new PragmaRemover());
+        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
+    }
+    protected void removePragmas(IASTNode node) {
+        if(!(node instanceof IASTForStatement)) {
+            throw new UnsupportedOperationException("Currently only support pragmas on for loops");
+        }
+        for(IASTPreprocessorPragmaStatement prag : InquisitorFactory.getInquisitor((IASTForStatement) node).getLeadingPragmas()) {
+            DeleteEdit de = new DeleteEdit(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + 1);
+            m_teg.addTextEdit(de);
+        }
+        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
     }
     
     public void setRewriter(ASTRewrite rewriter) {
@@ -169,14 +160,5 @@ public abstract class ASTChange {
         m_pm = pm;
     }
     public IProgressMonitor getProgressMonitor() { return m_pm; }
-    
-    protected void setPreprocessorContext(Map<IASTNode, List<String>> in) {
-        if (in != null) {
-            m_pp_context = in;
-        }
-    }
-    protected Map<IASTNode, List<String>> getPreprocessorContext() {
-        return m_pp_context;
-    }
     
 }
