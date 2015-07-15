@@ -1126,7 +1126,7 @@ void kernels()
     
     do
      {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1129, 9, 1132, 10, Kernel1 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1129, 1, 1134, 1, Kernel1 */
         {
             x[k] = q + y[k]*( r*z[k+10] + t*z[k+11] );
         }
@@ -1147,13 +1147,13 @@ void kernels()
      {
         ii = n;
         ipntp = 0;
-        do /*<<<<< 1150, 9, 1161, 27, Kernel2outer */
+        do /*<<<<< 1150, 1, 1162, 1, Kernel2outer */
          {
             ipnt = ipntp;
             ipntp += ii;
             ii /= 2;
             i = ipntp;
-            for ( k=ipnt+1 ; k<ipntp ; k=k+2 ) /*<<<<< 1156, 13, 1160, 15, Kernel2inner */
+            for ( k=ipnt+1 ; k<ipntp ; k=k+2 ) /*<<<<< 1156, 1, 1161, 1, Kernel2inner */
              {
                 i++;
                 x[i] = x[k] - v[k]*x[k-1] - v[k+1]*x[k+1];
@@ -1267,7 +1267,7 @@ void kernels()
     do
      {
 
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1270, 9, 1275, 11, Kernel7 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1270, 1, 1276, 1, Kernel7 */
          {
             x[k] = u[k] + r*( z[k] + r*y[k] ) +
                    t*( u[k+3] + r*( u[k+2] + r*u[k+1] ) +
@@ -1325,7 +1325,7 @@ void kernels()
     
     do
     {
-        for ( i=0 ; i<n ; i++ ) /*<<<<< 1328, 9, 1334, 10, Kernel9 */
+        for ( i=0 ; i<n ; i++ ) /*<<<<< 1328, 1, 1335, 1, Kernel9 */
         {
             px[i][0] = dm28*px[i][12] + dm27*px[i][11] + dm26*px[i][10] +
                        dm25*px[i][ 9] + dm24*px[i][ 8] + dm23*px[i][ 7] +
@@ -1404,7 +1404,7 @@ void kernels()
 
     do
     {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1407, 9, 1410, 10, Kernel12 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1407, 1, 1411, 1, Kernel12 */
         {
             x[k] = y[k+1] - y[k];
         }
@@ -1467,7 +1467,7 @@ void kernels()
             ex1[k] = ex[ ix[k] - 1 ];
             dex1[k] = dex[ ix[k] - 1 ];
         }
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1470, 9, 1478, 10, Kernel14-2 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1470, 1, 1479, 1, Kernel14-2 */
         {
             vx[k] = vx[k] + ex1[k] + ( xx[k] - xi[k] )*dex1[k];
             xx[k] = xx[k] + vx[k]  + flx;
