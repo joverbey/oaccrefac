@@ -5,9 +5,9 @@ int main(void) {
 	int a[10][10], i, j;
 
 #pragma acc loop private(j)
-	for (j = 0; j < 10; j++) {
+	for (j = 0; j < 10; j++) { /*<<<<< 8, 1, 14, 1, 1, pass */
 #pragma acc parallel loop private(i)
-		for (i = 0; i < 10; i++) { /*<<<<< 13, 2, 17, 3, 1, pass */
+		for (i = 0; i < 10; i++) {
 			a[i][j] = i*10 + j;
 		}
 	}
