@@ -3,7 +3,6 @@ package edu.auburn.oaccrefac.core.change;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.check.InterchangeCheck;
@@ -14,7 +13,7 @@ public class InterchangeLoops extends ForLoopChange {
 
     private IASTForStatement m_second;
 
-    public InterchangeLoops(ASTRewrite rewriter,
+    public InterchangeLoops(IASTRewrite rewriter,
             IASTForStatement first, IASTForStatement second) {
         super(rewriter, first);
         if (second != null) {
@@ -46,7 +45,7 @@ public class InterchangeLoops extends ForLoopChange {
     }
     
     @Override
-    public ASTRewrite doChange(ASTRewrite rewriter) {
+    public IASTRewrite doChange(IASTRewrite rewriter) {
         IASTForStatement first = getLoopToChange();
         return this.exchangeLoopHeaders(rewriter, first, m_second);
     }

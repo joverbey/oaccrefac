@@ -1,7 +1,6 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,6 +8,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
 import edu.auburn.oaccrefac.core.change.UnrollLoop;
 
 /**
@@ -47,7 +47,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
     };
 
 	@Override
-	protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {	
+	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {	
         m_unrollChange.setRewriter(rewriter);
 	    rewriter = m_unrollChange.change();
 	    //rewriter.replace(m_unrollChange.getOriginal(), m_unrollChange.change(), null);

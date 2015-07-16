@@ -6,7 +6,6 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -16,7 +15,7 @@ public class FuseLoops extends ForLoopChange {
     private IASTForStatement m_first;
     private IASTForStatement m_second;
     
-    public FuseLoops(ASTRewrite rewriter, IASTForStatement loop) {
+    public FuseLoops(IASTRewrite rewriter, IASTForStatement loop) {
         super(rewriter, loop);
         m_first = loop;
     }
@@ -43,9 +42,9 @@ public class FuseLoops extends ForLoopChange {
     }
     
     @Override
-    protected ASTRewrite doChange(ASTRewrite rewriter) {
+    protected IASTRewrite doChange(IASTRewrite rewriter) {
         IASTStatement body = m_first.getBody();
-        ASTRewrite body_rewriter = rewriter;
+        IASTRewrite body_rewriter = rewriter;
         if (!(body instanceof IASTCompoundStatement)) {
             ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
             IASTCompoundStatement newBody = factory.newCompoundStatement();

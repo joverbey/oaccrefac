@@ -17,7 +17,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
@@ -28,7 +27,7 @@ public class UnrollLoop extends ForLoopChange {
     private int m_unrollFactor;
     private Long m_upperBound;
     
-    public UnrollLoop(ASTRewrite rewriter, IASTForStatement loop, int unrollFactor) {
+    public UnrollLoop(IASTRewrite rewriter, IASTForStatement loop, int unrollFactor) {
         super(rewriter, loop);
         m_unrollFactor = unrollFactor;
     }
@@ -62,7 +61,7 @@ public class UnrollLoop extends ForLoopChange {
     }
     
     @Override
-    protected ASTRewrite doChange(ASTRewrite rewriter) {
+    protected IASTRewrite doChange(IASTRewrite rewriter) {
         IASTForStatement loop = this.getLoopToChange();
         
         //if the init statement is a declaration, move the declaration 
@@ -97,7 +96,7 @@ public class UnrollLoop extends ForLoopChange {
         return rewriter;
     }
         
-    private void adjustInit(ASTRewrite rewriter, IASTForStatement loop) {
+    private void adjustInit(IASTRewrite rewriter, IASTForStatement loop) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTName counter_name = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
         try {
@@ -113,7 +112,7 @@ public class UnrollLoop extends ForLoopChange {
         } //DOMException
     }
     
-    private void offsetCondition(ASTRewrite rewriter,
+    private void offsetCondition(IASTRewrite rewriter,
             IASTBinaryExpression condition, int amount) {
         
         int operator = IASTBinaryExpression.op_plus;
@@ -141,7 +140,7 @@ public class UnrollLoop extends ForLoopChange {
         this.safeReplace(rewriter, condition, condcopy);
     }
     
-    private ASTRewrite addTrailer(ASTRewrite rewriter, IASTForStatement loop,
+    private IASTRewrite addTrailer(IASTRewrite rewriter, IASTForStatement loop,
             int upperBound, int extras) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTStatement body = loop.getBody();
@@ -169,7 +168,7 @@ public class UnrollLoop extends ForLoopChange {
         return rewriter;
     }
 
-    private ASTRewrite unroll(ASTRewrite rewriter, IASTForStatement loop) {
+    private IASTRewrite unroll(IASTRewrite rewriter, IASTForStatement loop) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTExpression iter_expr = loop.getIterationExpression();
         IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());

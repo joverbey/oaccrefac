@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,6 +7,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
 import edu.auburn.oaccrefac.core.change.StripMine;
 
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
@@ -32,7 +32,7 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {        
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {        
         stripMine.setRewriter(rewriter);
         stripMine.change();
         //rewriter.replace(getLoop(), change.change(), null);

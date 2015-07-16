@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,6 +8,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.FizzLoops;
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -39,7 +39,7 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
         m_fizzChange.setRewriter(rewriter);
         rewriter = m_fizzChange.change();
         //rewriter.replace(m_fizzChange.getOriginal(), m_fizzChange.change(), null);

@@ -3,7 +3,6 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,6 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
 import edu.auburn.oaccrefac.core.change.InterchangeLoops;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
@@ -49,7 +49,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
         inter.setRewriter(rewriter);
         rewriter = inter.change();
     }

@@ -32,6 +32,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -74,7 +75,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      * @param rewriter
      * @param pm
      */
-    protected abstract void refactor(ASTRewrite rewriter, IProgressMonitor pm);
+    protected abstract void refactor(IASTRewrite rewriter, IProgressMonitor pm);
 
     /**
      * This method is the driver for the refactoring implementation that you defined above. It does some initialization
@@ -88,7 +89,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
         // Other initialization stuff here...
 
-        refactor(rewriter, pm);
+        refactor(new CDTASTRewriteProxy(rewriter), pm);
     }
 
     /**

@@ -1,9 +1,6 @@
 package edu.auburn.oaccrefac.core.change;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
-import org.eclipse.text.edits.DeleteEdit;
-import org.eclipse.text.edits.TextEditGroup;
 
 /**
  * This class defines the base strategy interface to be derived
@@ -14,7 +11,7 @@ import org.eclipse.text.edits.TextEditGroup;
 public abstract class ForLoopChange extends ASTChange {
     
     private IASTForStatement m_loop;
-    public ForLoopChange(ASTRewrite rewriter, IASTForStatement loopToChange) {
+    public ForLoopChange(IASTRewrite rewriter, IASTForStatement loopToChange) {
         super(rewriter);
         if (loopToChange == null) {
             throw new IllegalArgumentException("Argument loop cannot be null!");
@@ -33,7 +30,7 @@ public abstract class ForLoopChange extends ASTChange {
         m_loop = newLoop;
     }
     
-    protected ASTRewrite exchangeLoopHeaders(ASTRewrite rewriter,
+    protected IASTRewrite exchangeLoopHeaders(IASTRewrite rewriter,
             IASTForStatement loop1, IASTForStatement loop2) {
         this.safeReplace(rewriter,
                 loop1.getInitializerStatement(), 

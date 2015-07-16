@@ -18,7 +18,6 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -32,7 +31,7 @@ public class StripMine extends ForLoopChange {
     
     private IASTName m_generatedName;
     
-    public StripMine(ASTRewrite rewriter, 
+    public StripMine(IASTRewrite rewriter, 
             IASTForStatement loop, int stripFactor, int depth) {
         super(rewriter, loop);
         m_stripFactor = stripFactor;
@@ -64,7 +63,7 @@ public class StripMine extends ForLoopChange {
     }
 
     @Override
-    public ASTRewrite doChange(ASTRewrite rewriter) {
+    public IASTRewrite doChange(IASTRewrite rewriter) {
         //Set up which loops we need to deal with
         IASTForStatement byStrip = this.getLoopToChange();
         IASTForStatement inStrip = byStrip.copy();
@@ -73,7 +72,7 @@ public class StripMine extends ForLoopChange {
         this.modifyByStrip(rewriter, byStrip);
         
         IASTStatement body = byStrip.getBody();
-        ASTRewrite inStrip_rewriter = null;
+        IASTRewrite inStrip_rewriter = null;
         if (body instanceof IASTCompoundStatement) {
             IASTNode chilluns[] = body.getChildren();
             for (IASTNode child : chilluns) {
@@ -102,7 +101,7 @@ public class StripMine extends ForLoopChange {
         return ub;
     }
     
-    private void modifyByStrip(ASTRewrite rewriter, IASTForStatement byStripHeader) {
+    private void modifyByStrip(IASTRewrite rewriter, IASTForStatement byStripHeader) {
         IASTExpression upperBound = getUpperBoundExpression(byStripHeader);
         this.genByStripInit(rewriter, byStripHeader);
 
@@ -123,7 +122,7 @@ public class StripMine extends ForLoopChange {
         
     }
     
-    private void genByStripInit(ASTRewrite rewriter, IASTForStatement header) {
+    private void genByStripInit(IASTRewrite rewriter, IASTForStatement header) {
         IASTName counter_name = ASTUtil.findOne(header.getInitializerStatement(), IASTName.class);  
         String counter_str = new String(counter_name.getSimpleID());
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
@@ -152,19 +151,19 @@ public class StripMine extends ForLoopChange {
     }
 
 
-    private void modifyInStrip(ASTRewrite rewriter, IASTForStatement inStripHeader) {
+    private void modifyInStrip(IASTRewrite rewriter, IASTForStatement inStripHeader) {
         modifyInStripInit(rewriter, inStripHeader.getInitializerStatement());
         modifyInStripCondition(rewriter, inStripHeader);
     }
 
-    private void modifyInStripInit(ASTRewrite rewriter, IASTNode tree) {
+    private void modifyInStripInit(IASTRewrite rewriter, IASTNode tree) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTIdExpression byStripIdExp = factory.newIdExpression(m_generatedName);
         
         class findAndReplace extends ASTVisitor {
             IASTIdExpression m_replacement;
-            ASTRewrite m_rewriter;
-            public findAndReplace(ASTRewrite rewriter, IASTIdExpression replacement) {
+            IASTRewrite m_rewriter;
+            public findAndReplace(IASTRewrite rewriter, IASTIdExpression replacement) {
                 m_rewriter = rewriter;
                 m_replacement = replacement;
                 shouldVisitInitializers = true;
@@ -196,7 +195,7 @@ public class StripMine extends ForLoopChange {
         tree.accept(new findAndReplace(rewriter, byStripIdExp));
     }
     
-    private void modifyInStripCondition(ASTRewrite rewriter, IASTForStatement inStripHeader) {
+    private void modifyInStripCondition(IASTRewrite rewriter, IASTForStatement inStripHeader) {
         IASTExpression condition = inStripHeader.getConditionExpression();
         
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
@@ -79,7 +80,7 @@ public abstract class Change<T extends IASTNode> {
     }
     
     @SuppressWarnings("unchecked")
-    public final ASTRewrite change(ASTRewrite rewriter) {
+    public final IASTRewrite change(IASTRewrite rewriter) {
         IASTNode changed = null;
         T argNode = m_node;
         IASTNode parent = argNode.getParent();
@@ -170,7 +171,7 @@ public abstract class Change<T extends IASTNode> {
     }
     
     //uses the rewrites and current node-preprocessor map add preprocessor statements into the tree
-    protected final void insertPreprocessors(ASTRewrite rewriter) {
+    protected final void insertPreprocessors(IASTRewrite rewriter) {
         for(IASTNode key : m_pp_context.keySet()) {
             List<String> prags = m_pp_context.get(key);
             //FIXME currently inserts regular nodes in unexpected places, ignores literal nodes

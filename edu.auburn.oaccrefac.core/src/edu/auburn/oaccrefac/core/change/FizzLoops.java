@@ -6,14 +6,13 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class FizzLoops extends ForLoopChange {
     
-    public FizzLoops(ASTRewrite rewriter, IASTForStatement loop) {
+    public FizzLoops(IASTRewrite rewriter, IASTForStatement loop) {
         super(rewriter, loop);
     }
     
@@ -37,7 +36,7 @@ public class FizzLoops extends ForLoopChange {
     }
     
     @Override
-    protected ASTRewrite doChange(ASTRewrite rewriter) {
+    protected IASTRewrite doChange(IASTRewrite rewriter) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         
         //Ensured from precondition...
