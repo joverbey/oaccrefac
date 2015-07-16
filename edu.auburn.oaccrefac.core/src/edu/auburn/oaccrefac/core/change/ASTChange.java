@@ -7,6 +7,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -72,17 +73,18 @@ public abstract class ASTChange {
     
     protected IASTRewrite safeReplace(IASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
-        return rewriter.replace(node, replacement, m_teg);
+        return rewriter.replace(node, replacement, null);
     }
     
     protected IASTRewrite safeInsertBefore(IASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
-        return rewriter.insertBefore(parent, insertionPoint, newNode, m_teg);
+        return rewriter.insertBefore(parent, insertionPoint, newNode, null);
     }
     
     protected void safeRemove(IASTRewrite rewriter, IASTNode node) {
         rewriter.remove(node, m_teg);
     }
+    
     
     protected String[] getPragmas(IASTNode node) {
         if(!(node instanceof IASTForStatement)) {
@@ -106,7 +108,6 @@ public abstract class ASTChange {
             InsertEdit ie = new InsertEdit(node.getFileLocation().getNodeOffset(), pragma + System.lineSeparator());
             m_teg.addTextEdit(ie);
         }
-        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
     }
     protected void deepRemovePragmas(IASTNode node) {
         class PragmaRemover extends ASTVisitor {
@@ -127,7 +128,6 @@ public abstract class ASTChange {
             }
         }
         node.accept(new PragmaRemover());
-        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
     }
     protected void removePragmas(IASTNode node) {
         if(!(node instanceof IASTForStatement)) {
@@ -137,7 +137,9 @@ public abstract class ASTChange {
             DeleteEdit de = new DeleteEdit(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + 1);
             m_teg.addTextEdit(de);
         }
-        m_rewriter.insertBefore(node.getTranslationUnit(), node.getTranslationUnit().getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
+    }
+    protected void finalizePragmas(IASTTranslationUnit tu) {
+        m_rewriter.insertBefore(tu, tu.getChildren()[0], m_rewriter.createLiteralNode(""), m_teg);
     }
     
     public void setRewriter(IASTRewrite rewriter) {
