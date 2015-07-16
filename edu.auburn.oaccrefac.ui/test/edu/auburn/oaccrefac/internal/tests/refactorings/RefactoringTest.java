@@ -201,11 +201,11 @@ public abstract class RefactoringTest<R extends CRefactoring> {
     private static int n = 0;
 
     private IProject project;
-    private final File jioFileContainingMarker;
+    protected final File jioFileContainingMarker;
     private final String markerText;
     private final Class<R> refactoringClass;
     private String description;
-    private Map<String, IFile> files;
+    protected Map<String, IFile> files;
 
     protected RefactoringTest(Class<R> refactoringClass, File fileContainingMarker, int markerOffset, String markerText)
             throws Exception {
@@ -272,15 +272,16 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         appendFilenameToDescription(markerFields);
         validateRemainingMarkerFields(markerFields);
 
+        String origSauce = IOUtil.read(jioFileContainingMarker); //$NON-NLS-1$ //$NON-NLS-2$
         TextSelection selection = determineSelection(markerFields, createDocument(fileContainingMarker));
         R refactoring = createRefactoring(fileContainingMarker, selection);
         new CRefactoringContext(refactoring);
 
         RefactoringStatus status = refactoring.checkInitialConditions(SYSOUT_PROGRESS_MONITOR);
+        configureRefactoring(refactoring, fileContainingMarker, selection, markerFields);
         if (!status.hasError()) {
             String before = shouldCompile(fileContainingMarker) ? compileAndRunProgram(files) : ""; //$NON-NLS-1$
 
-            configureRefactoring(refactoring, fileContainingMarker, selection, markerFields);
             status = refactoring.checkFinalConditions(SYSOUT_PROGRESS_MONITOR);
 
             if (!status.hasError()) {
@@ -295,7 +296,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
                     }
                     assertEquals(before, after);
                 }
-                compareAgainstResultFile();
+                compareAgainstResultFile(origSauce, selection);
             }
         }
 
@@ -345,7 +346,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         return importFile(fileToCopyIntoWorkspace.getName(), fileToCopyIntoWorkspace);
     }
 
-    private String readWorkspaceFile(String filename) throws IOException, CoreException {
+    protected String readWorkspaceFile(String filename) throws IOException, CoreException {
         return IOUtil.read(project.getFile(filename).getContents(true));
     }
 
@@ -437,7 +438,8 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         change.perform(pm);
     }
 
-    private void compareAgainstResultFile() throws IOException, URISyntaxException, CoreException {
+    protected void compareAgainstResultFile(String originalSource, TextSelection selection) 
+            throws IOException, URISyntaxException, CoreException {
         for (String filename : files.keySet()) {
             File resultFile = resultFileFor(filename);
             if (!resultFile.exists()) {

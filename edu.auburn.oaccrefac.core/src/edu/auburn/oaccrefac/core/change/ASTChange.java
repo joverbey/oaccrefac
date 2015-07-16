@@ -1,20 +1,29 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.cdt.internal.core.dom.rewrite.ASTLiteralNode;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.InsertEdit;
-import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
@@ -73,20 +82,11 @@ public abstract class ASTChange {
     protected abstract ASTRewrite doChange(ASTRewrite rewriter);
     protected abstract RefactoringStatus doCheckConditions(RefactoringStatus init);
     
-    
-    /* *****************
-     * FOR ALL safeX METHODS
-     * TODO return void, not ASTRewrite
-     * TODO fix everything that expects a new rewriter to be returned
-     * TODO remove unused arguments (rewriters, parent nodes(?))
-     * *********************/
-    // FIXME if replacement is null, either do nothing or remove node
     protected ASTRewrite safeReplace(ASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
         return rewriter.replace(node, replacement, null);
     }
     
-    // FIXME if child is null, allow newNode to be first child of given parent node
     protected ASTRewrite safeInsertBefore(ASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
         return rewriter.insertBefore(parent, insertionPoint, newNode, null);
@@ -95,6 +95,7 @@ public abstract class ASTChange {
     protected void safeRemove(ASTRewrite rewriter, IASTNode node) {
         rewriter.remove(node, null);
     }
+    
     
     protected String[] getPragmas(IASTNode node) {
         if(!(node instanceof IASTForStatement)) {

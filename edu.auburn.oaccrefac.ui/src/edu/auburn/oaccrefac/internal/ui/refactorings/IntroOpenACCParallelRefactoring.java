@@ -15,7 +15,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
@@ -23,7 +22,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
 /**
  * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.
@@ -52,6 +50,7 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
     @Override
     protected void refactor(ASTRewrite rewriter, IProgressMonitor pm) {
         IASTNode pragma = rewriter.createLiteralNode("#pragma acc parallel loop\n");
+        getLoop().getFileLocation().getStartingLineNumber();
         rewriter.insertBefore(getLoop().getParent(), getLoop(), pragma, new TextEditGroup("Insert #pragma"));
     }
 

@@ -1,0 +1,7 @@
+#pragma acc parallel loop
+		for (k = 0; k < n; k++) /*<<<<< 1270, 1, 1276, 1, Kernel7 */
+         {
+            x[k] = u[k] + r*( z[k] + r*y[k] ) +
+                   t*( u[k+3] + r*( u[k+2] + r*u[k+1] ) +
+                      t*( u[k+6] + q*( u[k+5] + q*u[k+4] ) ) );
+         }

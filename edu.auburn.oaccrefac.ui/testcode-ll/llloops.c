@@ -1126,7 +1126,7 @@ void kernels()
     
     do
      {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1129, 9, 1132, 10, Kernel1 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1129, 1, 1134, 1, Kernel1 */
         {
             x[k] = q + y[k]*( r*z[k+10] + t*z[k+11] );
         }
@@ -1147,13 +1147,13 @@ void kernels()
      {
         ii = n;
         ipntp = 0;
-        do /*<<<<< 1150, 9, 1161, 27, Kernel2outer */
+        do /*<<<<< 1150, 1, 1162, 1, Kernel2outer */
          {
             ipnt = ipntp;
             ipntp += ii;
             ii /= 2;
             i = ipntp;
-            for ( k=ipnt+1 ; k<ipntp ; k=k+2 ) /*<<<<< 1156, 13, 1160, 15, Kernel2inner */
+            for ( k=ipnt+1 ; k<ipntp ; k=k+2 ) /*<<<<< 1156, 1, 1161, 1, Kernel2inner */
              {
                 i++;
                 x[i] = x[k] - v[k]*x[k-1] - v[k+1]*x[k+1];
@@ -1196,12 +1196,12 @@ void kernels()
     m = ( 1001-7 )/2;
     do
      {
-        for ( k=6 ; k<1001 ; k=k+m ) /*<<<<< 1199, 9, 1210, 11, Kernel4outer */
+        for ( k=6 ; k<1001 ; k=k+m ) /*<<<<< 1199, 1, 1211, 1, Kernel4outer */
          {
             lw = k - 6;
             temp = x[k-1];
 
-            for ( j=4 ; j<n ; j=j+5 ) /*<<<<< 1204, 13, 1208, 15, Kernel4inner */
+            for ( j=4 ; j<n ; j=j+5 ) /*<<<<< 1204, 1, 1209, 1, Kernel4inner */
              {
                 temp -= x[lw]*y[j];
                 lw++;
@@ -1223,7 +1223,7 @@ void kernels()
 
     do
      {
-        for ( i=1 ; i<n ; i++ ) /*<<<<< 1226, 9, 1229, 11, Kernel5 */
+        for ( i=1 ; i<n ; i++ ) /*<<<<< 1226, 1, 1230, 1, Kernel5 */
          {
             x[i] = z[i]*( y[i] - x[i-1] );
          }
@@ -1243,10 +1243,10 @@ void kernels()
 
     do
      {
-        for ( i=1 ; i<n ; i++ ) /*<<<<< 1246, 9, 1253, 11, Kernel6outer */
+        for ( i=1 ; i<n ; i++ ) /*<<<<< 1246, 1, 1254, 1, Kernel6outer */
          {
             w[i] = 0.01;
-            for ( k=0 ; k<i ; k++ ) /*<<<<< 1249, 13, 1252, 15, Kernel6inner */
+            for ( k=0 ; k<i ; k++ ) /*<<<<< 1249, 1, 1253, 1, Kernel6inner */
              {
                 w[i] += b[k][i] * w[(i-k)-1];
              }
@@ -1267,7 +1267,7 @@ void kernels()
     do
      {
 
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1270, 9, 1275, 11, Kernel7 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1270, 1, 1276, 1, Kernel7 */
          {
             x[k] = u[k] + r*( z[k] + r*y[k] ) +
                    t*( u[k+3] + r*( u[k+2] + r*u[k+1] ) +
@@ -1291,10 +1291,10 @@ void kernels()
 
     do
     {
-        for ( kx=1 ; kx<3 ; kx++ ) /*<<<<< 1294, 9, 1311, 13, Kernel8outer */
+        for ( kx=1 ; kx<3 ; kx++ ) /*<<<<< 1294, 1, 1313, 1, Kernel8outer */
         {
 
-           for ( ky=1 ; ky<n ; ky++ ) /*<<<<< 1297, 12, 1311, 13, Kernel8inner */
+           for ( ky=1 ; ky<n ; ky++ ) /*<<<<< 1297, 1, 1312, 1, Kernel8inner */
            {
               du1[ky] = u1[nl1][ky+1][kx] - u1[nl1][ky-1][kx];
               du2[ky] = u2[nl1][ky+1][kx] - u2[nl1][ky-1][kx];
@@ -1325,7 +1325,7 @@ void kernels()
     
     do
     {
-        for ( i=0 ; i<n ; i++ ) /*<<<<< 1328, 9, 1334, 10, Kernel9 */
+        for ( i=0 ; i<n ; i++ ) /*<<<<< 1328, 1, 1335, 1, Kernel9 */
         {
             px[i][0] = dm28*px[i][12] + dm27*px[i][11] + dm26*px[i][10] +
                        dm25*px[i][ 9] + dm24*px[i][ 8] + dm23*px[i][ 7] +
@@ -1347,7 +1347,7 @@ void kernels()
     
     do
     {
-        for ( i=0 ; i<n ; i++ ) /*<<<<< 1350, 9, 1371, 10, Kernel10 */
+        for ( i=0 ; i<n ; i++ ) /*<<<<< 1350, 1, 1372, 1, Kernel10 */
         {
             ar        =      cx[i][ 4];
             br        = ar - px[i][ 4];
@@ -1385,7 +1385,7 @@ void kernels()
     do
     {
         x[0] = y[0];
-        for ( k=1 ; k<n ; k++ ) /*<<<<< 1388, 9, 1391, 10, Kernel11 */
+        for ( k=1 ; k<n ; k++ ) /*<<<<< 1388, 1, 1392, 1, Kernel11 */
         {
             x[k] = x[k-1] + y[k];
         }
@@ -1404,7 +1404,7 @@ void kernels()
 
     do
     {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1407, 9, 1410, 10, Kernel12 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1407, 1, 1411, 1, Kernel12 */
         {
             x[k] = y[k+1] - y[k];
         }
@@ -1424,7 +1424,7 @@ void kernels()
   
    do
     {
-        for ( ip=0; ip<n; ip++) /*<<<<< 1427, 9, 1446, 10, Kernel13 */
+        for ( ip=0; ip<n; ip++) /*<<<<< 1427, 1, 1447, 1, Kernel13 */
         {
             i1 = p[ip][0];
             j1 = p[ip][1];
@@ -1457,8 +1457,8 @@ void kernels()
     parameters (14);
 
     do
-    {                           /*<<<<< 1461, 9, 1483, 10, Kernel14-all */
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1461, 9, 1469, 10, Kernel14-1 */
+    {                           /*<<<<< 1459, 1, 1487, 1, Kernel14-all */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1461, 1, 1470, 1, Kernel14-1 */
         {
             vx[k] = 0.0;
             xx[k] = 0.0;
@@ -1467,7 +1467,7 @@ void kernels()
             ex1[k] = ex[ ix[k] - 1 ];
             dex1[k] = dex[ ix[k] - 1 ];
         }
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1470, 9, 1478, 10, Kernel14-2 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1470, 1, 1479, 1, Kernel14-2 */
         {
             vx[k] = vx[k] + ex1[k] + ( xx[k] - xi[k] )*dex1[k];
             xx[k] = xx[k] + vx[k]  + flx;
@@ -1476,7 +1476,7 @@ void kernels()
             ir[k] = ( ir[k] & 2048-1 ) + 1;
             xx[k] = rx[k] + ir[k];
         }
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1479, 9, 1483, 10, Kernel14-3 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1479, 1, 1484, 1, Kernel14-3 */
         {
             rh[ ir[k]-1 ] += 1.0 - rx[k];
             rh[ ir[k]   ] += rx[k];
@@ -1499,9 +1499,9 @@ void kernels()
         nz = n;
         ar = 0.053;
         br = 0.073;
-        for ( j=1 ; j<ng ; j++ ) /*<<<<< 1502, 9, 1561, 10, Kernel15outer */
+        for ( j=1 ; j<ng ; j++ ) /*<<<<< 1502, 1, 1562, 1, Kernel15outer */
         {
-            for ( k=1 ; k<nz ; k++ ) /*<<<<< 1504, 13, 1560, 14, Kernel15inner */
+            for ( k=1 ; k<nz ; k++ ) /*<<<<< 1504, 1, 1561, 1, Kernel15inner */
             {
                 if ( (j+1) >= ng )
                 {
@@ -1580,7 +1580,7 @@ void kernels()
         i1 = m16 = 1;
         label410:
         j2 = ( n + n )*( m16 - 1 ) + 1;
-        for ( k=1 ; k<=n ; k++ ) /*<<<<< 1583, 9, 1638, 10, Kernel16 */
+        for ( k=1 ; k<=n ; k++ ) /*<<<<< 1583, 1, 1639, 1, Kernel16 */
         {
             k2++;
             j4 = j2 + k + k;
@@ -1650,7 +1650,7 @@ void kernels()
 
     do
     {
-        i = n-1; /*<<<<< 1653, 9, 1678, 6, Kernel17 */
+        i = n-1; /*<<<<< 1653, 1, 1679, 1, Kernel17 */
         j = 0;
         ink = -1;
         scale = 5.0 / 3.0;
@@ -1693,11 +1693,11 @@ l62:;
        t = 0.0037;
        s = 0.0041;
        kn = 6;
-       jn = n;                  /*<<<<< 1697, 8, 1731, 10, Kernel18-all */
-       for ( k=1 ; k<kn ; k++ ) /*<<<<< 1697, 8, 1707, 9, Kernel18-1outer */
+       jn = n;                  /*<<<<< 1691, 1, 1732, 1, Kernel18-all */
+       for ( k=1 ; k<kn ; k++ ) /*<<<<< 1697, 1, 1708, 1, Kernel18-1outer */
        {
 
-         for ( j=1 ; j<jn ; j++ ) /*<<<<< 1700, 10, 1706, 11, Kernel18-1inner */
+         for ( j=1 ; j<jn ; j++ ) /*<<<<< 1700, 1, 1707, 1, Kernel18-1inner */
          {
            za[k][j] = ( zp[k+1][j-1] +zq[k+1][j-1] -zp[k][j-1] -zq[k][j-1] )*
                       ( zr[k][j] +zr[k][j-1] ) / ( zm[k][j-1] +zm[k+1][j-1]);
@@ -1705,10 +1705,10 @@ l62:;
                       ( zr[k][j] +zr[k-1][j] ) / ( zm[k][j] +zm[k][j-1]);
          }
        }
-        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1708, 9, 1722, 10, Kerne18-2outer */
+        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1708, 1, 1723, 1, Kerne18-2outer */
         {
 
-            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1711, 13, 1721, 14, Kernel18-2inner */
+            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1711, 1, 1722, 1, Kernel18-2inner */
             {
                 zu[k][j] += s*( za[k][j]   *( zz[k][j] - zz[k][j+1] ) -
                                 za[k][j-1] *( zz[k][j] - zz[k][j-1] ) -
@@ -1720,10 +1720,10 @@ l62:;
                                 zb[k+1][j] *( zr[k][j] - zr[k+1][j] ) );
             }
         }
-        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1723, 9, 1731, 10, Kernel18-3outer */
+        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1723, 1, 1732, 1, Kernel18-3outer */
         {
 
-            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1726, 13, 1730, 14, Kernel18-4inner */
+            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1726, 1, 1731, 1, Kernel18-4inner */
             {
                 zr[k][j] = zr[k][j] + t*zu[k][j];
                 zz[k][j] = zz[k][j] + t*zv[k][j];
@@ -1744,12 +1744,12 @@ l62:;
     kb5i = 0;
     
     do
-    {                           /*<<<<< 1748, 9, 1757, 10, Kernel19-all */
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1748, 9, 1752, 10, Kernel19-1 */
+    {                           /*<<<<< 1746, 1, 1761, 1, Kernel19-all */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1748, 1, 1752, 1, Kernel19-1 */
             b5[k+kb5i] = sa[k] + stb5*sb[k];
             stb5 = b5[k+kb5i] - stb5;
         }
-        for ( i=1 ; i<=n ; i++ ) /*<<<<< 1752, 9, 1757, 10, Kernel19-2 */
+        for ( i=1 ; i<=n ; i++ ) /*<<<<< 1752, 1, 1758, 1, Kernel19-2 */
         {
             k = n - i;
             b5[k+kb5i] = sa[k] + stb5*sb[k];
@@ -1769,7 +1769,7 @@ l62:;
     
     do
     {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1772, 9, 1784, 10, Kernel20 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1772, 1, 1785, 1, Kernel20 */
         {
            di = y[k] - g[k] / ( xx[k] + dk );
            dn = 0.2;
@@ -1796,11 +1796,11 @@ l62:;
 
     do
     {
-        for ( k=0 ; k<25 ; k++ ) /*<<<<< 1799, 9, 1808, 10, Kernel21outer */
+        for ( k=0 ; k<25 ; k++ ) /*<<<<< 1799, 1, 1809, 1, Kernel21outer */
         {
-            for ( i=0 ; i<25 ; i++ ) /*<<<<< 1801, 13, 1807, 14, Kernel21middle */
+            for ( i=0 ; i<25 ; i++ ) /*<<<<< 1801, 1, 1808, 1, Kernel21middle */
             {
-                for ( j=0 ; j<n ; j++ ) /*<<<<< 1803, 17, 1806, 18, Kernel21inner */
+                for ( j=0 ; j<n ; j++ ) /*<<<<< 1803, 1, 1807, 1, Kernel21inner */
                 {
                     px[j][i] += vy[k][i] * cx[j][k];
                 }
@@ -1822,7 +1822,7 @@ l62:;
     u[n-1] = 0.99*expmax*v[n-1];
     do
     {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1825, 9, 1829, 10, Kernel22 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1825, 1, 1830, 1, Kernel22 */
         {
             y[k] = u[k] / v[k];
             w[k] = x[k] / ( exp( y[k] ) -1.0 );
@@ -1841,9 +1841,9 @@ l62:;
 
     do
     {
-        for ( j=1 ; j<6 ; j++ ) /*<<<<< 1844, 9, 1852, 10, Kernel23outer */
+        for ( j=1 ; j<6 ; j++ ) /*<<<<< 1844, 1, 1853, 1, Kernel23outer */
         {
-            for ( k=1 ; k<n ; k++ ) /*<<<<< 1846, 13, 1851, 14, Kernel23inner */
+            for ( k=1 ; k<n ; k++ ) /*<<<<< 1846, 1, 1852, 1, Kernel23inner */
             {
                 qa = za[j+1][k]*zr[j][k] + za[j-1][k]*zb[j][k] +
                      za[j][k+1]*zu[j][k] + za[j][k-1]*zv[j][k] + zz[j][k];
@@ -1866,7 +1866,7 @@ l62:;
     do
     {
         m24 = 0;
-        for ( k=1 ; k<n ; k++ ) /*<<<<< 1869, 9, 1872, 10, Kernel24 */
+        for ( k=1 ; k<n ; k++ ) /*<<<<< 1869, 1, 1873, 1, Kernel24 */
         {
             if ( x[k] < x[m24] ) m24 = k;
         }

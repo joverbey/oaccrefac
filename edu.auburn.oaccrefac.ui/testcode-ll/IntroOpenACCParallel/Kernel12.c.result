@@ -1,0 +1,5 @@
+#pragma acc parallel loop
+		for (k = 0; k < n; k++) /*<<<<< 1407, 1, 1411, 1, Kernel12 */
+        {
+            x[k] = y[k+1] - y[k];
+        }

@@ -19,12 +19,15 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefacto
 
 @RunWith(Parameterized.class)
 public class IntroOpenACCParallelTestsLL extends RefactoringTestLL<IntroOpenACCParallelRefactoring> {
+    
+    private static final String m_testDir = "testcode-ll/IntroOpenACCParallel/";
+    
     public IntroOpenACCParallelTestsLL(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
         super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
     protected File resultFileFor(String filename, String kernelDescription) {
-        return new File(String.format("testcode-ll/IntroOpenACCParallel/%s.c", kernelDescription)); //$NON-NLS-1$
+        return new File(String.format(m_testDir+"%s.c.result", kernelDescription));
     }
 }

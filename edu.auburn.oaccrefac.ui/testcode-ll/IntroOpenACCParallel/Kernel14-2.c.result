@@ -1,0 +1,10 @@
+#pragma acc parallel loop
+		for (k = 0; k < n; k++) /*<<<<< 1470, 1, 1479, 1, Kernel14-2 */
+        {
+            vx[k] = vx[k] + ex1[k] + ( xx[k] - xi[k] )*dex1[k];
+            xx[k] = xx[k] + vx[k]  + flx;
+            ir[k] = xx[k];
+            rx[k] = xx[k] - ir[k];
+            ir[k] = ( ir[k] & 2048-1 ) + 1;
+            xx[k] = rx[k] + ir[k];
+        }
