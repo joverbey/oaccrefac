@@ -1,0 +1,33 @@
+#!/bin/bash
+
+SRCDIR=`pwd`
+
+echo Deleting old files...
+rm -f *.java
+
+echo Generating parser and AST classes...
+java -Xmx1024M -cp $SRCDIR/ludwig.jar \
+	Main_LALR1_Java_AST_Prototype \
+	-startSymbols "<acc-construct>" \
+	-package "edu.auburn.oaccrefac.core.parser" \
+	-imports "import edu.auburn.oaccrefac.core.parser.SyntaxException; \
+                  import java.io.IOException;" \
+	-description "An LALR(1) parser for OpenACC 1.0" \
+	-throws "IOException, SyntaxException, Exception" \
+	-onError "throw new SyntaxException(parserStack.getLookahead(), describeTerminalsExpectedInCurrentState());" \
+	-parserClass OpenACCParser \
+	-autolabel true \
+	OpenACC-1.0.ebnf
+
+cat >SyntaxException.java <<EOF
+package edu.auburn.oaccrefac.core.parser;
+
+@SuppressWarnings("serial")
+public class SyntaxException extends Exception {
+    public SyntaxException(Token lookahead, String terminalsExpectedInCurrentState) {
+        super(String.format("Unexpected %s; expected one of: %s", lookahead, terminalsExpectedInCurrentState));
+    }
+}
+EOF
+
+echo "Done"

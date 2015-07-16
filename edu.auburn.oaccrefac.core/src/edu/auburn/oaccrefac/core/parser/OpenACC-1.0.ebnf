@@ -1,0 +1,457 @@
+# Ludwig Grammar for OpenACC 1.0 pragmas
+# Calvin Montgomery (March-April 2014)
+# Jeff Overbey (July 2015)
+
+# OpenACC extensions follow; see also <block-item> and <for-prelude> and <iteration-statement> above
+
+PRAGMA_ACC ::= "#" [ \t]* "pragma" [ \t]+ "acc"
+
+(superclass):<acc-construct> ::= <acc-loop>
+| <acc-parallel-loop>
+| <acc-kernels-loop>
+| <acc-parallel>
+| <acc-kernels>
+| <acc-data>
+| <acc-hostdata>
+| <acc-declare>
+| <acc-cache>
+| <acc-update>
+| <acc-wait>
+| (empty)           <= ASTAccNoConstruct
+
+# ACC loop declaration
+<acc-loop> ::= PRAGMA_ACC "loop" <acc-loop-clause-list>?
+(list):<acc-loop-clause-list> ::= <acc-loop-clause>
+| <acc-loop-clause-list>     <acc-loop-clause>
+| <acc-loop-clause-list> "," <acc-loop-clause>
+
+(superclass):<acc-loop-clause> ::= <acc-collapse-clause>
+| <acc-gang-clause>
+| <acc-worker-clause>
+| <acc-vector-clause>
+| "seq"                   <= CAccSeqClause
+| "independent"           <= CAccIndependentClause
+| <acc-private-clause>
+| <acc-reduction-clause>
+
+# ACC parallel region
+<acc-parallel> ::= PRAGMA_ACC "parallel" <acc-parallel-clause-list>?
+(list):<acc-parallel-clause-list> ::= <acc-parallel-clause>
+| <acc-parallel-clause-list>     <acc-parallel-clause>
+| <acc-parallel-clause-list> "," <acc-parallel-clause>
+
+(superclass):<acc-parallel-clause> ::= <acc-if-clause>
+| <acc-async-clause>
+| <acc-numgangs-clause>
+| <acc-numworkers-clause>
+| <acc-vectorlength-clause>
+| <acc-reduction-clause>
+| <acc-copy-clause>
+| <acc-copyin-clause>
+| <acc-copyout-clause>
+| <acc-create-clause>
+| <acc-present-clause>
+| <acc-presentorcopy-clause>
+| <acc-presentorcopyin-clause>
+| <acc-presentorcopyout-clause>
+| <acc-presentorcreate-clause>
+| <acc-deviceptr-clause>
+| <acc-private-clause>
+| <acc-firstprivate-clause>
+
+# ACC parallel loop region - combination of parallel region and loop declaration
+<acc-parallel-loop> ::= PRAGMA_ACC "parallel" "loop" <acc-parallel-loop-clause-list>?
+(list):<acc-parallel-loop-clause-list> ::= <acc-parallel-loop-clause>
+| <acc-parallel-loop-clause-list>     <acc-parallel-loop-clause>
+| <acc-parallel-loop-clause-list> "," <acc-parallel-loop-clause>
+
+(superclass):<acc-parallel-loop-clause> ::= <acc-collapse-clause>
+| <acc-gang-clause>
+| <acc-worker-clause>
+| <acc-vector-clause>
+| "seq"           <= CAccSeqClause
+| "independent"   <= CAccIndependentClause
+| <acc-private-clause>
+| <acc-reduction-clause>
+| <acc-if-clause>
+| <acc-async-clause>
+| <acc-numgangs-clause>
+| <acc-numworkers-clause>
+| <acc-vectorlength-clause>
+| <acc-copy-clause>
+| <acc-copyin-clause>
+| <acc-copyout-clause>
+| <acc-create-clause>
+| <acc-present-clause>
+| <acc-presentorcopy-clause>
+| <acc-presentorcopyin-clause>
+| <acc-presentorcopyout-clause>
+| <acc-presentorcreate-clause>
+| <acc-deviceptr-clause>
+| <acc-firstprivate-clause>
+
+# ACC kernels region
+<acc-kernels> ::= PRAGMA_ACC "kernels" <acc-kernels-clause-list>?
+(list):<acc-kernels-clause-list> ::= <acc-kernels-clause>
+| <acc-kernels-clause-list>     <acc-kernels-clause>
+| <acc-kernels-clause-list> "," <acc-kernels-clause>
+
+(superclass):<acc-kernels-clause> ::= <acc-if-clause>
+| <acc-async-clause>
+| <acc-copy-clause>
+| <acc-copyin-clause>
+| <acc-copyout-clause>
+| <acc-create-clause>
+| <acc-present-clause>
+| <acc-presentorcopy-clause>
+| <acc-presentorcopyin-clause>
+| <acc-presentorcopyout-clause>
+| <acc-presentorcreate-clause>
+| <acc-deviceptr-clause>
+
+# ACC kernels loop region
+<acc-kernels-loop> ::= PRAGMA_ACC "kernels" "loop" <acc-kernels-loop-clause-list>?
+(list):<acc-kernels-loop-clause-list> ::= <acc-kernels-loop-clause>
+| <acc-kernels-loop-clause-list>     <acc-kernels-loop-clause>
+| <acc-kernels-loop-clause-list> "," <acc-kernels-loop-clause>
+
+(superclass):<acc-kernels-loop-clause> ::= <acc-collapse-clause>
+| <acc-gang-clause>
+| <acc-worker-clause>
+| <acc-vector-clause>
+| "seq"            <= CAccSeqClause
+| "independent"    <= CAccIndependentClause
+| <acc-private-clause>
+| <acc-reduction-clause>
+| <acc-if-clause>
+| <acc-async-clause>
+| <acc-copy-clause>
+| <acc-copyin-clause>
+| <acc-copyout-clause>
+| <acc-create-clause>
+| <acc-present-clause>
+| <acc-presentorcopy-clause>
+| <acc-presentorcopyin-clause>
+| <acc-presentorcopyout-clause>
+| <acc-presentorcreate-clause>
+| <acc-deviceptr-clause>
+
+# ACC declare directive
+<acc-declare> ::= PRAGMA_ACC "declare" <acc-declare-clause-list>
+(list):<acc-declare-clause-list> ::= <acc-declare-clause>
+| <acc-declare-clause-list>     <acc-declare-clause>
+| <acc-declare-clause-list> "," <acc-declare-clause>
+
+(superclass):<acc-declare-clause> ::= <acc-copy-clause>
+| <acc-copyin-clause>
+| <acc-copyout-clause>
+| <acc-create-clause>
+| <acc-present-clause>
+| <acc-presentorcopy-clause>
+| <acc-presentorcopyin-clause>
+| <acc-presentorcopyout-clause>
+| <acc-presentorcreate-clause>
+| <acc-deviceptr-clause>
+| <acc-deviceresident-clause>
+
+# ACC data construct
+<acc-data> ::= PRAGMA_ACC "data" <acc-data-clause-list>
+(list):<acc-data-clause-list> ::= <acc-data-clause>
+| <acc-data-clause-list>     <acc-data-clause>
+| <acc-data-clause-list> "," <acc-data-clause>
+
+(superclass):<acc-data-clause> ::= <acc-if-clause>
+| <acc-copy-clause>
+| <acc-copyin-clause>
+| <acc-copyout-clause>
+| <acc-create-clause>
+| <acc-present-clause>
+| <acc-presentorcopy-clause>
+| <acc-presentorcopyin-clause>
+| <acc-presentorcopyout-clause>
+| <acc-presentorcreate-clause>
+| <acc-deviceptr-clause>
+
+# ACC host_data construct
+<acc-hostdata> ::= PRAGMA_ACC "host_data" <acc-hostdata-clause-list>
+(list):<acc-hostdata-clause-list> ::= <acc-hostdata-clause>
+| <acc-hostdata-clause-list>     <acc-hostdata-clause>
+| <acc-hostdata-clause-list> "," <acc-hostdata-clause>
+
+(superclass):<acc-hostdata-clause> ::= <acc-usedevice-clause>
+
+# ACC cache directive
+<acc-cache> ::= PRAGMA_ACC "cache" "(" <acc-data-list> ")"
+
+# ACC wait directive
+<acc-wait> ::= PRAGMA_ACC "wait" (inline):<acc-wait-parameter>?
+
+# I wish I had a more descriptive name for this parameter, but the spec doesn't say what it does...
+<acc-wait-parameter> ::= "(" wait-parameter:<constant-expression> ")"
+
+# ACC update directive
+<acc-update> ::= PRAGMA_ACC "update" <acc-update-clause-list>
+(list):<acc-update-clause-list> ::= <acc-update-clause>
+| <acc-update-clause-list>     <acc-update-clause>
+| <acc-update-clause-list> "," <acc-update-clause>
+
+(superclass):<acc-update-clause> ::= <acc-host-clause>
+| <acc-device-clause>
+| <acc-if-clause>
+| <acc-async-clause>
+
+# OpenACC clauses
+<acc-collapse-clause> ::= "collapse" (inline):<acc-count>
+<acc-gang-clause> ::= "gang" (inline):<acc-count>?
+<acc-worker-clause> ::= "worker" (inline):<acc-count>?
+<acc-vector-clause> ::= "vector" (inline):<acc-count>?
+<acc-private-clause> ::= "private" "(" <acc-data-list> ")"
+<acc-firstprivate-clause> ::= "firstprivate" "(" <acc-data-list> ")"
+<acc-reduction-clause> ::= "reduction" "(" (inline):<acc-reduction-operator> ":" <identifier-list> ")"
+<acc-if-clause> ::= "if" "(" <conditional-expression> ")"
+<acc-async-clause> ::= "async" (inline):<acc-count>?
+<acc-numgangs-clause> ::= "num_gangs" (inline):<acc-count>
+<acc-numworkers-clause> ::= "num_workers" (inline):<acc-count>
+<acc-vectorlength-clause> ::= "vector_length" (inline):<acc-count>
+<acc-copy-clause> ::= "copy" "(" <acc-data-list> ")"
+<acc-copyin-clause> ::= "copyin" "(" <acc-data-list> ")"
+<acc-copyout-clause> ::= "copyout" "(" <acc-data-list> ")"
+<acc-create-clause> ::= "create" "(" <acc-data-list> ")"
+<acc-present-clause> ::= "present" "(" <acc-data-list> ")"
+<acc-presentorcopy-clause> ::= "present_or_copy" "(" <acc-data-list> ")"
+| "pcopy" "(" <acc-data-list> ")"
+<acc-presentorcopyin-clause> ::= "present_or_copyin" "(" <acc-data-list> ")"
+| "pcopyin" "(" <acc-data-list> ")"
+<acc-presentorcopyout-clause> ::= "present_or_copyout" "(" <acc-data-list> ")"
+| "pcopyout" "(" <acc-data-list> ")"
+<acc-presentorcreate-clause> ::= "present_or_create" "(" <acc-data-list> ")"
+| "pcreate" "(" <acc-data-list> ")"
+<acc-deviceptr-clause> ::= "deviceptr" "(" <identifier-list> ")"
+<acc-deviceresident-clause> ::= "device_resident" "(" <identifier-list> ")"
+<acc-usedevice-clause> ::= "use_device" "(" <identifier-list> ")"
+<acc-host-clause> ::= "host" "(" <acc-data-list> ")"
+<acc-device-clause> ::= "device" "(" <acc-data-list> ")"
+
+# Generic nonterminal for a constant count expression in a clause, e.g. (512) or (1024/4)
+<acc-count> ::= "(" count:<constant-expression> ")" # Is it possible to allow only integer expressions?
+
+# Valid reduction operators for OpenACC
+<acc-reduction-operator> ::= operator:"+"
+| operator:"*"
+| operator:"min"
+| operator:"max"
+| operator:"&"
+| operator:"|"
+| operator:"^"
+| operator:"&&"
+| operator:"||"
+
+# List of variables to copy in/out.  Each variable optionally has a size in brackets
+(list):<acc-data-list> ::= <acc-data-item>
+| <acc-data-list> "," <acc-data-item>
+
+<acc-data-item> ::= <identifier>
+| <identifier> "[" lower-bound:<constant-expression> ":" count:<constant-expression> "]"
+
+# from the C99 Standard (ISO/IEC 9899)
+# Jeff Overbey (11 February 2011)
+# Section A.2.1 Expressions
+
+#Subsection 6.5.1
+ICExpression(superclass):
+<primary-expression> ::=
+  <identifier>               <= CIdentifierExpression
+| <constant>
+| literals:STRING-LITERAL+   <= CStringLiteralExpression
+| "(" <expression> ")"
+
+#Subsection 6.5.2
+ICExpression(superclass):
+<postfix-expression> ::=
+  <primary-expression>
+| array:<postfix-expression> "[" subscript:<expression> "]"          <= CArrayAccessExpression
+| function:<postfix-expression> "(" <argument-expression-list>? ")"  <= CFunctionCallExpression
+| structure:<postfix-expression> "." <identifier>                    <= CElementAccessExpression
+| structure:<postfix-expression> arrow(bool):"->" <identifier>       <= CElementAccessExpression
+| subexpression:<postfix-expression> operator:"++"                   <= CPostfixUnaryExpression
+| subexpression:<postfix-expression> operator:"--"                   <= CPostfixUnaryExpression
+#| "(" <type-name> ")" "{" <initializer-list> "}"                     <= CCompoundLiteralExpression
+#| "(" <type-name> ")" "{" <initializer-list> "," "}"                 <= CCompoundLiteralExpression
+
+(list):
+<argument-expression-list> ::=
+  <assignment-expression>
+| <argument-expression-list> "," <assignment-expression>
+
+#Subsection 6.5.3
+ICExpression(superclass):
+<unary-expression> ::=
+  <postfix-expression>
+| operator:"++" subexpression:<unary-expression>            <= CPrefixUnaryExpression
+| operator:"--" subexpression:<unary-expression>            <= CPrefixUnaryExpression
+| (inline):<unary-operator> subexpression:<cast-expression> <= CPrefixUnaryExpression
+| "sizeof" expression:<unary-expression>                    <= CSizeofExpression
+#| "sizeof" "(" <type-name> ")"                              <= CSizeofExpression
+
+<unary-operator> ::= operator:"&" | operator:"*" | operator:"+" | operator:"-" | operator:"~" | operator:"!"
+
+#Subsection 6.5.4
+ICExpression(superclass):
+<cast-expression> ::=
+  <unary-expression>
+#| "(" <type-name> ")" <cast-expression>       <= CCastExpression
+
+#Subsection 6.5.5
+ICExpression(superclass):
+<multiplicative-expression> ::=
+  <cast-expression>
+| lhs:<multiplicative-expression> operator:"*" rhs:<cast-expression>  <= CBinaryExpression
+| lhs:<multiplicative-expression> operator:"/" rhs:<cast-expression>  <= CBinaryExpression
+| lhs:<multiplicative-expression> operator:"%" rhs:<cast-expression>  <= CBinaryExpression
+
+#Subsection 6.5.6
+ICExpression(superclass):
+<additive-expression> ::=
+  <multiplicative-expression>
+| lhs:<additive-expression> operator:"+" rhs:<multiplicative-expression>  <= CBinaryExpression
+| lhs:<additive-expression> operator:"-" rhs:<multiplicative-expression>  <= CBinaryExpression
+
+#Subsection 6.5.7
+ICExpression(superclass):
+<shift-expression> ::=
+  <additive-expression>
+| lhs:<shift-expression> operator:"<<" rhs:<additive-expression>  <= CBinaryExpression
+| lhs:<shift-expression> operator:">>" rhs:<additive-expression>  <= CBinaryExpression
+
+#Subsection 6.5.8
+ICExpression(superclass):
+<relational-expression> ::=
+  <shift-expression>
+| lhs:<relational-expression> operator:"<"  rhs:<shift-expression>  <= CBinaryExpression
+| lhs:<relational-expression> operator:">"  rhs:<shift-expression>  <= CBinaryExpression
+| lhs:<relational-expression> operator:"<=" rhs:<shift-expression>  <= CBinaryExpression
+| lhs:<relational-expression> operator:">=" rhs:<shift-expression>  <= CBinaryExpression
+
+#Subsection 6.5.9
+ICExpression(superclass):
+<equality-expression> ::=
+  <relational-expression>
+| lhs:<equality-expression> operator:"==" rhs:<relational-expression>  <= CBinaryExpression
+| lhs:<equality-expression> operator:"!=" rhs:<relational-expression>  <= CBinaryExpression
+
+#Subsection 6.5.10
+ICExpression(superclass):
+<and-expression> ::=
+  <equality-expression>
+| lhs:<and-expression> operator:"&" rhs:<equality-expression>  <= CBinaryExpression
+
+#Subsection 6.5.11
+ICExpression(superclass):
+<exclusive-or-expression> ::=
+  <and-expression>
+| lhs:<exclusive-or-expression> operator:"^" rhs:<and-expression>  <= CBinaryExpression
+
+#Subsection 6.5.12
+ICExpression(superclass):
+<inclusive-or-expression> ::=
+  <exclusive-or-expression>
+| lhs:<inclusive-or-expression> operator:"|" rhs:<exclusive-or-expression>  <= CBinaryExpression
+
+#Subsection 6.5.13
+ICExpression(superclass):
+<logical-and-expression> ::=
+  <inclusive-or-expression>
+| lhs:<logical-and-expression> operator:"&&" rhs:<inclusive-or-expression>  <= CBinaryExpression
+
+#Subsection 6.5.14
+ICExpression(superclass):
+<logical-or-expression> ::=
+  <logical-and-expression>
+| lhs:<logical-or-expression> operator:"||" rhs:<logical-and-expression>  <= CBinaryExpression
+
+#Subsection 6.5.15
+ICExpression(superclass):
+<conditional-expression> ::=
+  <logical-or-expression>
+| test-expression:<logical-or-expression> "?" then-expression:<expression> ":" else-expression:<conditional-expression>  <= CTernaryExpression
+
+# A.1 LEXICAL GRAMMAR -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   (skip) ::= ([ \t]+ | "/*"~"*/" | "//" [^\r\n]*)+
+
+##Section A.1.2 Keywords - inlined
+
+#Section A.1.3 Identifiers, A.1.4 Universal Character Names
+
+#Subsection 6.4.2.1
+IDENTIFIER ::= ([_a-zA-Z] | "\\" [Uu] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f])
+               ([_a-zA-Z0-9] | "\\" [Uu] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f])*
+
+#Section A.1.5 Constants
+
+#Subsection 6.4.4
+CConstantExpression:
+<constant> ::=
+  constant:INTEGER-CONSTANT
+| constant:FLOATING-CONSTANT
+#| (inline):<enumeration-constant>
+| constant:CHARACTER-CONSTANT
+
+#Subsection 6.4.4.1
+INTEGER-CONSTANT ::=
+# {integer-suffix} ::= [uU] [lL]?
+#                   |  [uU] ("ll"|"LL")
+#                   |  [lL] [uU]?
+#                   |  ("ll"|"LL") [uU]?
+  [1-9][0-9]*              ([uU] [lL]? | [uU] ("ll"|"LL") | [lL] [uU]? | ("ll"|"LL") [uU]?)?
+| "0" [0-7]*               ([uU] [lL]? | [uU] ("ll"|"LL") | [lL] [uU]? | ("ll"|"LL") [uU]?)?
+| ("0x"|"0X") [0-9A-Fa-f]+ ([uU] [lL]? | [uU] ("ll"|"LL") | [lL] [uU]? | ("ll"|"LL") [uU]?)?
+
+#Subsection 6.4.4.2
+FLOATING-CONSTANT ::=
+  ([0-9]* "." [0-9]+ | [0-9]+ ".") ([eE] ("+"|"-")? [0-9]+)? [flFL]?
+| [0-9]+ ([eE] ("+"|"-")? [0-9]+) [flFL]?
+| ("0x"|"0X") ([0-9A-Fa-f]* "." [0-9A-Fa-f]+ | [0-9A-Fa-f]+ ".") ([Pp] ("+"|"-")? [0-9]+) [flFL]?
+| ("0x"|"0X") [0-9A-Fa-f]+ ([Pp] ("+"|"-")? [0-9]+) [flFL]?
+
+#Subsection 6.4.4.3
+#<enumeration-constant> ::= constant:IDENTIFIER#####
+
+#Subsection 6.4.4.4
+CHARACTER-CONSTANT ::=
+  "L"? "'" ([^\\'\r\n] | (
+                           "\\" ['"?\\abfnrtv]      # simple-escape-sequence
+                         | "\\" [0-7] [0-7]? [0-7]? # octal-escape-sequence
+                         | "\\x" [0-9A-Fa-f]+       # hexadecimal-escape-sequence
+                         | "\\" [Uu] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f]
+                         )) "'"
+
+#Section A.1.6 String Literals
+
+#Subsection 6.4.5
+STRING-LITERAL ::=
+  "L"? ["] ([^\\"\r\n] | (
+                           "\\" ['"?\\abfnrtv]      # simple-escape-sequence
+                         | "\\" [0-7] [0-7]? [0-7]? # octal-escape-sequence
+                         | "\\x" [0-9A-Fa-f]+       # hexadecimal-escape-sequence
+                         | "\\" [Uu] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f]
+                         ))* ["]
+
+# JO modified to remove assignments
+
+<expression> ::= <conditional-expression>
+
+(superclass):
+<assignment-expression> ::= <conditional-expression>
+
+(superclass):
+<constant-expression> ::= <conditional-expression>
+
+(list):
+<identifier-list> ::=
+  <identifier>
+| <identifier-list> "," <identifier>
+
+<identifier> ::=
+  IDENTIFIER
+| identifier:"data"
