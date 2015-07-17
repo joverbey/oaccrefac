@@ -177,7 +177,7 @@ public class UnrollLoop extends ForLoopChange {
         IASTNode[] chilluns = body.getChildren();
         
         IASTCompoundStatement newBody = factory.newCompoundStatement();
-        ASTRewrite body_rewriter = this.safeReplace(rewriter, body, newBody);
+        IASTRewrite body_rewriter = this.safeReplace(rewriter, body, newBody);
         for (int i = 0; i < m_unrollFactor; i++) {
             if (body instanceof IASTCompoundStatement) {
                 for (int j = 0; j < chilluns.length; j++) {
