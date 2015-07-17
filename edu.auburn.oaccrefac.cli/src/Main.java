@@ -13,9 +13,12 @@ import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.text.edits.TextEditGroup;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.change.UnrollLoop;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class Main {
@@ -35,15 +38,30 @@ public class Main {
             System.exit(1);
         }
 
-        ASTRewrite rw = ASTRewrite.create(translationUnit);
+        IASTRewrite rw = ASTRewrite.create(translationUnit);
         IASTForStatement forLoop = ASTUtil.findOne(translationUnit, IASTForStatement.class);
-        rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
-        Change chg = rw.rewriteAST();
+        // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
+
+        UnrollLoop unroll = new UnrollLoop(rw, forLoop, 4);
+        RefactoringStatus status = unroll.checkConditions(new RefactoringStatus());
+        printStatus(status);
+
+        if (status.hasFatalError()) {
+            System.exit(1);
+        }
+
+        Change chg = unroll.change().rewriteAST();
         try {
             chg.perform(new NullProgressMonitor());
         } catch (CoreException e) {
             System.err.printf("Internal error creating change: %s\n", e.getMessage());
             System.exit(1);
+        }
+    }
+
+    private static void printStatus(RefactoringStatus status) {
+        for (RefactoringStatusEntry entry : status.getEntries()) {
+            System.err.println(entry);
         }
     }
 

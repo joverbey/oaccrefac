@@ -26,6 +26,8 @@ import org.eclipse.cdt.internal.core.dom.rewrite.commenthandler.NodeCommentMap;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.text.edits.TextEditGroup;
 
+import edu.auburn.oaccrefac.core.change.IASTRewrite;
+
 /**
  * Infrastructure for modifying code by describing changes to AST nodes. The AST rewriter collects
  * descriptions of modifications to nodes and translates these descriptions into text edits that can
@@ -45,7 +47,7 @@ import org.eclipse.text.edits.TextEditGroup;
  * @since 5.0
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public final class ASTRewrite {
+public final class ASTRewrite implements IASTRewrite {
 	/**
 	 * Defines the positions of the comment.
 	 *

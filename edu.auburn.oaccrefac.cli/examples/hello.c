@@ -6,12 +6,12 @@
 int main(int argc, char **argv)
 {
 	char msg[] = "GdkknVnqkc";
-	int n = 10;
-	for (int i = 0; i < n; i++)
+	//int n = 10;
+	for (int i = 0; i < 10; i++)
 	{
 		msg[i] = msg[i] + 1;
 	}
 
-	puts(msg);
+	println(msg);
 	return EXIT_SUCCESS;
 }
