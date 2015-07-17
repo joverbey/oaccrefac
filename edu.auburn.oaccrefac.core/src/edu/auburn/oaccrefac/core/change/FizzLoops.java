@@ -28,8 +28,8 @@ public class FizzLoops extends ForLoopChange {
         }
         
         if (loop.getBody().getChildren().length < 2) {
-            init.addWarning("Warning: Loop fission refactoring is "
-                    + "useless with less than two statements in body.");
+            init.addFatalError("Loop fission refactoring requires more than "
+                    + "one statement.");
         }
         
         return init;
