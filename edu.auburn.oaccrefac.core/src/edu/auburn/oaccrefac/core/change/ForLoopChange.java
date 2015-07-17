@@ -49,7 +49,7 @@ public abstract class ForLoopChange extends ASTChange {
         this.safeReplace(rewriter,
                 loop2.getConditionExpression(), 
                 loop1.getConditionExpression());
-        rewriter = this.safeReplace(rewriter,
+        this.safeReplace(rewriter,
                 loop2.getIterationExpression(), 
                 loop1.getIterationExpression());
         this.insertPragmas(loop1, this.getPragmas(loop2));

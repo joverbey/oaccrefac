@@ -1,6 +1,8 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -8,6 +10,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -24,10 +27,12 @@ public abstract class ASTChange {
     private IASTRewrite m_rewriter;
     private IProgressMonitor m_pm;
     private TextEditGroup m_teg;
+    private Map<IASTNode, List<IASTPreprocessorPragmaStatement>> m_pp_map;
     
     public ASTChange(IASTRewrite rewriter) {
         m_rewriter = rewriter;
         m_teg = new TextEditGroup("edits");
+        m_pp_map = new HashMap<IASTNode, List<IASTPreprocessorPragmaStatement>>();
     }
     
     public final RefactoringStatus checkConditions(RefactoringStatus init) {
@@ -73,16 +78,35 @@ public abstract class ASTChange {
     
     protected IASTRewrite safeReplace(IASTRewrite rewriter, 
             IASTNode node, IASTNode replacement) {
+        if(replacement != null && m_pp_map.containsKey(replacement)) {
+            for(IASTPreprocessorPragmaStatement prag : m_pp_map.get(replacement)) {
+                rewriter.insertBefore(node.getParent(), node, rewriter.createLiteralNode(prag.getRawSignature() + System.lineSeparator()), null);
+            }
+        }
         return rewriter.replace(node, replacement, null);
     }
     
     protected IASTRewrite safeInsertBefore(IASTRewrite rewriter,
             IASTNode parent, IASTNode insertionPoint, IASTNode newNode) {
+        if(newNode != null && m_pp_map.containsKey(newNode)) {
+            for(IASTPreprocessorPragmaStatement prag : m_pp_map.get(newNode)) {
+                rewriter.insertBefore(parent, insertionPoint, rewriter.createLiteralNode(prag.getRawSignature() + System.lineSeparator()), null);
+            }
+        }
         return rewriter.insertBefore(parent, insertionPoint, newNode, null);
     }
     
     protected void safeRemove(IASTRewrite rewriter, IASTNode node) {
-        rewriter.remove(node, m_teg);
+        rewriter.remove(node, null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T extends IASTNode> T safeCopy(T node) {
+        T copy = (T) node.copy(CopyStyle.withLocations);
+        if(node instanceof IASTForStatement) {
+            m_pp_map.put(copy, InquisitorFactory.getInquisitor((IASTForStatement) node).getLeadingPragmas());
+        }
+        return copy;
     }
     
     
