@@ -1,0 +1,15 @@
+			for (i = 0; i < (25 - 1); i++) /*<<<<< 1801, 1, 1807, 14, Kernel21middle */
+			{
+				for (j = 0; j < as2.Inner_loops; j++) {
+					as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
+				}
+				i++;
+				for (j = 0; j < as2.Inner_loops; j++) {
+					as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
+				}
+			}
+			i++;
+			for (j = 0; j < as2.Inner_loops; j++) {
+				as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
+			}
+			i++;
