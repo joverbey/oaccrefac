@@ -2,6 +2,7 @@ package edu.auburn.oaccrefac.internal.core.dependence;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import edu.auburn.oaccrefac.core.dependence.Direction;
@@ -62,7 +63,28 @@ public class DirectionHierarchyTester {
         Set<Direction[]> results = new HashSet<Direction[]>();
 
         
-        return getPossibleDependenceDirections(allDirections, results);
+        Set<Direction[]> allVectors = getPossibleDependenceDirections(allDirections, results);
+        
+        Iterator<Direction[]> iter = allVectors.iterator();
+        while(iter.hasNext()) {
+            for(Direction d : iter.next()) {
+                switch (d) {
+                    case EQ:
+                        continue;
+                    case LT:
+                    case LE:
+                    case ANY:
+                        break;
+                    case GT:
+                    case GE:
+                        iter.remove();
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+        }
+        return allVectors;
 
     }
     private Set<Direction[]> getPossibleDependenceDirections(Direction[] dv, Set<Direction[]> results) {
