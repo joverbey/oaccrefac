@@ -177,21 +177,20 @@ public class UnrollLoop extends ForLoopChange {
         IASTNode[] chilluns = body.getChildren();
         
         IASTCompoundStatement newBody = factory.newCompoundStatement();
+        ASTRewrite body_rewriter = this.safeReplace(rewriter, body, newBody);
         for (int i = 0; i < m_unrollFactor; i++) {
             if (body instanceof IASTCompoundStatement) {
                 for (int j = 0; j < chilluns.length; j++) {
                     if (chilluns[j] instanceof IASTStatement)
-                        newBody.addStatement((IASTStatement)chilluns[j].copy());
+                        this.safeInsertBefore(body_rewriter, newBody, null, chilluns[j].copy());
                 }
             } else {
-                newBody.addStatement(body.copy());
+                this.safeInsertBefore(body_rewriter, newBody, null, body.copy());
             }
             if (i != m_unrollFactor-1) {
-                newBody.addStatement(iter_exprstmt);
+                this.safeInsertBefore(body_rewriter, newBody, null, iter_exprstmt);
             }
         }
-        
-        this.safeReplace(rewriter, body, newBody);
         
         return rewriter;
     }

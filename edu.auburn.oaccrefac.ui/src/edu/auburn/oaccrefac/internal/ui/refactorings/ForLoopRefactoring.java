@@ -1,7 +1,8 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import java.util.List;
+
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
@@ -59,6 +60,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         if (selection == null || tu.getResource() == null || project == null)
             initStatus.addFatalError("Invalid selection");
+        
     }
 
     /**
@@ -194,47 +196,27 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      * @return CASTForStatement to perform refactoring on
      */
     protected CASTForStatement findLoop(IASTTranslationUnit ast) {
-        class Visitor extends ASTVisitor {
-            private CASTForStatement loop = null;
-
-            public Visitor() {
-                shouldVisitStatements = true;
-            }
-
-            @Override
-            public int visit(IASTStatement statement) {
-                if (statement instanceof CASTForStatement) {
-                    CASTForStatement for_stmt = (CASTForStatement) statement;
-
-                    // Make sure we are getting the correct loop by checking the statement's
-                    // offset with the selected text's region in the project.
-
-                    int selectionStart = selectedRegion.getOffset();
-                    int selectionEnd = selectedRegion.getOffset() + selectedRegion.getLength();
-
-                    IASTFileLocation forStmtLocation = for_stmt.getFileLocation();
-                    int forStmtStart = forStmtLocation.getNodeOffset();
-                    int forStmtEnd = forStmtStart + forStmtLocation.getNodeLength();
-
-                    if (selectionStart <= forStmtStart && forStmtEnd <= selectionEnd) {
-                        loop = for_stmt;
-                        // Selection encloses this loop; do not check nested loops
-                        return PROCESS_ABORT;
-                    } else if (forStmtStart <= selectionStart && selectionEnd <= forStmtEnd) {
-                        loop = for_stmt;
-                        // Selection is inside this loop; check nested loops
-                        return PROCESS_CONTINUE;
-                    } else {
-                        // Otherwise skip this statement
-                        return PROCESS_CONTINUE;
+        IASTForStatement first_for = null;
+        List<IASTForStatement> fors = ASTUtil.find(ast, IASTForStatement.class);
+        int begin = selectedRegion.getOffset();
+        int end = selectedRegion.getLength() + begin;
+        
+        for (IASTForStatement loop : fors) {
+            IASTFileLocation loc = loop.getFileLocation(); 
+            if (loc.getNodeOffset() >= begin
+               && loc.getNodeOffset() < end) {
+                if (first_for != null) {
+                    IASTFileLocation firstloc = first_for.getFileLocation();
+                    if (firstloc.getNodeOffset() > loc.getNodeOffset()) {
+                        first_for = loop;
                     }
+                } else {
+                    first_for = loop;
                 }
-                return PROCESS_CONTINUE;
             }
         }
-        Visitor v = new Visitor();
-        ast.accept(v);
-        return v.loop;
+        
+        return (CASTForStatement) first_for;
     }
 
     protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, IProgressMonitor pm, IASTStatement... statements) {

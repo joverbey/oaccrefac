@@ -1310,7 +1310,7 @@ void kernels()
                   (u3[nl1][ky][kx+1]-2.0*u3[nl1][ky][kx]+u3[nl1][ky][kx-1]);
            }
         }
-    
+
         endloop (8);
    }
     while (count < loop);
@@ -1745,7 +1745,7 @@ l62:;
     
     do
     {                           /*<<<<< 1746, 1, 1761, 1, Kernel19-all */
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1748, 1, 1752, 1, Kernel19-1 */
+        for ( k=0 ; k<n ; k++ ) { /*<<<<< 1748, 1, 1752, 1, Kernel19-1 */
             b5[k+kb5i] = sa[k] + stb5*sb[k];
             stb5 = b5[k+kb5i] - stb5;
         }
@@ -1798,7 +1798,7 @@ l62:;
     {
         for ( k=0 ; k<25 ; k++ ) /*<<<<< 1799, 1, 1809, 1, Kernel21outer */
         {
-            for ( i=0 ; i<25 ; i++ ) /*<<<<< 1801, 1, 1808, 1, Kernel21middle */
+            for ( i=0 ; i<25 ; i++ ) /*<<<<< 1801, 1, 1807, 14, Kernel21middle */
             {
                 for ( j=0 ; j<n ; j++ ) /*<<<<< 1803, 1, 1807, 1, Kernel21inner */
                 {

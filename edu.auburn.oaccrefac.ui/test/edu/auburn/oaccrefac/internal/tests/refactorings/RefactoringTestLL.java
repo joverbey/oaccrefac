@@ -93,8 +93,8 @@ public abstract class RefactoringTestLL<R extends CRefactoring> extends Refactor
             
             String expected = injectResult(originalSource, selection, toInject);
             String actual = readWorkspaceFile(filename); //$NON-NLS-1$ //$NON-NLS-2$
-            expected = removeWhitespace(expected);
-            actual = removeWhitespace(actual);
+            expected = removeCRs(expected);
+            actual = removeCRs(actual);
             if (!expected.equals(actual)) {
                 System.err.println("Actual result does not match contents of .result file -- " + filename);
             }
@@ -110,11 +110,8 @@ public abstract class RefactoringTestLL<R extends CRefactoring> extends Refactor
         return (before + inject + after);
     }
     
-    private String removeWhitespace(String toRemove) {
-        return toRemove.replaceAll(" ", "")
-                .replaceAll("\\r", "")
-                .replaceAll("\t", "")
-                .replaceAll("\n", "");
+    private String removeCRs(String toRemove) {
+        return toRemove.replace("\r", "");
     }
     
 }
