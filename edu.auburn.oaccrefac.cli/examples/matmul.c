@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
 	/* Matrix multiplication - naive (19.57 seconds) */
 	/* Autotune */
-	/* for (int j = 0; j < m; j++) {
+	for (int j = 0; j < m; j++) {
 		for (int i = 0; i < n; i++) {
 			float t = 0.0;
 			for (int k = 0; k < l; k++) {
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 			}
 			c[j][i] = t;
 		}
-	} */
+	}
 
 	/* Matrix multiplication - optimized (2.32 seconds without, 0.67 with OpenMP) */
 	/* 0. Move float t declaration out of i-loop
