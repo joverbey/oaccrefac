@@ -67,7 +67,7 @@ public class DirectionHierarchyTester {
         
         Iterator<Direction[]> iter = allVectors.iterator();
         while(iter.hasNext()) {
-            for(Direction d : iter.next()) {
+loop:       for(Direction d : iter.next()) {
                 switch (d) {
                     case EQ:
                         continue;
@@ -78,7 +78,7 @@ public class DirectionHierarchyTester {
                     case GT:
                     case GE:
                         iter.remove();
-                        break;
+                        break loop;
                     default:
                         throw new IllegalStateException();
                 }
