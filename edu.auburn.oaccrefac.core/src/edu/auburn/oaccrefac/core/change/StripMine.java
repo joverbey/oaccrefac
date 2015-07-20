@@ -134,16 +134,19 @@ public class StripMine extends ForLoopChange {
             gen_str = counter_str+"_"+diffcounter;
             m_generatedName = factory.newName(gen_str.toCharArray());
         }
-        IASTLiteralExpression zeroLit = factory.newLiteralExpression(
-                IASTLiteralExpression.lk_integer_constant, "0");
-        IASTEqualsInitializer initializer = factory.newEqualsInitializer(zeroLit);
-        IASTDeclarator declarator = factory.newDeclarator(m_generatedName);
-        declarator.setInitializer(initializer);
+        
         IASTSimpleDeclSpecifier declSpecifier = factory.newSimpleDeclSpecifier();
         declSpecifier.setType(IASTSimpleDeclSpecifier.t_int);
-        
         IASTSimpleDeclaration declaration = factory.newSimpleDeclaration(declSpecifier);
-        declaration.addDeclarator(declarator);
+
+        IASTInitializer initializer = ASTUtil
+                .findOne(header, IASTEqualsInitializer.class);
+        if (initializer != null) {
+            initializer = initializer.copy();
+            IASTDeclarator declarator = factory.newDeclarator(m_generatedName);
+            declarator.setInitializer(initializer);
+            declaration.addDeclarator(declarator);
+        }
         
         this.safeReplace(rewriter,
                 header.getInitializerStatement(),
