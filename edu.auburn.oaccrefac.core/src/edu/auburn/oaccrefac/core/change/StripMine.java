@@ -4,9 +4,11 @@ import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializer;
@@ -135,22 +137,35 @@ public class StripMine extends ForLoopChange {
             m_generatedName = factory.newName(gen_str.toCharArray());
         }
         
+        IASTStatement headerInitializer = header.getInitializerStatement();
+        
         IASTSimpleDeclSpecifier declSpecifier = factory.newSimpleDeclSpecifier();
         declSpecifier.setType(IASTSimpleDeclSpecifier.t_int);
         IASTSimpleDeclaration declaration = factory.newSimpleDeclaration(declSpecifier);
-
+        IASTDeclarator declarator = factory.newDeclarator(m_generatedName);
+        
         IASTInitializer initializer = ASTUtil
-                .findOne(header, IASTEqualsInitializer.class);
+                .findOne(headerInitializer, IASTEqualsInitializer.class);
         if (initializer != null) {
             initializer = initializer.copy();
-            IASTDeclarator declarator = factory.newDeclarator(m_generatedName);
             declarator.setInitializer(initializer);
-            declaration.addDeclarator(declarator);
+        } else if (headerInitializer instanceof IASTExpressionStatement) {
+            IASTExpressionStatement exprSt = 
+                    (IASTExpressionStatement) headerInitializer;
+            IASTExpression expr = exprSt.getExpression();
+            if (expr instanceof IASTBinaryExpression) {
+                IASTExpression op2 = ((IASTBinaryExpression) expr).getOperand2();
+                declarator.setInitializer(
+                        factory.newEqualsInitializer(op2.copy()));
+            } else {
+                throw new UnsupportedOperationException("Loop initialization "
+                        + "expression is unsupported!");
+            }
         }
-        
-        this.safeReplace(rewriter,
-                header.getInitializerStatement(),
-                factory.newDeclarationStatement(declaration));
+        declaration.addDeclarator(declarator);
+        IASTDeclarationStatement replacement = 
+                factory.newDeclarationStatement(declaration);
+        this.safeReplace(rewriter, headerInitializer, replacement);
     }
 
 
