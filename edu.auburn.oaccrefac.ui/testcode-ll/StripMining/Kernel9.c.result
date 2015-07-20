@@ -1,0 +1,14 @@
+		for (int i_0 = 0; i_0 < as2.Inner_loops; i_0 += 3) /*<<<<< 1328, 1, 1335, 1, Kernel9 */
+		{
+			for (i = i_0; (i < i_0 + 3 && i < as2.Inner_loops); i++) {
+				as1.Px[i][0] = as1.Xtra[22] * as1.Px[i][12]
+						+ as1.Xtra[21] * as1.Px[i][11]
+						+ as1.Xtra[20] * as1.Px[i][10]
+						+ as1.Xtra[19] * as1.Px[i][9]
+						+ as1.Xtra[18] * as1.Px[i][8]
+						+ as1.Xtra[17] * as1.Px[i][7]
+						+ as1.Xtra[16] * as1.Px[i][6]
+						+ as1.Xtra[12] * (as1.Px[i][4] + as1.Px[i][5])
+						+ as1.Px[i][2];
+			}
+		}

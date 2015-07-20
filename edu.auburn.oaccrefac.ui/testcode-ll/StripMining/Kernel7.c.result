@@ -1,0 +1,24 @@
+		for (int k_0 = 0; k_0 < as2.Inner_loops; k_0 += 3) /*<<<<< 1270, 1, 1276, 1, Kernel7 */
+		{
+			for (k = k_0; (k < k_0 + 3 && k < as2.Inner_loops); k++) {
+				as1.X[k] =
+						as1.U[k]
+								+ as1.Xtra[30]
+										* (as1.Z[k] + as1.Xtra[30] * as1.Y[k])
+								+ as1.Xtra[36]
+										* (as1.U[k + 3]
+												+ as1.Xtra[30]
+														* (as1.U[k + 2]
+																+ as1.Xtra[30]
+																		* as1.U[k
+																				+ 1])
+												+ as1.Xtra[36]
+														* (as1.U[k + 6]
+																+ as1.Xtra[28]
+																		* (as1.U[k
+																				+ 5]
+																				+ as1.Xtra[28]
+																						* as1.U[k
+																								+ 4])));
+			}
+		}

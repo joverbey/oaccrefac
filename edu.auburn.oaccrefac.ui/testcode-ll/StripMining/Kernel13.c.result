@@ -1,0 +1,22 @@
+		for (int ip_0 = 0; ip_0 < as2.Inner_loops; ip_0 += 3) /*<<<<< 1427, 1, 1447, 1, Kernel13 */
+		{
+			for (ip = ip_0; (ip < ip_0 + 3 && ip < as2.Inner_loops); ip++) {
+				i1 = as1.P[ip][0];
+				j1 = as1.P[ip][1];
+				i1 &= 64 - 1;
+				j1 &= 64 - 1;
+				as1.P[ip][2] += as1.B[j1][i1];
+				as1.P[ip][3] += as1.C[j1][i1];
+				as1.P[ip][0] += as1.P[ip][2];
+				as1.P[ip][1] += as1.P[ip][3];
+				i2 = as1.P[ip][0];
+				j2 = as1.P[ip][1];
+				i2 = (i2 & 64 - 1) - 1;
+				j2 = (j2 & 64 - 1) - 1;
+				as1.P[ip][0] += as1.Y[i2 + 32];
+				as1.P[ip][1] += as1.Z[j2 + 32];
+				i2 += as1.E[i2 + 32];
+				j2 += as1.F[j2 + 32];
+				as1.H[j2][i2] += 1.0;
+			}
+		}

@@ -1,0 +1,7 @@
+		for (int k_0 = 1; k_0 < as2.Inner_loops; k_0 += 3) /*<<<<< 1869, 1, 1873, 1, Kernel24 */
+		{
+			for (k = k_0; (k < k_0 + 3 && k < as2.Inner_loops); k++) {
+				if (as1.X[k] < as1.X[as2.M24])
+					as2.M24 = k;
+			}
+		}

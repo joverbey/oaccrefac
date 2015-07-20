@@ -1,0 +1,6 @@
+				for (int j_0 = 0; j_0 < as2.Inner_loops; j_0 += 3) /*<<<<< 1803, 1, 1807, 1, Kernel21inner */
+				{
+					for (j = j_0; (j < j_0 + 3 && j < as2.Inner_loops); j++) {
+						as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
+					}
+				}

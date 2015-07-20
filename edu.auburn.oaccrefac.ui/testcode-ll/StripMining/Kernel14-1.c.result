@@ -1,0 +1,11 @@
+		for (int k_0 = 0; k_0 < as2.Inner_loops; k_0 += 3) /*<<<<< 1461, 1, 1470, 1, Kernel14-1 */
+		{
+			for (k = k_0; (k < k_0 + 3 && k < as2.Inner_loops); k++) {
+				as1.Vx[k] = 0.0;
+				as1.Xx[k] = 0.0;
+				as1.Ix[k] = (long) as1.Grd[k];
+				as1.Xi[k] = (double) as1.Ix[k];
+				as1.Ex1[k] = as1.Ex[as1.Ix[k] - 1];
+				as1.Dex1[k] = as1.Dex[as1.Ix[k] - 1];
+			}
+		}

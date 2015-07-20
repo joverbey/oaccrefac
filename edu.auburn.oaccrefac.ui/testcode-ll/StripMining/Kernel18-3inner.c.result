@@ -1,0 +1,7 @@
+			for ( int j_0 = 1; j_0 < jn; j_0 += 3 ) /*<<<<< 1726, 1, 1731, 1, Kernel18-4inner */
+			{
+				for (j = j_0;(j < j_0 + 3 && j < jn);j++) {
+					as1.Zr[k][j] = as1.Zr[k][j] + as1.Xtra[36] * as1.Zu[k][j];
+					as1.Zz[k][j] = as1.Zz[k][j] + as1.Xtra[36] * as1.Zv[k][j];
+				}
+			}

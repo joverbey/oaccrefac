@@ -1,0 +1,8 @@
+			for (int i_0 = 0; i_0 < 25; i_0 += 3) /*<<<<< 1801, 1, 1807, 14, Kernel21middle */
+			{
+				for (i = i_0; (i < i_0 + 3 && i < 25); i++) {
+					for (j = 0; j < as2.Inner_loops; j++) {
+						as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
+					}
+				}
+			}

@@ -1457,7 +1457,7 @@ void kernels()
     parameters (14);
 
     do
-    {                           /*<<<<< 1459, 1, 1487, 1, Kernel14-all */
+    {
         for ( k=0 ; k<n ; k++ ) /*<<<<< 1461, 1, 1470, 1, Kernel14-1 */
         {
             vx[k] = 0.0;
@@ -1693,7 +1693,7 @@ l62:;
        t = 0.0037;
        s = 0.0041;
        kn = 6;
-       jn = n;                  /*<<<<< 1691, 1, 1732, 1, Kernel18-all */
+       jn = n;
        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1697, 1, 1708, 1, Kernel18-1outer */
        {
 
@@ -1705,7 +1705,7 @@ l62:;
                       ( zr[k][j] +zr[k-1][j] ) / ( zm[k][j] +zm[k][j-1]);
          }
        }
-        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1708, 1, 1723, 1, Kerne18-2outer */
+        for ( k=1 ; k<kn ; k++ ) /*<<<<< 1708, 1, 1723, 1, Kernel18-2outer */
         {
 
             for ( j=1 ; j<jn ; j++ ) /*<<<<< 1711, 1, 1722, 1, Kernel18-2inner */
@@ -1723,7 +1723,7 @@ l62:;
         for ( k=1 ; k<kn ; k++ ) /*<<<<< 1723, 1, 1732, 1, Kernel18-3outer */
         {
 
-            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1726, 1, 1731, 1, Kernel18-4inner */
+            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1726, 1, 1731, 1, Kernel18-3inner */
             {
                 zr[k][j] = zr[k][j] + t*zu[k][j];
                 zz[k][j] = zz[k][j] + t*zv[k][j];
@@ -1744,7 +1744,7 @@ l62:;
     kb5i = 0;
     
     do
-    {                           /*<<<<< 1746, 1, 1761, 1, Kernel19-all */
+    {
         for ( k=0 ; k<n ; k++ ) { /*<<<<< 1748, 1, 1752, 1, Kernel19-1 */
             b5[k+kb5i] = sa[k] + stb5*sb[k];
             stb5 = b5[k+kb5i] - stb5;

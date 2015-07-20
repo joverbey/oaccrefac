@@ -1,0 +1,6 @@
+		for (int i_0 = 1; i_0 < as2.Inner_loops; i_0 += 3) /*<<<<< 1226, 1, 1230, 1, Kernel5 */
+		{
+			for (i = i_0; (i < i_0 + 3 && i < as2.Inner_loops); i++) {
+				as1.X[i] = as1.Z[i] * (as1.Y[i] - as1.X[i - 1]);
+			}
+		}

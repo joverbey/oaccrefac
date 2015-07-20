@@ -1,0 +1,7 @@
+			for ( int j_0 = 1; j_0 < jn; j_0 += 3 ) /*<<<<< 1711, 1, 1722, 1, Kernel18-2inner */
+			{
+				for (j = j_0;(j < j_0 + 3 && j < jn);j++) {
+					as1.Zu[k][j] += as1.Xtra[32] * (as1.Za[k][j] * (as1.Zz[k][j] - as1.Zz[k][j + 1]) - as1.Za[k][j - 1] * (as1.Zz[k][j] - as1.Zz[k][j - 1]) - as1.Zb[k][j] * (as1.Zz[k][j] - as1.Zz[k - 1][j]) + as1.Zb[k + 1][j] * (as1.Zz[k][j] - as1.Zz[k + 1][j]));
+					as1.Zv[k][j] += as1.Xtra[32] * (as1.Za[k][j] * (as1.Zr[k][j] - as1.Zr[k][j + 1]) - as1.Za[k][j - 1] * (as1.Zr[k][j] - as1.Zr[k][j - 1]) - as1.Zb[k][j] * (as1.Zr[k][j] - as1.Zr[k - 1][j]) + as1.Zb[k + 1][j] * (as1.Zr[k][j] - as1.Zr[k + 1][j]));
+				}
+			}
