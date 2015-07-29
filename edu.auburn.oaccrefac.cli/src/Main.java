@@ -43,7 +43,7 @@ public class Main {
         // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
 
         UnrollLoop unroll = new UnrollLoop(rw, forLoop, 4);
-        RefactoringStatus status = unroll.checkConditions(new RefactoringStatus());
+        RefactoringStatus status = unroll.checkConditions(new RefactoringStatus(), null);
         printStatus(status);
 
         if (status.hasFatalError()) {
