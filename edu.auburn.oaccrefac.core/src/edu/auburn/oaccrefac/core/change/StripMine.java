@@ -5,7 +5,6 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -16,7 +15,6 @@ import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
-import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
@@ -125,46 +123,32 @@ public class StripMine extends ForLoopChange {
     }
     
     private void genByStripInit(IASTRewrite rewriter, IASTForStatement header) {
-        IASTName counter_name = ASTUtil.findOne(header.getInitializerStatement(), IASTName.class);  
-        String counter_str = new String(counter_name.getSimpleID());
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        int diffcounter = 0;
-        String gen_str = counter_str+"_"+diffcounter;
-        m_generatedName = factory.newName(gen_str.toCharArray());
-        while (ASTUtil.isNameInScope(m_generatedName, header.getScope())) {
-            diffcounter++;
-            gen_str = counter_str+"_"+diffcounter;
-            m_generatedName = factory.newName(gen_str.toCharArray());
-        }
+        IASTName counter_name = ASTUtil.findOne(header.getInitializerStatement(), IASTName.class);  
+        m_generatedName = generateNewName(counter_name, header.getScope());
         
         IASTStatement headerInitializer = header.getInitializerStatement();
-        
-        IASTSimpleDeclSpecifier declSpecifier = factory.newSimpleDeclSpecifier();
-        declSpecifier.setType(IASTSimpleDeclSpecifier.t_int);
-        IASTSimpleDeclaration declaration = factory.newSimpleDeclaration(declSpecifier);
-        IASTDeclarator declarator = factory.newDeclarator(m_generatedName);
-        
-        IASTInitializer initializer = ASTUtil
+
+        IASTInitializer right_equals = ASTUtil
                 .findOne(headerInitializer, IASTEqualsInitializer.class);
-        if (initializer != null) {
-            initializer = initializer.copy();
-            declarator.setInitializer(initializer);
+        if (right_equals != null) {
+            right_equals = right_equals.copy();
         } else if (headerInitializer instanceof IASTExpressionStatement) {
             IASTExpressionStatement exprSt = 
                     (IASTExpressionStatement) headerInitializer;
             IASTExpression expr = exprSt.getExpression();
             if (expr instanceof IASTBinaryExpression) {
                 IASTExpression op2 = ((IASTBinaryExpression) expr).getOperand2();
-                declarator.setInitializer(
-                        factory.newEqualsInitializer(op2.copy()));
+                right_equals = factory.newEqualsInitializer(op2.copy());
             } else {
                 throw new UnsupportedOperationException("Loop initialization "
                         + "expression is unsupported!");
             }
         }
-        declaration.addDeclarator(declarator);
-        IASTDeclarationStatement replacement = 
-                factory.newDeclarationStatement(declaration);
+        IASTDeclarationStatement replacement = this.generateVariableDecl(
+                m_generatedName, 
+                IASTSimpleDeclSpecifier.t_int, 
+                right_equals);
         this.safeReplace(rewriter, headerInitializer, replacement);
     }
 
