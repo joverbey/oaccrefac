@@ -36,7 +36,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * Refactors to:
  *      The outer is the by-strip, inner is the in-strip...
  *      for (int i_0 = 0; i_0 < 10; i_0 += 2) {
- *          for (int i = 0; (i < i_0 && i < 10); i++) {
+ *          for (int i = i_0; (i < i_0 + 2 && i < 10); i++) {
  *              //do something...
  *          }
  *      }
@@ -56,6 +56,7 @@ public class StripMine extends ForLoopChange {
     /**
      * Constructor. Takes parameters for strip factor and strip depth
      * to tell the refactoring which perfectly nested loop to strip mine.
+     * @author Adam Eichelkraut
      * @param rewriter -- rewriter associated with the for loop
      * @param loop -- for loop to refactor
      * @param stripFactor -- factor for how large strips are
@@ -129,6 +130,7 @@ public class StripMine extends ForLoopChange {
     /**
      * Takes a rewriter and modifies the outer loop's expressions in order to
      * iterate in strips rather than sequentially.
+     * @author Adam Eichelkraut
      * @param rewriter -- rewriter associated with strip header
      * @param byStripHeader -- for statement to be the by-strip header
      */
@@ -159,6 +161,7 @@ public class StripMine extends ForLoopChange {
      * Generates the initializer statement for the by-strip loop. Basically, it
      * takes the original loop variable name and changes it in order for it to 
      * be unique to the scope
+     * @author Adam Eichelkraut
      * @param rewriter -- rewriter associated with the header
      * @param header -- for loop header
      */
@@ -201,6 +204,7 @@ public class StripMine extends ForLoopChange {
      * by-strip loop header. It needs to modify the initializer statement to replace
      * the right hand side of the equals to the new by-strip counter. It also needs
      * to modify the condition to work with the by-strip loop too.
+     * @author Adam Eichelkraut
      * @param rewriter
      * @param inStripHeader
      */
@@ -213,6 +217,7 @@ public class StripMine extends ForLoopChange {
      * Modifies the in-strip initializer statement by replacing all of the
      * right hand side of initializers and binary expressions to the new
      * by-strip id expression.
+     * @author Adam Eichelkraut
      * @param rewriter -- rewriter associated with the tree
      * @param tree -- node which is the in-strip initializer
      */
@@ -259,6 +264,7 @@ public class StripMine extends ForLoopChange {
      * Modifies the in-strip condition expression in order to check that the
      * in-strip counter is less than the (by-strip counter + strip factor) and
      * the upper bound expression
+     * @author Adam Eichelkraut
      * @param rewriter -- rewriter associated with in-strip header
      * @param inStripHeader -- in-strip header
      * @throws UnsupportedOperationException  if condition is not a binary expression
