@@ -24,13 +24,43 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
+/**
+ * Inheriting from {@link ForLoopChange}, this class defines a loop strip mine
+ * refactoring algorithm. Loop strip mining takes a sequential loop and essentially
+ * creates 'strips' through perfectly nesting a by-strip loop and an in-strip loop.
+ * 
+ * For example,
+ *      for (int i = 0; i < 10; i++) {
+            //do something
+ *      }
+ * Refactors to:
+ *      The outer is the by-strip, inner is the in-strip...
+ *      for (int i_0 = 0; i_0 < 10; i_0 += 2) {
+ *          for (int i = 0; (i < i_0 && i < 10); i++) {
+ *              //do something...
+ *          }
+ *      }
+ * 
+ * @author Adam Eichelkraut
+ *
+ */
 public class StripMine extends ForLoopChange {
     
+    //Members
     private int m_stripFactor;
     private int m_depth;
-    
+    //We use this in multiple methods... couldn't think
+    //of a better way of not making it a member variable...
     private IASTName m_generatedName;
     
+    /**
+     * Constructor. Takes parameters for strip factor and strip depth
+     * to tell the refactoring which perfectly nested loop to strip mine.
+     * @param rewriter -- rewriter associated with the for loop
+     * @param loop -- for loop to refactor
+     * @param stripFactor -- factor for how large strips are
+     * @param depth -- perfectly nested loop depth in 'loop' to strip mine
+     */
     public StripMine(IASTRewrite rewriter, 
             IASTForStatement loop, int stripFactor, int depth) {
         super(rewriter, loop);
@@ -42,16 +72,21 @@ public class StripMine extends ForLoopChange {
     protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.getLoopToChange());
         
+        //Check strip factor validity...
         if (m_stripFactor <= 0) {
             init.addFatalError("Invalid strip factor (<= 0).");
             return init;
         }
         
+        //Check depth validity...
         if (m_depth < 0 || m_depth >= inq.getPerfectLoopNestHeaders().size()) {
             init.addFatalError("There is no for-loop at depth " + m_depth);
             return init;
         }
         
+        //If the strip factor is not divisible by the original linear
+        //iteration factor, (i.e. loop counts by 4), then we cannot
+        //strip mine because the refactoring will change behavior
         int iterator = inq.getIterationFactor(m_depth);
         if (m_stripFactor % iterator != 0 || m_stripFactor <= iterator) {
             init.addFatalError("Strip mine factor must be greater than and "
@@ -68,7 +103,8 @@ public class StripMine extends ForLoopChange {
         IASTForStatement byStrip = this.getLoopToChange();
         IASTForStatement inStrip = byStrip.copy();
         
-        //Get expressions that we will need...
+        //The first loop (original) will be the by-strip
+        //loop, modify this loop first.
         this.modifyByStrip(rewriter, byStrip);
         
         IASTStatement body = byStrip.getBody();
@@ -89,22 +125,19 @@ public class StripMine extends ForLoopChange {
         this.safeReplace(inStrip_rewriter, inStrip.getBody(), byStrip.getBody().copy());
         return rewriter;
     }
-
-    private IASTExpression getUpperBoundExpression(IASTForStatement loop) {
-        IASTExpression ub = null;
-        if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
-            IASTBinaryExpression cond_be = (IASTBinaryExpression) loop.getConditionExpression();
-            ub = (IASTExpression)cond_be.getOperand2();
-        } else {
-            throw new UnsupportedOperationException("Non-binary conditional statements unsupported");
-        }
-        return ub;
-    }
     
+    /**
+     * Takes a rewriter and modifies the outer loop's expressions in order to
+     * iterate in strips rather than sequentially.
+     * @param rewriter -- rewriter associated with strip header
+     * @param byStripHeader -- for statement to be the by-strip header
+     */
     private void modifyByStrip(IASTRewrite rewriter, IASTForStatement byStripHeader) {
-        IASTExpression upperBound = getUpperBoundExpression(byStripHeader);
+        IASTExpression upperBound = this.getUpperBoundExpression(byStripHeader);
+        //Generate initializer statement
         this.genByStripInit(rewriter, byStripHeader);
-
+        
+        //Generate condition expression
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTBinaryExpression newCond = factory.newBinaryExpression(
                 IASTBinaryExpression.op_lessThan, 
@@ -112,28 +145,38 @@ public class StripMine extends ForLoopChange {
                 upperBound.copy());
         this.safeReplace(rewriter, byStripHeader.getConditionExpression(), newCond);
         
+        //Generate iteration statement
         IASTBinaryExpression newIter = factory.newBinaryExpression(
                 IASTBinaryExpression.op_plusAssign, 
                 factory.newIdExpression(m_generatedName), 
                 factory.newLiteralExpression(
                         IASTLiteralExpression.lk_integer_constant, m_stripFactor+""));
-        
         this.safeReplace(rewriter, byStripHeader.getIterationExpression(), newIter);
         
     }
     
+    /**
+     * Generates the initializer statement for the by-strip loop. Basically, it
+     * takes the original loop variable name and changes it in order for it to 
+     * be unique to the scope
+     * @param rewriter -- rewriter associated with the header
+     * @param header -- for loop header
+     */
     private void genByStripInit(IASTRewrite rewriter, IASTForStatement header) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTName counter_name = ASTUtil.findOne(header.getInitializerStatement(), IASTName.class);  
+        //Generate new name from old counter name...
         m_generatedName = generateNewName(counter_name, header.getScope());
         
+        //Get the initializer expression if there is one
         IASTStatement headerInitializer = header.getInitializerStatement();
-
         IASTInitializer right_equals = ASTUtil
                 .findOne(headerInitializer, IASTEqualsInitializer.class);
         if (right_equals != null) {
             right_equals = right_equals.copy();
         } else if (headerInitializer instanceof IASTExpressionStatement) {
+            //Sometimes the loop header isn't a declaration, but instead
+            //a simple binary expression such as for(i = 0; ...)
             IASTExpressionStatement exprSt = 
                     (IASTExpressionStatement) headerInitializer;
             IASTExpression expr = exprSt.getExpression();
@@ -145,6 +188,7 @@ public class StripMine extends ForLoopChange {
                         + "expression is unsupported!");
             }
         }
+        //Create the replacement, and replace
         IASTDeclarationStatement replacement = this.generateVariableDecl(
                 m_generatedName, 
                 IASTSimpleDeclSpecifier.t_int, 
@@ -152,12 +196,26 @@ public class StripMine extends ForLoopChange {
         this.safeReplace(rewriter, headerInitializer, replacement);
     }
 
-
+    /**
+     * Modifies the in-strip loop header in order to accommodate the newly-formed
+     * by-strip loop header. It needs to modify the initializer statement to replace
+     * the right hand side of the equals to the new by-strip counter. It also needs
+     * to modify the condition to work with the by-strip loop too.
+     * @param rewriter
+     * @param inStripHeader
+     */
     private void modifyInStrip(IASTRewrite rewriter, IASTForStatement inStripHeader) {
         modifyInStripInit(rewriter, inStripHeader.getInitializerStatement());
         modifyInStripCondition(rewriter, inStripHeader);
     }
 
+    /**
+     * Modifies the in-strip initializer statement by replacing all of the
+     * right hand side of initializers and binary expressions to the new
+     * by-strip id expression.
+     * @param rewriter -- rewriter associated with the tree
+     * @param tree -- node which is the in-strip initializer
+     */
     private void modifyInStripInit(IASTRewrite rewriter, IASTNode tree) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTIdExpression byStripIdExp = factory.newIdExpression(m_generatedName);
@@ -197,6 +255,14 @@ public class StripMine extends ForLoopChange {
         tree.accept(new findAndReplace(rewriter, byStripIdExp));
     }
     
+    /**
+     * Modifies the in-strip condition expression in order to check that the
+     * in-strip counter is less than the (by-strip counter + strip factor) and
+     * the upper bound expression
+     * @param rewriter -- rewriter associated with in-strip header
+     * @param inStripHeader -- in-strip header
+     * @throws UnsupportedOperationException  if condition is not a binary expression
+     */
     private void modifyInStripCondition(IASTRewrite rewriter, IASTForStatement inStripHeader) {
         IASTExpression condition = inStripHeader.getConditionExpression();
         

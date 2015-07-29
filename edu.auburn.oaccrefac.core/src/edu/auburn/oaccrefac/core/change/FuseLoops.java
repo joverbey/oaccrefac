@@ -212,6 +212,14 @@ public class FuseLoops extends ForLoopChange {
         }
     }
     
+    /**
+     * Method takes a child statement node from the body of the second
+     * loop and replaces, if any, modified variable names that occured
+     * before it.
+     * @author Adam Eichelkraut
+     * @param child -- node to replace variable names in
+     * @return -- unfrozen, copy of child node with variable names replaced
+     */
     private IASTNode replaceModifiedVariables(IASTNode child) {
         IASTNode modified = child.copy();
         List<IASTName> names = ASTUtil.find(modified, IASTName.class);

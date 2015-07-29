@@ -1,8 +1,10 @@
 package edu.auburn.oaccrefac.core.change;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTName;
@@ -105,6 +107,24 @@ public abstract class ForLoopChange extends ASTChange {
             declaration.addDeclarator(declarator);
         }
         return factory.newDeclarationStatement(declaration);
+    }
+    
+    /**
+     * Returns the upper bound expression for a loop, assuming it is 
+     * supported by the list of patterns defined
+     * @param loop -- loop in which to get upper bound
+     * @return -- upper bound expression
+     * @throws UnsupportedOperationException if pattern is not supported
+     */
+    protected IASTExpression getUpperBoundExpression(IASTForStatement loop) {
+        IASTExpression ub = null;
+        if (loop.getConditionExpression() instanceof IASTBinaryExpression) {
+            IASTBinaryExpression cond_be = (IASTBinaryExpression) loop.getConditionExpression();
+            ub = (IASTExpression)cond_be.getOperand2();
+        } else {
+            throw new UnsupportedOperationException("Non-binary conditional statements unsupported");
+        }
+        return ub;
     }
     
     /**
