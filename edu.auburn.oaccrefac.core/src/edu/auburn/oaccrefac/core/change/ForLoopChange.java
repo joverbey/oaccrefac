@@ -10,7 +10,16 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
  */
 public abstract class ForLoopChange extends ASTChange {
     
+    //Members
     private IASTForStatement m_loop;
+    
+    /**
+     * Constructor that takes a for-loop and a rewriter (for base)
+     * @author Adam Eichelkraut
+     * @param rewriter -- rewriter to be given to base class
+     * @param loopToChange -- loop to change
+     * @throws IllegalArgumentException if the for loop is null
+     */
     public ForLoopChange(IASTRewrite rewriter, IASTForStatement loopToChange) {
         super(rewriter);
         if (loopToChange == null) {
@@ -19,10 +28,21 @@ public abstract class ForLoopChange extends ASTChange {
         m_loop = loopToChange;
     }
     
+    /**
+     * Gets the loop set from constructor
+     * @author Adam Eichelkraut
+     * @return loop to change
+     */
     public IASTForStatement getLoopToChange() {
         return m_loop;
     }
     
+    /**
+     * Sets the loop to change
+     * @author Adam Eichelkraut
+     * @param newLoop, not null
+     * @throws IllegalArgumentException if argument is null
+     */
     public void setLoopToChange(IASTForStatement newLoop) {
         if (newLoop == null) {
             throw new IllegalArgumentException("Argument loop cannot be null!");
@@ -30,6 +50,15 @@ public abstract class ForLoopChange extends ASTChange {
         m_loop = newLoop;
     }
     
+    /**
+     * Exchanges two loop headers, not sure why this isn't in an
+     * inherited class. But for now it replaces the headers from two
+     * loops. It also handles swapping pragmas.
+     * @param rewriter -- rewriter to do swaps with
+     * @param loop1 -- first loop to swap headers
+     * @param loop2 -- second loop to swap headers
+     * @return -- returns rewriter used
+     */
     protected IASTRewrite exchangeLoopHeaders(IASTRewrite rewriter,
             IASTForStatement loop1, IASTForStatement loop2) {
         this.removePragmas(loop1);

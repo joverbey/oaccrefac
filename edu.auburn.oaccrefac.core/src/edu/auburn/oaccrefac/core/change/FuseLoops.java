@@ -20,11 +20,44 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
+/**
+ * Inheriting from {@link ForLoopChange}, this class defines a loop fusion
+ * refactoring algorithm. Loop fusion takes the bodies of two identical for-loop
+ * headers and places them in one.
+ * 
+ *<p>As of now, these loop headers MUST be completely identical and MUST be
+ * right next to each other. The reason they must be next to each other is because
+ * there could be statements between the two loops that could change the meaning of
+ * the program if two loops were merged into one.</p>
+ * 
+ * <p>
+ * For example,
+ *      for (int i = 0; i < 10; i++) {
+ *          a[i] = b[i] + c[i];
+ *      }
+ *      for (int i = 0; i < 10; i++) {
+ *          b[i-1] = a[i];
+ *      }
+ * Refactors to:
+ *      for (int i = 0; i < 10; i++) {
+ *          a[i] = b[i] + c[i];
+ *          b[i-1] = a[i];
+ *      }</p>
+ *
+ * @author Adam Eichelkraut
+ *
+ */
 public class FuseLoops extends ForLoopChange {
 
+    //Members
     private IASTForStatement m_first;
     private IASTForStatement m_second;
     
+    /**
+     * Constructor that takes a for-loop to perform fusion on
+     * @param rewriter -- base rewriter for loop
+     * @param loop -- loop to be fizzed
+     */
     public FuseLoops(IASTRewrite rewriter, IASTForStatement loop) {
         super(rewriter, loop);
         m_first = loop;
@@ -71,6 +104,9 @@ public class FuseLoops extends ForLoopChange {
     
     @Override
     protected IASTRewrite doChange(IASTRewrite rewriter) {
+        
+        //We make the first loop the loop body in which to merge
+        //the two bodies. Make sure that it is a compound statement.
         IASTStatement body = m_first.getBody();
         IASTRewrite body_rewriter = rewriter;
         if (!(body instanceof IASTCompoundStatement)) {
@@ -85,39 +121,72 @@ public class FuseLoops extends ForLoopChange {
         if (body_second instanceof IASTCompoundStatement) {
             IASTNode chilluns[] = body_second.getChildren();
             for (IASTNode child : chilluns) {
+                //For each statement to be added to the first's body,
+                //insert the return of 'modifyChild' on the child.
                 this.safeInsertBefore(body_rewriter, body, null, modifyChild(child));
             }
         } else {
-            this.safeInsertBefore(body_rewriter, body, null, body_second);
+            //Otherwise, the second's body is just a single statement...
+            this.safeInsertBefore(body_rewriter, body, null, modifyChild(body_second));
         }
         
+        //Remove the second loop from AST, as both are merged at this point
         this.safeRemove(rewriter, m_second);
         return rewriter;
     }
 
+    /**
+     * Internal helper method called by the algorithm to potentially modify
+     * the statement before being merged into the first's body. For example,
+     * if the statement in the second's body is a redeclaration of a variable
+     * in the first's body, then we need to change that somehow.
+     * @author Adam Eichelkraut
+     * 
+     * TODO -- the current method is wrong. Instead of removing the declaration
+     * of the variable, we need to change the name of the variable instead because
+     * it doesn't handle the case that the two identical identifiers may be different types.
+     * 
+     * @param child -- statement from the second's body
+     * @return -- copied, unfrozen node to be merged
+     */
     private IASTNode modifyChild(IASTNode child) {
 
-        if (isVaribleDeclaration(child) 
-                && isAssignmentDeclaration(child)) {
+        if (isAssignmentDeclaration(child)) {
             return modifyVariableDeclaration(child);
         } else {
             return child.copy();
         }
     }
     
+    /**
+     * Determines if a given node is an assignment declaration by
+     * looking for an {@link IASTEqualsInitializer} node within the
+     * tree of the child parameter as well as make sure that the node
+     * is a {@link IASTDeclarationStatement}.
+     * @author Adam Eichelkraut
+     * @param child -- node to look for
+     * @return T/F whether it is assignment declaration
+     */
     private boolean isAssignmentDeclaration(IASTNode child) {
-        IASTEqualsInitializer decl = 
-                ASTUtil.findOne(child, IASTEqualsInitializer.class);
-        if (decl == null)
+        if (child instanceof IASTDeclarationStatement) {
+            IASTEqualsInitializer eq = 
+                    ASTUtil.findOne(child, IASTEqualsInitializer.class);
+            if (eq == null)
+                return false;
+            IASTInitializerClause clause = eq.getInitializerClause();
+            return (clause instanceof IASTExpression);
+        } else {
             return false;
-        IASTInitializerClause clause = decl.getInitializerClause();
-        return (clause instanceof IASTExpression);
+        }
     }
 
-    private boolean isVaribleDeclaration(IASTNode child) {
-        return (child instanceof IASTDeclarationStatement);
-    }
-
+    /**
+     * Modifies a variable declaration so that a variable declaration that
+     * is conflicting with another within the first loop is able to be merged
+     * @param child -- node to be modified
+     * @return -- modified node
+     * @throws UnsupportedOperationException if variable declaration is unnamed is possible?
+     */
     private IASTNode modifyVariableDeclaration(IASTNode child) {
         IASTName name = 
                 ASTUtil.findOne(child, IASTName.class);
