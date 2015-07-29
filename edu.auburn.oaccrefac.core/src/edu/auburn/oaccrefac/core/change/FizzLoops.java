@@ -10,8 +10,34 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
+/**
+ * Inheriting from {@link ForLoopChange}, this class defines a loop fission
+ * refactoring algorithm. Loop fission takes the body of a for-loop and 
+ * splits the statements into separate for-loops with the same header, if possible.
+ * 
+ * For example,
+ *      for (int i = 0; i < 10; i++) {
+ *          a[i] = b[i] + c[i];
+ *          b[i-1] = a[i];
+ *      }
+ * Refactors to:
+ *      for (int i = 0; i < 10; i++) {
+ *          a[i] = b[i] + c[i];
+ *      }
+ *      for (int i = 0; i < 10; i++) {
+ *          b[i-1] = a[i];
+ *      }
+ * 
+ * @author Adam Eichelkraut
+ *
+ */
 public class FizzLoops extends ForLoopChange {
     
+    /**
+     * Constructor that takes a for-loop to perform fission on
+     * @param rewriter -- base rewriter for loop
+     * @param loop -- loop to be fizzed
+     */
     public FizzLoops(IASTRewrite rewriter, IASTForStatement loop) {
         super(rewriter, loop);
     }
@@ -43,11 +69,10 @@ public class FizzLoops extends ForLoopChange {
         IASTForStatement loop = this.getLoopToChange();
         IASTCompoundStatement body = (IASTCompoundStatement) loop.getBody();
         
-        /*
-         * Over here, we are looking for all the statements in the body of for-loop
-         * which can be put into individual for-loop of their own.
-         */
+        //Get the location to insert the separate loops
         IASTNode insertBefore = ASTUtil.getNextSibling(loop);
+        
+        //For each child, create new for loop with same header and child as body
         for (IASTStatement child : body.getStatements()) {
             IASTCompoundStatement newBody = factory.newCompoundStatement();
             newBody.addStatement(child.copy());
@@ -56,6 +81,7 @@ public class FizzLoops extends ForLoopChange {
                             loop.getConditionExpression().copy(), 
                             loop.getIterationExpression().copy(), 
                             newBody);
+            //place before the insertion point
             this.safeInsertBefore(rewriter, 
                     loop.getParent(), insertBefore, newForLoop);
         }
