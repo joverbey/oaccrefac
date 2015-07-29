@@ -2,7 +2,7 @@ int main() {
     int a, b;
     float d;
 
-    for (int i = 0; i < 100; i++) { /*<<<<< 3,5,3,34,pass*/
+    for (int i = 0; i < 100; i++) { /*<<<<< 5,1,10,1,pass*/
         a = 5;
         int c = 5;
         d = c;

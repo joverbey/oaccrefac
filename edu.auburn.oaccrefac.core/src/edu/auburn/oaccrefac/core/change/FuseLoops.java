@@ -1,14 +1,17 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
-import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -52,6 +55,7 @@ public class FuseLoops extends ForLoopChange {
     //Members
     private IASTForStatement m_first;
     private IASTForStatement m_second;
+    private Map<String, IASTName> m_modifiedVariableDecls;
     
     /**
      * Constructor that takes a for-loop to perform fusion on
@@ -61,6 +65,7 @@ public class FuseLoops extends ForLoopChange {
     public FuseLoops(IASTRewrite rewriter, IASTForStatement loop) {
         super(rewriter, loop);
         m_first = loop;
+        m_modifiedVariableDecls = new HashMap<String, IASTName>();
     }
     
     @Override
@@ -152,9 +157,11 @@ public class FuseLoops extends ForLoopChange {
     private IASTNode modifyChild(IASTNode child) {
 
         if (isAssignmentDeclaration(child)) {
-            return modifyVariableDeclaration(child);
+            //cast ensured from previous check
+            return modifyVariableDeclaration(
+                    (IASTDeclarationStatement) child);
         } else {
-            return child.copy();
+            return replaceModifiedVariables(child);
         }
     }
     
@@ -185,27 +192,41 @@ public class FuseLoops extends ForLoopChange {
      * is conflicting with another within the first loop is able to be merged
      * @param child -- node to be modified
      * @return -- modified node
-     * @throws UnsupportedOperationException if variable declaration is unnamed is possible?
      */
-    private IASTNode modifyVariableDeclaration(IASTNode child) {
-        IASTName name = 
-                ASTUtil.findOne(child, IASTName.class);
-        if (name != null) {
-            IASTEqualsInitializer decl = 
-                    ASTUtil.findOne(child, IASTEqualsInitializer.class);
-            IASTInitializerClause clause = decl.getInitializerClause().copy();
-            name = name.copy();
-            
-            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-            IASTBinaryExpression expr = factory.newBinaryExpression(
-                        IASTBinaryExpression.op_assign, 
-                        factory.newIdExpression(name), 
-                        (IASTExpression) clause);
-            return factory.newExpressionStatement(expr);
+    private IASTNode modifyVariableDeclaration(IASTDeclarationStatement child) {
+        IASTDeclarator decltr = ASTUtil.findOne(child, IASTDeclarator.class);
+        IASTName name = decltr.getName();
+        //ensured from preconditions...
+        IASTCompoundStatement first_body = (IASTCompoundStatement) m_first.getBody();
+        
+        if (ASTUtil.isNameInScope(name, first_body.getScope())) {
+            IASTName newName = this.generateNewName(name, first_body.getScope());
+            m_modifiedVariableDecls.put(new String(name.getSimpleID()), newName);
+            IASTNode child_copy = child.copy();
+            IASTDeclarator var_decltr = 
+                    ASTUtil.findOne(child_copy, IASTDeclarator.class);
+            var_decltr.setName(newName); //change name
+            return child_copy;
         } else {
-            throw new UnsupportedOperationException("Modifying variable"
-                    + " declaration without a name...is this possible in C/C++?");
+            return child.copy();
         }
+    }
+    
+    private IASTNode replaceModifiedVariables(IASTNode child) {
+        IASTNode modified = child.copy();
+        List<IASTName> names = ASTUtil.find(modified, IASTName.class);
+        for (IASTName name : names) {
+            IASTName replacedName = 
+                    m_modifiedVariableDecls.get(new String(name.getSimpleID()));
+            if (replacedName != null) {
+                IASTNode parent = name.getParent();
+                if (parent instanceof IASTIdExpression) {
+                    IASTIdExpression id = (IASTIdExpression) parent;
+                    id.setName(replacedName);
+                }
+            }
+        }
+        return modified;
     }
 
 
