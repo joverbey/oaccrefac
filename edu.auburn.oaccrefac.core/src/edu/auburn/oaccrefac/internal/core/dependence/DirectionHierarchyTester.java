@@ -74,7 +74,7 @@ loop:       for(Direction d : iter.next()) {
                     case LT:
                     case LE:
                     case ANY:
-                        break;
+                        break loop;
                     case GT:
                     case GE:
                         iter.remove();
