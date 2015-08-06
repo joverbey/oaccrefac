@@ -21,7 +21,7 @@ public class InterchangeCheck extends DependenceCheck {
     
     
     public InterchangeCheck(IASTForStatement base, IASTForStatement second) {
-        super(base, second);
+        super(base);
         
         m_base = base;
         m_second = second;
