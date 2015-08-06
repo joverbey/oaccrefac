@@ -107,10 +107,11 @@ public class DependenceAnalysis {
                             if (ub != null && Integer.MIN_VALUE+1 <= ub.longValue() && ub.longValue() <= Integer.MAX_VALUE-1)
                                 upperBounds[i] = (int)ub.longValue();
                         }
-
-                        for (Direction[] directionVector : new DirectionHierarchyTester(lowerBounds, upperBounds,
-                                writeCoefficients, readCoefficients, otherVars.size())
-                                        .getPossibleDependenceDirections()) {
+                        
+                        DirectionHierarchyTester dht = new DirectionHierarchyTester(lowerBounds, upperBounds,
+                                writeCoefficients, readCoefficients, otherVars.size());
+                        Set<Direction[]> dvs = dht.getPossibleDependenceDirections();
+                        for (Direction[] directionVector : dvs) {
                             dependences.add(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }
