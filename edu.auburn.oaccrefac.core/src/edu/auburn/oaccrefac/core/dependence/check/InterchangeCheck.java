@@ -21,6 +21,7 @@ public class InterchangeCheck extends DependenceCheck {
     
     
     public InterchangeCheck(IASTForStatement base, IASTForStatement second) {
+        //passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
         super(base);
         
         m_base = base;

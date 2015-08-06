@@ -163,13 +163,13 @@ public class FourierMotzkinDependenceTester {
                 // i_d - i_u <= 0, -i_d + i_u <= 0
                 // ie, [1 -1 0 0 ... 0], [-1 1 0 0 ... 0]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row[2 * i] = 1;
-                row[2 * i + 1] = -1;
+                row[i] = 1;
+                row[i + ((row.length-1-numScalars)/2)] = -1;
                 row[row.length - 1] = 0;
                 m.addRowAtIndex(m.getNumRows(), row);
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row[2 * i] = -1;
-                row[2 * i + 1] = 1;
+                row[i] = -1;
+                row[i + ((row.length-1-numScalars)/2)] = 1;
                 row[row.length - 1] = 0;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
@@ -178,8 +178,8 @@ public class FourierMotzkinDependenceTester {
                 // in integer terms, i_u <= i_d-1, or -i_d+i_d <= -1
                 // ie, [-1 1 0 0 ... -1]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row[2 * i] = -1;
-                row[2 * i + 1] = 1;
+                row[i] = -1;
+                row[i + ((row.length-1-numScalars)/2)] = 1;
                 row[row.length - 1] = -1;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
@@ -188,8 +188,8 @@ public class FourierMotzkinDependenceTester {
                 // in integer terms, i_d <= i_u-1, or i_d-i_u <= -1
                 // ie, [1 -1 0 0 ... -1]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row[2 * i] = 1;
-                row[2 * i + 1] = -1;
+                row[i] = 1;
+                row[i + ((row.length-1-numScalars)/2)] = -1;
                 row[row.length - 1] = -1;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
@@ -197,8 +197,8 @@ public class FourierMotzkinDependenceTester {
                 // i_u <= i_d
                 // ie, -i_d+i_u <= 0, or [-1 1 0 0 ... 0]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row[2 * i] = -1;
-                row[2 * i + 1] = 1;
+                row[i] = -1;
+                row[i + ((row.length-1-numScalars)/2)] = 1;
                 row[row.length - 1] = 0;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
@@ -206,8 +206,8 @@ public class FourierMotzkinDependenceTester {
                 // i_d <= i_u
                 // ie, i_d-i_u <= 0, or [1 -1 0 0 ... 0]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-                row[2 * i] = 1;
-                row[2 * i + 1] = -1;
+                row[i] = 1;
+                row[i + ((row.length-1-numScalars)/2)] = -1;
                 row[row.length - 1] = 0;
                 m.addRowAtIndex(m.getNumRows(), row);
                 break;
