@@ -3,6 +3,7 @@ package edu.auburn.oaccrefac.core.change;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.check.InterchangeCheck;
@@ -42,9 +43,9 @@ public class InterchangeLoops extends ForLoopChange {
      * @param second -- second loop, must be apart of perfect loop nest
      * @throws IllegalArgumentException if second loop is null
      */
-    public InterchangeLoops(IASTRewrite rewriter,
+    public InterchangeLoops(IASTTranslationUnit tu, IASTRewrite rewriter,
             IASTForStatement first, IASTForStatement second) {
-        super(rewriter, first);
+        super(tu, rewriter, first);
         if (second != null) {
             m_second = second;
         } else {
@@ -81,7 +82,6 @@ public class InterchangeLoops extends ForLoopChange {
         IASTForStatement first = getLoopToChange();
         return this.exchangeLoopHeaders(rewriter, first, m_second);
     }
-
     
     
 }

@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -62,9 +63,9 @@ public class StripMine extends ForLoopChange {
      * @param stripFactor -- factor for how large strips are
      * @param depth -- perfectly nested loop depth in 'loop' to strip mine
      */
-    public StripMine(IASTRewrite rewriter, 
+    public StripMine(IASTTranslationUnit tu, IASTRewrite rewriter, 
             IASTForStatement loop, int stripFactor, int depth) {
-        super(rewriter, loop);
+        super(tu, rewriter, loop);
         m_stripFactor = stripFactor;
         m_depth = depth;
     }

@@ -395,4 +395,13 @@ public class ForStatementInquisitor {
         return finder.finalOffset;
     }
     
+    public String[] getPragmas() {
+        List<IASTPreprocessorPragmaStatement> p = InquisitorFactory.getInquisitor(statement).getLeadingPragmas();
+        String[] pragCode = new String[p.size()];
+        for(int i = 0; i < pragCode.length; i++) {
+            pragCode[i] = p.get(i).getRawSignature();
+        }
+        return pragCode; 
+    }
+    
 }

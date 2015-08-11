@@ -10,6 +10,7 @@ import org.eclipse.cdt.core.dom.ast.IASTInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
@@ -33,8 +34,8 @@ public abstract class ForLoopChange extends ASTChange {
      * @param loopToChange -- loop to change
      * @throws IllegalArgumentException if the for loop is null
      */
-    public ForLoopChange(IASTRewrite rewriter, IASTForStatement loopToChange) {
-        super(rewriter);
+    public ForLoopChange(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loopToChange) {
+        super(tu, rewriter);
         if (loopToChange == null) {
             throw new IllegalArgumentException("Argument loop cannot be null!");
         }
@@ -128,8 +129,8 @@ public abstract class ForLoopChange extends ASTChange {
     }
     
     /**
-     * Exchanges two loop headers, not sure why this isn't in an
-     * inherited class. But for now it replaces the headers from two
+     * Exchanges two loop headers. 
+     * Replaces the headers from two
      * loops. It also handles swapping pragmas.
      * @param rewriter -- rewriter to do swaps with
      * @param loop1 -- first loop to swap headers

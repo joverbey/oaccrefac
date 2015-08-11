@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -67,9 +68,9 @@ public class TileLoops extends ForLoopChange {
      * @param stripFactor -- strip factor in which to strip mine header at depth
      * @param propagateInterchange -- how many times to interchange headers (-1 for arbitrary)
      */
-    public TileLoops(IASTRewrite rewriter, IASTForStatement loop, 
+    public TileLoops(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, 
             int stripDepth, int stripFactor, int propagateInterchange) {
-        super(rewriter, loop);
+        super(tu, rewriter, loop);
         m_depth = stripDepth;
         m_stripFactor = stripFactor;
         m_propagate = propagateInterchange;

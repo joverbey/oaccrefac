@@ -14,9 +14,11 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
@@ -60,8 +62,8 @@ public class UnrollLoop extends ForLoopChange {
      * @param loop -- loop in which to unroll 
      * @param unrollFactor -- how many times to unroll loop body (must be > 0)
      */
-    public UnrollLoop(IASTRewrite rewriter, IASTForStatement loop, int unrollFactor) {
-        super(rewriter, loop);
+    public UnrollLoop(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor) {
+        super(tu, rewriter, loop);
         m_unrollFactor = unrollFactor;
     }
     

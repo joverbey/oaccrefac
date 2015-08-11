@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -62,8 +63,8 @@ public class FuseLoops extends ForLoopChange {
      * @param rewriter -- base rewriter for loop
      * @param loop -- loop to be fizzed
      */
-    public FuseLoops(IASTRewrite rewriter, IASTForStatement loop) {
-        super(rewriter, loop);
+    public FuseLoops(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
+        super(tu, rewriter, loop);
         m_first = loop;
         m_modifiedVariableDecls = new HashMap<String, IASTName>();
     }
