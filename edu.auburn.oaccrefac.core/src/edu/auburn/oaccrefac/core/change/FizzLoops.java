@@ -62,36 +62,36 @@ public class FizzLoops extends ForLoopChange {
     }
     
     @Override
-    protected IASTRewrite doChange(IASTRewrite rewriter) {
-        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        
-        //Ensured from precondition...
-        IASTForStatement loop = this.getLoopToChange();
-        IASTCompoundStatement body = (IASTCompoundStatement) loop.getBody();
-        
-        //Get the location to insert the separate loops
-        IASTNode insertBefore = ASTUtil.getNextSibling(loop);
-        
-        //For each child, create new for loop with same header and child as body
-        for (IASTStatement child : body.getStatements()) {
-            IASTCompoundStatement newBody = factory.newCompoundStatement();
-            newBody.addStatement(child.copy());
-            IASTForStatement newForLoop = factory.newForStatement
-                    (loop.getInitializerStatement().copy(), 
-                            loop.getConditionExpression().copy(), 
-                            loop.getIterationExpression().copy(), 
-                            newBody);
-            //place before the insertion point
-            this.safeInsertBefore(rewriter, 
-                    loop.getParent(), insertBefore, newForLoop);
-        }
-        
-        //Remove the old loop from the statement list
-        if (body.getStatements().length > 0) {
-            this.safeRemove(rewriter, loop);
-        }
-        
-        return rewriter;
+    protected void doChange() {
+//        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
+//        
+//        //Ensured from precondition...
+//        IASTForStatement loop = this.getLoopToChange();
+//        IASTCompoundStatement body = (IASTCompoundStatement) loop.getBody();
+//        
+//        //Get the location to insert the separate loops
+//        IASTNode insertBefore = ASTUtil.getNextSibling(loop);
+//        
+//        //For each child, create new for loop with same header and child as body
+//        for (IASTStatement child : body.getStatements()) {
+//            IASTCompoundStatement newBody = factory.newCompoundStatement();
+//            newBody.addStatement(child.copy());
+//            IASTForStatement newForLoop = factory.newForStatement
+//                    (loop.getInitializerStatement().copy(), 
+//                            loop.getConditionExpression().copy(), 
+//                            loop.getIterationExpression().copy(), 
+//                            newBody);
+//            //place before the insertion point
+//            this.safeInsertBefore(rewriter, 
+//                    loop.getParent(), insertBefore, newForLoop);
+//        }
+//        
+//        //Remove the old loop from the statement list
+//        if (body.getStatements().length > 0) {
+//            this.safeRemove(rewriter, loop);
+//        }
+//        
+//        return rewriter;
     }
 
 }

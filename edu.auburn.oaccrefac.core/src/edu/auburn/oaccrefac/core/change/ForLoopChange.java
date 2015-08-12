@@ -13,6 +13,8 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
@@ -73,7 +75,7 @@ public abstract class ForLoopChange extends ASTChange {
      * @param scope -- scope to check name against
      * @return -- new name object
      */
-    protected IASTName generateNewName(IASTName base, IScope scope) {
+    protected final IASTName generateNewName(IASTName base, IScope scope) {
         String base_str = new String(base.getSimpleID());
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         int diffcounter = 0;
@@ -128,38 +130,38 @@ public abstract class ForLoopChange extends ASTChange {
         return ub;
     }
     
-    /**
-     * Exchanges two loop headers. 
-     * Replaces the headers from two
-     * loops. It also handles swapping pragmas.
-     * @param rewriter -- rewriter to do swaps with
-     * @param loop1 -- first loop to swap headers
-     * @param loop2 -- second loop to swap headers
-     * @return -- returns rewriter used
-     */
-    protected void exchangeLoopHeaders(IASTRewrite rewriter,
-            IASTForStatement loop1, IASTForStatement loop2) {
-
-        this.replace(loop1.getInitializerStatement().getFileLocation().getNodeOffset(),
-                loop1.getInitializerStatement().getFileLocation().getNodeLength(),
-                loop2.getInitializerStatement().getRawSignature());
-        this.replace(loop1.getConditionExpression().getFileLocation().getNodeOffset(),
-                loop1.getConditionExpression().getFileLocation().getNodeLength(),
-                loop2.getConditionExpression().getRawSignature());
-        this.replace(loop1.getIterationExpression().getFileLocation().getNodeOffset(),
-                loop1.getIterationExpression().getFileLocation().getNodeLength(),
-                loop2.getIterationExpression().getRawSignature());
-        this.replace(loop2.getInitializerStatement().getFileLocation().getNodeOffset(),
-                loop2.getInitializerStatement().getFileLocation().getNodeLength(),
-                loop1.getInitializerStatement().getRawSignature());
-        this.replace(loop2.getConditionExpression().getFileLocation().getNodeOffset(),
-                loop2.getConditionExpression().getFileLocation().getNodeLength(),
-                loop1.getConditionExpression().getRawSignature());
-        this.replace(loop2.getIterationExpression().getFileLocation().getNodeOffset(),
-                loop2.getIterationExpression().getFileLocation().getNodeLength(),
-                loop1.getIterationExpression().getRawSignature());
-        this.finalizeChanges();
-        
-    }
+//    /**
+//     * Exchanges two loop headers. 
+//     * Replaces the headers from two
+//     * loops. It also handles swapping pragmas.
+//     * @param rewriter -- rewriter to do swaps with
+//     * @param loop1 -- first loop to swap headers
+//     * @param loop2 -- second loop to swap headers
+//     * @return -- returns rewriter used
+//     */
+//    protected void exchangeLoopHeaders(IASTRewrite rewriter,
+//            IASTForStatement loop1, IASTForStatement loop2) {
+//
+//        this.replace(loop1.getInitializerStatement().getFileLocation().getNodeOffset(),
+//                loop1.getInitializerStatement().getFileLocation().getNodeLength(),
+//                loop2.getInitializerStatement().getRawSignature());
+//        this.replace(loop1.getConditionExpression().getFileLocation().getNodeOffset(),
+//                loop1.getConditionExpression().getFileLocation().getNodeLength(),
+//                loop2.getConditionExpression().getRawSignature());
+//        this.replace(loop1.getIterationExpression().getFileLocation().getNodeOffset(),
+//                loop1.getIterationExpression().getFileLocation().getNodeLength(),
+//                loop2.getIterationExpression().getRawSignature());
+//        this.replace(loop2.getInitializerStatement().getFileLocation().getNodeOffset(),
+//                loop2.getInitializerStatement().getFileLocation().getNodeLength(),
+//                loop1.getInitializerStatement().getRawSignature());
+//        this.replace(loop2.getConditionExpression().getFileLocation().getNodeOffset(),
+//                loop2.getConditionExpression().getFileLocation().getNodeLength(),
+//                loop1.getConditionExpression().getRawSignature());
+//        this.replace(loop2.getIterationExpression().getFileLocation().getNodeOffset(),
+//                loop2.getIterationExpression().getFileLocation().getNodeLength(),
+//                loop1.getIterationExpression().getRawSignature());
+//        this.finalizeChanges();
+//        
+//    }
     
 }

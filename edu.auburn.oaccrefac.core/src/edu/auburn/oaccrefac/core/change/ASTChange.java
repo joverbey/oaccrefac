@@ -2,8 +2,6 @@ package edu.auburn.oaccrefac.core.change;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
@@ -16,20 +14,16 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * use the ASTRewrite in their algorithms. 
  * 
  * All that the inherited classes need to implement are the two 
- * abstract methods {@link #doChange(IASTRewrite)} and 
+ * abstract methods {@link #doChange()} and 
  * {@link #doCheckConditions(RefactoringStatus)}.
  * @author Adam Eichelkraut
  *
  */
-/**
- * @author alexander
- *
- */
+
 public abstract class ASTChange {
     
     //Members
     private IASTRewrite m_rewriter;
-    private IProgressMonitor m_pm;
     private IASTTranslationUnit m_tu;
     private StringBuilder m_src;
 
@@ -47,14 +41,24 @@ public abstract class ASTChange {
         this.m_rewriter = rewriter;
         this.m_src = null;
         this.srcOffset = 0;
+        
+        if (m_rewriter == null) {
+            throw new IllegalArgumentException("Rewriter cannot be null!");
+        }
+        
     }
     
-    public ASTChange(ASTChange that) {
-        this.m_tu = that.m_tu;
-        this.m_rewriter = that.m_rewriter;
-        this.m_src = that.m_src;
-        this.srcOffset = that.srcOffset;
-        this.m_pm = that.m_pm;
+    /**
+     * Creates a new change object from an existing one.
+     * This allows chaining of changes by ensuring that the new change
+     * contains all of the changes made by the previous one. 
+     * @param previous -- the original change
+     */
+    public ASTChange(ASTChange previous) {
+        this.m_tu = previous.m_tu;
+        this.m_rewriter = previous.m_rewriter;
+        this.m_src = previous.m_src;
+        this.srcOffset = previous.srcOffset;
     }
     
     /**
@@ -65,7 +69,7 @@ public abstract class ASTChange {
      * @param rewriter -- rewriter to be sent to implementation
      * @return -- the original rewriter? I'm not sure this is needed.
      */
-    protected abstract IASTRewrite doChange(IASTRewrite rewriter);
+    protected abstract void doChange();
     
     /**
      * Abstract method pattern for inherited class to implement. This method is
@@ -78,11 +82,11 @@ public abstract class ASTChange {
      * @param init -- status to change
      * @return -- possibly changed status
      */
-    protected abstract RefactoringStatus doCheckConditions(RefactoringStatus init);
+    protected abstract void doCheckConditions(RefactoringStatus init);
     //-----------------------------------------------------------------------------------
     
     /**
-     * Should be called before performing 'change' method. Checks all preconditions
+     * Should always be called before changes are made. Checks all preconditions
      * for the inherited change object. This method calls the abstract 
      * {@link #doCheckConditions(RefactoringStatus)} to be defined in the inherited class.
      * @author Adam Eichelkraut
@@ -90,12 +94,12 @@ public abstract class ASTChange {
      * @param pm -- progress monitor, can be null if not needed
      * @return -- possibly changed status
      */
-    public final RefactoringStatus checkConditions(RefactoringStatus init, IProgressMonitor pm) {
-        if (m_pm == null) {
-            m_pm = new NullProgressMonitor();
-        }
-        
-        return doCheckConditions(init);
+    public final RefactoringStatus checkConditions(RefactoringStatus init) {
+//        if (m_pm == null) {
+//            m_pm = new NullProgressMonitor();
+//        }
+        doCheckConditions(init);
+        return init;
     }
     
     /**
@@ -106,12 +110,9 @@ public abstract class ASTChange {
      * @return -- returns the top-level rewriter used
      * @throws IllegalArgumentException if the rewriter is null at this point
      */
-    public final void change() {
-        if (m_rewriter == null) {
-            throw new IllegalArgumentException("Rewriter cannot be null!");
-        }
-        
-        doChange(m_rewriter);
+    public final ASTChange change() {
+        doChange();
+        return this;
     }
 
     protected final void insert(int offset, String text) {
@@ -138,33 +139,23 @@ public abstract class ASTChange {
         m_src.replace(offset - srcOffset, offset - srcOffset, text);
     }
     
-    protected String getCurrentTextAt(int offset, int length) {
+    protected final String getCurrentTextAt(int offset, int length) {
         return m_src.substring(offset - srcOffset, offset - srcOffset + length);
     }
     
-    protected String getText() {
+    protected final String getText() {
         return m_src.toString();
     }
     
-    protected String pragma(String code) {
+    protected final String pragma(String code) {
         return PRAGMA + code;
     }
     
-    protected String compound(String code) {
+    protected final String compound(String code) {
         return COMP_OPEN + code + COMP_CLOSE;
     }
     
-    public IProgressMonitor getProgressMonitor() {
-        return m_pm;
-    }
-
-    public void setProgressMonitor(IProgressMonitor pm) {
-        this.m_pm = pm;
-    }
-    
     private void initializeStringBuilder(int offset) {
-        if(offset < 0) throw new StringIndexOutOfBoundsException();
-        
         for(IASTFunctionDefinition func : ASTUtil.find(m_tu, IASTFunctionDefinition.class)) {
             if(offset >= func.getFileLocation().getNodeOffset()
                     && offset <= func.getFileLocation().getNodeOffset() + func.getFileLocation().getNodeLength()) {
@@ -172,17 +163,21 @@ public abstract class ASTChange {
                 break;
             }
         }
+        throw new StringIndexOutOfBoundsException();
     }
     
     /**
-     * 
-     * passes all "cached" changes to the rewriter
-     * 
+     * Passes all "cached" changes to the rewriter. Must be called 
+     * after all changes are made to cause changes to actually occur
      */
-    public void finalizeChanges() {
+    public final void finalizeChanges() {
         TextEditGroup teg = new TextEditGroup("teg");
-        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), m_src.toString()));
+        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), ASTUtil.format(getText())));
         m_rewriter.insertBefore(m_tu, m_tu.getChildren()[0], m_rewriter.createLiteralNode(""), new TextEditGroup("teg"));
+    }
+
+    protected IASTTranslationUnit getTranslationUnit() {
+        return m_tu;
     }
     
 //    private boolean sourceSubstringIsWithinCorrectBounds(int offset, int length) {
