@@ -25,7 +25,6 @@ import edu.auburn.oaccrefac.core.change.IASTRewrite;
  */
 public class LoopFissionRefactoring extends ForLoopRefactoring {
 
-    //I've always wanted to use a question mark like this.
     private ASTChange m_fizzChange;
     
     public LoopFissionRefactoring(ICElement element, ISelection selection, ICProject project) {

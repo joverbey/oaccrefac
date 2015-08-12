@@ -396,7 +396,7 @@ public class ForStatementInquisitor {
     }
     
     public String[] getPragmas() {
-        List<IASTPreprocessorPragmaStatement> p = InquisitorFactory.getInquisitor(statement).getLeadingPragmas();
+        List<IASTPreprocessorPragmaStatement> p = getLeadingPragmas();
         String[] pragCode = new String[p.size()];
         for(int i = 0; i < pragCode.length; i++) {
             pragCode[i] = p.get(i).getRawSignature();

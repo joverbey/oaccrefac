@@ -137,32 +137,29 @@ public abstract class ForLoopChange extends ASTChange {
      * @param loop2 -- second loop to swap headers
      * @return -- returns rewriter used
      */
-    protected IASTRewrite exchangeLoopHeaders(IASTRewrite rewriter,
+    protected void exchangeLoopHeaders(IASTRewrite rewriter,
             IASTForStatement loop1, IASTForStatement loop2) {
-        this.removePragmas(loop1);
-        this.removePragmas(loop2);
-        this.safeReplace(rewriter,
-                loop1.getInitializerStatement(), 
-                loop2.getInitializerStatement());
-        this.safeReplace(rewriter,
-                loop1.getConditionExpression(), 
-                loop2.getConditionExpression());
-        this.safeReplace(rewriter,
-                loop1.getIterationExpression(), 
-                loop2.getIterationExpression());
-        this.safeReplace(rewriter,
-                loop2.getInitializerStatement(), 
-                loop1.getInitializerStatement());
-        this.safeReplace(rewriter,
-                loop2.getConditionExpression(), 
-                loop1.getConditionExpression());
-        this.safeReplace(rewriter,
-                loop2.getIterationExpression(), 
-                loop1.getIterationExpression());
-        this.insertPragmas(loop1, this.getPragmas(loop2));
-        this.insertPragmas(loop2, this.getPragmas(loop1));
-        this.finalizePragmas(m_loop.getTranslationUnit());
-        return rewriter;
+
+        this.replace(loop1.getInitializerStatement().getFileLocation().getNodeOffset(),
+                loop1.getInitializerStatement().getFileLocation().getNodeLength(),
+                loop2.getInitializerStatement().getRawSignature());
+        this.replace(loop1.getConditionExpression().getFileLocation().getNodeOffset(),
+                loop1.getConditionExpression().getFileLocation().getNodeLength(),
+                loop2.getConditionExpression().getRawSignature());
+        this.replace(loop1.getIterationExpression().getFileLocation().getNodeOffset(),
+                loop1.getIterationExpression().getFileLocation().getNodeLength(),
+                loop2.getIterationExpression().getRawSignature());
+        this.replace(loop2.getInitializerStatement().getFileLocation().getNodeOffset(),
+                loop2.getInitializerStatement().getFileLocation().getNodeLength(),
+                loop1.getInitializerStatement().getRawSignature());
+        this.replace(loop2.getConditionExpression().getFileLocation().getNodeOffset(),
+                loop2.getConditionExpression().getFileLocation().getNodeLength(),
+                loop1.getConditionExpression().getRawSignature());
+        this.replace(loop2.getIterationExpression().getFileLocation().getNodeOffset(),
+                loop2.getIterationExpression().getFileLocation().getNodeLength(),
+                loop1.getIterationExpression().getRawSignature());
+        this.finalizeChanges();
+        
     }
     
 }

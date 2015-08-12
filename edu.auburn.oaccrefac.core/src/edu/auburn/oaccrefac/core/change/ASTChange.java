@@ -21,6 +21,10 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * @author Adam Eichelkraut
  *
  */
+/**
+ * @author alexander
+ *
+ */
 public abstract class ASTChange {
     
     //Members
@@ -43,6 +47,14 @@ public abstract class ASTChange {
         this.m_rewriter = rewriter;
         this.m_src = null;
         this.srcOffset = 0;
+    }
+    
+    public ASTChange(ASTChange that) {
+        this.m_tu = that.m_tu;
+        this.m_rewriter = that.m_rewriter;
+        this.m_src = that.m_src;
+        this.srcOffset = that.srcOffset;
+        this.m_pm = that.m_pm;
     }
     
     /**
@@ -94,18 +106,12 @@ public abstract class ASTChange {
      * @return -- returns the top-level rewriter used
      * @throws IllegalArgumentException if the rewriter is null at this point
      */
-    public final IASTRewrite change() {
+    public final void change() {
         if (m_rewriter == null) {
             throw new IllegalArgumentException("Rewriter cannot be null!");
         }
         
         doChange(m_rewriter);
-        
-        TextEditGroup teg = new TextEditGroup("teg");
-        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), m_src.toString()));
-        m_rewriter.insertBefore(m_tu, m_tu.getChildren()[0], m_rewriter.createLiteralNode(""), new TextEditGroup("teg"));
-        return m_rewriter;
-        
     }
 
     protected final void insert(int offset, String text) {
@@ -136,6 +142,10 @@ public abstract class ASTChange {
         return m_src.substring(offset - srcOffset, offset - srcOffset + length);
     }
     
+    protected String getText() {
+        return m_src.toString();
+    }
+    
     protected String pragma(String code) {
         return PRAGMA + code;
     }
@@ -162,6 +172,17 @@ public abstract class ASTChange {
                 break;
             }
         }
+    }
+    
+    /**
+     * 
+     * passes all "cached" changes to the rewriter
+     * 
+     */
+    public void finalizeChanges() {
+        TextEditGroup teg = new TextEditGroup("teg");
+        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), m_src.toString()));
+        m_rewriter.insertBefore(m_tu, m_tu.getChildren()[0], m_rewriter.createLiteralNode(""), new TextEditGroup("teg"));
     }
     
 //    private boolean sourceSubstringIsWithinCorrectBounds(int offset, int length) {

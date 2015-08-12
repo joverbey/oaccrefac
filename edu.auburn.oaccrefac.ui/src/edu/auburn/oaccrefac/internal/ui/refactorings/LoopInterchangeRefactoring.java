@@ -3,6 +3,7 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,7 +45,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
         
         IASTForStatement first = this.getLoop();
         IASTForStatement second = ASTUtil.findDepth(first, IASTForStatement.class, m_depth);
-        inter = new InterchangeLoops(null, first, second);
+        inter = new InterchangeLoops(getAST(), null, first, second);
         inter.checkConditions(status, pm);
     }
 

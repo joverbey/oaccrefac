@@ -1,0 +1,49 @@
+on construction, take in a translation unit, set up a string builder from 
+	function definition's text?
+		- how to translate offset
+			- take in an offset in the file, subtract offset of function, that is offset into function
+		- easier to code
+		- if we ever expanded outside a function we'd have trouble
+	keep a set of edits to be made and then decide what to replace at runtime?
+		- check for overlapping when a new edit is added and combine edits when needed
+		- how to handle offsets (offset into old version or just-changed version?)
+	file's text?
+		- unnecessarily big? 
+	translation unit's text?
+		- too big
+	
+
+necessary methods 
+	- offsets should all be file offsets, since that what comes from AST
+	- offsets should refer to offset after changes have been made, not the original file offsets
+		- ie, remove(10, 3) insert(10, "lol") adds text when insert(10, "lol") remove(10, 3) has no net effect
+insert(offset, text)
+remove(offset, length)
+replace(offset, length, text)
+getTranslationUnitForCurrent() ?
+getTextAt(offset, length) - gets text from string builder to use or see modification that have been made
+
+utility methods/static constants
+PRAGMA = "#pragma "
+COMP_START = " { "
+COMP_END = " } "
+SEMICOLON = ";"
+
+asCompoundStatement(String s) {
+	return COMP_START + s + COMP_END
+}
+asPragma(String s) {
+	return PRAGMA + s
+}
+
+ - have our own simple parser or regex matcher to get location in string of certain statement, etc?
+ - keep the change/doChange thing, but use doChange to do the sole rewriter call with a texteditgroup
+ -  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

@@ -17,7 +17,7 @@ import org.eclipse.text.edits.TextEditGroup;
  * @author Jeff Overbey
  */
 public interface IASTRewrite {
-
+    
     IASTNode createLiteralNode(String code);
 
     void remove(IASTNode node, TextEditGroup editGroup);
