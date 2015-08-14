@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
-import edu.auburn.oaccrefac.core.change.FizzLoops;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
 
 /**

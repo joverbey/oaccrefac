@@ -67,8 +67,6 @@ public abstract class ASTChange {
      * where the actual rewriting should happen by using the rewriter being sent from
      * the base class on the AST received by the inherited class' constructor.
      * @author Adam Eichelkraut
-     * @param rewriter -- rewriter to be sent to implementation
-     * @return -- the original rewriter? I'm not sure this is needed.
      */
     protected abstract void doChange();
     
@@ -81,7 +79,7 @@ public abstract class ASTChange {
      * class.
      * @author Adam Eichelkraut
      * @param init -- status to change
-     * @return -- possibly changed status
+     * @param pm -- the progress monitor, if needed
      */
     protected abstract void doCheckConditions(RefactoringStatus init, IProgressMonitor pm);
     //-----------------------------------------------------------------------------------

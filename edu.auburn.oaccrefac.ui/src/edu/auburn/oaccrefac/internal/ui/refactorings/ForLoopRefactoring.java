@@ -160,7 +160,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         pm.subTask("Determining if transformation can be safely performed...");
         doCheckFinalConditions(result, pm);
         return result;
-    };
+    }
 
     protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
     }
@@ -217,15 +217,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         }
         
         return (CASTForStatement) first_for;
-    }
-
-    protected DependenceAnalysis performDependenceAnalysis(RefactoringStatus status, IProgressMonitor pm, IASTStatement... statements) {
-        try {
-            return new DependenceAnalysis(pm, statements);
-        } catch (DependenceTestFailure e) {
-            status.addError("Dependences could not be analyzed.  " + e.getMessage());
-            return null;
-        }
     }
 
     // *************************************************************************

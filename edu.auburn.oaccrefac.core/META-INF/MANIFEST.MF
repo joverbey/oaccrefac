@@ -17,9 +17,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.text;bundle-version="3.5.400"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: edu.auburn.oaccrefac.core.dataflow,
+Export-Package: edu.auburn.oaccrefac.core.change,
+ edu.auburn.oaccrefac.core.dataflow,
  edu.auburn.oaccrefac.core.dependence,
- edu.auburn.oaccrefac.core.change,
+ edu.auburn.oaccrefac.core.dependence.check,
+ edu.auburn.oaccrefac.core.parser,
  edu.auburn.oaccrefac.internal.core,
  edu.auburn.oaccrefac.internal.core.constprop,
  edu.auburn.oaccrefac.internal.core.dependence,
