@@ -45,14 +45,13 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
         
         IASTForStatement first = this.getLoop();
         IASTForStatement second = ASTUtil.findDepth(first, IASTForStatement.class, m_depth);
-        inter = new InterchangeLoops(getAST(), null, first, second);
-        inter.checkConditions(status, pm);
+
+        
+        
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        inter.setRewriter(rewriter);
-        inter.change();
     }
 
 }

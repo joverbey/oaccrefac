@@ -27,15 +27,10 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        stripMine = new StripMine(null, getLoop(), m_stripFactor, 0);
-        stripMine.checkConditions(status, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {        
-        stripMine.setRewriter(rewriter);
-        rewriter = stripMine.change();
-        //rewriter.replace(getLoop(), change.change(), null);
     }
     
 }

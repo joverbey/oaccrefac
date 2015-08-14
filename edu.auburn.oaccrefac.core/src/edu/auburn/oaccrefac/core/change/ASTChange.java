@@ -2,6 +2,7 @@ package edu.auburn.oaccrefac.core.change;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
@@ -82,7 +83,7 @@ public abstract class ASTChange {
      * @param init -- status to change
      * @return -- possibly changed status
      */
-    protected abstract void doCheckConditions(RefactoringStatus init);
+    protected abstract void doCheckConditions(RefactoringStatus init, IProgressMonitor pm);
     //-----------------------------------------------------------------------------------
     
     /**
@@ -94,11 +95,11 @@ public abstract class ASTChange {
      * @param pm -- progress monitor, can be null if not needed
      * @return -- possibly changed status
      */
-    public final RefactoringStatus checkConditions(RefactoringStatus init) {
+    public final RefactoringStatus checkConditions(RefactoringStatus init, IProgressMonitor pm) {
 //        if (m_pm == null) {
 //            m_pm = new NullProgressMonitor();
 //        }
-        doCheckConditions(init);
+        doCheckConditions(init, pm);
         return init;
     }
     

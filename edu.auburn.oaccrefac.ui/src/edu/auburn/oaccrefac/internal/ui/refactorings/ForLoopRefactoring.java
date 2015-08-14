@@ -41,7 +41,7 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
 /**
  * Class is meant to be an abstract base class for all ForLoop transformation refactorings. It includes all methods that
- * would be synonomous in all for-loop refactorings. The only method that is different in the refactorings is the
+ * would be synonymous in all for-loop refactorings. The only method that is different in the refactorings is the
  * 'collectModifications' method, which is to be overridden in order to make the magic happen.
  *
  */

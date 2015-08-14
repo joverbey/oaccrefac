@@ -5,7 +5,9 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -38,19 +40,19 @@ public class FizzLoops extends ForLoopChange {
      * @param rewriter -- base rewriter for loop
      * @param loop -- loop to be fizzed
      */
-    public FizzLoops(IASTRewrite rewriter, IASTForStatement loop) {
-        super(rewriter, loop);
+    public FizzLoops(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
+        super(tu, rewriter, loop);
     }
     
     @Override
-    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
         //If the loop doesn't have children, bail. Save some
         //energy by not doing the refactoring.
         IASTForStatement loop = this.getLoopToChange();
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {
             init.addFatalError("Body does not have any statements"
                     + " therefore, loop fission is useless.");
-            return init;
+            return;
         }
         
         if (loop.getBody().getChildren().length < 2) {
@@ -58,7 +60,7 @@ public class FizzLoops extends ForLoopChange {
                     + "one statement.");
         }
         
-        return init;
+        return;
     }
     
     @Override

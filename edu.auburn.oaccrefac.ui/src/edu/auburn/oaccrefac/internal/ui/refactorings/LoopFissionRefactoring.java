@@ -33,15 +33,10 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        m_fizzChange = new FizzLoops(null, getLoop());
-        m_fizzChange.checkConditions(initStatus, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        m_fizzChange.setRewriter(rewriter);
-        rewriter = m_fizzChange.change();
-        //rewriter.replace(m_fizzChange.getOriginal(), m_fizzChange.change(), null);
     }
 
 }

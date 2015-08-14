@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.check.InterchangeCheck;
@@ -54,12 +55,12 @@ public class InterchangeLoops extends ForLoopChange {
     }
     
     @Override
-    protected RefactoringStatus doCheckConditions(RefactoringStatus init) {
+    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
         //Check for perfect loop nest...
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.getLoopToChange());
         if (!inq.isPerfectLoopNest()) {
             init.addFatalError("Only perfectly nested loops can be interchanged.");
-            return init;
+            return;
         }
         
         //Check to see if the second is within first
@@ -67,20 +68,20 @@ public class InterchangeLoops extends ForLoopChange {
         if (!headers.contains(m_second)) {
             init.addFatalError("Second loop is not within headers of first");
             
-            return init;
+            return;
         }
         
         //Dependence Analysis...
-        InterchangeCheck checkDependence = new InterchangeCheck(getLoopToChange(), m_second);
-        init = checkDependence.check(init, this.getProgressMonitor());
+//        InterchangeCheck checkDependence = new InterchangeCheck(getLoopToChange(), m_second);
+//        init = checkDependence.check(init, this.getProgressMonitor());
         
-        return init;
+        return;
     }
     
     @Override
-    public IASTRewrite doChange(IASTRewrite rewriter) {
-        IASTForStatement first = getLoopToChange();
-        return this.exchangeLoopHeaders(rewriter, first, m_second);
+    public void doChange() {
+//        IASTForStatement first = getLoopToChange();
+//        return this.exchangeLoopHeaders(rewriter, first, m_second);
     }
     
     

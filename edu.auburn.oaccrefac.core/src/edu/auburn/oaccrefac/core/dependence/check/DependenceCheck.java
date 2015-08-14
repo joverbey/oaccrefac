@@ -1,5 +1,7 @@
 package edu.auburn.oaccrefac.core.dependence.check;
 
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -17,8 +19,14 @@ public abstract class DependenceCheck {
 
     private IASTStatement[] m_statements;
     
-    public DependenceCheck(final IASTStatement... statements) {
-        m_statements = statements;
+    public DependenceCheck(final IASTForStatement loop) {
+        if(loop.getBody() instanceof IASTCompoundStatement) {
+            m_statements = ((IASTCompoundStatement) loop.getBody()).getStatements();
+        }
+        else {
+            m_statements = new IASTStatement[1];
+            m_statements[0] = loop.getBody();
+        }
     }
     
     public abstract RefactoringStatus doCheck(RefactoringStatus status, DependenceAnalysis dep);

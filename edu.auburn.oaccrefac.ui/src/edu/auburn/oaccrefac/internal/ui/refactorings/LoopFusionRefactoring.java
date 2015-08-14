@@ -33,15 +33,10 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        m_fuseLoops = new FuseLoops(null, getLoop());
-        m_fuseLoops.checkConditions(initStatus, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        m_fuseLoops.setRewriter(rewriter);
-        rewriter = m_fuseLoops.change();
-        //rewriter.replace(m_fuseLoops.getOriginal(), m_fuseLoops.change(), null);
     }
 
 }

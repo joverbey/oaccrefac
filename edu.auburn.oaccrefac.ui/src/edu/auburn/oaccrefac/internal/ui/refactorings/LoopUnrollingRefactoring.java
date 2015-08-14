@@ -42,15 +42,11 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         IASTForStatement loop = getLoop();
-        m_unrollChange = new UnrollLoop (null, loop, m_unrollFactor);
-        m_unrollChange.checkConditions(initStatus, pm);
-    };
+    
+    }
 
 	@Override
 	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {	
-        m_unrollChange.setRewriter(rewriter);
-	    rewriter = m_unrollChange.change();
-	    //rewriter.replace(m_unrollChange.getOriginal(), m_unrollChange.change(), null);
 	}
 
 }
