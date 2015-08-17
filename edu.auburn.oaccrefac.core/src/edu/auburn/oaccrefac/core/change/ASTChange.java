@@ -27,7 +27,7 @@ public abstract class ASTChange {
     private IASTRewrite m_rewriter;
     private IASTTranslationUnit m_tu;
     private StringBuilder m_src;
-
+    private int originalLength;
     //offset into the file that the StringBuilder starts at - 
     //should be the affected function definition's offset
     private int srcOffset;
@@ -147,7 +147,7 @@ public abstract class ASTChange {
     }
     
     protected final String pragma(String code) {
-        return PRAGMA + code;
+        return PRAGMA + code + System.lineSeparator();
     }
     
     protected final String compound(String code) {
@@ -159,7 +159,9 @@ public abstract class ASTChange {
             if(offset >= func.getFileLocation().getNodeOffset()
                     && offset <= func.getFileLocation().getNodeOffset() + func.getFileLocation().getNodeLength()) {
                 m_src = new StringBuilder(func.getRawSignature());
-                break;
+                srcOffset = func.getFileLocation().getNodeOffset();
+                originalLength = func.getFileLocation().getNodeLength();
+                return;
             }
         }
         throw new StringIndexOutOfBoundsException();
@@ -171,8 +173,9 @@ public abstract class ASTChange {
      */
     public final void finalizeChanges() {
         TextEditGroup teg = new TextEditGroup("teg");
-        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), ASTUtil.format(getText())));
-        m_rewriter.insertBefore(m_tu, m_tu.getChildren()[0], m_rewriter.createLiteralNode(""), new TextEditGroup("teg"));
+//        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), ASTUtil.format(getText())));
+        teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, getText()));
+        m_rewriter.insertBefore(m_tu, m_tu.getChildren()[0], m_rewriter.createLiteralNode(""), teg);
     }
 
     protected IASTTranslationUnit getTranslationUnit() {

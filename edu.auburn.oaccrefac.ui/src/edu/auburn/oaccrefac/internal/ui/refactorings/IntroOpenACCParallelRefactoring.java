@@ -11,16 +11,16 @@
  ******************************************************************************/
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.text.edits.TextEditGroup;
 
+import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.change.IntroOpenACCParallelChange;
 import edu.auburn.oaccrefac.core.dependence.check.DependenceCheck;
 import edu.auburn.oaccrefac.core.dependence.check.IntroOpenACCParallelCheck;
 
@@ -45,7 +45,8 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        
+        ASTChange change = new IntroOpenACCParallelChange(getAST(), rewriter, getLoop());
+        change.change();
     }
 
     @Override
