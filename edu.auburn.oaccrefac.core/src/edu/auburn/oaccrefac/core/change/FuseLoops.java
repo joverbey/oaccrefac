@@ -67,6 +67,7 @@ public class FuseLoops extends ForLoopChange {
     public FuseLoops(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
         super(tu, rewriter, loop);
         m_first = loop;
+        m_second = (IASTForStatement) ASTUtil.getNextSibling(m_first);
         m_modifiedVariableDecls = new HashMap<String, IASTName>();
     }
     
@@ -144,7 +145,28 @@ public class FuseLoops extends ForLoopChange {
 
     @Override
     protected void doChange() {
-        
+        remove(m_second.getFileLocation().getNodeOffset(), m_second.getFileLocation().getNodeLength());
+        String body = "";
+        if(m_first.getBody() instanceof IASTCompoundStatement) {
+            for(IASTStatement stmt : ((IASTCompoundStatement) m_first.getBody()).getStatements()) {
+                body += stmt.getRawSignature() + System.lineSeparator();
+            }
+        }
+        else {
+            body += m_first.getBody().getRawSignature() + System.lineSeparator();
+        }
+        if(m_second.getBody() instanceof IASTCompoundStatement) {
+            for(IASTStatement stmt : ((IASTCompoundStatement) m_second.getBody()).getStatements()) {
+                body += stmt.getRawSignature() + System.lineSeparator();
+            }
+        }
+        else {
+            body += m_first.getBody().getRawSignature() + System.lineSeparator();
+        }
+        replace(m_first.getBody().getFileLocation().getNodeOffset(), 
+                m_first.getBody().getFileLocation().getNodeLength(), compound(body));
+    
+        finalizeChanges();
     }
     
     /**

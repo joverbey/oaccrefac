@@ -9,6 +9,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.FuseLoops;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.dependence.check.FusionInitialCheck;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -37,6 +38,8 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
+        ASTChange change = new FuseLoops(getAST(), rewriter, getLoop());
+        change.change();
     }
 
 }
