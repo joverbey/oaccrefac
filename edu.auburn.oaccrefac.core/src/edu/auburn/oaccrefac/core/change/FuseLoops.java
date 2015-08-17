@@ -1,5 +1,7 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
@@ -143,9 +146,16 @@ public class FuseLoops extends ForLoopChange {
 //        return rewriter;
 //    }
 
+    //FIXME figure out how to handle pragmas on each loop
     @Override
     protected void doChange() {
         remove(m_second.getFileLocation().getNodeOffset(), m_second.getFileLocation().getNodeLength());
+        List<IASTPreprocessorPragmaStatement> prags = getPragmas(m_second);
+        Collections.reverse(prags);
+        for(IASTPreprocessorPragmaStatement prag : prags) {
+            remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
+        }
+        
         String body = "";
         if(m_first.getBody() instanceof IASTCompoundStatement) {
             for(IASTStatement stmt : ((IASTCompoundStatement) m_first.getBody()).getStatements()) {
@@ -165,7 +175,7 @@ public class FuseLoops extends ForLoopChange {
         }
         replace(m_first.getBody().getFileLocation().getNodeOffset(), 
                 m_first.getBody().getFileLocation().getNodeLength(), compound(body));
-    
+        
         finalizeChanges();
     }
     
