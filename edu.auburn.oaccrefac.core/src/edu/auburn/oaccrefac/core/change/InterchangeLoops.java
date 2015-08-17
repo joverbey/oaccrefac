@@ -1,8 +1,10 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -99,14 +101,30 @@ public class InterchangeLoops extends ForLoopChange {
         int secondCondLen = m_second.getConditionExpression().getFileLocation().getNodeLength();
         int secondIterOff = m_second.getIterationExpression().getFileLocation().getNodeOffset();
         int secondIterLen = m_second.getIterationExpression().getFileLocation().getNodeLength();
-        
+        List<IASTPreprocessorPragmaStatement> firstPrags = getPragmas(first);
+        List<IASTPreprocessorPragmaStatement> secondPrags = getPragmas(m_second);
+        Collections.reverse(firstPrags);
+        Collections.reverse(secondPrags);
+
         replace(secondIterOff, secondIterLen, first.getIterationExpression().getRawSignature());
         replace(secondCondOff, secondCondLen, first.getConditionExpression().getRawSignature());
         replace(secondInitOff, secondInitLen, first.getInitializerStatement().getRawSignature());
+        for(IASTPreprocessorPragmaStatement prag : firstPrags) {
+            insert(m_second.getFileLocation().getNodeOffset(), prag.getRawSignature() + System.lineSeparator());
+        }
+        for(IASTPreprocessorPragmaStatement prag : secondPrags) {
+            remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
+        }
         
         replace(firstIterOff, firstIterLen, m_second.getIterationExpression().getRawSignature());
         replace(firstCondOff, firstCondLen, m_second.getConditionExpression().getRawSignature());
         replace(firstInitOff, firstInitLen, m_second.getInitializerStatement().getRawSignature());
+        for(IASTPreprocessorPragmaStatement prag : secondPrags) {
+            insert(first.getFileLocation().getNodeOffset(), prag.getRawSignature() + System.lineSeparator());
+        }
+        for(IASTPreprocessorPragmaStatement prag : firstPrags) {
+            remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
+        }
         
         finalizeChanges();
     }

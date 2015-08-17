@@ -1,6 +1,11 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.List;
+
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -9,6 +14,7 @@ import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.core.dependence.check.DependenceCheck;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
  * This class describes the base class for change objects that
@@ -144,6 +150,27 @@ public abstract class ASTChange {
     
     protected final String getText() {
         return m_src.toString();
+    }
+    
+
+    /**
+     * Allows inherited classes to get any pragmas associated with a node.
+     * As of now, only {@link IASTForStatement} nodes are supported
+     * @param node -- node to retrieve pragmas from
+     * @return -- array of {@link String} representing literal pragma text
+     * @throws UnsupportedOperationException if node is not {@link IASTForStatement}
+     */
+    protected final String[] getPragmaStrings(IASTForStatement node) {
+        List<IASTPreprocessorPragmaStatement> p = InquisitorFactory.getInquisitor(node).getLeadingPragmas();
+        String[] pragCode = new String[p.size()];
+        for(int i = 0; i < pragCode.length; i++) {
+            pragCode[i] = p.get(i).getRawSignature();
+        }
+        return pragCode; 
+    }
+
+    protected final List<IASTPreprocessorPragmaStatement> getPragmas(IASTForStatement node) {
+        return InquisitorFactory.getInquisitor(node).getLeadingPragmas();
     }
     
     protected final String pragma(String code) {
