@@ -135,7 +135,7 @@ public abstract class ASTChange {
             initializeStringBuilder(offset);
         }
         
-        m_src.replace(offset - srcOffset, offset - srcOffset, text);
+        m_src.replace(offset - srcOffset, offset - srcOffset + length, text);
     }
     
     protected final String getCurrentTextAt(int offset, int length) {
@@ -173,8 +173,7 @@ public abstract class ASTChange {
      */
     public final void finalizeChanges() {
         TextEditGroup teg = new TextEditGroup("teg");
-//        teg.addTextEdit(new ReplaceEdit(srcOffset, m_src.length(), ASTUtil.format(getText())));
-        teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, getText()));
+        teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, ASTUtil.format(getText())));
         m_rewriter.insertBefore(m_tu, m_tu.getChildren()[0], m_rewriter.createLiteralNode(""), teg);
     }
 

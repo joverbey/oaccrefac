@@ -14,7 +14,7 @@ public class IntroOpenACCParallelChange extends ForLoopChange {
     @Override
     protected void doChange() {
         int offset = getLoopToChange().getFileLocation().getNodeOffset();
-        this.insert(offset, pragma("openacc parallel"));
+        this.insert(offset, pragma("acc parallel loop"));
         finalizeChanges();
     }
 

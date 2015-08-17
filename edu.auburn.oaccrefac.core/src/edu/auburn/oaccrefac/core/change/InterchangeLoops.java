@@ -78,10 +78,37 @@ public class InterchangeLoops extends ForLoopChange {
         return;
     }
     
-    @Override
-    public void doChange() {
+//    @Override
+//    public void doChange() {
 //        IASTForStatement first = getLoopToChange();
 //        return this.exchangeLoopHeaders(rewriter, first, m_second);
+//    }
+    
+    @Override
+    protected void doChange() {
+        IASTForStatement first = getLoopToChange();
+        int firstInitOff = first.getInitializerStatement().getFileLocation().getNodeOffset();
+        int firstInitLen = first.getInitializerStatement().getFileLocation().getNodeLength();
+        int firstCondOff = first.getConditionExpression().getFileLocation().getNodeOffset();
+        int firstCondLen = first.getConditionExpression().getFileLocation().getNodeLength();
+        int firstIterOff = first.getIterationExpression().getFileLocation().getNodeOffset();
+        int firstIterLen = first.getIterationExpression().getFileLocation().getNodeLength();
+        int secondInitOff = m_second.getInitializerStatement().getFileLocation().getNodeOffset();
+        int secondInitLen = m_second.getInitializerStatement().getFileLocation().getNodeLength();
+        int secondCondOff = m_second.getConditionExpression().getFileLocation().getNodeOffset();
+        int secondCondLen = m_second.getConditionExpression().getFileLocation().getNodeLength();
+        int secondIterOff = m_second.getIterationExpression().getFileLocation().getNodeOffset();
+        int secondIterLen = m_second.getIterationExpression().getFileLocation().getNodeLength();
+        
+        replace(secondIterOff, secondIterLen, first.getIterationExpression().getRawSignature());
+        replace(secondCondOff, secondCondLen, first.getConditionExpression().getRawSignature());
+        replace(secondInitOff, secondInitLen, first.getInitializerStatement().getRawSignature());
+        
+        replace(firstIterOff, firstIterLen, m_second.getIterationExpression().getRawSignature());
+        replace(firstCondOff, firstCondLen, m_second.getConditionExpression().getRawSignature());
+        replace(firstInitOff, firstInitLen, m_second.getInitializerStatement().getRawSignature());
+        
+        finalizeChanges();
     }
     
     

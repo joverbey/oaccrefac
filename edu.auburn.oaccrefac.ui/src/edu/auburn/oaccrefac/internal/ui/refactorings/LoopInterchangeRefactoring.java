@@ -24,7 +24,8 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     private int m_depth;
-    private ASTChange inter;
+    private IASTForStatement m_first;
+    private IASTForStatement m_second;
 
     public LoopInterchangeRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -43,15 +44,15 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
             status.addFatalError("There is no for-loop at exchange depth:" + m_depth);
         }
         
-        IASTForStatement first = this.getLoop();
-        IASTForStatement second = ASTUtil.findDepth(first, IASTForStatement.class, m_depth);
+        m_first = this.getLoop();
+        m_second = ASTUtil.findDepth(m_first, IASTForStatement.class, m_depth);
 
-        
-        
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
+        ASTChange change = new InterchangeLoops(getAST(), rewriter, m_first, m_second);
+        change.change();
     }
 
 }

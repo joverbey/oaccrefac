@@ -8,7 +8,7 @@ int main(void) {
 	for (j = 0; j < 10; j++) { /*<<<<< 8, 1, 14, 1, 1, pass */
 #pragma acc parallel loop private(i)
 		for (i = 0; i < 10; i++) {
-			a[i][j] = i*10 + j;
+			a[i][j] = i * 10 + j;
 		}
 	}
 
@@ -20,3 +20,4 @@ int main(void) {
 	}
 	return EXIT_SUCCESS;
 }
+

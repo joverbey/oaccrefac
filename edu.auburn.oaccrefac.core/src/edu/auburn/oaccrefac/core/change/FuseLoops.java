@@ -109,8 +109,8 @@ public class FuseLoops extends ForLoopChange {
         return;
     }
     
-    @Override
-    protected void doChange() {
+//    @Override
+//    protected void doChange() {
 //        
 //        //We make the first loop the loop body in which to merge
 //        //the two bodies. Make sure that it is a compound statement.
@@ -140,8 +140,13 @@ public class FuseLoops extends ForLoopChange {
 //        //Remove the second loop from AST, as both are merged at this point
 //        this.safeRemove(rewriter, m_second);
 //        return rewriter;
-    }
+//    }
 
+    @Override
+    protected void doChange() {
+        
+    }
+    
     /**
      * Internal helper method called by the algorithm to potentially modify
      * the statement before being merged into the first's body. For example,
