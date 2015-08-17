@@ -44,5 +44,4 @@ public abstract class DependenceCheck {
         return doCheck(status, dependenceAnalysis);
         
     }
-    
 }

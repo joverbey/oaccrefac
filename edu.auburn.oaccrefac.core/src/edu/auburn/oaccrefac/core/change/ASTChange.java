@@ -136,12 +136,23 @@ public abstract class ASTChange {
         m_src.delete(offset - srcOffset, offset - srcOffset + length);
     }
     
+    protected final void remove(IASTNode node) {
+        remove(node.getFileLocation().getNodeOffset(),
+               node.getFileLocation().getNodeLength());
+    }
+    
     protected final void replace(int offset, int length, String text) {
         if(m_src == null) {
             initializeStringBuilder(offset);
         }
         
         m_src.replace(offset - srcOffset, offset - srcOffset + length, text);
+    }
+    
+    protected final void replace(IASTNode node, String text) {
+        replace(node.getFileLocation().getNodeOffset(),
+                node.getFileLocation().getNodeLength(),
+                text);
     }
     
     protected final String getCurrentTextAt(int offset, int length) {
@@ -179,6 +190,17 @@ public abstract class ASTChange {
     
     protected final String compound(String code) {
         return COMP_OPEN + code + COMP_CLOSE;
+    }
+    
+    protected final String forLoop(String init, String cond, String iter, String body) {
+        if (!init.trim().endsWith(";"))
+            init += ";";
+        if (!cond.trim().endsWith(";"))
+            cond += ";";
+        StringBuilder sb = new StringBuilder(String.format("for (%s %s %s)", init, cond, iter));
+        sb.append(System.lineSeparator());
+        sb.append(body);
+        return sb.toString();
     }
     
     private void initializeStringBuilder(int offset) {

@@ -6,8 +6,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.change.ASTChange;
+import edu.auburn.oaccrefac.core.change.FizzLoops;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.dependence.check.LoopFissionCheck;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -24,18 +25,17 @@ import edu.auburn.oaccrefac.core.change.IASTRewrite;
  */
 public class LoopFissionRefactoring extends ForLoopRefactoring {
 
-    private ASTChange m_fizzChange;
-    
     public LoopFissionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
+        new LoopFissionCheck(this.getLoop()).check(status, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
+        new FizzLoops(getAST(), rewriter, getLoop()).change();
     }
-
 }

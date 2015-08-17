@@ -224,7 +224,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
     @Override
     protected RefactoringDescriptor getRefactoringDescriptor() {
-        return null;
+        return null; // Refactoring history is not supported.
     }
 
     protected CASTForStatement getLoop() {
