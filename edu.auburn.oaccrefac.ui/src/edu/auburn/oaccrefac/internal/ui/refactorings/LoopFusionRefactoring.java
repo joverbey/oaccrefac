@@ -27,8 +27,6 @@ import edu.auburn.oaccrefac.core.dependence.check.FusionInitialCheck;
  */
 public class LoopFusionRefactoring extends ForLoopRefactoring {
 
-    private ASTChange m_fuseLoops;
-
     public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }

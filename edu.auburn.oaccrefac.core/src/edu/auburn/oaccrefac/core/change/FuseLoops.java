@@ -18,6 +18,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -152,7 +153,6 @@ public class FuseLoops extends ForLoopChange {
         for(IASTPreprocessorPragmaStatement prag : prags) {
             remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
         }
-        
         String body = "";
         body += decompound(m_first.getBody().getRawSignature());
         body += decompound(m_second.getBody().getRawSignature());
@@ -162,24 +162,29 @@ public class FuseLoops extends ForLoopChange {
         finalizeChanges();
     }
     
-    private IASTStatement getLastStatement(IASTCompoundStatement comp) {
-        return comp.getStatements()[comp.getStatements().length];
+    //TODO - be sure IScope.find() does what i think it does
+    private String newName(String name, IScope scope) {
+        for(int i = 0; true; i++) {
+            String newName = name + "_" + i;
+            if(scope.find(newName).length == 0) {
+                return newName;
+            }
+        }
     }
     
-    /**
-     * Internal helper method called by the algorithm to potentially modify
-     * the statement before being merged into the first's body. For example,
-     * if the statement in the second's body is a redeclaration of a variable
-     * in the first's body, then we need to change that somehow.
-     * @author Adam Eichelkraut
-     * 
-     * TODO -- the current method is wrong. Instead of removing the declaration
-     * of the variable, we need to change the name of the variable instead because
-     * it doesn't handle the case that the two identical identifiers may be different types.
-     * 
-     * @param child -- statement from the second's body
-     * @return -- copied, unfrozen node to be merged
-     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private IASTNode modifyChild(IASTNode child) {
 
         if (isAssignmentDeclaration(child)) {

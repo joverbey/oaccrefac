@@ -32,6 +32,7 @@ public abstract class DependenceCheck extends Check {
     
     public abstract RefactoringStatus doCheck(RefactoringStatus status);
     
+    @Override
     public RefactoringStatus check(RefactoringStatus status, IProgressMonitor pm) {
         
         try {
