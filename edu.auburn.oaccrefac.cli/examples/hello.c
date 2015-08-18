@@ -10,6 +10,8 @@ int main(int argc, char **argv)
 	for (int i = 0; i < 10; i++)
 	{
 		msg[i] = msg[i] + 1;
+		if (arg == 1)
+			printf("There was one argument");
 	}
 
 	println(msg);

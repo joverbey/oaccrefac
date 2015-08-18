@@ -12,13 +12,12 @@ import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
+import edu.auburn.oaccrefac.core.change.FizzLoops;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.change.UnrollLoop;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class Main {
@@ -42,17 +41,17 @@ public class Main {
         IASTForStatement forLoop = ASTUtil.findOne(translationUnit, IASTForStatement.class);
         // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
 
-        UnrollLoop unroll = new UnrollLoop(rw, forLoop, 4);
-        RefactoringStatus status = unroll.checkConditions(new RefactoringStatus(), null);
+        FizzLoops xform = new FizzLoops(translationUnit, rw, forLoop);
+        RefactoringStatus status = xform.checkConditions(new RefactoringStatus(), null);
         printStatus(status);
 
         if (status.hasFatalError()) {
             System.exit(1);
         }
 
-        Change chg = unroll.change().rewriteAST();
+        xform.change();
         try {
-            chg.perform(new NullProgressMonitor());
+            xform.rewriteAST().perform(new NullProgressMonitor());
         } catch (CoreException e) {
             System.err.printf("Internal error creating change: %s\n", e.getMessage());
             System.exit(1);

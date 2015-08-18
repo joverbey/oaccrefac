@@ -8,6 +8,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
@@ -30,8 +31,8 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 public abstract class ASTChange {
     
     //Members
-    private IASTRewrite m_rewriter;
-    private IASTTranslationUnit m_tu;
+    private final IASTRewrite m_rewriter;
+    private final IASTTranslationUnit m_tu;
     private StringBuilder m_src;
     private int originalLength;
     //offset into the file that the StringBuilder starts at - 
@@ -115,9 +116,8 @@ public abstract class ASTChange {
      * @return -- returns the top-level rewriter used
      * @throws IllegalArgumentException if the rewriter is null at this point
      */
-    public final ASTChange change() {
+    public final void change() {
         doChange();
-        return this;
     }
 
     protected final void insert(int offset, String text) {
@@ -236,6 +236,11 @@ public abstract class ASTChange {
 //            && length > 0;
 //    }
     
-    
-    
+    /**
+     * Called by the CLI to rewrite the AST.  Not used by the Eclipse GUI.
+     * @return
+     */
+    public Change rewriteAST() {
+        return m_rewriter.rewriteAST();
+    }
 }
