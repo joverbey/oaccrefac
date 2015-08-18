@@ -42,6 +42,7 @@ public abstract class ASTChange {
     public static final String PRAGMA = "#pragma ";
     public static final String COMP_OPEN = " { ";
     public static final String COMP_CLOSE = " } ";
+    public static final String SEMICOLON = ";";
     
     //FIXME should somehow get an IASTRewrite from the tu and only take one argument
     public ASTChange(IASTTranslationUnit tu, IASTRewrite rewriter) {
@@ -192,11 +193,20 @@ public abstract class ASTChange {
         return COMP_OPEN + code + COMP_CLOSE;
     }
     
+    protected final String decompound(String code) {
+        if(code.trim().startsWith(COMP_OPEN.trim()) && code.trim().endsWith(COMP_CLOSE.trim())) {
+            return code.trim().substring(1, code.trim().length() - 1);
+        }
+        else {
+            return code;
+        }
+    }
+    
     protected final String forLoop(String init, String cond, String iter, String body) {
-        if (!init.trim().endsWith(";"))
-            init += ";";
-        if (!cond.trim().endsWith(";"))
-            cond += ";";
+        if (!init.trim().endsWith(SEMICOLON))
+            init += SEMICOLON;
+        if (!cond.trim().endsWith(SEMICOLON))
+            cond += SEMICOLON;
         StringBuilder sb = new StringBuilder(String.format("for (%s %s %s)", init, cond, iter));
         sb.append(System.lineSeparator());
         sb.append(body);

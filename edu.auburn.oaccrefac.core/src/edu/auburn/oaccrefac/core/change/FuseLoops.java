@@ -1,12 +1,10 @@
 package edu.auburn.oaccrefac.core.change;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
@@ -20,7 +18,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -157,26 +154,16 @@ public class FuseLoops extends ForLoopChange {
         }
         
         String body = "";
-        if(m_first.getBody() instanceof IASTCompoundStatement) {
-            for(IASTStatement stmt : ((IASTCompoundStatement) m_first.getBody()).getStatements()) {
-                body += stmt.getRawSignature() + System.lineSeparator();
-            }
-        }
-        else {
-            body += m_first.getBody().getRawSignature() + System.lineSeparator();
-        }
-        if(m_second.getBody() instanceof IASTCompoundStatement) {
-            for(IASTStatement stmt : ((IASTCompoundStatement) m_second.getBody()).getStatements()) {
-                body += stmt.getRawSignature() + System.lineSeparator();
-            }
-        }
-        else {
-            body += m_first.getBody().getRawSignature() + System.lineSeparator();
-        }
-        replace(m_first.getBody().getFileLocation().getNodeOffset(), 
-                m_first.getBody().getFileLocation().getNodeLength(), compound(body));
+        body += decompound(m_first.getBody().getRawSignature());
+        body += decompound(m_second.getBody().getRawSignature());
+        body = compound(body);
+        this.replace(m_first.getBody(), body);
         
         finalizeChanges();
+    }
+    
+    private IASTStatement getLastStatement(IASTCompoundStatement comp) {
+        return comp.getStatements()[comp.getStatements().length];
     }
     
     /**

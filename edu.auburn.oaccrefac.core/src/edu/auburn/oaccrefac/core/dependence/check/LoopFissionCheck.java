@@ -15,7 +15,7 @@ public class LoopFissionCheck extends DependenceCheck {
     }
     
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    public RefactoringStatus doCheck(RefactoringStatus status) {
         // If the loop doesn't have children, bail.
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {
             status.addFatalError("Body does not have any statements, so loop fission is useless.");

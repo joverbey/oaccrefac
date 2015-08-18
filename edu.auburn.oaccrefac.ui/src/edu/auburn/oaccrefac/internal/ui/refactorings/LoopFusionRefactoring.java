@@ -9,6 +9,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.FuseLoops;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.dependence.check.Check;
 import edu.auburn.oaccrefac.core.dependence.check.FusionInitialCheck;
 
 /**
@@ -34,6 +35,8 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
+        Check check = new FusionInitialCheck(getLoop());
+        check.check(initStatus, pm);
     }
 
     @Override

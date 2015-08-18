@@ -35,7 +35,9 @@ public class InterchangeCheck extends DependenceCheck {
     }
     
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    public RefactoringStatus doCheck(RefactoringStatus status) {
+        
+        DependenceAnalysis dep = getDependenceAnalysis();
         
         List<IASTForStatement> headers = m_inq.getPerfectLoopNestHeaders();
         int second_depth = headers.indexOf(m_second);

@@ -15,9 +15,10 @@ import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
  * @author Adam Eichelkraut
  *
  */
-public abstract class DependenceCheck {
+public abstract class DependenceCheck extends Check {
 
     private IASTStatement[] m_statements;
+    private DependenceAnalysis dependenceAnalysis;
     
     public DependenceCheck(final IASTForStatement loop) {
         if(loop.getBody() instanceof IASTCompoundStatement) {
@@ -29,11 +30,10 @@ public abstract class DependenceCheck {
         }
     }
     
-    public abstract RefactoringStatus doCheck(RefactoringStatus status, DependenceAnalysis dep);
+    public abstract RefactoringStatus doCheck(RefactoringStatus status);
     
     public RefactoringStatus check(RefactoringStatus status, IProgressMonitor pm) {
         
-        DependenceAnalysis dependenceAnalysis = null;
         try {
             dependenceAnalysis = new DependenceAnalysis(pm, m_statements);
         } catch (DependenceTestFailure e) {
@@ -41,7 +41,11 @@ public abstract class DependenceCheck {
             return status;
         }
         
-        return doCheck(status, dependenceAnalysis);
+        return doCheck(status);
         
+    }
+    
+    protected final DependenceAnalysis getDependenceAnalysis() {
+        return dependenceAnalysis;
     }
 }

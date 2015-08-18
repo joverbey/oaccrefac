@@ -13,9 +13,11 @@ public class IntroOpenACCParallelCheck extends DependenceCheck {
     }
     
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    public RefactoringStatus doCheck(RefactoringStatus status) {
         // TODO: Check for existing/conflicting OpenACC pragma
 
+        DependenceAnalysis dep = getDependenceAnalysis();
+        
         if (dep != null && dep.hasLevel1CarriedDependence()) {
             status.addError("This loop cannot be parallelized because it carries a dependence.");
         }

@@ -341,7 +341,7 @@ public class ASTUtil {
             result = result.substring(0, MAX_LEN + 1) + "...";
         return result;
     }
-
+    
     private ASTUtil() {
     }
 }
