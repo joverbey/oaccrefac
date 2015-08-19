@@ -1,10 +1,13 @@
 package edu.auburn.oaccrefac.core.change;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
@@ -16,6 +19,7 @@ import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
@@ -158,24 +162,100 @@ public class FuseLoops extends ForLoopChange {
         body += decompound(m_second.getBody().getRawSignature());
         body = compound(body);
         this.replace(m_first.getBody(), body);
+
+        Map<?, ?> m = getNameModifications(m_first, m_second);
         
         finalizeChanges();
+        
     }
     
-    //TODO - be sure IScope.find() does what i think it does
-    private String newName(String name, IScope scope) {
+    private Map<String, List<IASTName>> getNameModifications(IASTForStatement loop1, IASTForStatement loop2) {
+        IASTStatement[] body1 = getBodyStatements(loop1);
+        IASTStatement[] body2 = getBodyStatements(loop2);
+        Map<String, List<IASTName>> map = new HashMap<String, List<IASTName>>();
+        for(IASTStatement stmt1 : body1) {
+            for(IASTStatement stmt2 : body2) {
+                if(stmt1 instanceof IASTDeclarationStatement && stmt2 instanceof IASTDeclarationStatement &&
+                        ((IASTDeclarationStatement) stmt1).getDeclaration() instanceof IASTSimpleDeclaration &&
+                        ((IASTDeclarationStatement) stmt2).getDeclaration() instanceof IASTSimpleDeclaration) {
+                    IASTSimpleDeclaration decl1 = (IASTSimpleDeclaration) ((IASTDeclarationStatement) stmt1).getDeclaration();
+                    IASTSimpleDeclaration decl2 = (IASTSimpleDeclaration) ((IASTDeclarationStatement) stmt2).getDeclaration();
+                    
+                    mapNewNamesToIdenticalDeclarators(decl1, decl2, loop1, loop2, map);
+                    
+                }
+            }
+        }
+        return map;
+    }
+    
+    private IASTStatement[] getBodyStatements(IASTForStatement loop) {
+        if(loop.getBody() instanceof IASTCompoundStatement) {
+            return ((IASTCompoundStatement) loop.getBody()).getStatements();
+        }
+        else {
+            return new IASTStatement[] {loop.getBody()};
+        }
+    }
+    
+  //TODO add a check for if we have already used this new name (ie, if there is a duplicate c and c_0 both, both will end up called c_1)
+    private String newName(String name, IScope scope1, IScope scope2) {
         for(int i = 0; true; i++) {
-            String newName = name + "_" + i;
-            if(scope.find(newName).length == 0) {
-                return newName;
+            String newNameStr = name + "_" + i;
+            IASTName newName = ASTNodeFactoryFactory.getDefaultCNodeFactory().newName(newNameStr.toCharArray());
+            if(!ASTUtil.isNameInScope(newName, scope1) && !ASTUtil.isNameInScope(newName, scope2)) {
+                return newNameStr;
             }
         }
     }
     
+    private void mapNewNamesToIdenticalDeclarators(IASTSimpleDeclaration decl1, IASTSimpleDeclaration decl2, 
+            IASTForStatement loop1, IASTForStatement loop2, Map<String, List<IASTName>> map) {
+        for(IASTDeclarator d1 : decl1.getDeclarators()) {
+            for(IASTDeclarator d2 : decl2.getDeclarators()) {
+                //TODO be sure this is correct - should be a check to see if d1 and d2 have identical names
+                if(d1.getName().getRawSignature().equals(d2.getName().getRawSignature())) {
+                    
+                    //TODO can cast to compound statements can be assumed from preconditions?
+                    String newName = newName(d2.getName().getRawSignature(), 
+                            ((IASTCompoundStatement) loop1.getBody()).getScope(), ((IASTCompoundStatement) loop2.getBody()).getScope());
+                    List<IASTName> uses = getUses(d2, loop2);
+                    
+                    map.put(newName, uses);
+                
+                }
+            }
+        }
+    }
     
-    
-    
-    
+    private List<IASTName> getUses(IASTDeclarator decl, IASTForStatement loop) {
+        
+        class VariableUseFinder extends ASTVisitor {
+            
+            private IASTName decl;
+            public List<IASTName> uses;
+            
+            public VariableUseFinder(IASTName decl) {
+                this.decl = decl;
+                this.uses = new ArrayList<IASTName>();
+                shouldVisitNames = true;
+            }
+            
+            @Override
+            public int visit(IASTName name) {
+                if(name.resolveBinding().equals(decl.resolveBinding())) {
+                    uses.add(name);
+                }
+                return PROCESS_CONTINUE;
+            }
+            
+        }
+        
+        VariableUseFinder finder = new VariableUseFinder(decl.getName());
+        loop.accept(finder);
+        return finder.uses;
+        
+    }
     
     
     
