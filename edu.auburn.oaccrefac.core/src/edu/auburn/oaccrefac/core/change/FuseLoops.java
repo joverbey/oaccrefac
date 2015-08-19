@@ -169,10 +169,10 @@ public class FuseLoops extends ForLoopChange {
         
     }
     
-    private Map<String, List<IASTName>> getNameModifications(IASTForStatement loop1, IASTForStatement loop2) {
+    private Map<IASTName, String> getNameModifications(IASTForStatement loop1, IASTForStatement loop2) {
         IASTStatement[] body1 = getBodyStatements(loop1);
         IASTStatement[] body2 = getBodyStatements(loop2);
-        Map<String, List<IASTName>> map = new HashMap<String, List<IASTName>>();
+        Map<IASTName, String> map = new HashMap<IASTName, String>();
         for(IASTStatement stmt1 : body1) {
             for(IASTStatement stmt2 : body2) {
                 if(stmt1 instanceof IASTDeclarationStatement && stmt2 instanceof IASTDeclarationStatement &&
@@ -210,7 +210,7 @@ public class FuseLoops extends ForLoopChange {
     }
     
     private void mapNewNamesToIdenticalDeclarators(IASTSimpleDeclaration decl1, IASTSimpleDeclaration decl2, 
-            IASTForStatement loop1, IASTForStatement loop2, Map<String, List<IASTName>> map) {
+            IASTForStatement loop1, IASTForStatement loop2, Map<IASTName, String> map) {
         for(IASTDeclarator d1 : decl1.getDeclarators()) {
             for(IASTDeclarator d2 : decl2.getDeclarators()) {
                 //TODO be sure this is correct - should be a check to see if d1 and d2 have identical names
@@ -221,7 +221,9 @@ public class FuseLoops extends ForLoopChange {
                             ((IASTCompoundStatement) loop1.getBody()).getScope(), ((IASTCompoundStatement) loop2.getBody()).getScope());
                     List<IASTName> uses = getUses(d2, loop2);
                     
-                    map.put(newName, uses);
+                    for(IASTName use : uses) {
+                        map.put(use, newName);
+                    }
                 
                 }
             }
