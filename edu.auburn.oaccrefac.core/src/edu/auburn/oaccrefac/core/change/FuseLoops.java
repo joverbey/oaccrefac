@@ -1,13 +1,17 @@
 package edu.auburn.oaccrefac.core.change;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
@@ -159,12 +163,21 @@ public class FuseLoops extends ForLoopChange {
         }
         String body = "";
         body += decompound(m_first.getBody().getRawSignature());
-        body += decompound(m_second.getBody().getRawSignature());
+        
+        for(IASTNode bodyObject : getBodyObjects(m_second)) {
+            String stmt;
+            if(bodyObject instanceof IASTStatement) {
+                stmt = getModifiedStatement((IASTStatement) bodyObject, getNameModifications(m_first, m_second));
+            }
+            else {
+                stmt = bodyObject.getRawSignature();
+            }
+            body += stmt + System.lineSeparator();
+        }
+        
         body = compound(body);
         this.replace(m_first.getBody(), body);
 
-        Map<?, ?> m = getNameModifications(m_first, m_second);
-        
         finalizeChanges();
         
     }
@@ -196,6 +209,30 @@ public class FuseLoops extends ForLoopChange {
         else {
             return new IASTStatement[] {loop.getBody()};
         }
+    }
+    
+    //gets statements AND comments from a loop body in forward order
+    private IASTNode[] getBodyObjects(IASTForStatement loop) {
+        List<IASTNode> objects = new ArrayList<IASTNode>();
+        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        for(IASTComment comment : loop.getTranslationUnit().getComments()) {
+            //if the comment's offset is in between the start of the loop and the end of the loop body
+            if(comment.getFileLocation().getNodeOffset() > loop.getBody().getFileLocation().getNodeOffset() &&
+                    comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset() + loop.getBody().getFileLocation().getNodeLength()) {
+                objects.add(comment);
+            }
+        }
+        Collections.sort(objects, new Comparator<IASTNode>() {
+
+            @Override
+            public int compare(IASTNode node1, IASTNode node2) {
+                return node1.getFileLocation().getNodeOffset() - node2.getFileLocation().getNodeOffset();
+            }
+            
+        });
+        
+        return objects.toArray(new IASTNode[objects.size()]);
+        
     }
     
   //TODO add a check for if we have already used this new name (ie, if there is a duplicate c and c_0 both, both will end up called c_1)
@@ -259,9 +296,40 @@ public class FuseLoops extends ForLoopChange {
         
     }
     
+    private String getModifiedStatement(IASTStatement original, Map<IASTName, String> map) {
+        
+        StringBuilder sb = new StringBuilder(original.getRawSignature());
+        
+        //references in reverse order of file location
+        IASTName[] references = getReferencesToModify(original, map.keySet());
+        
+        for(IASTName reference : references) {
+            int offsetIntoStatement = reference.getFileLocation().getNodeOffset() - original.getFileLocation().getNodeOffset();
+            sb.replace(offsetIntoStatement, offsetIntoStatement + reference.getFileLocation().getNodeLength(), map.get(reference));
+        }
+        
+        return sb.toString();
+    }
     
-    
-    
+    //returns in reverse order of file location
+    private IASTName[] getReferencesToModify(IASTStatement original, Set<IASTName> allRefs) {
+        List<IASTName> refsToMod = new ArrayList<IASTName>();
+        for(IASTName ref : allRefs) {
+            if(ASTUtil.isAncestor(original, ref)) {
+                refsToMod.add(ref);
+            }
+        }
+        Collections.sort(refsToMod, new Comparator<IASTName>() {
+
+            @Override
+            public int compare(IASTName name1, IASTName name2) {
+                return name2.getFileLocation().getNodeOffset() - name1.getFileLocation().getNodeOffset();
+            }
+            
+        });
+        
+        return refsToMod.toArray(new IASTName[refsToMod.size()]);
+    }
     
     
     

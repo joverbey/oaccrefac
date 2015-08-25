@@ -78,6 +78,15 @@ public class ASTUtil {
         return null;
     }
 
+    public static boolean isAncestor(IASTNode ancestor, IASTNode descendant) {
+        for(IASTNode node = descendant; node != null; node = node.getParent()) {
+            if(node.equals(ancestor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
      * next sibling after itself with respect to its parent.
