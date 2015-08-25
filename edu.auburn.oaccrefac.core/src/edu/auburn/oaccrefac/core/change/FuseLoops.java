@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,7 @@ public class FuseLoops extends ForLoopChange {
     private IASTForStatement m_first;
     private IASTForStatement m_second;
     private Map<String, IASTName> m_modifiedVariableDecls;
+    private Set<String> usedNames;
     
     /**
      * Constructor that takes a for-loop to perform fusion on
@@ -78,6 +80,7 @@ public class FuseLoops extends ForLoopChange {
         m_first = loop;
         m_second = (IASTForStatement) ASTUtil.getNextSibling(m_first);
         m_modifiedVariableDecls = new HashMap<String, IASTName>();
+        usedNames = new HashSet<String>();
     }
     
     @Override
@@ -118,39 +121,6 @@ public class FuseLoops extends ForLoopChange {
         
         return;
     }
-    
-//    @Override
-//    protected void doChange() {
-//        
-//        //We make the first loop the loop body in which to merge
-//        //the two bodies. Make sure that it is a compound statement.
-//        IASTStatement body = m_first.getBody();
-//        IASTRewrite body_rewriter = rewriter;
-//        if (!(body instanceof IASTCompoundStatement)) {
-//            ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-//            IASTCompoundStatement newBody = factory.newCompoundStatement();
-//            newBody.addStatement(body.copy());
-//            body_rewriter = this.safeReplace(rewriter, body, newBody);
-//            body = newBody;
-//        }
-//        
-//        IASTStatement body_second = m_second.getBody();
-//        if (body_second instanceof IASTCompoundStatement) {
-//            IASTNode chilluns[] = body_second.getChildren();
-//            for (IASTNode child : chilluns) {
-//                //For each statement to be added to the first's body,
-//                //insert the return of 'modifyChild' on the child.
-//                this.safeInsertBefore(body_rewriter, body, null, modifyChild(child));
-//            }
-//        } else {
-//            //Otherwise, the second's body is just a single statement...
-//            this.safeInsertBefore(body_rewriter, body, null, modifyChild(body_second));
-//        }
-//        
-//        //Remove the second loop from AST, as both are merged at this point
-//        this.safeRemove(rewriter, m_second);
-//        return rewriter;
-//    }
 
     //FIXME figure out how to handle pragmas on each loop
     @Override
@@ -331,93 +301,4 @@ public class FuseLoops extends ForLoopChange {
         return refsToMod.toArray(new IASTName[refsToMod.size()]);
     }
     
-    
-    
-    
-    
-    private IASTNode modifyChild(IASTNode child) {
-
-        if (isAssignmentDeclaration(child)) {
-            //cast ensured from previous check
-            return modifyVariableDeclaration(
-                    (IASTDeclarationStatement) child);
-        } else {
-            return replaceModifiedVariables(child);
-        }
-    }
-    
-    /**
-     * Determines if a given node is an assignment declaration by
-     * looking for an {@link IASTEqualsInitializer} node within the
-     * tree of the child parameter as well as make sure that the node
-     * is a {@link IASTDeclarationStatement}.
-     * @author Adam Eichelkraut
-     * @param child -- node to look for
-     * @return T/F whether it is assignment declaration
-     */
-    private boolean isAssignmentDeclaration(IASTNode child) {
-        if (child instanceof IASTDeclarationStatement) {
-            IASTEqualsInitializer eq = 
-                    ASTUtil.findOne(child, IASTEqualsInitializer.class);
-            if (eq == null)
-                return false;
-            IASTInitializerClause clause = eq.getInitializerClause();
-            return (clause instanceof IASTExpression);
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Modifies a variable declaration so that a variable declaration that
-     * is conflicting with another within the first loop is able to be merged
-     * @param child -- node to be modified
-     * @return -- modified node
-     */
-    private IASTNode modifyVariableDeclaration(IASTDeclarationStatement child) {
-        IASTDeclarator decltr = ASTUtil.findOne(child, IASTDeclarator.class);
-        IASTName name = decltr.getName();
-        //ensured from preconditions...
-        IASTCompoundStatement first_body = (IASTCompoundStatement) m_first.getBody();
-        
-        if (ASTUtil.isNameInScope(name, first_body.getScope())) {
-            IASTName newName = this.generateNewName(name, first_body.getScope());
-            m_modifiedVariableDecls.put(new String(name.getSimpleID()), newName);
-            IASTNode child_copy = child.copy();
-            IASTDeclarator var_decltr = 
-                    ASTUtil.findOne(child_copy, IASTDeclarator.class);
-            var_decltr.setName(newName); //change name
-            return child_copy;
-        } else {
-            return child.copy();
-        }
-    }
-    
-    /**
-     * Method takes a child statement node from the body of the second
-     * loop and replaces, if any, modified variable names that occured
-     * before it.
-     * @author Adam Eichelkraut
-     * @param child -- node to replace variable names in
-     * @return -- unfrozen, copy of child node with variable names replaced
-     */
-    private IASTNode replaceModifiedVariables(IASTNode child) {
-        IASTNode modified = child.copy();
-        List<IASTName> names = ASTUtil.find(modified, IASTName.class);
-        for (IASTName name : names) {
-            IASTName replacedName = 
-                    m_modifiedVariableDecls.get(new String(name.getSimpleID()));
-            if (replacedName != null) {
-                IASTNode parent = name.getParent();
-                if (parent instanceof IASTIdExpression) {
-                    IASTIdExpression id = (IASTIdExpression) parent;
-                    id.setName(replacedName);
-                }
-            }
-        }
-        return modified;
-    }
-
-
-
 }
