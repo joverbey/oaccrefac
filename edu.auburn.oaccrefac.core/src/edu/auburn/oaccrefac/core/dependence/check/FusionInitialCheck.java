@@ -29,7 +29,7 @@ public class FusionInitialCheck extends Check {
         IASTForStatement pattern = m_first.copy();
         pattern.setBody(new ArbitraryStatement());
         
-        while (ASTUtil.getNextSibling(newnode) != null && !found) {
+        if (ASTUtil.getNextSibling(newnode) != null) {
             newnode = ASTUtil.getNextSibling(newnode);
             m_second = ASTUtil.findOne(newnode, IASTForStatement.class);
             found = (m_second != null);
