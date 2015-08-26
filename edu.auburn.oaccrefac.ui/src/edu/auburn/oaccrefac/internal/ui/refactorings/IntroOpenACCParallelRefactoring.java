@@ -30,7 +30,6 @@ import edu.auburn.oaccrefac.core.dependence.check.IntroOpenACCParallelCheck;
  * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
-@SuppressWarnings("restriction")
 public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
     public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {

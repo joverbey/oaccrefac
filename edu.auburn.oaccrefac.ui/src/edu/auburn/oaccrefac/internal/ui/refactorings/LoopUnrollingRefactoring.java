@@ -9,7 +9,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.change.UnrollLoop;
 
 /**
  * This class defines the implementation for refactoring a loop

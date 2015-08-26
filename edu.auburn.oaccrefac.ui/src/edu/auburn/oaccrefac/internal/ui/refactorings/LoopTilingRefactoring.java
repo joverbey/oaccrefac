@@ -6,9 +6,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.Change;
-import edu.auburn.oaccrefac.internal.ui.refactorings.changes.TileLoops;
+import edu.auburn.oaccrefac.core.change.TileLoops;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
@@ -24,20 +24,11 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
     private int m_stripFactor;
     private int m_propagate;
     
-    private Change<?> m_tileChange;
-    
     public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
         m_depth = 0;
         m_propagate = -1;
         m_stripFactor = 0;
-    }
-
-    @Override
-    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        m_tileChange = new TileLoops(getLoop(), 
-                m_depth, m_stripFactor, m_propagate);
-        m_tileChange.checkConditions(status, pm);
     }
     
     public void setStripMineDepth(int depth) {
@@ -53,8 +44,13 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
     }
 
     @Override
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
+        // FIXME: Check preconditions
+    }
+
+    @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        rewriter = m_tileChange.change(rewriter);
-//        rewriter.replace(getLoop(), refactored, null);
+        ASTChange change = new TileLoops(getAST(), rewriter, getLoop(), m_depth, m_stripFactor, m_propagate);
+        change.change();
     }
 }

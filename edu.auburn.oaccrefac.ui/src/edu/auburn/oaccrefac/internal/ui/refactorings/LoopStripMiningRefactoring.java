@@ -8,7 +8,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.change.ASTChange;
 import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.change.StripMine;
 
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
