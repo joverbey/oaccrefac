@@ -122,7 +122,7 @@ public class FuseLoops extends ForLoopChange {
         return;
     }
 
-    //FIXME figure out how to handle pragmas on each loop
+    //FIXME figure out what to do with pragmas on each loop
     @Override
     protected void doChange() {
         remove(m_second.getFileLocation().getNodeOffset(), m_second.getFileLocation().getNodeLength());
@@ -132,8 +132,12 @@ public class FuseLoops extends ForLoopChange {
             remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
         }
         String body = "";
-        body += decompound(m_first.getBody().getRawSignature());
+        //body += decompound(m_first.getBody().getRawSignature());
         
+        for(int i = getBodyObjects(m_first).length - 1; i >= 0; i--) {
+            IASTNode bodyObject = getBodyObjects(m_first)[i];
+            body = bodyObject.getRawSignature() + System.lineSeparator() + body;
+        }
         for(IASTNode bodyObject : getBodyObjects(m_second)) {
             String stmt;
             if(bodyObject instanceof IASTStatement) {
@@ -145,9 +149,18 @@ public class FuseLoops extends ForLoopChange {
             body += stmt + System.lineSeparator();
         }
         
+        
         body = compound(body);
+        
         this.replace(m_first.getBody(), body);
-
+        
+        for(int i = getBodyObjects(m_first).length - 1; i >= 0; i--) {
+            IASTNode bodyObject = getBodyObjects(m_first)[i];
+            if(!(m_first.getBody() instanceof IASTCompoundStatement) && bodyObject instanceof IASTComment) {
+                this.remove(bodyObject.getFileLocation().getNodeOffset(), bodyObject.getFileLocation().getNodeLength() + System.lineSeparator().length());
+            }
+        }
+        
         finalizeChanges();
         
     }
@@ -186,8 +199,8 @@ public class FuseLoops extends ForLoopChange {
         List<IASTNode> objects = new ArrayList<IASTNode>();
         objects.addAll(Arrays.asList(getBodyStatements(loop)));
         for(IASTComment comment : loop.getTranslationUnit().getComments()) {
-            //if the comment's offset is in between the start of the loop and the end of the loop body
-            if(comment.getFileLocation().getNodeOffset() > loop.getBody().getFileLocation().getNodeOffset() &&
+            //if the comment's offset is in between the end of the loop header and the end of the loop body
+            if(comment.getFileLocation().getNodeOffset() > loop.getIterationExpression().getFileLocation().getNodeOffset() + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length() &&
                     comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset() + loop.getBody().getFileLocation().getNodeLength()) {
                 objects.add(comment);
             }
@@ -205,7 +218,6 @@ public class FuseLoops extends ForLoopChange {
         
     }
     
-  //TODO add a check for if we have already used this new name (ie, if there is a duplicate c and c_0 both, both will end up called c_1)
     private String newName(String name, IScope scope1, IScope scope2) {
         for(int i = 0; true; i++) {
             String newNameStr = name + "_" + i;
@@ -220,10 +232,8 @@ public class FuseLoops extends ForLoopChange {
             IASTForStatement loop1, IASTForStatement loop2, Map<IASTName, String> map) {
         for(IASTDeclarator d1 : decl1.getDeclarators()) {
             for(IASTDeclarator d2 : decl2.getDeclarators()) {
-                //TODO be sure this is correct - should be a check to see if d1 and d2 have identical names
                 if(d1.getName().getRawSignature().equals(d2.getName().getRawSignature())) {
                     
-                    //TODO can cast to compound statements can be assumed from preconditions?
                     String newName = newName(d2.getName().getRawSignature(), 
                             ((IASTCompoundStatement) loop1.getBody()).getScope(), ((IASTCompoundStatement) loop2.getBody()).getScope());
                     List<IASTName> uses = getUses(d2, loop2);
