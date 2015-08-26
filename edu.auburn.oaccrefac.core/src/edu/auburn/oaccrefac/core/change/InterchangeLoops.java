@@ -80,35 +80,17 @@ public class InterchangeLoops extends ForLoopChange {
         return;
     }
     
-//    @Override
-//    public void doChange() {
-//        IASTForStatement first = getLoopToChange();
-//        return this.exchangeLoopHeaders(rewriter, first, m_second);
-//    }
-    
     @Override
     protected void doChange() {
         IASTForStatement first = getLoopToChange();
-        int firstInitOff = first.getInitializerStatement().getFileLocation().getNodeOffset();
-        int firstInitLen = first.getInitializerStatement().getFileLocation().getNodeLength();
-        int firstCondOff = first.getConditionExpression().getFileLocation().getNodeOffset();
-        int firstCondLen = first.getConditionExpression().getFileLocation().getNodeLength();
-        int firstIterOff = first.getIterationExpression().getFileLocation().getNodeOffset();
-        int firstIterLen = first.getIterationExpression().getFileLocation().getNodeLength();
-        int secondInitOff = m_second.getInitializerStatement().getFileLocation().getNodeOffset();
-        int secondInitLen = m_second.getInitializerStatement().getFileLocation().getNodeLength();
-        int secondCondOff = m_second.getConditionExpression().getFileLocation().getNodeOffset();
-        int secondCondLen = m_second.getConditionExpression().getFileLocation().getNodeLength();
-        int secondIterOff = m_second.getIterationExpression().getFileLocation().getNodeOffset();
-        int secondIterLen = m_second.getIterationExpression().getFileLocation().getNodeLength();
         List<IASTPreprocessorPragmaStatement> firstPrags = getPragmas(first);
         List<IASTPreprocessorPragmaStatement> secondPrags = getPragmas(m_second);
         Collections.reverse(firstPrags);
         Collections.reverse(secondPrags);
 
-        replace(secondIterOff, secondIterLen, first.getIterationExpression().getRawSignature());
-        replace(secondCondOff, secondCondLen, first.getConditionExpression().getRawSignature());
-        replace(secondInitOff, secondInitLen, first.getInitializerStatement().getRawSignature());
+        replace(m_second.getIterationExpression(), first.getIterationExpression().getRawSignature());
+        replace(m_second.getConditionExpression(), first.getConditionExpression().getRawSignature());
+        replace(m_second.getInitializerStatement(), first.getInitializerStatement().getRawSignature());
         for(IASTPreprocessorPragmaStatement prag : firstPrags) {
             insert(m_second.getFileLocation().getNodeOffset(), prag.getRawSignature() + System.lineSeparator());
         }
@@ -116,9 +98,9 @@ public class InterchangeLoops extends ForLoopChange {
             remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
         }
         
-        replace(firstIterOff, firstIterLen, m_second.getIterationExpression().getRawSignature());
-        replace(firstCondOff, firstCondLen, m_second.getConditionExpression().getRawSignature());
-        replace(firstInitOff, firstInitLen, m_second.getInitializerStatement().getRawSignature());
+        replace(first.getIterationExpression(), m_second.getIterationExpression().getRawSignature());
+        replace(first.getConditionExpression(), m_second.getConditionExpression().getRawSignature());
+        replace(first.getInitializerStatement(), m_second.getInitializerStatement().getRawSignature());
         for(IASTPreprocessorPragmaStatement prag : secondPrags) {
             insert(first.getFileLocation().getNodeOffset(), prag.getRawSignature() + System.lineSeparator());
         }
