@@ -132,7 +132,6 @@ public class FuseLoops extends ForLoopChange {
             remove(prag.getFileLocation().getNodeOffset(), prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
         }
         String body = "";
-        //body += decompound(m_first.getBody().getRawSignature());
         
         for(int i = getBodyObjects(m_first).length - 1; i >= 0; i--) {
             IASTNode bodyObject = getBodyObjects(m_first)[i];
@@ -148,7 +147,6 @@ public class FuseLoops extends ForLoopChange {
             }
             body += stmt + System.lineSeparator();
         }
-        
         
         body = compound(body);
         
