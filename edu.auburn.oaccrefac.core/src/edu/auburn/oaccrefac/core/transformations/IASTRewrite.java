@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.change;
+package edu.auburn.oaccrefac.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
@@ -10,13 +10,13 @@ import org.eclipse.text.edits.TextEditGroup;
  * <p>
  * The Eclipse plug-in uses CDT's {@link ASTRewrite} class to perform rewriting, while the command-line tool uses its
  * own (modified) ASTRewrite class: the Eclipse plug-in depends on the Eclipse file system, while the command-line tool
- * does not. {@link ASTChange} objects receive and return {@link IASTRewrite}s so that they can be used in Eclipse as
- * well as in the command-line tool.
+ * does not. {@link SourceAlteration} objects receive and return {@link IASTRewrite}s so that they can be used in
+ * Eclipse as well as in the command-line tool.
  * 
  * @author Jeff Overbey
  */
 public interface IASTRewrite {
-    
+
     IASTNode createLiteralNode(String code);
 
     void remove(IASTNode node, TextEditGroup editGroup);

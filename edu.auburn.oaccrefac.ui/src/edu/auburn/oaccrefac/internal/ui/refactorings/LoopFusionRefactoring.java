@@ -6,11 +6,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.change.ASTChange;
-import edu.auburn.oaccrefac.core.change.FuseLoops;
-import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.dependence.check.Check;
-import edu.auburn.oaccrefac.core.dependence.check.FusionInitialCheck;
+import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.core.transformations.Check;
+import edu.auburn.oaccrefac.core.transformations.FuseLoopsAlteration;
+import edu.auburn.oaccrefac.core.transformations.FuseLoopsInitialCheck;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:
@@ -33,13 +33,13 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        Check check = new FusionInitialCheck(getLoop());
+        Check check = new FuseLoopsInitialCheck(getLoop());
         check.check(initStatus, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        ASTChange change = new FuseLoops(getAST(), rewriter, getLoop());
+        SourceAlteration change = new FuseLoopsAlteration(getAST(), rewriter, getLoop());
         change.change();
     }
 

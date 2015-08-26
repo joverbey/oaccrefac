@@ -1,115 +1,128 @@
-package edu.auburn.oaccrefac.core.change;
+package edu.auburn.oaccrefac.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
-import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
-import org.eclipse.cdt.core.dom.ast.IASTExpression;
-import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
-import org.eclipse.cdt.core.dom.ast.IASTInitializer;
-import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
-import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * Inheriting from {@link ForLoopChange}, this class defines a loop strip mine
- * refactoring algorithm. Loop strip mining takes a sequential loop and essentially
- * creates 'strips' through perfectly nesting a by-strip loop and an in-strip loop.
+ * Inheriting from {@link ForLoopAlteration}, this class defines a loop tiling refactoring algorithm. Loop tiling takes a
+ * perfectly nested loop and 'tiles' the loop nest by performing loop strip mining on a specified loop and afterwards
+ * interchanging the by-strip loop header as many times as possible.
  * 
  * For example,
- *      for (int i = 0; i < 10; i++) {
-            //do something
- *      }
+ * 
+ * <pre>
+ * for (int j = 0; j < 20; j++) {
+ *     for (int i = 0; i < 10; i++) {
+ *         // do something
+ *     }
+ * }
+ * </pre>
+ * 
  * Refactors to:
- *      The outer is the by-strip, inner is the in-strip...
- *      for (int i_0 = 0; i_0 < 10; i_0 += 2) {
- *          for (int i = i_0; (i < i_0 + 2 && i < 10); i++) {
- *              //do something...
- *          }
- *      }
+ * 
+ * <pre>
+ * for (int i_0 = 0; i_0 < 10; i_0 += 2) {
+ *     for (int j = 0; j < 20; j++) {
+ *         for (int i = i_0; (i < i_0 + 2 && i < 10); i++) {
+ *             // do something...
+ *         }
+ *     }
+ * }
+ * </pre>
  * 
  * @author Adam Eichelkraut
  *
  */
-public class StripMine extends ForLoopChange {
-    
-    //Members
-    private int m_stripFactor;
-    private int m_depth;
-    //We use this in multiple methods... couldn't think
-    //of a better way of not making it a member variable...
-    private IASTName m_generatedName;
-    
+public class TileLoopsAlteration extends ForLoopAlteration {
+
+    private int depth;
+    private int stripFactor;
+    private int propagate;
+
+    private ForStatementInquisitor inq;
+    private IASTName generatedName;
+
     /**
-     * Constructor. Takes parameters for strip factor and strip depth
-     * to tell the refactoring which perfectly nested loop to strip mine.
-     * @author Adam Eichelkraut
-     * @param rewriter -- rewriter associated with the for loop
-     * @param loop -- for loop to refactor
-     * @param stripFactor -- factor for how large strips are
-     * @param depth -- perfectly nested loop depth in 'loop' to strip mine
+     * Constructor. Takes strip depth, strip factor, and how many times to propagate interchange for tiling. Loop nest
+     * must be perfectly nested.
+     * 
+     * @param rewriter
+     *            -- rewriter associated with loop argument
+     * @param loop
+     *            -- for loop in which to tile
+     * @param stripDepth
+     *            -- strip depth of perfectly nested loop headers
+     * @param stripFactor
+     *            -- strip factor in which to strip mine header at depth
+     * @param propagateInterchange
+     *            -- how many times to interchange headers (-1 for arbitrary)
      */
-    public StripMine(IASTTranslationUnit tu, IASTRewrite rewriter, 
-            IASTForStatement loop, int stripFactor, int depth) {
+    public TileLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripDepth,
+            int stripFactor, int propagateInterchange) {
         super(tu, rewriter, loop);
-        m_stripFactor = stripFactor;
-        m_depth = depth;
+        this.depth = stripDepth;
+        this.stripFactor = stripFactor;
+        this.propagate = propagateInterchange;
     }
-    
+
     @Override
     protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.getLoopToChange());
+        //TODO dependence analysis??? how to do i dunno
         
-        //Check strip factor validity...
-        if (m_stripFactor <= 0) {
+        //DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
+        // if (dependenceAnalysis != null && dependenceAnalysis.()) {
+        // status.addError("This loop cannot be parallelized because it carries a dependence.",
+        // getLocation(getLoop()));
+        // }
+        inq = ForStatementInquisitor.getInquisitor(getLoopToChange());
+        if (!inq.isPerfectLoopNest()) {
+            init.addFatalError("Only perfectly nested loops can be tiled.");
+            return;
+        }
+
+        if (propagate > depth) {
+            init.addWarning(
+                    "Warning: propagation higher than depth -- propagation " + "will occur as many times as possible.");
+            return;
+        }
+
+        // TODO -- make this better (this stuff is from strip mining-specific code)
+        if (stripFactor <= 0) {
             init.addFatalError("Invalid strip factor (<= 0).");
             return;
         }
-        
-        //Check depth validity...
-        if (m_depth < 0 || m_depth >= inq.getPerfectLoopNestHeaders().size()) {
-            init.addFatalError("There is no for-loop at depth " + m_depth);
+
+        if (depth < 0 || depth >= inq.getPerfectLoopNestHeaders().size()) {
+            init.addFatalError("There is no for-loop at depth " + depth);
             return;
         }
-        
-        //If the strip factor is not divisible by the original linear
-        //iteration factor, (i.e. loop counts by 4), then we cannot
-        //strip mine because the refactoring will change behavior
-        int iterator = inq.getIterationFactor(m_depth);
-        if (m_stripFactor % iterator != 0 || m_stripFactor <= iterator) {
+
+        int iterator = inq.getIterationFactor(depth);
+        if (stripFactor % iterator != 0 || stripFactor <= iterator) {
             init.addFatalError("Strip mine factor must be greater than and "
                     + "divisible by the intended loop's iteration factor.");
             return;
         }
-        
+        // TODO_end ----------------------------------------------------------------
+
         return;
     }
 
     @Override
-    public void doChange() {
+    protected void doChange() {
 //        //Set up which loops we need to deal with
-//        IASTForStatement byStrip = this.getLoopToChange();
+//        IASTForStatement byStrip = m_inq.getPerfectLoopNestHeaders().get(m_depth);
 //        IASTForStatement inStrip = byStrip.copy();
 //        
-//        //The first loop (original) will be the by-strip
-//        //loop, modify this loop first.
+//        //Modify by-strip loop
 //        this.modifyByStrip(rewriter, byStrip);
 //        
+//        //Modify in-strip loop
 //        IASTStatement body = byStrip.getBody();
 //        IASTRewrite inStrip_rewriter = null;
 //        if (body instanceof IASTCompoundStatement) {
@@ -121,14 +134,34 @@ public class StripMine extends ForLoopChange {
 //        } else {
 //            inStrip_rewriter = this.safeReplace(rewriter, byStrip.getBody(), inStrip);
 //        }
-//        
 //        this.modifyInStrip(inStrip_rewriter, inStrip);
-//        
-//
 //        this.safeReplace(inStrip_rewriter, inStrip.getBody(), byStrip.getBody().copy());
+//        
+//        //Begin interchanging loop headers for tiling-effect
+//        IASTForStatement interchange = m_inq.getPerfectLoopNestHeaders().get(m_depth-1);
+//        for (int i = 0; checkIteration(i); i++) {
+//            interchange = m_inq.getPerfectLoopNestHeaders().get(m_depth-i-1);
+//        }
+//        this.exchangeLoopHeaders(rewriter, byStrip, interchange);
 //        return rewriter;
+    }
+    
+//    /**
+//     * Helper method to check the iteration based on set parameters. If the
+//     * propagation factor is unspecified, then do something else.
+//     * @author Adam Eichelkraut
+//     * @param iteration -- for loop iteration
+//     * @return -- T/F whether to continue interchanging headers
+//     */
+//    private boolean checkIteration(int iteration) {
+//        if (m_propagate < 0) {
+//            return (m_depth-iteration > 0);
+//        } else {
+//            return (iteration < m_propagate && m_depth-iteration > 0);
+//        }
 //    }
 //    
+//    //TODO -- make this better (this stuff is from strip mining-specific code)
 //    /**
 //     * Takes a rewriter and modifies the outer loop's expressions in order to
 //     * iterate in strips rather than sequentially.
@@ -156,8 +189,8 @@ public class StripMine extends ForLoopChange {
 //                factory.newLiteralExpression(
 //                        IASTLiteralExpression.lk_integer_constant, m_stripFactor+""));
 //        this.safeReplace(rewriter, byStripHeader.getIterationExpression(), newIter);
-        
-    }
+//        
+//    }
     
 //    /**
 //     * Generates the initializer statement for the by-strip loop. Basically, it
@@ -200,7 +233,7 @@ public class StripMine extends ForLoopChange {
 //                right_equals);
 //        this.safeReplace(rewriter, headerInitializer, replacement);
 //    }
-
+//
 //    /**
 //     * Modifies the in-strip loop header in order to accommodate the newly-formed
 //     * by-strip loop header. It needs to modify the initializer statement to replace
@@ -214,7 +247,7 @@ public class StripMine extends ForLoopChange {
 //        modifyInStripInit(rewriter, inStripHeader.getInitializerStatement());
 //        modifyInStripCondition(rewriter, inStripHeader);
 //    }
-
+//
 //    /**
 //     * Modifies the in-strip initializer statement by replacing all of the
 //     * right hand side of initializers and binary expressions to the new
@@ -304,6 +337,5 @@ public class StripMine extends ForLoopChange {
 //
 //        this.safeReplace(rewriter, inStripHeader.getConditionExpression(), parenth);
 //    }
-
-    
+    //--------------------------------------------------------------------------------------
 }

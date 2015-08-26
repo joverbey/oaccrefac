@@ -44,7 +44,7 @@ public class ForStatementInquisitor {
     }
 
     private boolean counted;
-    
+
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
             // Constant upper bound
@@ -66,8 +66,8 @@ public class ForStatementInquisitor {
 
     private ForStatementInquisitor(IASTForStatement statement) {
         this.statement = statement;
-        
-        //cache whether or not the loop is counted for performance
+
+        // cache whether or not the loop is counted for performance
         class LiteralReplacer extends ASTVisitor {
             public LiteralReplacer() {
                 shouldVisitExpressions = true;
@@ -98,7 +98,7 @@ public class ForStatementInquisitor {
                 break;
             }
         }
-        if(!countedInitialized) {
+        if (!countedInitialized) {
             counted = false;
         }
     }
@@ -180,6 +180,7 @@ public class ForStatementInquisitor {
     public IASTStatement getInnermostLoopBody() {
         return getInnermostLoopBody(statement);
     }
+
     private IASTStatement getInnermostLoopBody(IASTForStatement outerLoop) {
         IASTStatement body = outerLoop.getBody();
         if (body instanceof IASTForStatement) {
@@ -206,6 +207,7 @@ public class ForStatementInquisitor {
     public boolean areAllInnermostStatementsValid() {
         return areAllInnermostStatementsValid(statement);
     }
+
     private boolean areAllInnermostStatementsValid(IASTForStatement outerLoop) {
         IASTNode body = outerLoop.getBody();
         if (body instanceof IASTCompoundStatement) {
@@ -235,25 +237,26 @@ public class ForStatementInquisitor {
             }
         } else if (body instanceof IASTForStatement) {
             return areAllInnermostStatementsValid((IASTForStatement) body);
-        } else if(body instanceof IASTNullStatement) {
+        } else if (body instanceof IASTNullStatement) {
             return true;
-        }
-        else { // neither compound nor for statement - body is the only statement
+        } else { // neither compound nor for statement - body is the only statement
             if (body instanceof IASTExpressionStatement) {
-                if(body.getChildren()[0] instanceof IASTBinaryExpression) {
-                    if (((IASTBinaryExpression) body.getChildren()[0]).getOperator() == IASTBinaryExpression.op_assign) {
+                if (body.getChildren()[0] instanceof IASTBinaryExpression) {
+                    if (((IASTBinaryExpression) body.getChildren()[0])
+                            .getOperator() == IASTBinaryExpression.op_assign) {
                         return true;
-                    }   
-                }                
+                    }
+                }
             }
             // either not binary or not an assignment
             return false;
         }
     }
-    
+
     public List<IASTForStatement> getPerfectLoopNestHeaders() {
         return getPerfectLoopNestHeaders(statement);
     }
+
     private static List<IASTForStatement> getPerfectLoopNestHeaders(IASTForStatement outerLoop) {
         List<IASTForStatement> result = new LinkedList<IASTForStatement>();
         result.add(outerLoop);
@@ -272,6 +275,7 @@ public class ForStatementInquisitor {
     public boolean isPerfectLoopNest() {
         return isPerfectLoopNest(statement);
     }
+
     private boolean isPerfectLoopNest(IASTForStatement outerLoop) {
         if (!doesForLoopContainForLoopChild(outerLoop)) {
             return true;
@@ -307,12 +311,13 @@ public class ForStatementInquisitor {
         // If we've aborted, it's because we found a for statement
         return !loop.getBody().accept(new Visitor());
     }
-    
+
     /**
      * Method returns the number in which a loop iterates by.
-     * @param depth -- loop depth in which to query
-     * @return integer describing linear loop's iterator
-     *          returns -1 if invalid depth
+     * 
+     * @param depth
+     *            -- loop depth in which to query
+     * @return integer describing linear loop's iterator returns -1 if invalid depth
      */
     public int getIterationFactor(int depth) {
         IASTForStatement header = ASTUtil.findDepth(statement, IASTForStatement.class, depth);
@@ -320,28 +325,28 @@ public class ForStatementInquisitor {
             return -1;
         }
         IASTExpression iterationExpression = header.getIterationExpression();
-        
-        //Based on our accepted patterns, the only literal in this expression
-        //should be how the linear iteration is depicted. For now, find the
-        //only literal expression in this and return it.
-        IASTLiteralExpression literal = ASTUtil.findOne(iterationExpression, 
-                IASTLiteralExpression.class);
+
+        // Based on our accepted patterns, the only literal in this expression
+        // should be how the linear iteration is depicted. For now, find the
+        // only literal expression in this and return it.
+        IASTLiteralExpression literal = ASTUtil.findOne(iterationExpression, IASTLiteralExpression.class);
         if (literal != null) {
             return Integer.parseInt(new String(literal.getValue()));
         } else {
-            //Otherwise, return one. Generic iterator.
+            // Otherwise, return one. Generic iterator.
             return 1;
         }
     }
-    
+
     public List<IASTPreprocessorPragmaStatement> getLeadingPragmas() {
         int loopLoc = statement.getFileLocation().getNodeOffset();
         int precedingStmtOffset = getNearestPrecedingStatementOffset(statement);
         List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
-        for(IASTPreprocessorStatement pre : statement.getTranslationUnit().getAllPreprocessorStatements()) {
-            if(pre instanceof IASTPreprocessorPragmaStatement &&
-                    ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < loopLoc &&
-                    ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() > precedingStmtOffset) {
+        for (IASTPreprocessorStatement pre : statement.getTranslationUnit().getAllPreprocessorStatements()) {
+            if (pre instanceof IASTPreprocessorPragmaStatement
+                    && ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < loopLoc
+                    && ((IASTPreprocessorPragmaStatement) pre).getFileLocation()
+                            .getNodeOffset() > precedingStmtOffset) {
                 pragmas.add((IASTPreprocessorPragmaStatement) pre);
             }
         }
@@ -351,19 +356,19 @@ public class ForStatementInquisitor {
             public int compare(IASTPreprocessorPragmaStatement o1, IASTPreprocessorPragmaStatement o2) {
                 return o1.getFileLocation().getNodeOffset() - o2.getFileLocation().getNodeOffset();
             }
-            
+
         });
         return pragmas;
     }
-    
+
     private int getNearestPrecedingStatementOffset(IASTStatement stmt) {
-        
+
         class OffsetFinder extends ASTVisitor {
-            
-            //the offset of the nearest lexical predecessor of the given node
+
+            // the offset of the nearest lexical predecessor of the given node
             int finalOffset;
             int thisOffset;
-            
+
             public OffsetFinder(int offset) {
                 shouldVisitStatements = true;
                 shouldVisitDeclarations = true;
@@ -373,35 +378,36 @@ public class ForStatementInquisitor {
             @Override
             public int visit(IASTStatement stmt) {
                 int foundOffset = stmt.getFileLocation().getNodeOffset();
-                if(thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
+                if (thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
                     this.finalOffset = foundOffset;
                 }
                 return PROCESS_CONTINUE;
             }
+
             @Override
             public int visit(IASTDeclaration dec) {
                 int foundOffset = dec.getFileLocation().getNodeOffset();
-                if(thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
+                if (thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
                     this.finalOffset = foundOffset;
                 }
                 return PROCESS_CONTINUE;
             }
-            
+
         }
-        
+
         OffsetFinder finder = new OffsetFinder(stmt.getFileLocation().getNodeOffset());
         IASTFunctionDefinition containingFunc = ASTUtil.findNearestAncestor(stmt, IASTFunctionDefinition.class);
         containingFunc.accept(finder);
         return finder.finalOffset;
     }
-    
+
     public String[] getPragmas() {
         List<IASTPreprocessorPragmaStatement> p = getLeadingPragmas();
         String[] pragCode = new String[p.size()];
-        for(int i = 0; i < pragCode.length; i++) {
+        for (int i = 0; i < pragCode.length; i++) {
             pragCode[i] = p.get(i).getRawSignature();
         }
-        return pragCode; 
+        return pragCode;
     }
-    
+
 }

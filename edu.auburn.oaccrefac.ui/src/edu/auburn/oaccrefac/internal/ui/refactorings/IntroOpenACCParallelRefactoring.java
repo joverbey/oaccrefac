@@ -18,11 +18,11 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.change.ASTChange;
-import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.change.IntroOpenACCParallelChange;
-import edu.auburn.oaccrefac.core.dependence.check.DependenceCheck;
-import edu.auburn.oaccrefac.core.dependence.check.IntroOpenACCParallelCheck;
+import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.core.transformations.DependenceCheck;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.IntroParallelAlteration;
+import edu.auburn.oaccrefac.core.transformations.IntroParallelCheck;
 
 /**
  * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.
@@ -38,13 +38,13 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        DependenceCheck check = new IntroOpenACCParallelCheck(getLoop());
+        DependenceCheck check = new IntroParallelCheck(getLoop());
         check.check(status, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        ASTChange change = new IntroOpenACCParallelChange(getAST(), rewriter, getLoop());
+        SourceAlteration change = new IntroParallelAlteration(getAST(), rewriter, getLoop());
         change.change();
     }
 

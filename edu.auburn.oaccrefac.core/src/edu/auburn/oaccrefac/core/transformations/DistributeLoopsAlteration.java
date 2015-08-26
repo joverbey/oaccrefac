@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.change;
+package edu.auburn.oaccrefac.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -8,16 +8,32 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 /**
- * Inheriting from {@link ForLoopChange}, this class defines a loop fission refactoring algorithm. Loop fission takes
+ * Inheriting from {@link ForLoopAlteration}, this class defines a loop fission refactoring algorithm. Loop fission takes
  * the body of a for-loop and splits the statements into separate for-loops with the same header, if possible.
  * 
- * For example, for (int i = 0; i < 10; i++) { a[i] = b[i] + c[i]; b[i-1] = a[i]; } Refactors to: for (int i = 0; i <
- * 10; i++) { a[i] = b[i] + c[i]; } for (int i = 0; i < 10; i++) { b[i-1] = a[i]; }
+ * For example,
+ * 
+ * <pre>
+ * for (int i = 0; i < 10; i++) {
+ *     a[i] = b[i] + c[i];
+ *     b[i - 1] = a[i];
+ * }
+ * </pre>
+ * 
+ * Refactors to:
+ * 
+ * <pre>
+ * for (int i = 0; i < 10; i++) {
+ *     a[i] = b[i] + c[i];
+ * }
+ * for (int i = 0; i < 10; i++) {
+ *     b[i - 1] = a[i];
+ * }
+ * </pre>
  * 
  * @author Adam Eichelkraut
- *
  */
-public class FizzLoops extends ForLoopChange {
+public class DistributeLoopsAlteration extends ForLoopAlteration {
 
     /**
      * Constructor that takes a for-loop to perform fission on
@@ -27,7 +43,7 @@ public class FizzLoops extends ForLoopChange {
      * @param loop
      *            -- loop to be fizzed
      */
-    public FizzLoops(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
+    public DistributeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
         super(tu, rewriter, loop);
     }
 
@@ -37,35 +53,6 @@ public class FizzLoops extends ForLoopChange {
 
     @Override
     protected void doChange() {
-        // ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-        //
-        // //Ensured from precondition...
-        // IASTForStatement loop = this.getLoopToChange();
-        // IASTCompoundStatement body = (IASTCompoundStatement) loop.getBody();
-        //
-        // //Get the location to insert the separate loops
-        // IASTNode insertBefore = ASTUtil.getNextSibling(loop);
-        //
-        // //For each child, create new for loop with same header and child as body
-        // for (IASTStatement child : body.getStatements()) {
-        // IASTCompoundStatement newBody = factory.newCompoundStatement();
-        // newBody.addStatement(child.copy());
-        // IASTForStatement newForLoop = factory.newForStatement
-        // (loop.getInitializerStatement().copy(),
-        // loop.getConditionExpression().copy(),
-        // loop.getIterationExpression().copy(),
-        // newBody);
-        // //place before the insertion point
-        // this.safeInsertBefore(rewriter,
-        // loop.getParent(), insertBefore, newForLoop);
-        // }
-        //
-        // //Remove the old loop from the statement list
-        // if (body.getStatements().length > 0) {
-        // this.safeRemove(rewriter, loop);
-        // }
-        //
-        // return rewriter;
         String init = this.getLoopToChange().getInitializerStatement().getRawSignature();
         String cond = this.getLoopToChange().getConditionExpression().getRawSignature();
         String incr = this.getLoopToChange().getIterationExpression().getRawSignature();

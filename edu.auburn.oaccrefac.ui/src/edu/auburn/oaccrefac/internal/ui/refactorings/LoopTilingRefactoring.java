@@ -6,9 +6,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.change.ASTChange;
-import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.change.TileLoops;
+import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.TileLoopsAlteration;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
@@ -50,7 +50,7 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        ASTChange change = new TileLoops(getAST(), rewriter, getLoop(), m_depth, m_stripFactor, m_propagate);
+        SourceAlteration change = new TileLoopsAlteration(getAST(), rewriter, getLoop(), m_depth, m_stripFactor, m_propagate);
         change.change();
     }
 }

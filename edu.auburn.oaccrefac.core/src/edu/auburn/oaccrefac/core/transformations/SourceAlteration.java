@@ -8,7 +8,7 @@
  * Contributors:
  *     Adam Eichelkraut - initial API and implementation
  *******************************************************************************/
-package edu.auburn.oaccrefac.core.change;
+package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.List;
 
@@ -23,7 +23,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
-import edu.auburn.oaccrefac.core.dependence.check.DependenceCheck;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
@@ -33,7 +32,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * All that the inherited classes need to implement are the two abstract methods {@link #doChange()} and
  * {@link #doCheckConditions(RefactoringStatus)}.
  */
-public abstract class ASTChange {
+public abstract class SourceAlteration {
     public static final String PRAGMA = "#pragma ";
     public static final String COMP_OPEN = " { ";
     public static final String COMP_CLOSE = " } ";
@@ -52,7 +51,7 @@ public abstract class ASTChange {
     private int srcOffset;
 
     // FIXME should somehow get an IASTRewrite from the tu and only take one argument
-    public ASTChange(IASTTranslationUnit tu, IASTRewrite rewriter) {
+    public SourceAlteration(IASTTranslationUnit tu, IASTRewrite rewriter) {
         this.tu = tu;
         this.rewriter = rewriter;
         this.src = null;
@@ -70,7 +69,7 @@ public abstract class ASTChange {
      * @param previous
      *            -- the original change
      */
-    public ASTChange(ASTChange previous) {
+    public SourceAlteration(SourceAlteration previous) {
         this.tu = previous.tu;
         this.rewriter = previous.rewriter;
         this.src = previous.src;

@@ -1,4 +1,4 @@
-package edu.auburn.oaccrefac.core.dependence.check;
+package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.List;
 import java.util.Set;
@@ -13,51 +13,48 @@ import edu.auburn.oaccrefac.core.dependence.Direction;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
-public class InterchangeCheck extends DependenceCheck {
+public class InterchangeLoopsCheck extends DependenceCheck {
 
-    private ForStatementInquisitor m_inq;
-    private IASTForStatement m_base;
-    private IASTForStatement m_second;
-    
-    
-    public InterchangeCheck(IASTForStatement base, IASTForStatement second) {
-        //passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
+    private ForStatementInquisitor inq;
+    private IASTForStatement base;
+    private IASTForStatement second;
+
+    public InterchangeLoopsCheck(IASTForStatement base, IASTForStatement second) {
+        // passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
         super(base);
-        
-        m_base = base;
-        m_second = second;
-        
-        if (m_base == null || m_second == null) {
+
+        this.base = base;
+        this.second = second;
+
+        if (this.base == null || this.second == null) {
             throw new IllegalArgumentException("Inputs cannot be null!");
         }
-        
-        m_inq = InquisitorFactory.getInquisitor(m_base);
+
+        this.inq = InquisitorFactory.getInquisitor(base);
     }
-    
+
     @Override
     public RefactoringStatus doCheck(RefactoringStatus status) {
-        
+
         DependenceAnalysis dep = getDependenceAnalysis();
-        
-        List<IASTForStatement> headers = m_inq.getPerfectLoopNestHeaders();
-        int second_depth = headers.indexOf(m_second);
+
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        int second_depth = headers.indexOf(second);
         if (second_depth > 0) {
-            int numEnclosingLoops = countEnclosingLoops(m_base);
-            boolean isValid = isInterchangeValid(numEnclosingLoops, 
-                    second_depth + numEnclosingLoops,
+            int numEnclosingLoops = countEnclosingLoops(base);
+            boolean isValid = isInterchangeValid(numEnclosingLoops, second_depth + numEnclosingLoops,
                     dep.getDependences());
             if (!isValid) {
-                status.addError("Interchanging the selected loop with the loop at "
-                            + "depth " + second_depth + " will change the dependence structure "
-                            + "of the loop nest.");
+                status.addError("Interchanging the selected loop with the loop at " + "depth " + second_depth
+                        + " will change the dependence structure " + "of the loop nest.");
             }
         } else {
-            throw new IllegalArgumentException("Second for-statement must be within"
-                    + "perfectly nested loop headers of first.");
+            throw new IllegalArgumentException(
+                    "Second for-statement must be within" + "perfectly nested loop headers of first.");
         }
         return null;
     }
-    
+
     private int countEnclosingLoops(IASTNode outsideOf) {
         int result = 0;
         for (IASTNode node = outsideOf.getParent(); node != null; node = node.getParent()) {
@@ -67,7 +64,7 @@ public class InterchangeCheck extends DependenceCheck {
         }
         return result;
     }
-    
+
     private boolean isInterchangeValid(int i, int j, Set<DataDependence> dependences) {
         for (DataDependence dep : dependences) {
             Direction[] dirVec = dep.getDirectionVector();
@@ -109,7 +106,5 @@ public class InterchangeCheck extends DependenceCheck {
         result[j] = tmp;
         return result;
     }
-    
-
 
 }

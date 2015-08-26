@@ -9,11 +9,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.change.ASTChange;
-import edu.auburn.oaccrefac.core.change.IASTRewrite;
-import edu.auburn.oaccrefac.core.change.InterchangeLoops;
-import edu.auburn.oaccrefac.core.dependence.check.DependenceCheck;
-import edu.auburn.oaccrefac.core.dependence.check.InterchangeCheck;
+import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.core.transformations.DependenceCheck;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsCheck;
+import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsAlteration;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
@@ -48,13 +48,13 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
         m_first = this.getLoop();
         m_second = ASTUtil.findDepth(m_first, IASTForStatement.class, m_depth);
 
-        DependenceCheck check = new InterchangeCheck(m_first, m_second);
+        DependenceCheck check = new InterchangeLoopsCheck(m_first, m_second);
         check.check(status, pm);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        ASTChange change = new InterchangeLoops(getAST(), rewriter, m_first, m_second);
+        SourceAlteration change = new InterchangeLoopsAlteration(getAST(), rewriter, m_first, m_second);
         change.change();
     }
 

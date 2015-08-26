@@ -1,13 +1,13 @@
-package edu.auburn.oaccrefac.core.change;
+package edu.auburn.oaccrefac.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-public class IntroOpenACCParallelChange extends ForLoopChange {
+public class IntroParallelAlteration extends ForLoopAlteration {
 
-    public IntroOpenACCParallelChange(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loopToChange) {
+    public IntroParallelAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loopToChange) {
         super(tu, rewriter, loopToChange);
     }
 
