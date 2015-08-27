@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 Wind River Systems, Inc. and others.
+ * Copyright (c) 2007, 2012, 2015 Wind River Systems, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Markus Schorn - initial API and implementation
+ *     Jeff Overbey (Auburn) - changes for accelerator refactorings
  *******************************************************************************/
 package edu.auburn.oaccrefac.cli.dom.rewrite;
 
@@ -26,7 +27,7 @@ import org.eclipse.cdt.internal.core.dom.rewrite.commenthandler.NodeCommentMap;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.text.edits.TextEditGroup;
 
-import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 
 /**
  * Infrastructure for modifying code by describing changes to AST nodes. The AST rewriter collects

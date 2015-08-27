@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Jeff Overbey - initial API and implementation
+ *     Jeff Overbey (Auburn) - initial API and implementation
  *******************************************************************************/
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +26,8 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
-import edu.auburn.oaccrefac.core.change.FizzLoops;
-import edu.auburn.oaccrefac.core.change.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.DistributeLoopsAlteration;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
@@ -54,7 +54,7 @@ public class Main {
         IASTForStatement forLoop = ASTUtil.findOne(translationUnit, IASTForStatement.class);
         // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
 
-        FizzLoops xform = new FizzLoops(translationUnit, rw, forLoop);
+        DistributeLoopsAlteration xform = new DistributeLoopsAlteration(translationUnit, rw, forLoop);
         RefactoringStatus status = xform.checkConditions(new RefactoringStatus(), null);
         printStatus(status);
 

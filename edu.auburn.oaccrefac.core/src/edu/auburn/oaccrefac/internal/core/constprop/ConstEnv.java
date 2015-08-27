@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Jeff Overbey (Auburn) - initial API and implementation
+ *******************************************************************************/
 package edu.auburn.oaccrefac.internal.core.constprop;
 
 import java.util.Collections;
@@ -15,8 +25,6 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
  * particular point in a program, or <code>null</code> if it is not constant-valued.
  * <p>
  * Used by {@link ConstantPropagation}.
- * 
- * @author Jeff Overbey
  */
 public class ConstEnv {
     /** An empty constant environment, where no variables are constant-valued. */

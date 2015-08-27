@@ -12,10 +12,6 @@ package edu.auburn.oaccrefac.core.dependence;
 
 /**
  * Thrown when dependence testing cannot succeed.
- * <p>
- * THIS IS PRELIMINARY AND EXPERIMENTAL.  IT IS NOT APPROPRIATE FOR PRODUCTION USE.
- * 
- * @author Jeff Overbey
  */
 @SuppressWarnings("serial")
 public class DependenceTestFailure extends Exception

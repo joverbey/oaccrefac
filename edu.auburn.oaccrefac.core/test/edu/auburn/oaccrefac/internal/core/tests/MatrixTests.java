@@ -1,4 +1,3 @@
-package edu.auburn.oaccrefac.internal.core.tests;
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,6 +8,8 @@ package edu.auburn.oaccrefac.internal.core.tests;
  * Contributors:
  *    Susan Chesnut - Initial API and implementation
  *******************************************************************************/
+package edu.auburn.oaccrefac.internal.core.tests;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
