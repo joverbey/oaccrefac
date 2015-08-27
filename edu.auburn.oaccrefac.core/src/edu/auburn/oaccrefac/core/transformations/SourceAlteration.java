@@ -12,10 +12,12 @@ package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.List;
 
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.Change;
@@ -130,18 +132,12 @@ public abstract class SourceAlteration {
     }
 
     protected final void insert(int offset, String text) {
-        if (src == null) {
-            initializeStringBuilder(offset);
-        }
-
+        updateAlterationTrackingFields(offset, 0);
         src.insert(offset - srcOffset, text);
     }
 
     protected final void remove(int offset, int length) {
-        if (src == null) {
-            initializeStringBuilder(offset);
-        }
-
+        updateAlterationTrackingFields(offset, length);
         src.delete(offset - srcOffset, offset - srcOffset + length);
     }
 
@@ -150,10 +146,7 @@ public abstract class SourceAlteration {
     }
 
     protected final void replace(int offset, int length, String text) {
-        if (src == null) {
-            initializeStringBuilder(offset);
-        }
-
+        updateAlterationTrackingFields(offset, length);
         src.replace(offset - srcOffset, offset - srcOffset + length, text);
     }
 
@@ -221,19 +214,46 @@ public abstract class SourceAlteration {
         return sb.toString();
     }
 
-    private void initializeStringBuilder(int offset) {
-        for (IASTFunctionDefinition func : ASTUtil.find(tu, IASTFunctionDefinition.class)) {
-            if (offset >= func.getFileLocation().getNodeOffset()
-                    && offset <= func.getFileLocation().getNodeOffset() + func.getFileLocation().getNodeLength()) {
-                src = new StringBuilder(func.getRawSignature());
-                srcOffset = func.getFileLocation().getNodeOffset();
-                originalLength = func.getFileLocation().getNodeLength();
-                return;
+    private void updateAlterationTrackingFields(int offset, int length) {
+        if(src == null) {
+            originalLength = length;
+        }
+        else {
+            //edit area overlaps start of src
+            if(offset < srcOffset && srcOffset < offset + length) {
+                originalLength = originalLength + length - (offset + length - srcOffset); 
+            }
+            //edit area overlaps end of src
+            else if(offset < srcOffset + originalLength && srcOffset + originalLength < offset + length) {
+                originalLength = originalLength + length - (srcOffset + originalLength - offset);
+            }
+            //edit area is entirely before src
+            else if(offset + length < srcOffset) {
+                originalLength = originalLength + length + (srcOffset - (offset + length));
+            }
+            //edit area is entirely after src
+            else if(srcOffset + originalLength < offset) {
+                originalLength = originalLength + length + (offset - (srcOffset + originalLength));
+            }
+            //otherwise, edit area is contained in src, so no update to originalLength are needed
+        }
+        
+        if (src == null) {
+            src = new StringBuilder(tu.getRawSignature().substring(offset, offset + length));
+            srcOffset = offset;
+        }
+        else {
+            if(offset < srcOffset) {
+                src.insert(0, tu.getRawSignature().substring(offset, srcOffset));
+                srcOffset = offset;
+            }
+            if(offset + length > srcOffset + src.length()) {
+                src.append(tu.getRawSignature().substring(srcOffset + src.length(), offset));
             }
         }
-        throw new StringIndexOutOfBoundsException();
+        
     }
-
+    
     /**
      * Passes all "cached" changes to the rewriter. Must be called after all changes are made to cause changes to
      * actually occur
