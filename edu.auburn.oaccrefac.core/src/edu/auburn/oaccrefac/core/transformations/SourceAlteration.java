@@ -241,11 +241,11 @@ public abstract class SourceAlteration {
                 originalLength = originalLength + length - (srcOffset + originalLength - offset);
             }
             //edit area is entirely before src
-            else if(offset + length < srcOffset) {
+            else if(offset + length <= srcOffset) {
                 originalLength = originalLength + length + (srcOffset - (offset + length));
             }
             //edit area is entirely after src
-            else if(srcOffset + originalLength < offset) {
+            else if(srcOffset + originalLength <= offset) {
                 originalLength = originalLength + length + (offset - (srcOffset + originalLength));
             }
             //otherwise, edit area is contained in src, so no update to originalLength are needed

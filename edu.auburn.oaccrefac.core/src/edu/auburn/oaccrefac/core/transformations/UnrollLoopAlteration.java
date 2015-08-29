@@ -4,14 +4,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -19,6 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
@@ -113,8 +119,8 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
     protected void doChange() {
         IASTForStatement loop = this.getLoopToChange();
 
-        //TODO move his code somewhere else to use refactoring status
-        //If the upper bound is not a constant, we cannot do loop unrolling
+        // TODO move his code somewhere else to use refactoring status
+        // If the upper bound is not a constant, we cannot do loop unrolling
         IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
         ConstantPropagation constantprop_ub = new ConstantPropagation(enclosing);
         IASTExpression ub_expr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
@@ -140,15 +146,15 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
         }
 
         try {
-        
-            this.insert(loop.getBody().getFileLocation().getNodeOffset() + loop.getBody().getFileLocation().getNodeLength(),
+
+            this.insert(
+                    loop.getBody().getFileLocation().getNodeOffset() + loop.getBody().getFileLocation().getNodeLength(),
                     getTrailer(loop, extras));
-            this.replace(loop, forLoop(getInitializer(loop), getCondition(loop, condOffset), getIterationExpression(loop),
-                    getBody(loop)));
+            this.replace(loop, forLoop(getInitializer(loop), getCondition(loop, condOffset),
+                    getIterationExpression(loop), getBody(loop)));
             this.insert(loop.getFileLocation().getNodeOffset(), getLeadingDeclaration(loop));
-        
-        }
-        catch (DOMException e) {
+
+        } catch (DOMException e) {
             e.printStackTrace();
             return;
         }
@@ -156,24 +162,37 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
         finalizeChanges();
     }
 
-    private String getTrailer(IASTForStatement loop, int extras) {
+    private String getTrailer(IASTForStatement loop, int extras) throws DOMException {
         StringBuilder trailer = new StringBuilder();
         for (int i = 0; i < extras; i++) {
             IASTNode[] bodyObjects = getBodyObjects(loop);
-            trailer.append(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString() + "++;"
+            trailer.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent()) + "++;"
                     + System.lineSeparator());
             for (IASTNode bodyObject : bodyObjects) {
-                trailer.append(bodyObject.getRawSignature());
+                if(bodyObject instanceof IASTStatement) {
+                    trailer.append(getModifiedStatement((IASTStatement) bodyObject, getUses(getNameFromInitializer(loop), loop), 
+                            newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent())));
+                }
+                else {
+                    trailer.append(bodyObject.getRawSignature() + System.lineSeparator());
+                }
             }
         }
         return trailer.toString();
     }
 
-    private String getBody(IASTForStatement loop) {
+    private String getBody(IASTForStatement loop) throws DOMException {
+        
         StringBuilder body = new StringBuilder("");
         for (int i = 0; i < unrollFactor; i++) {
             for (IASTNode bodyObject : getBodyObjects(loop)) {
-                body.append(bodyObject.getRawSignature() + System.lineSeparator());
+                if(bodyObject instanceof IASTStatement) {
+                    body.append(getModifiedStatement((IASTStatement) bodyObject, getUses(getNameFromInitializer(loop), loop), 
+                            newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent())));
+                }
+                else {
+                    body.append(bodyObject.getRawSignature() + System.lineSeparator());
+                }
             }
             if (i != unrollFactor - 1) {
                 body.append(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString() + "++;"
@@ -183,27 +202,22 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
         return compound(body.toString());
     }
 
-    private String getLeadingDeclaration(IASTForStatement loop) {
+    private String getLeadingDeclaration(IASTForStatement loop) throws DOMException {
         // if the init statement is a declaration, move the declaration
         // to outer scope if possible and continue
         // TODO don't move the declaration in between loop and pragma
-        try {
-            if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
-                IASTName varname = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
-                String declaration;
-                StringBuilder newDeclaration = new StringBuilder(loop.getInitializerStatement().getRawSignature());
-                int start = varname.getFileLocation().getNodeOffset()
-                        - loop.getInitializerStatement().getFileLocation().getNodeOffset();
-                int end = start + varname.getFileLocation().getNodeLength();
-                newDeclaration.replace(start, end, newName(varname.toString(), loop.getScope().getParent()));
-                declaration = newDeclaration.toString();
-                return declaration;
-            } else {
-                return "";
-            }
-        } catch (DOMException e) {
-            e.printStackTrace();
-            return null;
+        if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
+            IASTName varname = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
+            String declaration;
+            StringBuilder newDeclaration = new StringBuilder(loop.getInitializerStatement().getRawSignature());
+            int start = varname.getFileLocation().getNodeOffset()
+                    - loop.getInitializerStatement().getFileLocation().getNodeOffset();
+            int end = start + varname.getFileLocation().getNodeLength();
+            newDeclaration.replace(start, end, newName(varname.toString(), loop.getScope().getParent()));
+            declaration = newDeclaration.toString();
+            return declaration;
+        } else {
+            return "";
         }
     }
 
@@ -214,29 +228,31 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
 
     private String getCondition(IASTForStatement loop, int condOffset) throws DOMException {
         StringBuilder cond = new StringBuilder();
-        cond.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent()));
+        cond.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(),
+                loop.getScope().getParent()));
         cond.append(" < ");
-        cond.append(parenth(((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature() + " + " + condOffset));
+        cond.append(parenth(((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature()
+                + " + " + condOffset));
         return cond.toString();
     }
 
     private String getIterationExpression(IASTForStatement loop) throws DOMException {
-        return newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent()) + " += " + unrollFactor;
+        return newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(),
+                loop.getScope().getParent()) + " += " + unrollFactor;
     }
 
     private String newName(String name, IScope scope) {
-        if(ASTUtil.isNameInScope(name, scope)) {
+        if (ASTUtil.isNameInScope(name, scope)) {
             for (int i = 0; true; i++) {
                 String newName = name + "_" + i;
                 if (!ASTUtil.isNameInScope(newName, scope)) {
                     return newName;
                 }
             }
-        }
-        else {
+        } else {
             return name;
         }
-        
+
     }
 
     private IASTStatement[] getBodyStatements(IASTForStatement loop) {
@@ -284,38 +300,63 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
 
     }
 
-    // * Unrolling function that unrolls the loop body multiple times within itself,
-    // * adding iteration expression statements inbetween body copies in order to
-    // * maintain original behavior.
-    // * @param rewriter -- rewriter associated with loop argument
-    // * @param loop -- loop in which to unroll
-    // * @return -- rewriter? I still don't know.
-    // */
-    // private IASTRewrite unroll(IASTRewrite rewriter, IASTForStatement loop) {
-    // ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-    // IASTExpression iter_expr = loop.getIterationExpression();
-    // IASTExpressionStatement iter_exprstmt = factory.newExpressionStatement(iter_expr.copy());
-    //
-    // IASTStatement body = loop.getBody();
-    // IASTNode[] chilluns = body.getChildren();
-    //
-    // IASTCompoundStatement newBody = factory.newCompoundStatement();
-    // IASTRewrite body_rewriter = this.safeReplace(rewriter, body, newBody);
-    // for (int i = 0; i < m_unrollFactor; i++) {
-    // if (body instanceof IASTCompoundStatement) {
-    // for (int j = 0; j < chilluns.length; j++) {
-    // if (chilluns[j] instanceof IASTStatement)
-    // this.safeInsertBefore(body_rewriter, newBody, null, chilluns[j].copy());
-    // }
-    // } else {
-    // this.safeInsertBefore(body_rewriter, newBody, null, body.copy());
-    // }
-    // if (i != m_unrollFactor-1) {
-    // this.safeInsertBefore(body_rewriter, newBody, null, iter_exprstmt);
-    // }
-    // }
-    //
-    // return rewriter;
-    // }
+    private IASTName getNameFromInitializer(IASTForStatement loop) {
+        IASTStatement initStmt = loop.getInitializerStatement();
+        if (initStmt instanceof IASTDeclarationStatement && 
+                ((IASTDeclarationStatement) initStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
+            IASTSimpleDeclaration decl = (IASTSimpleDeclaration) ((IASTDeclarationStatement) initStmt).getDeclaration();
+            return decl.getDeclarators()[0].getName();
+        }
+        return null;
+    }
+    
+    private List<IASTName> getUses(IASTName var, IASTForStatement loop) {
+
+        class VariableUseFinder extends ASTVisitor {
+
+            private IASTName var;
+            public List<IASTName> uses;
+
+            public VariableUseFinder(IASTName var) {
+                this.var = var;
+                this.uses = new ArrayList<IASTName>();
+                shouldVisitNames = true;
+            }
+
+            @Override
+            public int visit(IASTName name) {
+                if (name.resolveBinding().equals(var.resolveBinding())) {
+                    uses.add(name);
+                }
+                return PROCESS_CONTINUE;
+            }
+
+        }
+
+        VariableUseFinder finder = new VariableUseFinder(var);
+        loop.accept(finder);
+        return finder.uses;
+
+    }
+
+    private String getModifiedStatement(IASTStatement original, List<IASTName> uses, String newName) {
+        Collections.sort(uses, new Comparator<IASTNode>() {
+
+            @Override
+            public int compare(IASTNode node1, IASTNode node2) {
+                return node2.getFileLocation().getNodeOffset() - node1.getFileLocation().getNodeOffset();
+            }
+
+        });
+        StringBuilder sb = new StringBuilder(original.getRawSignature());
+        for (IASTName use : uses) {
+            if (ASTUtil.isAncestor(original, use)) {
+                int offsetIntoStatement = use.getFileLocation().getNodeOffset()
+                        - original.getFileLocation().getNodeOffset();
+                sb.replace(offsetIntoStatement, offsetIntoStatement + use.getFileLocation().getNodeLength(), newName);
+            }
+        }
+        return sb.toString();
+    }
 
 }
