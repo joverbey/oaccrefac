@@ -289,20 +289,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
                 objects.add(comment);
             }
         }
-        Collections.sort(objects, reverse ? new Comparator<IASTNode>() {
-
-            @Override
-            public int compare(IASTNode node1, IASTNode node2) {
-                return node2.getFileLocation().getNodeOffset() - node1.getFileLocation().getNodeOffset();
-            }
-
-        } : new Comparator<IASTNode>() {
-
-            @Override
-            public int compare(IASTNode node1, IASTNode node2) {
-                return node1.getFileLocation().getNodeOffset() - node2.getFileLocation().getNodeOffset();
-            }
-        });
+        Collections.sort(objects, reverse ? ASTUtil.REVERSE_COMPARATOR : ASTUtil.FORWARD_COMPARATOR);
 
         return objects.toArray(new IASTNode[objects.size()]);
 
@@ -348,14 +335,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
     }
 
     private String getModifiedStatement(IASTStatement original, List<IASTName> uses, String newName) {
-        Collections.sort(uses, new Comparator<IASTNode>() {
-
-            @Override
-            public int compare(IASTNode node1, IASTNode node2) {
-                return node2.getFileLocation().getNodeOffset() - node1.getFileLocation().getNodeOffset();
-            }
-
-        });
+        Collections.sort(uses, ASTUtil.REVERSE_COMPARATOR);
         StringBuilder sb = new StringBuilder(original.getRawSignature());
         for (IASTName use : uses) {
             if (ASTUtil.isAncestor(original, use)) {

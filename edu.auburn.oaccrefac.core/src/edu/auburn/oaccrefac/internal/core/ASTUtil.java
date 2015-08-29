@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
@@ -56,6 +57,24 @@ import org.junit.Assert;
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 
 public class ASTUtil {
+    
+    public static final Comparator REVERSE_COMPARATOR = new Comparator<IASTNode>() {
+
+        @Override
+        public int compare(IASTNode node1, IASTNode node2) {
+            return node2.getFileLocation().getNodeOffset() - node1.getFileLocation().getNodeOffset();
+        }
+
+    };
+    
+    public static final Comparator FORWARD_COMPARATOR = new Comparator<IASTNode>() {
+
+        @Override
+        public int compare(IASTNode node1, IASTNode node2) {
+            return node1.getFileLocation().getNodeOffset() - node2.getFileLocation().getNodeOffset();
+        }
+
+    };
 
     public static <T> List<T> find(IASTNode parent, Class<T> clazz) {
         List<T> results = new LinkedList<T>();
@@ -371,7 +390,7 @@ public class ASTUtil {
             result = result.substring(0, MAX_LEN + 1) + "...";
         return result;
     }
-    
+
     private ASTUtil() {
     }
 }

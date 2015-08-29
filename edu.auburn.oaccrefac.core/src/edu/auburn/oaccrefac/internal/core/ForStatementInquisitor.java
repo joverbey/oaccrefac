@@ -362,14 +362,7 @@ public class ForStatementInquisitor {
                 pragmas.add((IASTPreprocessorPragmaStatement) pre);
             }
         }
-        Collections.sort(pragmas, new Comparator<IASTPreprocessorPragmaStatement>() {
-
-            @Override
-            public int compare(IASTPreprocessorPragmaStatement o1, IASTPreprocessorPragmaStatement o2) {
-                return o1.getFileLocation().getNodeOffset() - o2.getFileLocation().getNodeOffset();
-            }
-
-        });
+        Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
         return pragmas;
     }
 

@@ -210,14 +210,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration {
                 objects.add(comment);
             }
         }
-        Collections.sort(objects, new Comparator<IASTNode>() {
-
-            @Override
-            public int compare(IASTNode node1, IASTNode node2) {
-                return node1.getFileLocation().getNodeOffset() - node2.getFileLocation().getNodeOffset();
-            }
-
-        });
+        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
 
         return objects.toArray(new IASTNode[objects.size()]);
 
@@ -307,14 +300,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration {
                 refsToMod.add(ref);
             }
         }
-        Collections.sort(refsToMod, new Comparator<IASTName>() {
-
-            @Override
-            public int compare(IASTName name1, IASTName name2) {
-                return name2.getFileLocation().getNodeOffset() - name1.getFileLocation().getNodeOffset();
-            }
-
-        });
+        Collections.sort(refsToMod, ASTUtil.REVERSE_COMPARATOR);
 
         return refsToMod.toArray(new IASTName[refsToMod.size()]);
     }
