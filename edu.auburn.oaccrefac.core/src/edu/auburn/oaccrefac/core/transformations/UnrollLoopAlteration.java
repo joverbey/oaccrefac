@@ -24,6 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -119,7 +120,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
     protected void doChange() {
         IASTForStatement loop = this.getLoopToChange();
 
-        // TODO move his code somewhere else to use refactoring status
+        // TODO move this code somewhere else to use refactoring status
         // If the upper bound is not a constant, we cannot do loop unrolling
         IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
         ConstantPropagation constantprop_ub = new ConstantPropagation(enclosing);
@@ -152,7 +153,15 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
                     getTrailer(loop, extras));
             this.replace(loop, forLoop(getInitializer(loop), getCondition(loop, condOffset),
                     getIterationExpression(loop), getBody(loop)));
-            this.insert(loop.getFileLocation().getNodeOffset(), getLeadingDeclaration(loop));
+            
+            List<IASTPreprocessorPragmaStatement> prags = 
+                    InquisitorFactory.getInquisitor(loop).getLeadingPragmas();
+            int insertPoint = prags.size() > 0?
+                    prags.get(0).getFileLocation().getNodeOffset() :
+                        loop.getFileLocation().getNodeOffset();
+                            
+                    
+            this.insert(insertPoint, getLeadingDeclaration(loop));
 
         } catch (DOMException e) {
             e.printStackTrace();
@@ -205,7 +214,6 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
     private String getLeadingDeclaration(IASTForStatement loop) throws DOMException {
         // if the init statement is a declaration, move the declaration
         // to outer scope if possible and continue
-        // TODO don't move the declaration in between loop and pragma
         if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
             IASTName varname = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
             String declaration;
