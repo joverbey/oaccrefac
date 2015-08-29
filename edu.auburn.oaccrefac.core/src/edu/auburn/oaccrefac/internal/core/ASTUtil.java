@@ -58,7 +58,7 @@ import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 
 public class ASTUtil {
     
-    public static final Comparator REVERSE_COMPARATOR = new Comparator<IASTNode>() {
+    public static final Comparator<IASTNode> REVERSE_COMPARATOR = new Comparator<IASTNode>() {
 
         @Override
         public int compare(IASTNode node1, IASTNode node2) {
@@ -67,7 +67,7 @@ public class ASTUtil {
 
     };
     
-    public static final Comparator FORWARD_COMPARATOR = new Comparator<IASTNode>() {
+    public static final Comparator<IASTNode> FORWARD_COMPARATOR = new Comparator<IASTNode>() {
 
         @Override
         public int compare(IASTNode node1, IASTNode node2) {
