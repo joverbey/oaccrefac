@@ -70,8 +70,6 @@ public class FuseLoopsAlteration extends ForLoopAlteration {
 
     private IASTForStatement first;
     private IASTForStatement second;
-    private Map<String, IASTName> modifiedVariableDecls;
-    private Set<String> usedNames;
 
     /**
      * Constructor that takes a for-loop to perform fusion on
@@ -85,8 +83,6 @@ public class FuseLoopsAlteration extends ForLoopAlteration {
         super(tu, rewriter, loop);
         first = loop;
         second = (IASTForStatement) ASTUtil.getNextSibling(first);
-        modifiedVariableDecls = new HashMap<String, IASTName>();
-        usedNames = new HashSet<String>();
     }
 
     @Override
@@ -156,15 +152,15 @@ public class FuseLoopsAlteration extends ForLoopAlteration {
 
         body = compound(body);
 
-        this.replace(first.getBody(), body);
+        this.replace(first, forLoop(first.getInitializerStatement(), first.getConditionExpression(), first.getIterationExpression(), body));
 
-        for (int i = getBodyObjects(first).length - 1; i >= 0; i--) {
-            IASTNode bodyObject = getBodyObjects(first)[i];
-            if (!(first.getBody() instanceof IASTCompoundStatement) && bodyObject instanceof IASTComment) {
-                this.remove(bodyObject.getFileLocation().getNodeOffset(),
-                        bodyObject.getFileLocation().getNodeLength() + System.lineSeparator().length());
-            }
-        }
+//        for (int i = getBodyObjects(first).length - 1; i >= 0; i--) {
+//            IASTNode bodyObject = getBodyObjects(first)[i];
+//            if (!(first.getBody() instanceof IASTCompoundStatement) && bodyObject instanceof IASTComment) {
+//                this.remove(bodyObject.getFileLocation().getNodeOffset(),
+//                        bodyObject.getFileLocation().getNodeLength() + System.lineSeparator().length());
+//            }
+//        }
 
         finalizeChanges();
 

@@ -128,6 +128,15 @@ public class ASTUtil {
         }
     }
 
+    public static boolean isNameInScope(String varname, IScope scope) {
+        IBinding[] bindings = scope.find(varname);
+        if (bindings.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
         List<IBinding> result = new ArrayList<IBinding>(loops.size());
         for (IASTForStatement forStmt : loops) {

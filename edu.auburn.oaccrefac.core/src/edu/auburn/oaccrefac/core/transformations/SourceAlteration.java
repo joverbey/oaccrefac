@@ -12,8 +12,7 @@ package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.List;
 
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
@@ -35,9 +34,11 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * {@link #doCheckConditions(RefactoringStatus)}.
  */
 public abstract class SourceAlteration {
-    public static final String PRAGMA = "#pragma ";
-    public static final String COMP_OPEN = " { ";
-    public static final String COMP_CLOSE = " } ";
+    public static final String PRAGMA = "#pragma";
+    public static final String LCURLY = "{";
+    public static final String RCURLY = "}";
+    public static final String LPARENTH = "(";
+    public static final String RPARENTH = ")";
     public static final String SEMICOLON = ";";
 
     private final IASTRewrite rewriter;
@@ -188,16 +189,20 @@ public abstract class SourceAlteration {
     }
 
     protected final String pragma(String code) {
-        return PRAGMA + code + System.lineSeparator();
+        return PRAGMA + (code.startsWith(" ")? "" : " ") + System.lineSeparator();
     }
 
     protected final String compound(String code) {
-        return COMP_OPEN + code + COMP_CLOSE;
+        return LCURLY + 
+                //(code.startsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
+                code + 
+                //(code.endsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
+                RCURLY;
     }
 
     protected final String decompound(String code) {
-        if (code.trim().startsWith(COMP_OPEN.trim()) && code.trim().endsWith(COMP_CLOSE.trim())) {
-            return code.trim().substring(1, code.trim().length() - 1);
+        if (code.trim().startsWith(LCURLY.trim()) && code.trim().endsWith(RCURLY.trim())) {
+            return code.trim().substring(1, code.trim().length() - 1).trim();
         } else {
             return code;
         }
@@ -212,6 +217,14 @@ public abstract class SourceAlteration {
         sb.append(System.lineSeparator());
         sb.append(body);
         return sb.toString();
+    }
+    
+    protected final String forLoop(IASTStatement init, IASTExpression cond, IASTExpression iter, String body) {
+        return forLoop(init.getRawSignature(), cond.getRawSignature(), iter.getRawSignature(), body);
+    }
+    
+    protected final String parenth(String code) {
+        return LPARENTH + code + RPARENTH;
     }
 
     private void updateAlterationTrackingFields(int offset, int length) {

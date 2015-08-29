@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.core.transformations.UnrollLoopAlteration;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 
 /**
@@ -27,25 +28,26 @@ import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
  */
 public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
-    private int m_unrollFactor;
-    private SourceAlteration m_unrollChange;
+    private int unrollFactor;
+    private SourceAlteration unroll;
     
 	public LoopUnrollingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
 	}
 
     public void setUnrollFactor(int toSet) {
-        m_unrollFactor = toSet;
+        unrollFactor = toSet;
     }
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
         IASTForStatement loop = getLoop();
-    
     }
 
 	@Override
-	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {	
+	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
+	    SourceAlteration unroll = new UnrollLoopAlteration(getAST(), rewriter, getLoop(), unrollFactor);
+	    unroll.change();
 	}
 
 }
