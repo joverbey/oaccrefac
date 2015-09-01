@@ -1,0 +1,8 @@
+ - change matrix unit tests to be accurate (apparently i was confused when i first made them, so they matched the incorrect output from th FMTester)
+ - look into how outputted code/comments are formatted, change unit tests accordingly AFTER a decision is made
+ - look into possible moving the variable renaming stuff up to SourceAlteration?
+ - look into splitting off the pragma/comment/forloop methods from SourceAlteration into a separate class
+ - add dependence testing to the refactorings we have so far (and matching unit tests)
+ - revisit the separate check object issue in light of Unrolling's constant propagation (output of constant prop needs to go to refactoring itself, and const prop needs the refacoring status to quit prematurely)
+ 	- maybe keep checks separate, but have them output a RefactoringFeasibilityData container of some sort, maybe with some sort of generic parameters?
+ - come up with some way of creating an IASTRewrite from a translation unit (maybe a factory with an awareness of whether we're in the plugin or not)
