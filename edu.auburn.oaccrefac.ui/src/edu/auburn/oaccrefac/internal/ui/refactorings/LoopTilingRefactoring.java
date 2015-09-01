@@ -6,9 +6,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.TileLoopsAlteration;
+import edu.auburn.oaccrefac.core.transformations.TileLoopsCheck;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
@@ -20,37 +20,40 @@ import edu.auburn.oaccrefac.core.transformations.TileLoopsAlteration;
  */
 public class LoopTilingRefactoring extends ForLoopRefactoring {
 
-    private int m_depth;
-    private int m_stripFactor;
-    private int m_propagate;
+    private int depth;
+    private int stripFactor;
+    private int propagate;
+    
+    private TileLoopsCheck check;
     
     public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        m_depth = 0;
-        m_propagate = -1;
-        m_stripFactor = 0;
+        this.depth = 0;
+        this.propagate = -1;
+        this.stripFactor = 0;
     }
     
     public void setStripMineDepth(int depth) {
-        m_depth = depth;
+        this.depth = depth;
     }
     
     public void setStripFactor(int factor) {
-        m_stripFactor = factor;
+        this.stripFactor = factor;
     }
     
     public void setPropagateInterchange(int prop) {
-        m_propagate = prop;
+        this.propagate = prop;
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        // FIXME: Check preconditions
+        check = new TileLoopsCheck(getLoop());
+        check.performChecks(status, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        SourceAlteration change = new TileLoopsAlteration(getAST(), rewriter, getLoop(), m_depth, m_stripFactor, m_propagate);
+        TileLoopsAlteration change = new TileLoopsAlteration(getAST(), rewriter, getLoop(), depth, stripFactor, propagate, check);
         change.change();
     }
 }

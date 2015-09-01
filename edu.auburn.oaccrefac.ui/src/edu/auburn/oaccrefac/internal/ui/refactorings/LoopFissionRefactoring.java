@@ -25,17 +25,20 @@ import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
  */
 public class LoopFissionRefactoring extends ForLoopRefactoring {
 
+    private DistributeLoopsCheck check;
+    
     public LoopFissionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        new DistributeLoopsCheck(this.getLoop()).check(status, pm);
+        check = new DistributeLoopsCheck(this.getLoop());
+        check.performChecks(status, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        new DistributeLoopsAlteration(getAST(), rewriter, getLoop()).change();
+        new DistributeLoopsAlteration(getAST(), rewriter, getLoop(), check).change();
     }
 }

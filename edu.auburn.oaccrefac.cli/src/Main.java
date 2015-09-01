@@ -56,7 +56,7 @@ public class Main {
         // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
 
         DistributeLoopsCheck check = new DistributeLoopsCheck(forLoop);
-        RefactoringStatus status = check.check(new RefactoringStatus(), new NullProgressMonitor());
+        RefactoringStatus status = check.performChecks(new RefactoringStatus(), new NullProgressMonitor(), null);
         printStatus(status);
         
         DistributeLoopsAlteration xform = new DistributeLoopsAlteration(translationUnit, rw, forLoop, check);
