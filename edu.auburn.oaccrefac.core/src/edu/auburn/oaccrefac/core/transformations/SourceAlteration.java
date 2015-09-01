@@ -189,13 +189,13 @@ public abstract class SourceAlteration {
     }
 
     protected final String pragma(String code) {
-        return PRAGMA + (code.startsWith(" ")? "" : " ") + System.lineSeparator();
+        return PRAGMA + " " + code.trim() + System.lineSeparator();
     }
 
     protected final String compound(String code) {
         return LCURLY + 
                 //(code.startsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
-                code + 
+                code.trim() + 
                 //(code.endsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
                 RCURLY;
     }
