@@ -34,7 +34,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * 
  * @author Adam Eichelkraut
  */
-public class StripMineAlteration extends ForLoopAlteration {
+public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 
     private int stripFactor;
     private int depth;
@@ -56,8 +56,8 @@ public class StripMineAlteration extends ForLoopAlteration {
      * @param depth
      *            -- perfectly nested loop depth in 'loop' to strip mine
      */
-    public StripMineAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripFactor, int depth) {
-        super(tu, rewriter, loop);
+    public StripMineAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripFactor, int depth, StripMineCheck check) {
+        super(tu, rewriter, loop, check);
         this.stripFactor = stripFactor;
         this.depth = depth;
     }

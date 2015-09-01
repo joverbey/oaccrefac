@@ -33,7 +33,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
  * 
  * @author Adam Eichelkraut
  */
-public class DistributeLoopsAlteration extends ForLoopAlteration {
+public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoopsCheck> {
 
     /**
      * Constructor that takes a for-loop to perform fission on
@@ -43,8 +43,8 @@ public class DistributeLoopsAlteration extends ForLoopAlteration {
      * @param loop
      *            -- loop to be fizzed
      */
-    public DistributeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
-        super(tu, rewriter, loop);
+    public DistributeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, DistributeLoopsCheck check) {
+        super(tu, rewriter, loop, check);
     }
 
     @Override

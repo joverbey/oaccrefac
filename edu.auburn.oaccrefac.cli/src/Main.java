@@ -27,6 +27,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.DistributeLoopsAlteration;
+import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
@@ -54,9 +55,11 @@ public class Main {
         IASTForStatement forLoop = ASTUtil.findOne(translationUnit, IASTForStatement.class);
         // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
 
-        DistributeLoopsAlteration xform = new DistributeLoopsAlteration(translationUnit, rw, forLoop);
-        RefactoringStatus status = xform.checkConditions(new RefactoringStatus(), null);
+        DistributeLoopsCheck check = new DistributeLoopsCheck(forLoop);
+        RefactoringStatus status = check.check(new RefactoringStatus(), new NullProgressMonitor());
         printStatus(status);
+        
+        DistributeLoopsAlteration xform = new DistributeLoopsAlteration(translationUnit, rw, forLoop, check);
 
         if (status.hasFatalError()) {
             System.exit(1);

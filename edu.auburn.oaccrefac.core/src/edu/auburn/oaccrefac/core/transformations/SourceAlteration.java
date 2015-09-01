@@ -33,7 +33,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * All that the inherited classes need to implement are the two abstract methods {@link #doChange()} and
  * {@link #doCheckConditions(RefactoringStatus)}.
  */
-public abstract class SourceAlteration {
+public abstract class SourceAlteration<T extends Check> {
     public static final String PRAGMA = "#pragma";
     public static final String LCURLY = "{";
     public static final String RCURLY = "}";
@@ -52,9 +52,10 @@ public abstract class SourceAlteration {
      * Should be the affected function definition's offset.
      */
     private int srcOffset;
+    private T check;
 
     // FIXME should somehow get an IASTRewrite from the tu and only take one argument
-    public SourceAlteration(IASTTranslationUnit tu, IASTRewrite rewriter) {
+    public SourceAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, T check) {
         this.tu = tu;
         this.rewriter = rewriter;
         this.src = null;

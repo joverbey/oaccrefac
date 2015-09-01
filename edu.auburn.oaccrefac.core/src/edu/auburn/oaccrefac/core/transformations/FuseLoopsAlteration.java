@@ -64,7 +64,7 @@ import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
  * @author Adam Eichelkraut
  *
  */
-public class FuseLoopsAlteration extends ForLoopAlteration {
+public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsInitialCheck> {
 
     private IASTForStatement first;
     private IASTForStatement second;
@@ -77,8 +77,8 @@ public class FuseLoopsAlteration extends ForLoopAlteration {
      * @param loop
      *            -- loop to be fizzed
      */
-    public FuseLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop) {
-        super(tu, rewriter, loop);
+    public FuseLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, FuseLoopsInitialCheck check) {
+        super(tu, rewriter, loop, check);
         first = loop;
         second = (IASTForStatement) ASTUtil.getNextSibling(first);
     }

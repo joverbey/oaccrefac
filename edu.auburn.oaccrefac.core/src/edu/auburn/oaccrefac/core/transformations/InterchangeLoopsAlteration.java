@@ -39,7 +39,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * 
  * @author Adam Eichelkraut
  */
-public class InterchangeLoopsAlteration extends ForLoopAlteration {
+public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoopsCheck> {
 
     private IASTForStatement second;
 
@@ -56,8 +56,8 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration {
      *             if second loop is null
      */
     public InterchangeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement first,
-            IASTForStatement second) {
-        super(tu, rewriter, first);
+            IASTForStatement second, InterchangeLoopsCheck check) {
+        super(tu, rewriter, first, check);
         if (second != null) {
             this.second = second;
         } else {

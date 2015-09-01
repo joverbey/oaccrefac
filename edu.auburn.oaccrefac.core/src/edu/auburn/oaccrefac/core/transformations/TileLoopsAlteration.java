@@ -38,7 +38,7 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
  * @author Adam Eichelkraut
  *
  */
-public class TileLoopsAlteration extends ForLoopAlteration {
+public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
 
     private int depth;
     private int stripFactor;
@@ -63,8 +63,8 @@ public class TileLoopsAlteration extends ForLoopAlteration {
      *            -- how many times to interchange headers (-1 for arbitrary)
      */
     public TileLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripDepth,
-            int stripFactor, int propagateInterchange) {
-        super(tu, rewriter, loop);
+            int stripFactor, int propagateInterchange, TileLoopsCheck check) {
+        super(tu, rewriter, loop, check);
         this.depth = stripDepth;
         this.stripFactor = stripFactor;
         this.propagate = propagateInterchange;

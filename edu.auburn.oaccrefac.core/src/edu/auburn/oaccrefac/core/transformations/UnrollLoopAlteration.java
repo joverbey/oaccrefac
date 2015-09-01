@@ -61,7 +61,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * @author Adam Eichelkraut
  *
  */
-public class UnrollLoopAlteration extends ForLoopAlteration {
+public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
     private int unrollFactor;
     private Long upperBound;
@@ -76,8 +76,8 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
      * @param unrollFactor
      *            -- how many times to unroll loop body (must be > 0)
      */
-    public UnrollLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor) {
-        super(tu, rewriter, loop);
+    public UnrollLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor, UnrollLoopCheck check) {
+        super(tu, rewriter, loop, check);
         this.unrollFactor = unrollFactor;
     }
 

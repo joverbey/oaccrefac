@@ -22,7 +22,7 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * @author Adam Eichelkraut
  *
  */
-public abstract class ForLoopAlteration extends SourceAlteration {
+public abstract class ForLoopAlteration<T extends Check> extends SourceAlteration<T> {
 
     private IASTForStatement loop;
 
@@ -37,8 +37,8 @@ public abstract class ForLoopAlteration extends SourceAlteration {
      * @throws IllegalArgumentException
      *             if the for loop is null
      */
-    public ForLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loopToChange) {
-        super(tu, rewriter);
+    public ForLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loopToChange, T check) {
+        super(tu, rewriter, check);
         if (loopToChange == null) {
             throw new IllegalArgumentException("Argument loop cannot be null!");
         }
