@@ -3,11 +3,6 @@ package edu.auburn.oaccrefac.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop strip mine refactoring algorithm. Loop strip mining
@@ -60,35 +55,6 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
         super(tu, rewriter, loop, check);
         this.stripFactor = stripFactor;
         this.depth = depth;
-    }
-
-    @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.getLoopToChange());
-
-        // Check strip factor validity...
-        if (stripFactor <= 0) {
-            init.addFatalError("Invalid strip factor (<= 0).");
-            return;
-        }
-
-        // Check depth validity...
-        if (depth < 0 || depth >= inq.getPerfectLoopNestHeaders().size()) {
-            init.addFatalError("There is no for-loop at depth " + depth);
-            return;
-        }
-
-        // If the strip factor is not divisible by the original linear
-        // iteration factor, (i.e. loop counts by 4), then we cannot
-        // strip mine because the refactoring will change behavior
-        int iterator = inq.getIterationFactor(depth);
-        if (stripFactor % iterator != 0 || stripFactor <= iterator) {
-            init.addFatalError("Strip mine factor must be greater than and "
-                    + "divisible by the intended loop's iteration factor.");
-            return;
-        }
-
-        return;
     }
 
     @Override

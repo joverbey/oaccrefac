@@ -10,10 +10,11 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.Direction;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.InterchangeParams;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
-public class InterchangeLoopsCheck extends Check {
+public class InterchangeLoopsCheck extends Check<InterchangeParams> {
 
     private ForStatementInquisitor inq;
     private IASTForStatement outer;
@@ -26,9 +27,25 @@ public class InterchangeLoopsCheck extends Check {
         this.inner = inner;
         this.inq = InquisitorFactory.getInquisitor(outer);
     }
+    
+    @Override
+    protected void doLoopFormCheck(RefactoringStatus status) {
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(outer);
+        if (!inq.isPerfectLoopNest()) {
+            status.addFatalError("Only perfectly nested loops can be interchanged.");
+            return;
+        }
+
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        if (!headers.contains(inner)) {
+            status.addFatalError("Second loop is not within headers of first");
+
+            return;
+        }
+    }
 
     @Override
-    public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
 
         List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
         int second_depth = headers.indexOf(inner);
@@ -97,5 +114,5 @@ public class InterchangeLoopsCheck extends Check {
         result[j] = tmp;
         return result;
     }
-
+    
 }

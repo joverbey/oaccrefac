@@ -18,7 +18,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.ReplaceEdit;
@@ -33,7 +32,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * All that the inherited classes need to implement are the two abstract methods {@link #doChange()} and
  * {@link #doCheckConditions(RefactoringStatus)}.
  */
-public abstract class SourceAlteration<T extends Check> {
+public abstract class SourceAlteration<T extends Check<?>> {
     public static final String PRAGMA = "#pragma";
     public static final String LCURLY = "{";
     public static final String RCURLY = "}";
@@ -52,7 +51,7 @@ public abstract class SourceAlteration<T extends Check> {
      * Should be the affected function definition's offset.
      */
     private int srcOffset;
-    private T check;
+    protected T check;
 
     // FIXME should somehow get an IASTRewrite from the tu and only take one argument
     public SourceAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, T check) {
@@ -73,7 +72,7 @@ public abstract class SourceAlteration<T extends Check> {
      * @param previous
      *            -- the original change
      */
-    public SourceAlteration(SourceAlteration previous) {
+    public SourceAlteration(SourceAlteration<?> previous) {
         this.tu = previous.tu;
         this.rewriter = previous.rewriter;
         this.src = previous.src;
@@ -89,35 +88,7 @@ public abstract class SourceAlteration<T extends Check> {
      */
     protected abstract void doChange();
 
-    /**
-     * Abstract method pattern for inherited class to implement. This method is where the checking of preconditions for
-     * the inherited class should happen. For example, if there were any inputs or parameters to the change, they should
-     * be checked to make sure they make sense and are valid. Dependency checking should also happen in this by creating
-     * an instance of some {@link DependenceCheck} class.
-     * 
-     * @param init
-     *            -- status to change
-     * @param pm
-     *            -- the progress monitor, if needed
-     */
-    protected abstract void doCheckConditions(RefactoringStatus init, IProgressMonitor pm);
-
     // -----------------------------------------------------------------------------------
-
-    /**
-     * Should always be called before changes are made. Checks all preconditions for the inherited change object. This
-     * method calls the abstract {@link #doCheckConditions(RefactoringStatus)} to be defined in the inherited class.
-     * 
-     * @param init
-     *            -- status to be changed
-     * @param pm
-     *            -- progress monitor, can be null if not needed
-     * @return -- possibly changed status
-     */
-    public final RefactoringStatus checkConditions(RefactoringStatus init, IProgressMonitor pm) {
-        doCheckConditions(init, pm);
-        return init;
-    }
 
     /**
      * Base change method for all inherited classes. This method does some initialization before calling the inherited

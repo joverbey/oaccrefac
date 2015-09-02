@@ -4,8 +4,6 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fission refactoring algorithm. Loop fission takes
@@ -45,10 +43,6 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
      */
     public DistributeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, DistributeLoopsCheck check) {
         super(tu, rewriter, loop, check);
-    }
-
-    @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
     }
 
     @Override

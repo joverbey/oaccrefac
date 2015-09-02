@@ -43,8 +43,6 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
     private int depth;
     private int stripFactor;
     private int propagate;
-
-    private ForStatementInquisitor inq;
     private IASTName generatedName;
 
     /**
@@ -68,49 +66,6 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
         this.depth = stripDepth;
         this.stripFactor = stripFactor;
         this.propagate = propagateInterchange;
-    }
-
-    @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        //TODO dependence analysis??? how to do i dunno
-        
-        //DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
-        // if (dependenceAnalysis != null && dependenceAnalysis.()) {
-        // status.addError("This loop cannot be parallelized because it carries a dependence.",
-        // getLocation(getLoop()));
-        // }
-        inq = ForStatementInquisitor.getInquisitor(getLoopToChange());
-        if (!inq.isPerfectLoopNest()) {
-            init.addFatalError("Only perfectly nested loops can be tiled.");
-            return;
-        }
-
-        if (propagate > depth) {
-            init.addWarning(
-                    "Warning: propagation higher than depth -- propagation " + "will occur as many times as possible.");
-            return;
-        }
-
-        // TODO -- make this better (this stuff is from strip mining-specific code)
-        if (stripFactor <= 0) {
-            init.addFatalError("Invalid strip factor (<= 0).");
-            return;
-        }
-
-        if (depth < 0 || depth >= inq.getPerfectLoopNestHeaders().size()) {
-            init.addFatalError("There is no for-loop at depth " + depth);
-            return;
-        }
-
-        int iterator = inq.getIterationFactor(depth);
-        if (stripFactor % iterator != 0 || stripFactor <= iterator) {
-            init.addFatalError("Strip mine factor must be greater than and "
-                    + "divisible by the intended loop's iteration factor.");
-            return;
-        }
-        // TODO_end ----------------------------------------------------------------
-
-        return;
     }
 
     @Override

@@ -4,7 +4,9 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-public class DistributeLoopsCheck extends Check {
+import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+
+public class DistributeLoopsCheck extends Check<RefactoringParameters> {
 
     public DistributeLoopsCheck(IASTForStatement loop) {
         super(loop);
@@ -22,4 +24,9 @@ public class DistributeLoopsCheck extends Check {
         }
     }
 
+    @Override
+    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+        //TODO figure out how to do this dependence analysis
+    }
+    
 }

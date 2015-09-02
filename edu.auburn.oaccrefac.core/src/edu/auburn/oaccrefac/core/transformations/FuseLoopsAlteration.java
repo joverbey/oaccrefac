@@ -22,12 +22,8 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fusion refactoring algorithm. Loop fusion takes the
@@ -81,45 +77,6 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         super(tu, rewriter, loop, check);
         first = loop;
         second = (IASTForStatement) ASTUtil.getNextSibling(first);
-    }
-
-    @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        // This gets the selected loop to re-factor.
-        boolean found = false;
-        IASTNode newnode = first;
-
-        // Create pattern for matching loop headers
-        IASTForStatement pattern = first.copy();
-        pattern.setBody(new ArbitraryStatement());
-
-        if (ASTUtil.getNextSibling(newnode) != null) {
-            newnode = ASTUtil.getNextSibling(newnode);
-            second = ASTUtil.findOne(newnode, IASTForStatement.class);
-            found = (second != null);
-
-            // Check to make sure the first and second loops have same headers
-            Map<String, String> varmap = ASTMatcher.unify(pattern, second);
-            if (varmap != null) {
-                for (String key : varmap.keySet()) {
-                    // The map returned contains name mapping that
-                    // tells which names would make the two patterns equal
-                    if (!varmap.get(key).equals(key)) {
-                        found = false;
-                    }
-                }
-                found = true;
-            } else {
-                found = false;
-            }
-        }
-
-        if (!found) {
-            init.addFatalError("There is no for loop for fusion to be possible.");
-            return;
-        }
-
-        return;
     }
 
     // FIXME figure out what to do with pragmas on each loop

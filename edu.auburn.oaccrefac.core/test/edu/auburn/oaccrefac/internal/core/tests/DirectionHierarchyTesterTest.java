@@ -98,22 +98,6 @@ public class DirectionHierarchyTesterTest {
         Assert.assertTrue(actual.size() == expectedSize);
     }
     
-    private void printResults(Set<Direction[]> expected, Set<Direction[]> actual) {
-        System.out.println("--------------------");
-        System.out.println("Expected: ");
-        ps(expected);
-        System.out.println("Got: ");
-        ps(actual);
-        System.out.println("--------------------");
-    }
-    
-    private void ps(Set<Direction[]> s) {
-        for(Direction[] dv : s) {
-            System.out.println(stringifyDV(dv));
-        }
-        System.out.println();
-    }
-    
     private String stringifyDV(Direction[] v) {
         StringBuilder sb = new StringBuilder();
         for(Direction el : v) {

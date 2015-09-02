@@ -6,10 +6,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.StripMineAlteration;
 import edu.auburn.oaccrefac.core.transformations.StripMineCheck;
-import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 

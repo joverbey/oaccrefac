@@ -22,10 +22,11 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * @author Adam Eichelkraut
  *
  */
-public abstract class ForLoopAlteration<T extends Check> extends SourceAlteration<T> {
+public abstract class ForLoopAlteration<T extends Check<?>> extends SourceAlteration<T> {
 
     private IASTForStatement loop;
-
+    protected T check;
+    
     /**
      * Constructor that takes a for-loop and a rewriter (for base)
      * 

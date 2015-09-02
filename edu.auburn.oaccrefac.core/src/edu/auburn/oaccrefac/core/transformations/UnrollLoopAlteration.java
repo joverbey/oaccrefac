@@ -82,34 +82,6 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
     }
 
     @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        // Check unroll factor validity...
-        if (unrollFactor <= 0) {
-            init.addFatalError("Invalid loop unroll factor! (<= 0)");
-            return;
-        }
-
-        // If the upper bound is not a constant, we cannot do loop unrolling
-        IASTForStatement loop = getLoopToChange();
-        IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
-        ConstantPropagation constantprop_ub = new ConstantPropagation(enclosing);
-        IASTExpression ub_expr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
-        upperBound = constantprop_ub.evaluate(ub_expr);
-        if (upperBound == null) {
-            init.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
-            return;
-        }
-
-        IASTStatement body = loop.getBody();
-        // if the body is empty, exit out -- pointless to unroll.
-        if (body == null || body instanceof IASTNullStatement) {
-            init.addFatalError("Loop body is empty -- nothing to unroll!");
-            return;
-        }
-        return;
-    }
-
-    @Override
     protected void doChange() {
         IASTForStatement loop = this.getLoopToChange();
 

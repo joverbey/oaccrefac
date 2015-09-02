@@ -6,11 +6,6 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop interchange refactoring algorithm. Loop interchange
@@ -63,30 +58,6 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoo
         } else {
             throw new IllegalArgumentException("Target loop cannot be null!");
         }
-    }
-
-    @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        // Check for perfect loop nest...
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.getLoopToChange());
-        if (!inq.isPerfectLoopNest()) {
-            init.addFatalError("Only perfectly nested loops can be interchanged.");
-            return;
-        }
-
-        // Check to see if the second is within first
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
-        if (!headers.contains(second)) {
-            init.addFatalError("Second loop is not within headers of first");
-
-            return;
-        }
-
-        // Dependence Analysis...
-        // InterchangeCheck checkDependence = new InterchangeCheck(getLoopToChange(), m_second);
-        // init = checkDependence.check(init, this.getProgressMonitor());
-
-        return;
     }
 
     @Override

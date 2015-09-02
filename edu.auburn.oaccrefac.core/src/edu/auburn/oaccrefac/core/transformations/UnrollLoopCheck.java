@@ -1,13 +1,58 @@
 package edu.auburn.oaccrefac.core.transformations;
 
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-public class UnrollLoopCheck extends Check {
+import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.UnrollLoopParams;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
+
+public class UnrollLoopCheck extends Check<UnrollLoopParams> {
+
+    private final Long upperBound;
 
     public UnrollLoopCheck(IASTForStatement loop) {
         super(loop);
+        IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
+        ConstantPropagation constantProp = new ConstantPropagation(enclosing);
+        IASTExpression ubExpr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
+        upperBound = constantProp.evaluate(ubExpr);
     }
 
-  //TODO implement this
+    @Override
+    protected void doLoopFormCheck(RefactoringStatus status) {
+        IASTStatement body = loop.getBody();
+        // if the body is empty, exit out -- pointless to unroll.
+        if (body == null || body instanceof IASTNullStatement) {
+            status.addFatalError("Loop body is empty -- nothing to unroll!");
+            return;
+        }
+
+        // If the upper bound is not a constant, we cannot do loop unrolling
+        if (upperBound == null) {
+            status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+            return;
+        }
+    }
+
+    @Override
+    protected void doParameterCheck(RefactoringStatus status, UnrollLoopParams params) {
+        // Check unroll factor validity...
+        if (params.getUnrollFactor() <= 0) {
+            status.addFatalError("Invalid loop unroll factor! (<= 0)");
+            return;
+        }
+    }
+
     
+    public Long getUpperBound() {
+        return upperBound;
+    }
+
+
 }

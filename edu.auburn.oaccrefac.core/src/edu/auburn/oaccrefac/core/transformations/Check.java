@@ -9,7 +9,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 
-public abstract class Check {
+public abstract class Check<T extends RefactoringParameters> {
 
     protected final IASTForStatement loop;
     
@@ -19,7 +19,7 @@ public abstract class Check {
     
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) { }
     
-    protected void doParameterCheck(RefactoringStatus status, RefactoringParameters params) { }
+    protected void doParameterCheck(RefactoringStatus status, T params) { }
     
     protected void doLoopFormCheck(RefactoringStatus status) { }
 
@@ -45,7 +45,7 @@ public abstract class Check {
         return status;
     }
 
-    public final RefactoringStatus parameterCheck(RefactoringStatus status, IProgressMonitor pm, RefactoringParameters params) {
+    public final RefactoringStatus parameterCheck(RefactoringStatus status, IProgressMonitor pm, T params) {
         doParameterCheck(status, params);
         return status;
     }
@@ -55,13 +55,11 @@ public abstract class Check {
         return status;
     }
     
-    public final RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, RefactoringParameters params) {
+    public final RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
         parameterCheck(status, pm, params);
         loopFormCheck(status, pm);
         dependenceCheck(status, pm);
         return status;
     }
-    
-    public interface RefactoringParameters { }
     
 }
