@@ -1,0 +1,10 @@
+#pragma acc parallel loop
+		for ( k=1; k<kn; k++ ) /*<<<<< 1723, 1, 1732, 1, Kernel18-3outer */
+        {
+
+            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1726, 1, 1731, 1, Kernel18-3inner */
+            {
+                zr[k][j] = zr[k][j] + t*zu[k][j];
+                zz[k][j] = zz[k][j] + t*zv[k][j];
+            }
+        }

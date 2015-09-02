@@ -297,7 +297,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-   struct Arrays
+ struct Arrays
    {
      double U[1001];
      double V[1001];
