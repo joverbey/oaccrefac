@@ -7,9 +7,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParams.UnrollLoopParams;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopAlteration;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopCheck;
+import edu.auburn.oaccrefac.core.transformations.UnrollLoopParams;
 
 /**
  * This class defines the implementation for refactoring a loop

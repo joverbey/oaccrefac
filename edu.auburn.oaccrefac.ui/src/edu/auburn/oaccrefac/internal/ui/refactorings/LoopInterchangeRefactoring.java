@@ -10,9 +10,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.InterchangeLoopParams;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsAlteration;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsCheck;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParams.InterchangeLoopParams;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
