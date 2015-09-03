@@ -481,7 +481,7 @@ public class FourierMotzkinDependenceTesterTest {
         int[] ub = { 100, 100 };
         int[][] wc = { { 1, 0, 0 }, { 1, 1, 1 } };
         int[][] rc = { { 2, 1, 3 }, { 1, 1, 1 } };
-        Direction[] d = { Direction.ANY };
+        Direction[] d = { Direction.ANY, Direction.ANY };
         Assert.assertFalse(tester.test(lb, ub, wc, rc, 0, d));
     }
 
@@ -491,7 +491,7 @@ public class FourierMotzkinDependenceTesterTest {
         int[] ub = { 100, 100 };
         int[][] wc = { { 2, 1, 3 }, { 1, 1, 1 } };
         int[][] rc = { { 1, 0, 0 }, { 1, 1, 1 } };
-        Direction[] d = { Direction.ANY };
+        Direction[] d = { Direction.ANY, Direction.ANY };
         Assert.assertFalse(tester.test(lb, ub, wc, rc, 0, d));
     }
 
@@ -501,7 +501,7 @@ public class FourierMotzkinDependenceTesterTest {
         int[] ub = { 100, 100 };
         int[][] wc = { { 2, 1, 3 }, { 1, 1, 1 } };
         int[][] rc = { { 2, 1, 3 }, { 1, 1, 1 } };
-        Direction[] d = { Direction.ANY };
+        Direction[] d = { Direction.ANY, Direction.ANY };
         Assert.assertTrue(tester.test(lb, ub, wc, rc, 0, d));
     }
     
