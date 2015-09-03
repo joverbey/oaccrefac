@@ -59,7 +59,7 @@ public class Main {
         RefactoringStatus status = check.performChecks(new RefactoringStatus(), new NullProgressMonitor(), null);
         printStatus(status);
         
-        DistributeLoopsAlteration xform = new DistributeLoopsAlteration(translationUnit, rw, forLoop, check);
+        DistributeLoopsAlteration xform = new DistributeLoopsAlteration(rw, check);
 
         if (status.hasFatalError()) {
             System.exit(1);
