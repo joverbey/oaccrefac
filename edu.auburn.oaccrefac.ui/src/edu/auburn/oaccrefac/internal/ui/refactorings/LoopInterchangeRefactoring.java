@@ -54,7 +54,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        new InterchangeLoopsAlteration(getAST(), rewriter, first, second, check).change();
+        new InterchangeLoopsAlteration(rewriter, check).change();
     }
 
 }

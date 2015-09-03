@@ -21,7 +21,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
 
@@ -67,15 +66,12 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
     /**
      * Constructor.
-     * 
      * @param rewriter
      *            -- rewriter associated with loop
-     * @param loop
-     *            -- loop in which to unroll
      * @param unrollFactor
      *            -- how many times to unroll loop body (must be > 0)
      */
-    public UnrollLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor, UnrollLoopCheck check) {
+    public UnrollLoopAlteration(IASTRewrite rewriter, int unrollFactor, UnrollLoopCheck check) {
         super(rewriter, check);
         this.unrollFactor = unrollFactor;
     }

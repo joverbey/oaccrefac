@@ -1,11 +1,8 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-
 public class IntroParallelAlteration extends ForLoopAlteration<IntroParallelCheck> {
 
-    public IntroParallelAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, IntroParallelCheck check) {
+    public IntroParallelAlteration(IASTRewrite rewriter, IntroParallelCheck check) {
         super(rewriter, check);
     }
 

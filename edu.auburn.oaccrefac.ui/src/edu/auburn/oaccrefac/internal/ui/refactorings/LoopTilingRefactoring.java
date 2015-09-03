@@ -53,7 +53,7 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        TileLoopsAlteration change = new TileLoopsAlteration(getAST(), rewriter, getLoop(), depth, stripFactor, propagate, check);
+        TileLoopsAlteration change = new TileLoopsAlteration(rewriter, depth, stripFactor, propagate, check);
         change.change();
     }
 }

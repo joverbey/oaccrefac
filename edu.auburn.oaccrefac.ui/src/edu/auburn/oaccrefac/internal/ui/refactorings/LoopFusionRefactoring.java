@@ -39,7 +39,7 @@ public class LoopFusionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        new FuseLoopsAlteration(getAST(), rewriter, getLoop(), check).change();
+        new FuseLoopsAlteration(rewriter, check).change();
     }
 
 }

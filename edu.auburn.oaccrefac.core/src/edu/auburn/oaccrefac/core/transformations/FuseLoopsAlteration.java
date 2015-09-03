@@ -20,7 +20,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -67,16 +66,13 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
 
     /**
      * Constructor that takes a for-loop to perform fusion on
-     * 
      * @param rewriter
      *            -- base rewriter for loop
-     * @param loop
-     *            -- loop to be fizzed
      */
-    public FuseLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, FuseLoopsCheck check) {
+    public FuseLoopsAlteration(IASTRewrite rewriter, FuseLoopsCheck check) {
         super(rewriter, check);
-        first = loop;
-        second = (IASTForStatement) ASTUtil.getNextSibling(first);
+        first = check.getLoop1();
+        second = check.getLoop2();
     }
 
     // FIXME figure out what to do with pragmas on each loop

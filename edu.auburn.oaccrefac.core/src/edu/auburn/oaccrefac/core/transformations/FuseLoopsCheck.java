@@ -41,6 +41,14 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParameters> {
         }
     }
 
+    public IASTForStatement getLoop1() {
+        return this.first;
+    }
+    
+    public IASTForStatement getLoop2() {
+        return this.second;
+    }
+    
     @Override
     public void doLoopFormCheck(RefactoringStatus status) {
         if (second == null) {

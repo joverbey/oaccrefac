@@ -1,8 +1,6 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop strip mine refactoring algorithm. Loop strip mining
@@ -44,14 +42,12 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
      * @author Adam Eichelkraut
      * @param rewriter
      *            -- rewriter associated with the for loop
-     * @param loop
-     *            -- for loop to refactor
      * @param stripFactor
      *            -- factor for how large strips are
      * @param depth
      *            -- perfectly nested loop depth in 'loop' to strip mine
      */
-    public StripMineAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripFactor, int depth, StripMineCheck check) {
+    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, int depth, StripMineCheck check) {
         super(rewriter, check);
         this.stripFactor = stripFactor;
         this.depth = depth;

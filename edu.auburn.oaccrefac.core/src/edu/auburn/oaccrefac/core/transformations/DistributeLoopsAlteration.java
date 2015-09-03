@@ -41,7 +41,7 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
      * @param loop
      *            -- loop to be fizzed
      */
-    public DistributeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, DistributeLoopsCheck check) {
+    public DistributeLoopsAlteration(IASTRewrite rewriter, DistributeLoopsCheck check) {
         super(rewriter, check);
     }
 

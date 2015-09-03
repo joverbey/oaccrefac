@@ -47,7 +47,7 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
 	@Override
 	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-	    UnrollLoopAlteration unroll = new UnrollLoopAlteration(getAST(), rewriter, getLoop(), unrollFactor, check);
+	    UnrollLoopAlteration unroll = new UnrollLoopAlteration(rewriter, unrollFactor, check);
 	    unroll.change();
 	}
 

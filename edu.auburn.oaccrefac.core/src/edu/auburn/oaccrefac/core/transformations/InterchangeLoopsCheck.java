@@ -114,5 +114,13 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeParams> {
         result[j] = tmp;
         return result;
     }
+
+    public IASTForStatement getOuterLoop() {
+        return outer;
+    }
+
+    public IASTForStatement getInnerLoop() {
+        return inner;
+    }
     
 }

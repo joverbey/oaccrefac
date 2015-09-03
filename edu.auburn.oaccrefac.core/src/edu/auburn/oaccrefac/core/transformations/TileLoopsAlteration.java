@@ -1,8 +1,6 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -48,11 +46,8 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
     /**
      * Constructor. Takes strip depth, strip factor, and how many times to propagate interchange for tiling. Loop nest
      * must be perfectly nested.
-     * 
      * @param rewriter
      *            -- rewriter associated with loop argument
-     * @param loop
-     *            -- for loop in which to tile
      * @param stripDepth
      *            -- strip depth of perfectly nested loop headers
      * @param stripFactor
@@ -60,8 +55,8 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
      * @param propagateInterchange
      *            -- how many times to interchange headers (-1 for arbitrary)
      */
-    public TileLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripDepth,
-            int stripFactor, int propagateInterchange, TileLoopsCheck check) {
+    public TileLoopsAlteration(IASTRewrite rewriter, int stripDepth, int stripFactor, int propagateInterchange,
+            TileLoopsCheck check) {
         super(rewriter, check);
         this.depth = stripDepth;
         this.stripFactor = stripFactor;
