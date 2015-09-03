@@ -38,20 +38,19 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * 
  * <pre>
  * for (int i = 0; i < 19; i++) {
- *     a = 5;
+ *     a[i] = i;
  * }
  * </pre>
  * 
- * Refactors to:
+ * can be unrolled with a factor of 2 to produce
  * 
  * <pre>
- * for (int i = 0; i < 18; i += 2) {
- *     a = 5;
+ * for (int i = 0; i < 18; i++) {
+ *     a[i] = i;
  *     i++;
- *     a = 5;
+ *     a[i] = i;
  * }
- * i++;
- * a = 5;
+ * a[i] = i;
  * i++;
  * </pre>
  * 
@@ -141,11 +140,10 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
 
         try {
 
-            this.insert(
-                    loop.getBody().getFileLocation().getNodeOffset() + loop.getBody().getFileLocation().getNodeLength(),
+            this.insertAfter(loop.getBody(),
                     getTrailer(loop, extras));
-            this.replace(loop, forLoop(getInitializer(loop), getCondition(loop, condOffset),
-                    getIterationExpression(loop), getBody(loop)));
+            this.replace(loop,
+                    forLoop(getInitializer(loop), getCondition(loop, condOffset), getIterationExpression(loop), getBody(loop)));
             
             List<IASTPreprocessorPragmaStatement> prags = 
                     InquisitorFactory.getInquisitor(loop).getLeadingPragmas();
@@ -168,8 +166,6 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
         StringBuilder trailer = new StringBuilder();
         for (int i = 0; i < extras; i++) {
             IASTNode[] bodyObjects = getBodyObjects(loop);
-            trailer.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent()) + "++;"
-                    + System.lineSeparator());
             for (IASTNode bodyObject : bodyObjects) {
                 if(bodyObject instanceof IASTStatement) {
                     trailer.append(getModifiedStatement((IASTStatement) bodyObject, getUses(getNameFromInitializer(loop), loop), 
@@ -179,6 +175,8 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
                     trailer.append(bodyObject.getRawSignature() + System.lineSeparator());
                 }
             }
+            trailer.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent()) + "++;"
+                    + System.lineSeparator());
         }
         return trailer.toString();
     }
@@ -232,14 +230,15 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
         cond.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(),
                 loop.getScope().getParent()));
         cond.append(" < ");
-        cond.append(parenth(((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature()
-                + " + " + condOffset));
+        String ub = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature();
+        if (condOffset != 0) ub += " + " + condOffset;
+        cond.append(ub);
         return cond.toString();
     }
 
     private String getIterationExpression(IASTForStatement loop) throws DOMException {
         return newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(),
-                loop.getScope().getParent()) + " += " + unrollFactor;
+                loop.getScope().getParent()) + "++";
     }
 
     private String newName(String name, IScope scope) {

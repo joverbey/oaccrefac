@@ -9,5 +9,5 @@ int main() {
     for (int i = 0; i < n; i++) { /*<<<<< 9,1,12,1,2,pass*/
         a = 0;
     }
-
+    return 0;
 }

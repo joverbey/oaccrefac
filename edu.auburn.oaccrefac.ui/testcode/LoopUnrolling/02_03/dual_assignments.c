@@ -8,5 +8,5 @@ int main() {
 	char b[15];
     for (int i = 0; i < 14; i++) /*<<<<< 9,5,10,21,3,pass*/
         a[i] = b[i];
-
+    return 0;
 }

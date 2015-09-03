@@ -12,5 +12,5 @@ int main() {
 	char a[15];
     for (int i = 0; i < 14; i++) /*<<<<< 13,5,14,19,3,pass*/
         foo(a[i]);
-
+    return 0;
 }

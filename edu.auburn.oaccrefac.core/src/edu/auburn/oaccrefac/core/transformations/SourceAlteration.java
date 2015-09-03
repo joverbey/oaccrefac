@@ -137,6 +137,10 @@ public abstract class SourceAlteration {
         src.insert(offset - srcOffset, text);
     }
 
+    protected final void insertAfter(IASTNode node, String text) {
+        insert(node.getFileLocation().getNodeOffset() + node.getFileLocation().getNodeLength(), text);
+    }
+
     protected final void remove(int offset, int length) {
         updateAlterationTrackingFields(offset, length);
         src.delete(offset - srcOffset, offset - srcOffset + length);

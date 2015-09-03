@@ -12,5 +12,5 @@ int main() {
 	char b[11];
     for (int i = 0; i <= 10; i++) /*<<<<< 13,5,14,21,2,pass*/
         a[i] = b[i];
-
+    return 0;
 }

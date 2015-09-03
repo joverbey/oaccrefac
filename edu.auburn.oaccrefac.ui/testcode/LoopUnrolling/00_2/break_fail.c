@@ -11,5 +11,5 @@ int main() {
         if (foo) //to add depth to test case...
         	break;
     }
-
+    return 0;
 }
