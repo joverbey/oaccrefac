@@ -6,7 +6,7 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 public class IntroParallelAlteration extends ForLoopAlteration<IntroParallelCheck> {
 
     public IntroParallelAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, IntroParallelCheck check) {
-        super(tu, rewriter, loop, check);
+        super(rewriter, check);
     }
 
     @Override

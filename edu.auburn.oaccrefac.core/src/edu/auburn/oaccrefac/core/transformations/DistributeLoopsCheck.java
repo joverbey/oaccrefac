@@ -6,7 +6,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 
-public class DistributeLoopsCheck extends Check<RefactoringParameters> {
+public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParameters> {
 
     public DistributeLoopsCheck(IASTForStatement loop) {
         super(loop);

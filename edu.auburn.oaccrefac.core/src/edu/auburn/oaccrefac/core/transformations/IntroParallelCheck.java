@@ -5,7 +5,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 
-public class IntroParallelCheck extends Check<RefactoringParameters> {
+public class IntroParallelCheck extends ForLoopCheck<RefactoringParameters> {
 
     public IntroParallelCheck(final IASTForStatement loop) {
         super(loop);

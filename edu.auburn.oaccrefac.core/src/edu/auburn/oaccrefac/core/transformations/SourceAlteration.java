@@ -54,8 +54,8 @@ public abstract class SourceAlteration<T extends Check<?>> {
     protected T check;
 
     // FIXME should somehow get an IASTRewrite from the tu and only take one argument
-    public SourceAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, T check) {
-        this.tu = tu;
+    public SourceAlteration(IASTRewrite rewriter, T check) {
+        this.tu = check.getTranslationUnit();
         this.rewriter = rewriter;
         this.src = null;
         this.srcOffset = 0;

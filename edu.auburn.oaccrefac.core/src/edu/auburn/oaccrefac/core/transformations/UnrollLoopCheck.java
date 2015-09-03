@@ -12,7 +12,7 @@ import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.UnrollLoopParams;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
-public class UnrollLoopCheck extends Check<UnrollLoopParams> {
+public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
     private final Long upperBound;
 

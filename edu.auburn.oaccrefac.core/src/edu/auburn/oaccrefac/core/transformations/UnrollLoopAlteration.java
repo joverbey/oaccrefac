@@ -77,7 +77,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
      *            -- how many times to unroll loop body (must be > 0)
      */
     public UnrollLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor, UnrollLoopCheck check) {
-        super(tu, rewriter, loop, check);
+        super(rewriter, check);
         this.unrollFactor = unrollFactor;
     }
 

@@ -52,7 +52,7 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
      *            -- perfectly nested loop depth in 'loop' to strip mine
      */
     public StripMineAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripFactor, int depth, StripMineCheck check) {
-        super(tu, rewriter, loop, check);
+        super(rewriter, check);
         this.stripFactor = stripFactor;
         this.depth = depth;
     }

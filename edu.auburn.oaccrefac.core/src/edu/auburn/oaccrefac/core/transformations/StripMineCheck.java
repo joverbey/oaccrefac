@@ -7,7 +7,7 @@ import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.StripMine
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
-public class StripMineCheck extends Check<StripMineParams> {
+public class StripMineCheck extends ForLoopCheck<StripMineParams> {
 
     public StripMineCheck(IASTForStatement loop) {
         super(loop);

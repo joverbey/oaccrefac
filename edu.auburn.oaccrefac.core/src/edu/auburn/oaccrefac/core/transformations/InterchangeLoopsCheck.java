@@ -14,7 +14,7 @@ import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.Interchan
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
-public class InterchangeLoopsCheck extends Check<InterchangeParams> {
+public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeParams> {
 
     private ForStatementInquisitor inq;
     private IASTForStatement outer;

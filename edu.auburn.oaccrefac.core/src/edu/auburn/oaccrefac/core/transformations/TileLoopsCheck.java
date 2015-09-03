@@ -7,7 +7,7 @@ import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.TileLoopsParams;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
-public class TileLoopsCheck extends Check<TileLoopsParams> {
+public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
 
     public TileLoopsCheck(IASTForStatement loop) {
         super(loop);

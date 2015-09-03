@@ -74,7 +74,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
      *            -- loop to be fizzed
      */
     public FuseLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, FuseLoopsCheck check) {
-        super(tu, rewriter, loop, check);
+        super(rewriter, check);
         first = loop;
         second = (IASTForStatement) ASTUtil.getNextSibling(first);
     }

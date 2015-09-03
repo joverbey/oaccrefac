@@ -62,7 +62,7 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
      */
     public TileLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int stripDepth,
             int stripFactor, int propagateInterchange, TileLoopsCheck check) {
-        super(tu, rewriter, loop, check);
+        super(rewriter, check);
         this.depth = stripDepth;
         this.stripFactor = stripFactor;
         this.propagate = propagateInterchange;

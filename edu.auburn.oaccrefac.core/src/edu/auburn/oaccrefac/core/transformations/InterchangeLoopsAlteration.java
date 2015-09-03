@@ -52,7 +52,7 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoo
      */
     public InterchangeLoopsAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement first,
             IASTForStatement second, InterchangeLoopsCheck check) {
-        super(tu, rewriter, first, check);
+        super(rewriter, check);
         if (second != null) {
             this.second = second;
         } else {

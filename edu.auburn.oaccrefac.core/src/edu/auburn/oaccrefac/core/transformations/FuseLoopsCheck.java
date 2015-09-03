@@ -11,7 +11,7 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
-public class FuseLoopsCheck extends Check<RefactoringParameters> {
+public class FuseLoopsCheck extends ForLoopCheck<RefactoringParameters> {
 
     private IASTForStatement first;
     private IASTForStatement second;
@@ -21,8 +21,6 @@ public class FuseLoopsCheck extends Check<RefactoringParameters> {
         this.first = this.loop;
         
         // This gets the selected loop to re-factor.
-        // TODO does the commented out code do anything?
-        // boolean found = false;
         IASTNode next = ASTUtil.getNextSibling(first);
 
         // Create pattern for matching loop headers
@@ -30,22 +28,11 @@ public class FuseLoopsCheck extends Check<RefactoringParameters> {
         pattern.setBody(new ArbitraryStatement());
 
         if (next != null && next instanceof IASTForStatement) {
-//            found = (second != null);
 
             // Check to make sure the first and second loops have same headers
-            Map<String, String> varmap = ASTMatcher.unify(pattern, next);
-            if (varmap != null) {
-//                for (String key : varmap.keySet()) {
-//                    // The map returned contains name mapping that
-//                    // tells which names would make the two patterns equal
-//                    if (!varmap.get(key).equals(key)) {
-//                        found = false;
-//                    }
-//                }
-//                found = true;
+            if (ASTMatcher.unify(pattern, next) != null) {
                 second = (IASTForStatement) next;
             } else {
-//                found = false;
                 second = null;
             }
         }
