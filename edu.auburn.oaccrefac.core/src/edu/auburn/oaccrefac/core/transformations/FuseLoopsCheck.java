@@ -1,7 +1,5 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-import java.util.Map;
-
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;

@@ -39,6 +39,6 @@ public class LoopFissionRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        new DistributeLoopsAlteration(getAST(), rewriter, getLoop(), check).change();
+        new DistributeLoopsAlteration(rewriter, check).change();
     }
 }
