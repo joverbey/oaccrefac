@@ -4,7 +4,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.TileLoopsParams;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParams.TileLoopsParams;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
 public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {

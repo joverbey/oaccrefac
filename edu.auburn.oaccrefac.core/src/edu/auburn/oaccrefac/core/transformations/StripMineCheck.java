@@ -3,7 +3,7 @@ package edu.auburn.oaccrefac.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.StripMineParams;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParams.StripMineParams;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 

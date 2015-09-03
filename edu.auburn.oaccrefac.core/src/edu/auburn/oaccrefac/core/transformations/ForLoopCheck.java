@@ -10,7 +10,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 
-public class ForLoopCheck<T extends RefactoringParameters> extends Check<T> {
+public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
 
     protected final IASTForStatement loop;
     

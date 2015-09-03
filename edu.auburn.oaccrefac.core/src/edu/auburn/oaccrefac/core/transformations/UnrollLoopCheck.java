@@ -9,7 +9,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.UnrollLoopParams;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParams.UnrollLoopParams;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {

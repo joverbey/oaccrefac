@@ -4,7 +4,7 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-public abstract class Check<T extends RefactoringParameters> {
+public abstract class Check<T extends RefactoringParams> {
 
     protected void doParameterCheck(RefactoringStatus status, T params) { }
     

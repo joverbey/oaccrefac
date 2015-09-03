@@ -12,7 +12,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsAlteration;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsCheck;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.InterchangeParams;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParams.InterchangeLoopParams;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
@@ -49,7 +49,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
         second = ASTUtil.findDepth(first, IASTForStatement.class, depth);
 
         check = new InterchangeLoopsCheck(first, second);
-        check.performChecks(status, pm, new InterchangeParams(depth));
+        check.performChecks(status, pm, new InterchangeLoopParams(depth));
     }
 
     @Override

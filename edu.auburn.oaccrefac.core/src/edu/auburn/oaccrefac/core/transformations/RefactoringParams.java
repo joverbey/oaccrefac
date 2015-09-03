@@ -1,11 +1,11 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-public abstract class RefactoringParameters {
+public abstract class RefactoringParams {
 
-    public static class InterchangeParams extends RefactoringParameters {
+    public static class InterchangeLoopParams extends RefactoringParams {
         private int depth;
 
-        public InterchangeParams(int depth) {
+        public InterchangeLoopParams(int depth) {
             this.depth = depth;
         }
 
@@ -15,7 +15,7 @@ public abstract class RefactoringParameters {
 
     }
 
-    public static class StripMineParams extends RefactoringParameters {
+    public static class StripMineParams extends RefactoringParams {
 
         private int stripFactor;
         private int depth;
@@ -35,7 +35,7 @@ public abstract class RefactoringParameters {
 
     }
 
-    public static class TileLoopsParams extends RefactoringParameters {
+    public static class TileLoopsParams extends RefactoringParams {
         private int depth;
         private int stripFactor;
         private int propagate;
@@ -60,7 +60,7 @@ public abstract class RefactoringParameters {
 
     }
 
-    public static class UnrollLoopParams extends RefactoringParameters {
+    public static class UnrollLoopParams extends RefactoringParams {
         private int unrollFactor;
 
         public UnrollLoopParams(int unrollFactor) {

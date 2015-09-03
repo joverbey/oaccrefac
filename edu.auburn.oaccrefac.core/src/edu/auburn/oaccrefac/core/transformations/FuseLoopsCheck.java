@@ -11,7 +11,7 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
-public class FuseLoopsCheck extends ForLoopCheck<RefactoringParameters> {
+public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
     private IASTForStatement first;
     private IASTForStatement second;
