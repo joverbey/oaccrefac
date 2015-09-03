@@ -17,16 +17,6 @@ import java.util.Set;
 
 import edu.auburn.oaccrefac.core.dependence.Direction;
 
-/**
- *         Class to encapsulate a for loop data dependence system
- *
- *         TODO: finish constructor (see other todo's for new fields, etc.) TODO: this class contains the inequality
- *         matrix for the loop system, but FMDepTest generates it from array info internally from loop bounds, etc.
- *         Either this class should keep loop bounds, etc. instead of the matrix, or FMDepTest should take the matrix as
- *         an argument rather than loop bounds, etc. This would, however, mess with the IDependenceTest interface.
- * 
- *         int[] lowerBounds, int[] upperBounds, int[][] writeCoefficients, int[][] readCoefficients
- */
 public class DirectionHierarchyTester {
 
     private FourierMotzkinDependenceTester fourierMotzkin = new FourierMotzkinDependenceTester();

@@ -17,7 +17,7 @@ import edu.auburn.oaccrefac.core.dependence.Direction;
 
 public class FourierMotzkinDependenceTester {
 
-    /*
+    /**
      * assumes that the subscript expressions are normalized see example on Wolfe pg 225-226
      * 
      * coefficients are arrays of subscript linear expressions a linear expression should be an array of doubles,
@@ -171,7 +171,6 @@ public class FourierMotzkinDependenceTester {
                 break;
             case EQ:
                 // i_d - i_u <= 0, -i_d + i_u <= 0
-                // ie, [1 -1 0 0 ... 0], [-1 1 0 0 ... 0]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
                 row[i] = 1;
                 row[i + ((row.length-1-numScalars)/2)] = -1;
@@ -185,8 +184,7 @@ public class FourierMotzkinDependenceTester {
                 break;
             case GT:
                 // i_u < i_d
-                // in integer terms, i_u <= i_d-1, or -i_d+i_d <= -1
-                // ie, [-1 1 0 0 ... -1]
+                // in integer terms, i_u <= i_d-1, or -i_d+i_u <= -1
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
                 row[i] = -1;
                 row[i + ((row.length-1-numScalars)/2)] = 1;
@@ -196,7 +194,6 @@ public class FourierMotzkinDependenceTester {
             case LT:
                 // i_d < i_u
                 // in integer terms, i_d <= i_u-1, or i_d-i_u <= -1
-                // ie, [1 -1 0 0 ... -1]
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
                 row[i] = 1;
                 row[i + ((row.length-1-numScalars)/2)] = -1;
@@ -205,7 +202,7 @@ public class FourierMotzkinDependenceTester {
                 break;
             case GE:
                 // i_u <= i_d
-                // ie, -i_d+i_u <= 0, or [-1 1 0 0 ... 0]
+                // ie, -i_d+i_u <= 0
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
                 row[i] = -1;
                 row[i + ((row.length-1-numScalars)/2)] = 1;
@@ -214,7 +211,7 @@ public class FourierMotzkinDependenceTester {
                 break;
             case LE:
                 // i_d <= i_u
-                // ie, i_d-i_u <= 0, or [1 -1 0 0 ... 0]
+                // ie, i_d-i_u <= 0
                 row = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
                 row[i] = 1;
                 row[i + ((row.length-1-numScalars)/2)] = -1;
