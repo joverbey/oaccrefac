@@ -12,18 +12,18 @@ import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -60,7 +60,7 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * @author Adam Eichelkraut
  *
  */
-public class UnrollLoopAlteration extends ForLoopAlteration {
+public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
     private int unrollFactor;
     private Long upperBound;
@@ -75,37 +75,9 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
      * @param unrollFactor
      *            -- how many times to unroll loop body (must be > 0)
      */
-    public UnrollLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor) {
-        super(tu, rewriter, loop);
+    public UnrollLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loop, int unrollFactor, UnrollLoopCheck check) {
+        super(rewriter, check);
         this.unrollFactor = unrollFactor;
-    }
-
-    @Override
-    protected void doCheckConditions(RefactoringStatus init, IProgressMonitor pm) {
-        // Check unroll factor validity...
-        if (unrollFactor <= 0) {
-            init.addFatalError("Invalid loop unroll factor! (<= 0)");
-            return;
-        }
-
-        // If the upper bound is not a constant, we cannot do loop unrolling
-        IASTForStatement loop = getLoopToChange();
-        IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
-        ConstantPropagation constantprop_ub = new ConstantPropagation(enclosing);
-        IASTExpression ub_expr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
-        upperBound = constantprop_ub.evaluate(ub_expr);
-        if (upperBound == null) {
-            init.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
-            return;
-        }
-
-        IASTStatement body = loop.getBody();
-        // if the body is empty, exit out -- pointless to unroll.
-        if (body == null || body instanceof IASTNullStatement) {
-            init.addFatalError("Loop body is empty -- nothing to unroll!");
-            return;
-        }
-        return;
     }
 
     @Override
@@ -294,6 +266,17 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
             IASTSimpleDeclaration decl = (IASTSimpleDeclaration) ((IASTDeclarationStatement) initStmt).getDeclaration();
             return decl.getDeclarators()[0].getName();
         }
+        else if(initStmt instanceof IASTExpressionStatement) {
+            IASTExpression expr = ((IASTExpressionStatement) initStmt).getExpression();
+            if(expr instanceof IASTBinaryExpression &&
+                    ((IASTBinaryExpression) expr).getOperator() == IASTBinaryExpression.op_assign) {
+                IASTBinaryExpression binExp = (IASTBinaryExpression) expr;
+                IASTExpression lhs = binExp.getOperand1();
+                if(lhs instanceof IASTIdExpression) {
+                    return ((IASTIdExpression) lhs).getName();
+                }
+            }            
+        }
         return null;
     }
     
@@ -312,7 +295,9 @@ public class UnrollLoopAlteration extends ForLoopAlteration {
 
             @Override
             public int visit(IASTName name) {
-                if (name.resolveBinding().equals(var.resolveBinding())) {
+                IBinding nameBinding = name.resolveBinding(); 
+                IBinding varBinding = var.resolveBinding();
+                if (nameBinding.equals(varBinding)) {
                     uses.add(name);
                 }
                 return PROCESS_CONTINUE;

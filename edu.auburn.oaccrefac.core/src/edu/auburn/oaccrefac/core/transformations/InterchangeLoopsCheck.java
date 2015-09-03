@@ -10,38 +10,47 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.Direction;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.InterchangeParams;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
-public class InterchangeLoopsCheck extends DependenceCheck {
+public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeParams> {
 
     private ForStatementInquisitor inq;
-    private IASTForStatement base;
-    private IASTForStatement second;
+    private IASTForStatement outer;
+    private IASTForStatement inner;
 
-    public InterchangeLoopsCheck(IASTForStatement base, IASTForStatement second) {
+    public InterchangeLoopsCheck(IASTForStatement outer, IASTForStatement inner) {
         // passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
-        super(base);
-
-        this.base = base;
-        this.second = second;
-
-        if (this.base == null || this.second == null) {
-            throw new IllegalArgumentException("Inputs cannot be null!");
+        super(outer);
+        this.outer = outer;
+        this.inner = inner;
+        this.inq = InquisitorFactory.getInquisitor(outer);
+    }
+    
+    @Override
+    protected void doLoopFormCheck(RefactoringStatus status) {
+        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(outer);
+        if (!inq.isPerfectLoopNest()) {
+            status.addFatalError("Only perfectly nested loops can be interchanged.");
+            return;
         }
 
-        this.inq = InquisitorFactory.getInquisitor(base);
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        if (!headers.contains(inner)) {
+            status.addFatalError("Second loop is not within headers of first");
+
+            return;
+        }
     }
 
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status) {
-
-        DependenceAnalysis dep = getDependenceAnalysis();
+    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
 
         List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
-        int second_depth = headers.indexOf(second);
+        int second_depth = headers.indexOf(inner);
         if (second_depth > 0) {
-            int numEnclosingLoops = countEnclosingLoops(base);
+            int numEnclosingLoops = countEnclosingLoops(outer);
             boolean isValid = isInterchangeValid(numEnclosingLoops, second_depth + numEnclosingLoops,
                     dep.getDependences());
             if (!isValid) {
@@ -52,7 +61,6 @@ public class InterchangeLoopsCheck extends DependenceCheck {
             throw new IllegalArgumentException(
                     "Second for-statement must be within" + "perfectly nested loop headers of first.");
         }
-        return null;
     }
 
     private int countEnclosingLoops(IASTNode outsideOf) {
@@ -106,5 +114,5 @@ public class InterchangeLoopsCheck extends DependenceCheck {
         result[j] = tmp;
         return result;
     }
-
+    
 }

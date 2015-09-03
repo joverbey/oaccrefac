@@ -18,8 +18,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
-import edu.auburn.oaccrefac.core.transformations.DependenceCheck;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.IntroParallelAlteration;
 import edu.auburn.oaccrefac.core.transformations.IntroParallelCheck;
@@ -32,19 +30,21 @@ import edu.auburn.oaccrefac.core.transformations.IntroParallelCheck;
  */
 public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
+    private IntroParallelCheck check;
+    
     public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        DependenceCheck check = new IntroParallelCheck(getLoop());
-        check.check(status, pm);
+        check = new IntroParallelCheck(getLoop());        
+        check.performChecks(status, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        SourceAlteration change = new IntroParallelAlteration(getAST(), rewriter, getLoop());
+        IntroParallelAlteration change = new IntroParallelAlteration(getAST(), rewriter, getLoop(), check);
         change.change();
     }
 

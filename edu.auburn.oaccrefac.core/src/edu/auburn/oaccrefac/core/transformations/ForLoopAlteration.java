@@ -10,7 +10,6 @@ import org.eclipse.cdt.core.dom.ast.IASTInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.c.ICNodeFactory;
 
@@ -22,10 +21,11 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * @author Adam Eichelkraut
  *
  */
-public abstract class ForLoopAlteration extends SourceAlteration {
+public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends SourceAlteration<T> {
 
     private IASTForStatement loop;
-
+    protected T check;
+    
     /**
      * Constructor that takes a for-loop and a rewriter (for base)
      * 
@@ -37,12 +37,9 @@ public abstract class ForLoopAlteration extends SourceAlteration {
      * @throws IllegalArgumentException
      *             if the for loop is null
      */
-    public ForLoopAlteration(IASTTranslationUnit tu, IASTRewrite rewriter, IASTForStatement loopToChange) {
-        super(tu, rewriter);
-        if (loopToChange == null) {
-            throw new IllegalArgumentException("Argument loop cannot be null!");
-        }
-        loop = loopToChange;
+    public ForLoopAlteration(IASTRewrite rewriter, T check) {
+        super(rewriter, check);
+        loop = check.getLoop();;
     }
 
     /**

@@ -4,28 +4,29 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-public class DistributeLoopsCheck extends DependenceCheck {
-    private IASTForStatement loop;
+import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 
-    public DistributeLoopsCheck(final IASTForStatement loop) {
+public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParameters> {
+
+    public DistributeLoopsCheck(IASTForStatement loop) {
         super(loop);
-        this.loop = loop;
     }
 
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status) {
+    public void doLoopFormCheck(RefactoringStatus status) {
         // If the loop doesn't have children, bail.
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {
             status.addFatalError("Body does not have any statements, so loop fission is useless.");
-            return status;
         }
 
         if (loop.getBody().getChildren().length < 2) {
             status.addFatalError("Loop fission refactoring requires more than one statement.");
-            return status;
         }
-
-        return status;
     }
 
+    @Override
+    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+        //TODO figure out how to do this dependence analysis
+    }
+    
 }

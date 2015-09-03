@@ -11,7 +11,6 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizard;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFissionRefactoring;
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopFissionDelegate extends RefactoringActionDelegate {

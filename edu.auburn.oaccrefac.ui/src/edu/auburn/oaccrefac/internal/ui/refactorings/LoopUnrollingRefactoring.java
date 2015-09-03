@@ -1,15 +1,15 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
-import edu.auburn.oaccrefac.core.transformations.UnrollLoopAlteration;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.RefactoringParameters.UnrollLoopParams;
+import edu.auburn.oaccrefac.core.transformations.UnrollLoopAlteration;
+import edu.auburn.oaccrefac.core.transformations.UnrollLoopCheck;
 
 /**
  * This class defines the implementation for refactoring a loop
@@ -29,7 +29,7 @@ import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
     private int unrollFactor;
-    private SourceAlteration unroll;
+    private UnrollLoopCheck check;
     
 	public LoopUnrollingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -40,13 +40,14 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
     }
     
     @Override
-    protected void doCheckFinalConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        IASTForStatement loop = getLoop();
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
+        check = new UnrollLoopCheck(getLoop());
+        check.performChecks(status, pm, new UnrollLoopParams(unrollFactor));
     }
 
 	@Override
 	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-	    SourceAlteration unroll = new UnrollLoopAlteration(getAST(), rewriter, getLoop(), unrollFactor);
+	    UnrollLoopAlteration unroll = new UnrollLoopAlteration(getAST(), rewriter, getLoop(), unrollFactor, check);
 	    unroll.change();
 	}
 

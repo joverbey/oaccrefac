@@ -5,22 +5,22 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 
-public class IntroParallelCheck extends DependenceCheck {
+public class IntroParallelCheck extends ForLoopCheck<RefactoringParameters> {
 
     public IntroParallelCheck(final IASTForStatement loop) {
         super(loop);
     }
 
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status) {
-        // TODO: Check for existing/conflicting OpenACC pragma
+    protected void doLoopFormCheck(RefactoringStatus status) {
+      //TODO: Check for existing/conflicting OpenACC pragma
+    }
 
-        DependenceAnalysis dep = getDependenceAnalysis();
-
+    @Override
+    public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
         if (dep != null && dep.hasLevel1CarriedDependence()) {
             status.addError("This loop cannot be parallelized because it carries a dependence.");
         }
-        return status;
     }
 
 }

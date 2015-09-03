@@ -6,10 +6,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
-import edu.auburn.oaccrefac.core.transformations.Check;
 import edu.auburn.oaccrefac.core.transformations.FuseLoopsAlteration;
-import edu.auburn.oaccrefac.core.transformations.FuseLoopsInitialCheck;
+import edu.auburn.oaccrefac.core.transformations.FuseLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 
 /**
@@ -27,20 +25,21 @@ import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
  */
 public class LoopFusionRefactoring extends ForLoopRefactoring {
 
+    private FuseLoopsCheck check;
+    
     public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus initStatus, IProgressMonitor pm) {
-        Check check = new FuseLoopsInitialCheck(getLoop());
-        check.check(initStatus, pm);
+    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
+        check = new FuseLoopsCheck(getLoop());
+        check.performChecks(status, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
-        SourceAlteration change = new FuseLoopsAlteration(getAST(), rewriter, getLoop());
-        change.change();
+        new FuseLoopsAlteration(getAST(), rewriter, getLoop(), check).change();
     }
 
 }

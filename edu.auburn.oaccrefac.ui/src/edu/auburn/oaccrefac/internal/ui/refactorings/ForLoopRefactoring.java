@@ -45,8 +45,8 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 @SuppressWarnings("restriction")
 public abstract class ForLoopRefactoring extends CRefactoring {
 
-    private IASTTranslationUnit m_ast;
-    private IASTForStatement m_forloop;
+    private IASTTranslationUnit ast;
+    private IASTForStatement forloop;
 
     /**
      * The constructor for ForLoopRefactoring takes items for refactoring and tosses them up to the super class as well
@@ -107,28 +107,28 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         pm.subTask("Analyzing selection...");
 
         SubMonitor progress = SubMonitor.convert(pm, 10);
-        m_ast = getAST(tu, progress.newChild(9));
-        m_forloop = findLoop(m_ast);
-        if (m_forloop == null) {
+        ast = getAST(tu, progress.newChild(9));
+        forloop = findLoop(ast);
+        if (forloop == null) {
             initStatus.addFatalError("Please select a for loop.");
             return initStatus;
         }
 
         String msg = String.format("Selected loop (line %d) is: %s",
-                m_forloop.getFileLocation().getStartingLineNumber(), ASTUtil.summarize(m_forloop));
-        initStatus.addInfo(msg, getLocation(m_forloop));
+                forloop.getFileLocation().getStartingLineNumber(), ASTUtil.summarize(forloop));
+        initStatus.addInfo(msg, getLocation(forloop));
 
-        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(m_forloop);
+        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(forloop);
 
         pm.subTask("Checking initial conditions...");
         if (!forLoop.isCountedLoop()) {
-            initStatus.addFatalError("Loop form not supported!", getLocation(m_forloop));
+            initStatus.addFatalError("Loop form not supported!", getLocation(forloop));
             return initStatus;
         }
 
         doCheckInitialConditions(initStatus, progress.newChild(1));
 
-        if (containsUnsupportedOp(m_forloop)) {
+        if (containsUnsupportedOp(forloop)) {
             initStatus.addFatalError(
                     "Cannot refactor -- loop contains " + "iteration augment statement (break or continue or goto)");
         }
@@ -224,11 +224,11 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     }
 
     protected CASTForStatement getLoop() {
-        return (CASTForStatement) m_forloop;
+        return (CASTForStatement) forloop;
     }
 
     protected IASTTranslationUnit getAST() {
-        return m_ast;
+        return ast;
     }
 
     // *************************************************************************
