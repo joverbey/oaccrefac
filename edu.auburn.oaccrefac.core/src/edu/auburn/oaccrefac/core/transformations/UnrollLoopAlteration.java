@@ -12,18 +12,18 @@ import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -267,6 +267,17 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
             IASTSimpleDeclaration decl = (IASTSimpleDeclaration) ((IASTDeclarationStatement) initStmt).getDeclaration();
             return decl.getDeclarators()[0].getName();
         }
+        else if(initStmt instanceof IASTExpressionStatement) {
+            IASTExpression expr = ((IASTExpressionStatement) initStmt).getExpression();
+            if(expr instanceof IASTBinaryExpression &&
+                    ((IASTBinaryExpression) expr).getOperator() == IASTBinaryExpression.op_assign) {
+                IASTBinaryExpression binExp = (IASTBinaryExpression) expr;
+                IASTExpression lhs = binExp.getOperand1();
+                if(lhs instanceof IASTIdExpression) {
+                    return ((IASTIdExpression) lhs).getName();
+                }
+            }            
+        }
         return null;
     }
     
@@ -285,7 +296,9 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
             @Override
             public int visit(IASTName name) {
-                if (name.resolveBinding().equals(var.resolveBinding())) {
+                IBinding nameBinding = name.resolveBinding(); 
+                IBinding varBinding = var.resolveBinding();
+                if (nameBinding.equals(varBinding)) {
                     uses.add(name);
                 }
                 return PROCESS_CONTINUE;
