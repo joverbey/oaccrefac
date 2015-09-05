@@ -52,6 +52,4 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
     public Long getUpperBound() {
         return upperBound;
     }
-
-
 }

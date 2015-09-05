@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -53,7 +54,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new InterchangeLoopsAlteration(rewriter, check).change();
     }
 

@@ -35,6 +35,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
@@ -57,7 +58,7 @@ import org.junit.Assert;
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 
 public class ASTUtil {
-    
+
     public static final Comparator<IASTNode> REVERSE_COMPARATOR = new Comparator<IASTNode>() {
 
         @Override
@@ -66,7 +67,7 @@ public class ASTUtil {
         }
 
     };
-    
+
     public static final Comparator<IASTNode> FORWARD_COMPARATOR = new Comparator<IASTNode>() {
 
         @Override
@@ -110,14 +111,14 @@ public class ASTUtil {
     }
 
     public static boolean isAncestor(IASTNode ancestor, IASTNode descendant) {
-        for(IASTNode node = descendant; node != null; node = node.getParent()) {
-            if(node.equals(ancestor)) {
+        for (IASTNode node = descendant; node != null; node = node.getParent()) {
+            if (node.equals(ancestor)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
      * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
      * next sibling after itself with respect to its parent.
@@ -139,12 +140,7 @@ public class ASTUtil {
     }
 
     public static boolean isNameInScope(IASTName varname, IScope scope) {
-        IBinding[] bindings = scope.find(new String(varname.getSimpleID()));
-        if (bindings.length > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return isNameInScope(new String(varname.getSimpleID()), scope);
     }
 
     public static boolean isNameInScope(String varname, IScope scope) {
@@ -155,7 +151,7 @@ public class ASTUtil {
             return false;
         }
     }
-    
+
     public static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
         List<IBinding> result = new ArrayList<IBinding>(loops.size());
         for (IASTForStatement forStmt : loops) {
@@ -236,6 +232,43 @@ public class ASTUtil {
         for (IASTNode child : parent.getChildren()) {
             findAndAdd(child, clazz, results);
         }
+    }
+
+    public static IASTExpression getIncrDecr(IASTExpression expr) {
+        if (!(expr instanceof IASTUnaryExpression))
+            return null;
+
+        IASTUnaryExpression unaryExp = (IASTUnaryExpression) expr;
+        switch (unaryExp.getOperator()) {
+        case IASTUnaryExpression.op_prefixIncr:
+        case IASTUnaryExpression.op_postFixIncr:
+        case IASTUnaryExpression.op_prefixDecr:
+        case IASTUnaryExpression.op_postFixDecr:
+            return unaryExp.getOperand();
+        }
+        return null;
+    }
+
+    public static Pair<IASTExpression, IASTExpression> getAssignEq(IASTExpression expr) {
+        if (!(expr instanceof IASTBinaryExpression))
+            return null;
+
+        IASTBinaryExpression binExp = (IASTBinaryExpression) expr;
+        switch (binExp.getOperator()) {
+        case IASTBinaryExpression.op_binaryAndAssign:
+        case IASTBinaryExpression.op_binaryOrAssign:
+        case IASTBinaryExpression.op_binaryXorAssign:
+        case IASTBinaryExpression.op_divideAssign:
+        case IASTBinaryExpression.op_minusAssign:
+        case IASTBinaryExpression.op_moduloAssign:
+        case IASTBinaryExpression.op_multiplyAssign:
+        case IASTBinaryExpression.op_plusAssign:
+        case IASTBinaryExpression.op_shiftLeftAssign:
+        case IASTBinaryExpression.op_shiftRightAssign:
+            return new Pair<IASTExpression, IASTExpression>(binExp.getOperand1(), binExp.getOperand2());
+        }
+
+        return null;
     }
 
     public static Pair<IASTExpression, IASTExpression> getAssignment(IASTExpression expr) {
@@ -360,11 +393,10 @@ public class ASTUtil {
             return "<error>";
         }
     }
-    
+
     public static String format(String source) {
         CodeFormatter cf = ToolFactory.createDefaultCodeFormatter(null);
-        TextEdit edit = cf.format(CodeFormatter.K_STATEMENTS, 
-                source, 0, source.length(), 0, null);
+        TextEdit edit = cf.format(CodeFormatter.K_STATEMENTS, source, 0, source.length(), 0, null);
         IDocument doc = new Document(source);
         try {
             edit.apply(doc);

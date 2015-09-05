@@ -18,12 +18,16 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.Activator;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
@@ -86,7 +90,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
      * happen by using the rewriter being sent from the base class on the AST received by the inherited class'
      * constructor.
      */
-    protected abstract void doChange();
+    protected abstract void doChange() throws Exception;
 
     // -----------------------------------------------------------------------------------
 
@@ -99,9 +103,14 @@ public abstract class SourceAlteration<T extends Check<?>> {
      * @throws IllegalArgumentException
      *             if the rewriter is null at this point
      */
-    public final void change() {
+    public final void change() throws CoreException {
         // FIXME: Eliminate doChange -- subclasses can override change() instead???
-        doChange();
+        try {
+            doChange();
+        } catch (Exception e) {
+            Activator.log(e);
+            throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+        }
     }
 
     protected final void insert(int offset, String text) {

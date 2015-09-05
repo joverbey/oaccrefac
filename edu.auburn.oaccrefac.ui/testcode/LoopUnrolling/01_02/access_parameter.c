@@ -13,8 +13,10 @@ static void foo(char* p) {
 
 int main() {
 
-	char a[10];
-    for (int i = 0; i < 10; i++) /*<<<<< 17,5,18,19,2,pass*/
+	char a[10], b[10];
+    for (int i = 0; i < 10; i++) /*<<<<< 17,5,18,19,2,fail*/ /* Cannot analyze dependences */
         foo(a[i]);
+    for (int i = 0; i < 10; i++) /*<<<<< 19,5,20,19,2,pass*/
+        b[i] = a[i];
     return 0;
 }

@@ -65,8 +65,8 @@ public class Main {
             System.exit(1);
         }
 
-        xform.change();
         try {
+            xform.change();
             xform.rewriteAST().perform(new NullProgressMonitor());
         } catch (CoreException e) {
             System.err.printf("Internal error creating change: %s\n", e.getMessage());

@@ -62,11 +62,12 @@ public class DependenceAnalysis {
     private final Set<DataDependence> dependences;
 
     /**
-     * Constructor.  Analyzes dependences in a sequence of C statements.
+     * Constructor. Analyzes dependences in a sequence of C statements.
      * 
      * @throws DependenceTestFailure
      */
-    public DependenceAnalysis(IProgressMonitor pm, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
+    public DependenceAnalysis(IProgressMonitor pm, IASTStatement... statements)
+            throws DependenceTestFailure, OperationCanceledException {
         variableAccesses = new ArrayList<VariableAccess>();
         dependences = new HashSet<DataDependence>();
 
@@ -112,10 +113,11 @@ public class DependenceAnalysis {
                             ForStatementInquisitor thisLoop = InquisitorFactory.getInquisitor(commonLoops.get(i));
                             lowerBounds[i] = thisLoop.getLowerBound();
                             Long ub = thisLoop.getInclusiveUpperBound();
-                            if (ub != null && Integer.MIN_VALUE+1 <= ub.longValue() && ub.longValue() <= Integer.MAX_VALUE-1)
-                                upperBounds[i] = (int)ub.longValue();
+                            if (ub != null && Integer.MIN_VALUE + 1 <= ub.longValue()
+                                    && ub.longValue() <= Integer.MAX_VALUE - 1)
+                                upperBounds[i] = (int) ub.longValue();
                         }
-                        
+
                         DirectionHierarchyTester dht = new DirectionHierarchyTester(lowerBounds, upperBounds,
                                 writeCoefficients, readCoefficients, otherVars.size());
                         Set<Direction[]> dvs = dht.getPossibleDependenceDirections();
@@ -213,11 +215,30 @@ public class DependenceAnalysis {
 
     private void collectAccessesFrom(IASTExpressionStatement stmt) throws DependenceTestFailure {
         Pair<IASTExpression, IASTExpression> asgt = ASTUtil.getAssignment(stmt.getExpression());
-        if (asgt == null)
-            throw unsupported(stmt);
+        if (asgt != null) {
+            collectAccessesFromAssignmentLHS(asgt.getFirst());
+            collectAccessesFromExpression(asgt.getSecond());
+            return;
+        }
 
-        collectAccessesFromAssignmentLHS(asgt.getFirst());
-        collectAccessesFromExpression(asgt.getSecond());
+        Pair<IASTExpression, IASTExpression> assignEq = ASTUtil.getAssignEq(stmt.getExpression());
+        if (assignEq != null) {
+            // The variable on the LHS is both read and written
+            collectAccessesFromAssignmentLHS(assignEq.getFirst());
+            collectAccessesFromExpression(assignEq.getFirst());
+            collectAccessesFromExpression(assignEq.getSecond());
+            return;
+        }
+
+        IASTExpression incrDecr = ASTUtil.getIncrDecr(stmt.getExpression());
+        if (incrDecr != null) {
+            // The incremented variable/array element is both read and written
+            collectAccessesFromAssignmentLHS(incrDecr);
+            collectAccessesFromExpression(incrDecr);
+            return;
+        }
+
+        throw unsupported(stmt);
     }
 
     private void collectAccessesFromAssignmentLHS(IASTExpression expr) throws DependenceTestFailure {
@@ -335,9 +356,9 @@ public class DependenceAnalysis {
     }
 
     private static DependenceTestFailure unsupported(IASTNode node) {
-        return new DependenceTestFailure(
-                String.format("Unsupported construct on line %d (%s)", node.getFileLocation().getStartingLineNumber(), //
-                        node.getClass().getSimpleName()));
+        return new DependenceTestFailure(String.format("Unsupported construct on line %d (%s) - %s",
+                node.getFileLocation().getStartingLineNumber(), //
+                node.getClass().getSimpleName(), ASTUtil.toString(node)));
     }
 
     public Set<DataDependence> getDependences() {

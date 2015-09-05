@@ -73,7 +73,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      * @param rewriter
      * @param pm
      */
-    protected abstract void refactor(IASTRewrite rewriter, IProgressMonitor pm);
+    protected abstract void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException;
 
     /**
      * This method is the driver for the refactoring implementation that you defined above. It does some initialization

@@ -13,6 +13,7 @@ package edu.auburn.oaccrefac.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
@@ -43,7 +44,7 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         IntroParallelAlteration change = new IntroParallelAlteration(rewriter, check);
         change.change();
     }

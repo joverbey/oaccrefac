@@ -1,15 +1,17 @@
-			for (i = 0; i < (25 - 1); i++) /*<<<<< 1801, 1, 1807, 14, Kernel21middle */
-			{
-				for (j = 0; j < as2.Inner_loops; j++) {
-					as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
-				}
+			for (i = 0; i < 25 - 1; i++) {/*<<<<< 1801, 1, 1807, 14, Kernel21middle */
+				for (j = 0; j < n; j++) /*<<<<< 1803, 1, 1807, 1, Kernel21inner */
+				{
+					px[j][i] += vy[k][i] * cx[j][k];
+				}/*<<<<< 1803, 1, 1807, 1, Kernel21inner */
 				i++;
-				for (j = 0; j < as2.Inner_loops; j++) {
-					as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
-				}
-			}
-			i++;
-			for (j = 0; j < as2.Inner_loops; j++) {
-				as1.Px[j][i] += as1.Vy[k][i] * as1.Cx[j][k];
-			}
+				/*<<<<< 1801, 1, 1807, 14, Kernel21middle */
+				for (j = 0; j < n; j++) /*<<<<< 1803, 1, 1807, 1, Kernel21inner */
+				{
+					px[j][i] += vy[k][i] * cx[j][k];
+				}/*<<<<< 1803, 1, 1807, 1, Kernel21inner */
+			}/*<<<<< 1801, 1, 1807, 14, Kernel21middle */
+			for (j = 0; j < n; j++) /*<<<<< 1803, 1, 1807, 1, Kernel21inner */
+			{
+				px[j][i] += vy[k][i] * cx[j][k];
+			}/*<<<<< 1803, 1, 1807, 1, Kernel21inner */
 			i++;

@@ -1,18 +1,16 @@
-		for (j = 1; j < 6; j++) /*<<<<< 1844, 1, 1853, 1, Kernel23outer */
-		{
-			for (k = 1; k < as2.Inner_loops; k++) {
-				qa = as1.Za[j + 1][k] * as1.Zr[j][k]
-						+ as1.Za[j - 1][k] * as1.Zb[j][k]
-						+ as1.Za[j][k + 1] * as1.Zu[j][k]
-						+ as1.Za[j][k - 1] * as1.Zv[j][k] + as1.Zz[j][k];
-				as1.Za[j][k] += 0.175 * (qa - as1.Za[j][k]);
-			}
+		for (j = 1; j < 6; j++) {/*<<<<< 1844, 1, 1853, 1, Kernel23outer */
+			for (k = 1; k < n; k++) /*<<<<< 1846, 1, 1852, 1, Kernel23inner */
+			{
+				qa = za[j + 1][k] * zr[j][k] + za[j - 1][k] * zb[j][k] +
+				za[j][k + 1] * zu[j][k] + za[j][k - 1] * zv[j][k] + zz[j][k];
+				za[j][k] += 0.175 * (qa - za[j][k]);
+			}/*<<<<< 1846, 1, 1852, 1, Kernel23inner */
 			j++;
-			for (k = 1; k < as2.Inner_loops; k++) {
-				qa = as1.Za[j + 1][k] * as1.Zr[j][k]
-						+ as1.Za[j - 1][k] * as1.Zb[j][k]
-						+ as1.Za[j][k + 1] * as1.Zu[j][k]
-						+ as1.Za[j][k - 1] * as1.Zv[j][k] + as1.Zz[j][k];
-				as1.Za[j][k] += 0.175 * (qa - as1.Za[j][k]);
-			}
+			/*<<<<< 1844, 1, 1853, 1, Kernel23outer */
+			for (k = 1; k < n; k++) /*<<<<< 1846, 1, 1852, 1, Kernel23inner */
+			{
+				qa = za[j + 1][k] * zr[j][k] + za[j - 1][k] * zb[j][k] +
+				za[j][k + 1] * zu[j][k] + za[j][k - 1] * zv[j][k] + zz[j][k];
+				za[j][k] += 0.175 * (qa - za[j][k]);
+			}/*<<<<< 1846, 1, 1852, 1, Kernel23inner */
 		}

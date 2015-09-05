@@ -9,8 +9,8 @@ static void foo(char* p) {
 
 int main() {
 
-	char a[15];
+	char a[15], b[15];
     for (int i = 0; i < 14; i++) /*<<<<< 13,5,14,19,3,pass*/
-        foo(a[i]);
+        b[i] = a[i];
     return 0;
 }

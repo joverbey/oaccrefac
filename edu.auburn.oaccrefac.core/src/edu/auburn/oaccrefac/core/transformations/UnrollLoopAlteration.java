@@ -14,7 +14,6 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -24,7 +23,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
 
-import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
@@ -57,159 +55,69 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * unrolled loop body.
  * 
  * @author Adam Eichelkraut
- *
+ * @author Alexander Calvert
+ * @author Jeff Overbey
  */
 public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
-    private int unrollFactor;
-    private Long upperBound;
+    private final IASTForStatement loop;
+    private final int unrollFactor;
+    private final int condOffset;
+    private final int extras;
+    private final IBinding oldIndexVariable;
+    private final String newIndexVariable;
 
     /**
      * Constructor.
+     * 
      * @param rewriter
      *            -- rewriter associated with loop
      * @param unrollFactor
      *            -- how many times to unroll loop body (must be > 0)
+     * @throws DOMException
      */
-    public UnrollLoopAlteration(IASTRewrite rewriter, int unrollFactor, UnrollLoopCheck check) {
+    public UnrollLoopAlteration(IASTRewrite rewriter, int unrollFactor, UnrollLoopCheck check) throws DOMException {
         super(rewriter, check);
         this.unrollFactor = unrollFactor;
-    }
 
-    @Override
-    protected void doChange() {
-        IASTForStatement loop = this.getLoopToChange();
+        this.loop = this.getLoopToChange();
 
-        // TODO move this code somewhere else to use refactoring status
-        // If the upper bound is not a constant, we cannot do loop unrolling
-        IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
-        ConstantPropagation constantprop_ub = new ConstantPropagation(enclosing);
-        IASTExpression ub_expr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
-        upperBound = constantprop_ub.evaluate(ub_expr);
-        if (upperBound == null) {
-            return;
-        }
-
-        // get the loop upper bound from AST, if the conditional statement is '<=',
+        // Get the loop upper bound from the AST. If the conditional expression is '<=',
         // change it and adjust the bound to include a +1.
-        int upper = upperBound.intValue();
+        int upper = check.getUpperBound().intValue();
         int condOffset = 0;
+
         IASTBinaryExpression condition = (IASTBinaryExpression) loop.getConditionExpression();
         if (condition.getOperator() == IASTBinaryExpression.op_lessEqual) {
-            upper = upper + 1;
-            condOffset = condOffset + 1;
+            upper++;
+            condOffset++;
         }
 
         // Number of extra iterations to add after loop based on divisibility.
-        int extras = upper % unrollFactor;
+        this.extras = upper % unrollFactor;
         if (extras != 0) {
-            condOffset = condOffset - extras;
+            condOffset -= extras;
         }
 
-        try {
+        this.condOffset = condOffset;
 
-            this.insertAfter(loop.getBody(),
-                    getTrailer(loop, extras));
-            this.replace(loop,
-                    forLoop(getInitializer(loop), getCondition(loop, condOffset), getIterationExpression(loop), getBody(loop)));
-            
-            List<IASTPreprocessorPragmaStatement> prags = 
-                    InquisitorFactory.getInquisitor(loop).getLeadingPragmas();
-            int insertPoint = prags.size() > 0?
-                    prags.get(0).getFileLocation().getNodeOffset() :
-                        loop.getFileLocation().getNodeOffset();
-                            
-                    
-            this.insert(insertPoint, getLeadingDeclaration(loop));
-
-        } catch (DOMException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        finalizeChanges();
-    }
-
-    private String getTrailer(IASTForStatement loop, int extras) throws DOMException {
-        StringBuilder trailer = new StringBuilder();
-        for (int i = 0; i < extras; i++) {
-            IASTNode[] bodyObjects = getBodyObjects(loop);
-            for (IASTNode bodyObject : bodyObjects) {
-                if(bodyObject instanceof IASTStatement) {
-                    trailer.append(getModifiedStatement((IASTStatement) bodyObject, getUses(getNameFromInitializer(loop), loop), 
-                            newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent())));
-                }
-                else {
-                    trailer.append(bodyObject.getRawSignature() + System.lineSeparator());
-                }
-            }
-            trailer.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent()) + "++;"
-                    + System.lineSeparator());
-        }
-        return trailer.toString();
-    }
-
-    private String getBody(IASTForStatement loop) throws DOMException {
-        
-        StringBuilder body = new StringBuilder("");
-        for (int i = 0; i < unrollFactor; i++) {
-            for (IASTNode bodyObject : getBodyObjects(loop)) {
-                if(bodyObject instanceof IASTStatement) {
-                    body.append(getModifiedStatement((IASTStatement) bodyObject, getUses(getNameFromInitializer(loop), loop), 
-                            newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(), loop.getScope().getParent())));
-                }
-                else {
-                    body.append(bodyObject.getRawSignature() + System.lineSeparator());
-                }
-            }
-            if (i != unrollFactor - 1) {
-                body.append(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString() + "++;"
-                        + System.lineSeparator());
-            }
-        }
-        return compound(body.toString());
-    }
-
-    private String getLeadingDeclaration(IASTForStatement loop) throws DOMException {
-        // if the init statement is a declaration, move the declaration
-        // to outer scope if possible and continue
-        if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
-            IASTName varname = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
-            String declaration;
-            StringBuilder newDeclaration = new StringBuilder(loop.getInitializerStatement().getRawSignature());
-            int start = varname.getFileLocation().getNodeOffset()
-                    - loop.getInitializerStatement().getFileLocation().getNodeOffset();
-            int end = start + varname.getFileLocation().getNodeLength();
-            newDeclaration.replace(start, end, newName(varname.toString(), loop.getScope().getParent()));
-            declaration = newDeclaration.toString();
-            return declaration;
+        this.oldIndexVariable = InquisitorFactory.getInquisitor(loop).getIndexVariable();
+        if (shouldMoveDeclAboveLoop()) {
+            this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
         } else {
-            return "";
+            this.newIndexVariable = this.oldIndexVariable.getName();
         }
     }
 
-    private String getInitializer(IASTForStatement loop) {
-        return loop.getInitializerStatement() instanceof IASTDeclarationStatement ? "; "
-                : loop.getInitializerStatement().getRawSignature();
+    private boolean shouldMoveDeclAboveLoop() {
+        return loop.getInitializerStatement() instanceof IASTDeclarationStatement && extras != 0;
     }
 
-    private String getCondition(IASTForStatement loop, int condOffset) throws DOMException {
-        StringBuilder cond = new StringBuilder();
-        cond.append(newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(),
-                loop.getScope().getParent()));
-        cond.append(" < ");
-        String ub = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature();
-        if (condOffset != 0) ub += " + " + condOffset;
-        cond.append(ub);
-        return cond.toString();
-    }
-
-    private String getIterationExpression(IASTForStatement loop) throws DOMException {
-        return newName(ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class).toString(),
-                loop.getScope().getParent()) + "++";
-    }
-
-    private String newName(String name, IScope scope) {
+    /**
+     * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
+     *         name_2, etc.) that is not in scope
+     */
+    private static String createNewName(String name, IScope scope) {
         if (ASTUtil.isNameInScope(name, scope)) {
             for (int i = 0; true; i++) {
                 String newName = name + "_" + i;
@@ -220,10 +128,102 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         } else {
             return name;
         }
-
     }
 
-    private IASTStatement[] getBodyStatements(IASTForStatement loop) {
+    @Override
+    protected void doChange() throws DOMException {
+        this.insertAfter(loop.getBody(), createTrailer(extras));
+
+        this.replace(loop, forLoop(getInitializer(), getCondition(condOffset), getIterationExpression(), createBody()));
+
+        List<IASTPreprocessorPragmaStatement> prags = InquisitorFactory.getInquisitor(loop).getLeadingPragmas();
+        int insertPoint = prags.size() > 0 ? prags.get(0).getFileLocation().getNodeOffset()
+                : loop.getFileLocation().getNodeOffset();
+        this.insert(insertPoint, createLeadingDeclaration());
+
+        finalizeChanges();
+    }
+
+    /**
+     * @return leftover ("extra") iterations inserted after the loop (when the number of iterations is not divisible by
+     *         the unrolling factor)
+     */
+    private String createTrailer(int extras) throws DOMException {
+        StringBuilder trailer = new StringBuilder();
+        for (int i = 0; i < extras; i++) {
+            appendModifiedOrigBody(trailer);
+            trailer.append(newIndexVariable + "++;" + System.lineSeparator());
+        }
+        return trailer.toString();
+    }
+
+    private void appendModifiedOrigBody(StringBuilder sb) throws DOMException {
+        IASTNode[] bodyObjects = getBodyObjects();
+        for (IASTNode bodyObject : bodyObjects) {
+            if (bodyObject instanceof IASTStatement) {
+                sb.append(getModifiedStatement((IASTStatement) bodyObject, getUses(getNameFromInitializer())));
+            } else {
+                sb.append(bodyObject.getRawSignature() + System.lineSeparator());
+            }
+        }
+    }
+
+    private String createBody() throws DOMException {
+        StringBuilder body = new StringBuilder();
+        for (int i = 0; i < unrollFactor; i++) {
+            appendModifiedOrigBody(body);
+            if (i != unrollFactor - 1) {
+                body.append(newIndexVariable + "++;" + System.lineSeparator());
+            }
+        }
+        return compound(body.toString());
+    }
+
+    private String createLeadingDeclaration() throws DOMException {
+        // if the init statement is a declaration, move the declaration
+        // to outer scope if possible and continue
+        if (shouldMoveDeclAboveLoop()) {
+            IASTName varname = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
+            String declaration;
+            StringBuilder newDeclaration = new StringBuilder(loop.getInitializerStatement().getRawSignature());
+            int start = varname.getFileLocation().getNodeOffset()
+                    - loop.getInitializerStatement().getFileLocation().getNodeOffset();
+            int end = start + varname.getFileLocation().getNodeLength();
+            newDeclaration.replace(start, end, newIndexVariable);
+            declaration = newDeclaration.toString();
+            return declaration;
+        } else {
+            return "";
+        }
+    }
+
+    private String getInitializer() {
+        if (shouldMoveDeclAboveLoop()) {
+            return "; ";
+        } else {
+            return getModifiedStatement(loop.getInitializerStatement(), getUses(getNameFromInitializer()));
+        }
+    }
+
+    private String getCondition(int condOffset) throws DOMException {
+        StringBuilder cond = new StringBuilder();
+        cond.append(newIndexVariable);
+        cond.append(" < ");
+        String ub = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature();
+        if (condOffset > 0) {
+            ub += " + " + condOffset;
+        } else if (condOffset < 0) {
+            ub += " - " + (-1 * condOffset);
+        }
+        cond.append(ub);
+        return cond.toString();
+    }
+
+    private String getIterationExpression() throws DOMException {
+        return newIndexVariable + "++";
+    }
+
+    private IASTStatement[] getBodyStatements() {
         if (loop.getBody() instanceof IASTCompoundStatement) {
             return ((IASTCompoundStatement) loop.getBody()).getStatements();
         } else {
@@ -231,14 +231,14 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         }
     }
 
-    private IASTNode[] getBodyObjects(IASTForStatement loop) {
-        return getBodyObjects(loop, false);
+    private IASTNode[] getBodyObjects() {
+        return getBodyObjects(false);
     }
 
     // gets statements AND comments from a loop body in forward order
-    private IASTNode[] getBodyObjects(IASTForStatement loop, boolean reverse) {
+    private IASTNode[] getBodyObjects(boolean reverse) {
         List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        objects.addAll(Arrays.asList(getBodyStatements()));
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
@@ -255,28 +255,27 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
     }
 
-    private IASTName getNameFromInitializer(IASTForStatement loop) {
+    private IASTName getNameFromInitializer() {
         IASTStatement initStmt = loop.getInitializerStatement();
-        if (initStmt instanceof IASTDeclarationStatement && 
-                ((IASTDeclarationStatement) initStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
+        if (initStmt instanceof IASTDeclarationStatement
+                && ((IASTDeclarationStatement) initStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
             IASTSimpleDeclaration decl = (IASTSimpleDeclaration) ((IASTDeclarationStatement) initStmt).getDeclaration();
             return decl.getDeclarators()[0].getName();
-        }
-        else if(initStmt instanceof IASTExpressionStatement) {
+        } else if (initStmt instanceof IASTExpressionStatement) {
             IASTExpression expr = ((IASTExpressionStatement) initStmt).getExpression();
-            if(expr instanceof IASTBinaryExpression &&
-                    ((IASTBinaryExpression) expr).getOperator() == IASTBinaryExpression.op_assign) {
+            if (expr instanceof IASTBinaryExpression
+                    && ((IASTBinaryExpression) expr).getOperator() == IASTBinaryExpression.op_assign) {
                 IASTBinaryExpression binExp = (IASTBinaryExpression) expr;
                 IASTExpression lhs = binExp.getOperand1();
-                if(lhs instanceof IASTIdExpression) {
+                if (lhs instanceof IASTIdExpression) {
                     return ((IASTIdExpression) lhs).getName();
                 }
-            }            
+            }
         }
         return null;
     }
-    
-    private List<IASTName> getUses(IASTName var, IASTForStatement loop) {
+
+    private List<IASTName> getUses(IASTName var) {
 
         class VariableUseFinder extends ASTVisitor {
 
@@ -291,7 +290,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
             @Override
             public int visit(IASTName name) {
-                IBinding nameBinding = name.resolveBinding(); 
+                IBinding nameBinding = name.resolveBinding();
                 IBinding varBinding = var.resolveBinding();
                 if (nameBinding.equals(varBinding)) {
                     uses.add(name);
@@ -307,14 +306,15 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
     }
 
-    private String getModifiedStatement(IASTStatement original, List<IASTName> uses, String newName) {
+    private String getModifiedStatement(IASTStatement original, List<IASTName> uses) {
         Collections.sort(uses, ASTUtil.REVERSE_COMPARATOR);
         StringBuilder sb = new StringBuilder(original.getRawSignature());
         for (IASTName use : uses) {
             if (ASTUtil.isAncestor(original, use)) {
                 int offsetIntoStatement = use.getFileLocation().getNodeOffset()
                         - original.getFileLocation().getNodeOffset();
-                sb.replace(offsetIntoStatement, offsetIntoStatement + use.getFileLocation().getNodeLength(), newName);
+                sb.replace(offsetIntoStatement, offsetIntoStatement + use.getFileLocation().getNodeLength(),
+                        newIndexVariable);
             }
         }
         return sb.toString();
