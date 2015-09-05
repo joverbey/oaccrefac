@@ -1,0 +1,16 @@
+#pragma acc parallel loop
+		for ( k=1; k<kn; k++ ) /*<<<<< 1708, 1, 1723, 1, Kernel18-2outer */
+        {
+
+            for ( j=1 ; j<jn ; j++ ) /*<<<<< 1711, 1, 1722, 1, Kernel18-2inner */
+            {
+                zu[k][j] += s*( za[k][j]   *( zz[k][j] - zz[k][j+1] ) -
+                                za[k][j-1] *( zz[k][j] - zz[k][j-1] ) -
+                                zb[k][j]   *( zz[k][j] - zz[k-1][j] ) +
+                                zb[k+1][j] *( zz[k][j] - zz[k+1][j] ) );
+                zv[k][j] += s*( za[k][j]   *( zr[k][j] - zr[k][j+1] ) -
+                                za[k][j-1] *( zr[k][j] - zr[k][j-1] ) -
+                                zb[k][j]   *( zr[k][j] - zr[k-1][j] ) +
+                                zb[k+1][j] *( zr[k][j] - zr[k+1][j] ) );
+            }
+        }
