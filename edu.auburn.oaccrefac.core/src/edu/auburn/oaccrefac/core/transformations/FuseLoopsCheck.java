@@ -1,11 +1,26 @@
 package edu.auburn.oaccrefac.core.transformations;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.core.dependence.DataDependence;
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+import edu.auburn.oaccrefac.core.dependence.DependenceType;
+import edu.auburn.oaccrefac.core.dependence.Direction;
+import edu.auburn.oaccrefac.core.dependence.FusionDependenceAnalysis;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
 import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
@@ -53,11 +68,62 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
             status.addFatalError("There is no for loop for fusion to be possible.");
         }
     }
-
   
     @Override
-    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
-        //TODO figure out how to do this dependence analysis
+    public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
+        
+        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(first);
+        FusionDependenceAnalysis dep;
+        
+        try {
+            dep = new FusionDependenceAnalysis(pm, 
+                    loop.getIndexVariable(), loop.getLowerBound(), loop.getInclusiveUpperBound(), 
+                    getStatementsFromLoopBodies(first, second));
+        } catch (DependenceTestFailure e) {
+            status.addError("Dependences could not be analyzed.  " + e.getMessage());
+            return status;
+        }
+        
+        for(DataDependence d : dep.getDependences()) {
+
+            if(d.isLoopCarried() &&
+                    statementsComeFromDifferentLoops(second, first, d.getStatement1(), d.getStatement2()) &&
+                    (d.getDirectionVector()[d.getLevel()-1] == Direction.LT || d.getDirectionVector()[d.getLevel()-1] == Direction.LE) &&
+                    d.getType() == DependenceType.ANTI)  {
+                
+                status.addError("A dependence in the loops is fusion-preventing");
+                
+            }
+            
+        }
+        return status;
+    }
+    
+    private IASTStatement[] getStatementsFromLoopBodies(IASTForStatement l1, IASTForStatement l2) {
+        List<IASTStatement> stmts = new ArrayList<IASTStatement>();
+        
+        if(l1.getBody() instanceof IASTCompoundStatement) {
+            IASTStatement[] bodyStmts = ((IASTCompoundStatement) l1.getBody()).getStatements();
+            stmts.addAll(Arrays.asList(bodyStmts));
+        }
+        else {
+            stmts.add(l1.getBody());
+        }
+        
+        if(l2.getBody() instanceof IASTCompoundStatement) {
+            IASTStatement[] bodyStmts = ((IASTCompoundStatement) l2.getBody()).getStatements();
+            stmts.addAll(Arrays.asList(bodyStmts));
+        }
+        else {
+            stmts.add(l2.getBody());
+        }
+        
+        return stmts.toArray(new IASTStatement[stmts.size()]);
+    }
+    
+    private static boolean statementsComeFromDifferentLoops(IASTForStatement l1, IASTForStatement l2, IASTStatement s1, IASTStatement s2) {
+        return (ASTUtil.isAncestorOf(l1, s1) && ASTUtil.isAncestorOf(l2, s2)) || 
+                (ASTUtil.isAncestorOf(l1, s2) && ASTUtil.isAncestorOf(l2, s1));
     }
     
 }

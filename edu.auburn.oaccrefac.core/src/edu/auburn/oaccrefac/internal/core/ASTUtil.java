@@ -390,6 +390,17 @@ public class ASTUtil {
             result = result.substring(0, MAX_LEN + 1) + "...";
         return result;
     }
+    
+    public static boolean isAncestorOf(IASTNode potentialParent, IASTNode child) {
+        
+        for(IASTNode current = child; current != null; current = current.getParent()) {
+            if(potentialParent == current) {
+                return true;
+            }
+        }
+        return false;
+        
+    }
 
     private ASTUtil() {
     }
