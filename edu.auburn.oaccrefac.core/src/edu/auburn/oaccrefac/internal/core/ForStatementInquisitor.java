@@ -21,11 +21,14 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -33,7 +36,9 @@ import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
 
@@ -97,7 +102,7 @@ public class ForStatementInquisitor {
                 return PROCESS_CONTINUE;
             }
         }
-        boolean countedInitialized = false;
+        counted = false;
         for (String pattern : patterns) {
             IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
@@ -105,12 +110,8 @@ public class ForStatementInquisitor {
             patternAST.setBody(new ArbitraryStatement());
             if (ASTMatcher.unify(patternAST, statement) != null) {
                 counted = true;
-                countedInitialized = true;
                 break;
             }
-        }
-        if (!countedInitialized) {
-            counted = false;
         }
     }
 
@@ -162,9 +163,22 @@ public class ForStatementInquisitor {
         return nameFinder.name.resolveBinding();
     }
 
-    // FIXME fails to handle cases where the lower bound is not 0
     public int getLowerBound() {
-        return 0;
+        // This makes assumptions about the tree structure based on the patterns above
+        IASTFunctionDefinition enclosingFunction = ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class);
+        if (statement.getInitializerStatement() instanceof IASTDeclarationStatement) {
+            IASTDeclarationStatement stmt = (IASTDeclarationStatement) statement.getInitializerStatement();
+            IASTSimpleDeclaration simpleDecl = (IASTSimpleDeclaration) stmt.getDeclaration();
+            for (IASTDeclarator declarator : simpleDecl.getDeclarators()) {
+                IASTEqualsInitializer eqInit = (IASTEqualsInitializer) declarator.getInitializer();
+                IASTInitializerClause initializer = eqInit.getInitializerClause();
+                return new ConstantPropagation(enclosingFunction).evaluate((IASTExpression) initializer).intValue();
+            }
+        } else if (statement.getInitializerStatement() instanceof IASTExpressionStatement) {
+            IASTExpressionStatement stmt = (IASTExpressionStatement) statement.getInitializerStatement();
+            return new ConstantPropagation(enclosingFunction).evaluate(stmt.getExpression()).intValue();
+        }
+        throw new IllegalStateException();
     }
 
     public Long getInclusiveUpperBound() {
@@ -224,44 +238,39 @@ public class ForStatementInquisitor {
         if (body instanceof IASTCompoundStatement) {
             if (body.getChildren().length == 0) {
                 return true;
-            }
-            // assuming perfect nesting, so only check children[0]
-            else if (body.getChildren()[0] instanceof IASTForStatement) {
+            } else if (body.getChildren().length == 1 && body.getChildren()[0] instanceof IASTForStatement) {
+                // perfect nesting, so only check children[0]
                 return areAllInnermostStatementsValid((IASTForStatement) body.getChildren()[0]);
             } else {
                 // check if all children are assignments or null stmts
                 for (IASTNode child : body.getChildren()) {
                     // to be an asgt, must be an expr stmt with a bin expr child,
                     // which has asgt operator
-                    if (child instanceof IASTExpressionStatement && child.getChildren().length > 0
-                            && child.getChildren()[0] instanceof IASTBinaryExpression
-                            && ((IASTBinaryExpression) child.getChildren()[0])
-                                    .getOperator() == IASTBinaryExpression.op_assign) {
-                        continue;
-                    } else if (child instanceof IASTNullStatement) {
-                        continue;
-                    } else {
+                    if (!isLoopBodyStmtValid(child))
                         return false;
-                    }
                 }
                 return true;
             }
         } else if (body instanceof IASTForStatement) {
             return areAllInnermostStatementsValid((IASTForStatement) body);
-        } else if (body instanceof IASTNullStatement) {
-            return true;
         } else { // neither compound nor for statement - body is the only statement
-            if (body instanceof IASTExpressionStatement) {
-                if (body.getChildren()[0] instanceof IASTBinaryExpression) {
-                    if (((IASTBinaryExpression) body.getChildren()[0])
-                            .getOperator() == IASTBinaryExpression.op_assign) {
-                        return true;
-                    }
-                }
-            }
-            // either not binary or not an assignment
-            return false;
+            return isLoopBodyStmtValid(body);
         }
+    }
+
+    private boolean isLoopBodyStmtValid(IASTNode body) {
+        if (body instanceof IASTNullStatement) {
+            return true;
+        } else if (body instanceof IASTExpressionStatement) {
+            if (body.getChildren()[0] instanceof IASTBinaryExpression) {
+                IASTBinaryExpression expr = (IASTBinaryExpression) body.getChildren()[0];
+                return ASTUtil.getAssignment(expr) != null || ASTUtil.getAssignEq(expr) != null;
+            } else if (body.getChildren()[0] instanceof IASTUnaryExpression) {
+                IASTUnaryExpression expr = (IASTUnaryExpression) body.getChildren()[0];
+                return ASTUtil.getIncrDecr(expr) != null;
+            }
+        }
+        return false;
     }
 
     public List<IASTForStatement> getPerfectLoopNestHeaders() {

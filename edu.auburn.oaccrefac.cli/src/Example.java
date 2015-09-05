@@ -11,10 +11,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
 import org.eclipse.cdt.core.parser.DefaultLogService;
@@ -29,19 +26,19 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
-import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite.CommentPosition;
-import edu.auburn.oaccrefac.core.transformations.Check;
+import edu.auburn.oaccrefac.core.transformations.DistributeLoopsAlteration;
+import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
-import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
- * Skeleton command line driver.  Subclasses should extend to implement specific refactorings.
+ * Example command line driver -- how to run a refactoring from the CLI.
  */
-public abstract class Main<P extends RefactoringParams, C extends Check<P>, A extends SourceAlteration<C>> {
+public class Example {
 
-    protected final void run(String[] args) {
-        if (!checkArgs(args)) {
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println("Usage: example <filename.c>");
             System.exit(1);
         }
 
@@ -51,61 +48,33 @@ public abstract class Main<P extends RefactoringParams, C extends Check<P>, A ex
             translationUnit = parse(filename);
         } catch (CoreException e) {
             System.err.printf("Unable to parse %s (%s)\n", filename, e.getMessage());
-            System.exit(2);
+            System.exit(1);
         }
 
         IASTRewrite rw = ASTRewrite.create(translationUnit);
-
-        IASTForStatement forLoop = findLoopToAutotune(translationUnit, rw);
+        IASTForStatement forLoop = ASTUtil.findOne(translationUnit, IASTForStatement.class);
         if (forLoop == null) {
-            System.err.println(
-                    "Please add a comment containing \"autotune\" or \"refactor\" immediately above the loop to refactor.");
-            System.exit(3);
+            System.err.println("No loop found");
+            System.exit(1);
         }
 
-        C check = createCheck(forLoop);
-        RefactoringStatus status = check.performChecks(new RefactoringStatus(), new NullProgressMonitor(), createParams(forLoop));
+        // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
+
+        DistributeLoopsCheck check = new DistributeLoopsCheck(forLoop);
+        RefactoringStatus status = check.performChecks(new RefactoringStatus(), new NullProgressMonitor(), null);
         printStatus(status);
         if (status.hasFatalError()) {
-            System.exit(4);
+            System.exit(1);
         }
 
+        DistributeLoopsAlteration xform = new DistributeLoopsAlteration(rw, check);
         try {
-            A xform = createAlteration(rw, check);
             xform.change();
             xform.rewriteAST().perform(new NullProgressMonitor());
         } catch (CoreException e) {
             System.err.printf("Internal error creating change: %s\n", e.getMessage());
-            System.exit(5);
+            System.exit(1);
         }
-    }
-
-    private static IASTForStatement findLoopToAutotune(IASTTranslationUnit translationUnit, final IASTRewrite rw) {
-        class V extends ASTVisitor {
-            private IASTForStatement found = null;
-
-            public V() {
-                this.shouldVisitStatements = true;
-            }
-
-            @Override
-            public int visit(IASTStatement statement) {
-                if (found == null && statement instanceof IASTForStatement) {
-                    for (IASTComment comment : ((ASTRewrite) rw).getComments(statement, CommentPosition.leading)) {
-                        String commentLower = String.valueOf(comment.getComment()).toLowerCase();
-                        if (commentLower.contains("autotune") || commentLower.contains("refactor")) {
-                            found = (IASTForStatement) statement;
-                            return PROCESS_ABORT;
-                        }
-
-                    }
-                }
-                return PROCESS_CONTINUE;
-            }
-        }
-        V visitor = new V();
-        translationUnit.accept(visitor);
-        return visitor.found;
     }
 
     private static void printStatus(RefactoringStatus status) {
@@ -126,12 +95,4 @@ public abstract class Main<P extends RefactoringParams, C extends Check<P>, A ex
                 fileContentProvider, null, 0, log);
         return translationUnit;
     }
-
-    protected abstract boolean checkArgs(String[] args);
-
-    protected abstract C createCheck(IASTForStatement loop);
-
-    protected abstract P createParams(IASTForStatement forLoop);
-
-    protected abstract A createAlteration(IASTRewrite rewriter, C check) throws CoreException;
 }

@@ -22,8 +22,12 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.Activator;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
@@ -76,11 +80,13 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
      *            -- how many times to unroll loop body (must be > 0)
      * @throws DOMException
      */
-    public UnrollLoopAlteration(IASTRewrite rewriter, int unrollFactor, UnrollLoopCheck check) throws DOMException {
+    public UnrollLoopAlteration(IASTRewrite rewriter, int unrollFactor, UnrollLoopCheck check) throws CoreException {
         super(rewriter, check);
         this.unrollFactor = unrollFactor;
 
         this.loop = this.getLoopToChange();
+
+        int lower = InquisitorFactory.getInquisitor(loop).getLowerBound();
 
         // Get the loop upper bound from the AST. If the conditional expression is '<=',
         // change it and adjust the bound to include a +1.
@@ -94,7 +100,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         }
 
         // Number of extra iterations to add after loop based on divisibility.
-        this.extras = upper % unrollFactor;
+        this.extras = (upper - lower) % unrollFactor;
         if (extras != 0) {
             condOffset -= extras;
         }
@@ -103,7 +109,12 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.oldIndexVariable = InquisitorFactory.getInquisitor(loop).getIndexVariable();
         if (shouldMoveDeclAboveLoop()) {
-            this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
+            try {
+                this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
+            } catch (DOMException e) {
+                Activator.log(e);
+                throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+            }
         } else {
             this.newIndexVariable = this.oldIndexVariable.getName();
         }

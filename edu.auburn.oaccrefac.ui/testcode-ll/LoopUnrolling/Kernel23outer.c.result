@@ -1,4 +1,4 @@
-		for (j = 1; j < 6; j++) {/*<<<<< 1844, 1, 1853, 1, Kernel23outer */
+		for (j = 1; j < 6 - 1; j++) {/*<<<<< 1844, 1, 1853, 1, Kernel23outer */
 			for (k = 1; k < n; k++) /*<<<<< 1846, 1, 1852, 1, Kernel23inner */
 			{
 				qa = za[j + 1][k] * zr[j][k] + za[j - 1][k] * zb[j][k] +
@@ -13,4 +13,12 @@
 				za[j][k + 1] * zu[j][k] + za[j][k - 1] * zv[j][k] + zz[j][k];
 				za[j][k] += 0.175 * (qa - za[j][k]);
 			}/*<<<<< 1846, 1, 1852, 1, Kernel23inner */
-		}
+		}/*<<<<< 1844, 1, 1853, 1, Kernel23outer */
+		for (k = 1; k < n; k++) /*<<<<< 1846, 1, 1852, 1, Kernel23inner */
+		{
+			qa = za[j + 1][k] * zr[j][k] + za[j - 1][k] * zb[j][k] +
+			za[j][k + 1] * zu[j][k] + za[j][k - 1] * zv[j][k] + zz[j][k];
+			za[j][k] += 0.175 * (qa - za[j][k]);
+		}/*<<<<< 1846, 1, 1852, 1, Kernel23inner */
+		j++;
+

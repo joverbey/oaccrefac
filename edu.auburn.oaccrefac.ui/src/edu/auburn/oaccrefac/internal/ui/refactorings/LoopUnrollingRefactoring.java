@@ -1,12 +1,9 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -14,7 +11,6 @@ import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopAlteration;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopCheck;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopParams;
-import edu.auburn.oaccrefac.internal.core.Activator;
 
 /**
  * This class defines the implementation for refactoring a loop so that it is unrolled. For example:
@@ -54,13 +50,8 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        try {
-            UnrollLoopAlteration unroll = new UnrollLoopAlteration(rewriter, unrollFactor, check);
-            unroll.change();
-        } catch (DOMException e) {
-            Activator.log(e);
-            throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
-        }
+        UnrollLoopAlteration unroll = new UnrollLoopAlteration(rewriter, unrollFactor, check);
+        unroll.change();
     }
 
 }

@@ -13,11 +13,11 @@
 package edu.auburn.oaccrefac.internal.core;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Comparator;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
@@ -48,12 +48,12 @@ import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
-import org.junit.Assert;
 
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 
@@ -190,10 +190,10 @@ public class ASTUtil {
     public static IASTStatement parseStatement(String string) throws CoreException {
         String program = String.format("void f() { %s; }", string);
         IASTTranslationUnit tu = translationUnitForString(program);
-        Assert.assertNotNull(tu);
+        if (tu == null) throw new CoreException(Status.CANCEL_STATUS);
         IASTStatement stmt = ASTUtil.findOne(tu, IASTStatement.class);
-        Assert.assertNotNull(stmt);
-        Assert.assertTrue(stmt instanceof IASTCompoundStatement);
+        if (stmt == null) throw new CoreException(Status.CANCEL_STATUS);
+        if (!(stmt instanceof IASTCompoundStatement)) throw new CoreException(Status.CANCEL_STATUS);
         return ((IASTCompoundStatement) stmt).getStatements()[0];
     }
 
@@ -207,8 +207,8 @@ public class ASTUtil {
 
     public static IASTExpression parseExpression(String string) throws CoreException {
         IASTStatement stmt = parseStatement(string + ";");
-        Assert.assertNotNull(stmt);
-        Assert.assertTrue(stmt instanceof IASTExpressionStatement);
+        if (stmt == null) throw new CoreException(Status.CANCEL_STATUS);
+        if (!(stmt instanceof IASTExpressionStatement)) throw new CoreException(Status.CANCEL_STATUS);
         return ((IASTExpressionStatement) stmt).getExpression();
     }
 

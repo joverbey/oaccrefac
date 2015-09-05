@@ -10,6 +10,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
@@ -26,9 +27,22 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
         IASTStatement body = loop.getBody();
-        // if the body is empty, exit out -- pointless to unroll.
+        // If the body is empty, exit out -- pointless to unroll.
         if (body == null || body instanceof IASTNullStatement) {
             status.addFatalError("Loop body is empty -- nothing to unroll!");
+            return;
+        }
+
+        // If the loop is not a counted loop, fail
+        System.out.println();
+        if (!InquisitorFactory.getInquisitor(loop).isCountedLoop()) {
+            status.addFatalError("Loop form not supported");
+            return;
+        }
+
+        // If the loop is not a 0-based counted loop, fail
+        if (!InquisitorFactory.getInquisitor(loop).areAllInnermostStatementsValid()) {
+            status.addFatalError("Loop contains unsupported statements");
             return;
         }
 
