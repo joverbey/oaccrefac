@@ -24,19 +24,19 @@ public class NumberInputComposite extends Composite {
         public void valueChanged(int value);
     }
     
-    private Label m_label;
-    private Text m_inputText;
-    private ValueChangedListener m_listener;
+    private Label label;
+    private Text inputText;
+    private ValueChangedListener listener;
     
     public NumberInputComposite(Composite parent, int style) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
-        m_label = new Label(this, SWT.NONE);
-        m_inputText = new Text(this, SWT.LEFT | SWT.BORDER);
+        label = new Label(this, SWT.NONE);
+        inputText = new Text(this, SWT.LEFT | SWT.BORDER);
         
         //Add a listener to make sure that the only thing inserted
         //into this text field are numbers.
-        m_inputText.addModifyListener(new ModifyListener() {
+        inputText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
                 Text source = ((Text) e.getSource());
@@ -44,7 +44,7 @@ public class NumberInputComposite extends Composite {
                 if (newText.length() > 0) {
                     char last = newText.charAt(newText.length()-1);
                     if (isNumber(last)) {
-                        m_listener.valueChanged(Integer.parseInt(newText));
+                        listener.valueChanged(Integer.parseInt(newText));
                     } else {
                         source.setText("");
                     }
@@ -62,14 +62,14 @@ public class NumberInputComposite extends Composite {
     }
     
     public void setListener(ValueChangedListener listener) {
-        m_listener = listener;
+        listener = listener;
     }
     
     public void setLabelText(String text) {
-        m_label.setText(text);
+        label.setText(text);
     }
     public Label getLabel() {
-        return m_label;
+        return label;
     }
 
 }

@@ -19,8 +19,8 @@ import org.eclipse.ui.PlatformUI;
 
 @SuppressWarnings("restriction")
 public abstract class RefactoringActionDelegate implements IWorkbenchWindowActionDelegate {
-	private IWorkbenchWindow m_window;
-	private ITextSelection m_selection;
+	private IWorkbenchWindow window;
+	private ITextSelection textSelection;
 	
 	public RefactoringActionDelegate() {}
 	
@@ -34,7 +34,7 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 		
 		ISelection selection = editor.getSelectionProvider().getSelection();
 		if (selection instanceof ITextSelection) {
-		    m_selection = (ITextSelection)selection;
+		    textSelection = (ITextSelection)selection;
 		}
 		
 		if (editor != null) {
@@ -43,11 +43,11 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 					.getWorkingCopy(editor.getEditorInput());
 					
 			if (wc != null) {
-				new RefactoringRunner((ICElement)wc, m_selection, 
+				new RefactoringRunner((ICElement)wc, textSelection, 
 						editor.getSite(), wc.getCProject()) {
 					@Override
 					public void run() {
-						CRefactoring refac = createRefactoring(wc, m_selection, project);
+						CRefactoring refac = createRefactoring(wc, textSelection, project);
 						run(createWizard(refac), refac, RefactoringSaveHelper.SAVE_NOTHING);
 					}
 				}.run();
@@ -80,19 +80,19 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 	 */
 	@Override
     public void init(IWorkbenchWindow window) {
-		this.m_window = window;
+		this.window = window;
 	}
 	
-	public IWorkbenchWindow getWindow() {return m_window;}
+	public IWorkbenchWindow getWindow() {return window;}
 	
 	public void setWindow(IWorkbenchWindow w) {
-		m_window = w;
+		window = w;
 	}
 	
-	public ITextSelection getSelection() {return m_selection;}
+	public ITextSelection getSelection() {return textSelection;}
 	
 	public void setSelection(ITextSelection toSet) {
-		m_selection = toSet;
+		textSelection = toSet;
 	}
 
 }
