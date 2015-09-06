@@ -61,8 +61,8 @@ public class NumberInputComposite extends Composite {
         }
     }
     
-    public void setListener(ValueChangedListener listener) {
-        listener = listener;
+    public void setListener(ValueChangedListener listenerIn) {
+        listener = listenerIn;
     }
     
     public void setLabelText(String text) {

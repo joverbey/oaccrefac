@@ -21,10 +21,10 @@ public class LoopRefactoringWizard extends RefactoringWizard {
     private String title;
     private LoopRefactoringWizardPage inputpage;
     
-    public LoopRefactoringWizard(Refactoring refactoring, String title) {
+    public LoopRefactoringWizard(Refactoring refactoring, String titleIn) {
         super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
         
-        title = title;
+        title = titleIn;
         setDefaultPageTitle(title);
         setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
         
