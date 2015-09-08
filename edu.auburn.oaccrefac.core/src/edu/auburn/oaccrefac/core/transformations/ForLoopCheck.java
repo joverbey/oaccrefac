@@ -27,7 +27,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         return status;
     }
     
-    public final RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
+    public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
         
         IASTStatement[] statements;
         DependenceAnalysis dependenceAnalysis;
@@ -52,7 +52,13 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     @Override
     public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
         super.performChecks(status, pm, params);
+        if(status.hasFatalError()) {
+            return status;
+        }
         loopFormCheck(status, pm);
+        if(status.hasFatalError()) {
+            return status;
+        }
         dependenceCheck(status, pm);
         return status;
     }
