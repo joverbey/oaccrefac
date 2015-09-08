@@ -1,6 +1,17 @@
 package edu.auburn.oaccrefac.core.transformations;
 
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IScope;
+
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop strip mine refactoring algorithm. Loop strip mining
@@ -30,7 +41,6 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 
     private int stripFactor;
-    private int depth;
     // We use this in multiple methods... couldn't think
     // of a better way of not making it a member variable...
     private IASTName generatedName;
@@ -44,17 +54,56 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
      *            -- rewriter associated with the for loop
      * @param stripFactor
      *            -- factor for how large strips are
-     * @param depth
-     *            -- perfectly nested loop depth in 'loop' to strip mine
      */
-    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, int depth, StripMineCheck check) {
+    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, StripMineCheck check) {
         super(rewriter, check);
         this.stripFactor = stripFactor;
-        this.depth = depth;
     }
-
+    
     @Override
     public void doChange() {
+        IASTForStatement loop = getLoopToChange();
+    }
+    
+    private IASTName getNameFromInitializer() {
+        IASTStatement initStmt = getLoopToChange().getInitializerStatement();
+        if (initStmt instanceof IASTDeclarationStatement
+                && ((IASTDeclarationStatement) initStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
+            IASTSimpleDeclaration decl = (IASTSimpleDeclaration) ((IASTDeclarationStatement) initStmt).getDeclaration();
+            return decl.getDeclarators()[0].getName();
+        } else if (initStmt instanceof IASTExpressionStatement) {
+            IASTExpression expr = ((IASTExpressionStatement) initStmt).getExpression();
+            if (expr instanceof IASTBinaryExpression
+                    && ((IASTBinaryExpression) expr).getOperator() == IASTBinaryExpression.op_assign) {
+                IASTBinaryExpression binExp = (IASTBinaryExpression) expr;
+                IASTExpression lhs = binExp.getOperand1();
+                if (lhs instanceof IASTIdExpression) {
+                    return ((IASTIdExpression) lhs).getName();
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
+     *         name_2, etc.) that is not in scope
+     */
+    private String createNewName(String name, IScope scope) {
+        if (ASTUtil.isNameInScope(name, scope)) {
+            for (int i = 0; true; i++) {
+                String newName = name + "_" + i;
+                if (!ASTUtil.isNameInScope(newName, scope)) {
+                    return newName;
+                }
+            }
+        } else {
+            return name;
+        }
+    }
+
+//    @Override
+//    public void doChange() {
 //        //Set up which loops we need to deal with
 //        IASTForStatement byStrip = this.getLoopToChange();
 //        IASTForStatement inStrip = byStrip.copy();
@@ -109,9 +158,9 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 //                factory.newLiteralExpression(
 //                        IASTLiteralExpression.lk_integer_constant, m_stripFactor+""));
 //        this.safeReplace(rewriter, byStripHeader.getIterationExpression(), newIter);
-        
-    }
-    
+//        
+//    }
+//    
 //    /**
 //     * Generates the initializer statement for the by-strip loop. Basically, it
 //     * takes the original loop variable name and changes it in order for it to 

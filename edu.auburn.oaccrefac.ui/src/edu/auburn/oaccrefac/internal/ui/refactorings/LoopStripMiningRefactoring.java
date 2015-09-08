@@ -45,7 +45,7 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, stripFactor, depth, check).change();
+        new StripMineAlteration(rewriter, stripFactor, check).change();
     }
     
 }
