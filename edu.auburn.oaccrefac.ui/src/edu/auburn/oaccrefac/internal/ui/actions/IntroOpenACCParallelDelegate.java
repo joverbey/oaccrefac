@@ -53,12 +53,12 @@ public class IntroOpenACCParallelDelegate extends RefactoringActionDelegate {
 	 * the delegate has been created.
 	 * @see IWorkbenchWindowActionDelegate#selectionChanged
 	 */
-	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-		//TODO: make this better...? maybe?
-		if (selection instanceof ITextSelection)
-			setSelection((ITextSelection) selection);
-	}
+//	@Override
+//	public void selectionChanged(IAction action, ISelection selection) {
+//		//TODO: make this better...? maybe?
+//		if (selection instanceof ITextSelection)
+//			setSelection((ITextSelection) selection);
+//	}
 	
 	@Override
 	public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {

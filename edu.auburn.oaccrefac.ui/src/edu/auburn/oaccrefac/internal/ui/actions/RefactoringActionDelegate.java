@@ -67,8 +67,16 @@ public abstract class RefactoringActionDelegate implements IWorkbenchWindowActio
 		}
 	}
 
-	@Override
-	public abstract void selectionChanged(IAction action, ISelection selection);
+//	@Override
+//	public abstract void selectionChanged(IAction action, ISelection selection);
+	
+	// This function is exactly the same in each subclass. Unless it is going to be modified
+	// on a per-subclass basis, no need for the abstraction above.
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (selection instanceof ITextSelection) {
+            setSelection((ITextSelection) selection);
+        }
+    }
 	
 	public abstract CRefactoring createRefactoring(IWorkingCopy wc,
 												ITextSelection selection,
