@@ -26,13 +26,6 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopTilingRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopTilingDelegate extends RefactoringActionDelegate {
-
-//    @Override
-//    public void selectionChanged(IAction action, ISelection selection) {
-//        if (selection instanceof ITextSelection) {
-//            setSelection((ITextSelection) selection);
-//        }
-//    }
     
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
