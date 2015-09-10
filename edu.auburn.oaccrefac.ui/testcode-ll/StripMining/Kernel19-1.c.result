@@ -1,6 +1,0 @@
-		for (int k_0 = 0; k_0 < as2.Inner_loops; k_0 += 3) {
-			for (k = k_0; (k < k_0 + 3 && k < as2.Inner_loops); k++) {
-				as1.B5[k + kb5i] = as1.Sa[k] + as1.Xtra[35] * as1.Sb[k];
-				as1.Xtra[35] = as1.B5[k + kb5i] - as1.Xtra[35];
-			}
-		}

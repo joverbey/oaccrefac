@@ -1,9 +1,0 @@
-		for (int i_0 = 1; i_0 < as2.Inner_loops; i_0 += 3) /*<<<<< 1246, 1, 1254, 1, Kernel6outer */
-		{
-			for (i = i_0; (i < i_0 + 3 && i < as2.Inner_loops); i++) {
-				as1.W[i] = 0.01;
-				for (k = 0; k < i; k++) {
-					as1.W[i] += as1.B[k][i] * as1.W[(i - k) - 1];
-				}
-			}
-		}

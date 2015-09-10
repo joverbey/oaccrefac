@@ -1,8 +1,0 @@
-		for ( int i_0 = 1; i_0 < as2.Inner_loops; i_0 += 3 ) /*<<<<< 1752, 1, 1758, 1, Kernel19-2 */
-		{
-			for (i = i_0;(i <= i_0 + 3 && i <= as2.Inner_loops);i++) {
-				k = as2.Inner_loops - i;
-				as1.B5[k + kb5i] = as1.Sa[k] + as1.Xtra[35] * as1.Sb[k];
-				as1.Xtra[35] = as1.B5[k + kb5i] - as1.Xtra[35];
-			}
-		}
