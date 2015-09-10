@@ -48,10 +48,11 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         pm.subTask("Analyzing dependences...");
         computeDependences(pm);
     }
-    
+
     @Override
     protected void computeDependences(IProgressMonitor pm) throws DependenceTestFailure {
         SubMonitor progress = SubMonitor.convert(pm, getVariableAccesses().size() * getVariableAccesses().size());
+
         for (VariableAccess v1 : getVariableAccesses()) {
             progress.subTask(String.format("Analyzing line %d - %s",
                     v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
@@ -70,11 +71,10 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                         Set<IBinding> otherVars = collectAllVariables(v1.getLinearSubscriptExpressions(),
                                 v2.getLinearSubscriptExpressions());
                         otherVars.removeAll(indexVars);
-                              
+
                         List<IBinding> vars = new ArrayList<IBinding>(indexVars.size() + otherVars.size());
                         vars.addAll(indexVars);
                         vars.addAll(otherVars);
-                        
 
                         int[][] writeCoefficients = v1.collectCoefficients(vars);
                         int[][] readCoefficients = v2.collectCoefficients(vars);
@@ -92,7 +92,8 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
 
                         DirectionHierarchyTester dht = new DirectionHierarchyTester(lowerBounds, upperBounds,
                                 writeCoefficients, readCoefficients, otherVars.size());
-                        for (Direction[] directionVector : dht.getPossibleDependenceDirections()) {
+                        Set<Direction[]> dvs = dht.getPossibleDependenceDirections();
+                        for (Direction[] directionVector : dvs) {
                             addDependence(new DataDependence(s1, s2, directionVector, dependenceType));
                         }
                     }

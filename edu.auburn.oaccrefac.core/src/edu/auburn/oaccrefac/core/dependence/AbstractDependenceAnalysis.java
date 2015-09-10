@@ -40,6 +40,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.BindingComparator;
@@ -52,17 +53,31 @@ import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 public abstract class AbstractDependenceAnalysis {
 
     private final List<VariableAccess> variableAccesses;
+
     private final Set<DataDependence> dependences;
-    
-    public AbstractDependenceAnalysis(IProgressMonitor pm, IASTStatement... statements) throws DependenceTestFailure {
+
+    /**
+     * Constructor. Analyzes dependences in a sequence of C statements.
+     * 
+     * @throws DependenceTestFailure
+     */
+    public AbstractDependenceAnalysis(IProgressMonitor pm, IASTStatement... statements)
+            throws DependenceTestFailure, OperationCanceledException {
         this.variableAccesses = new ArrayList<VariableAccess>();
         this.dependences = new HashSet<DataDependence>();
-        
+
         pm.subTask("Finding variable accesses...");
         collectAccessesFromStatements(statements);
-        
     }
-    
+
+    protected List<VariableAccess> getVariableAccesses() {
+        return this.variableAccesses;
+    }
+
+    protected void addDependence(DataDependence dataDependence) {
+        this.dependences.add(dataDependence);
+    }
+
     protected Set<IBinding> collectAllVariables(LinearExpression[]... exprs) {
         Set<IBinding> vars = new TreeSet<IBinding>(new BindingComparator());
         for (LinearExpression[] array : exprs) {
@@ -73,8 +88,6 @@ public abstract class AbstractDependenceAnalysis {
         return vars;
     }
 
-    protected abstract void computeDependences(IProgressMonitor pm) throws DependenceTestFailure;
-    
     protected int[] fillArray(int length, int value) {
         int[] result = new int[length];
         Arrays.fill(result, value);
@@ -85,7 +98,7 @@ public abstract class AbstractDependenceAnalysis {
         return v1.isInCommonLoopsWith(v2) || v1.enclosingStatementLexicallyPrecedes(v2);
     }
 
-    protected void collectAccessesFromStatements(IASTStatement... statements) throws DependenceTestFailure {
+    private void collectAccessesFromStatements(IASTStatement... statements) throws DependenceTestFailure {
         for (IASTStatement stmt : statements) {
             if (stmt instanceof IASTDeclarationStatement) {
                 collectAccessesFrom((IASTDeclarationStatement) stmt);
@@ -103,15 +116,15 @@ public abstract class AbstractDependenceAnalysis {
         }
     }
 
-    protected void collectAccessesFrom(IASTNullStatement stmt) {
+    private void collectAccessesFrom(IASTNullStatement stmt) {
         // Nothing to do
     }
 
-    protected void collectAccessesFrom(IASTCompoundStatement stmt) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTCompoundStatement stmt) throws DependenceTestFailure {
         collectAccessesFromStatements(stmt.getStatements());
     }
 
-    protected void collectAccessesFrom(IASTForStatement stmt) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTForStatement stmt) throws DependenceTestFailure {
         ForStatementInquisitor forLoop = InquisitorFactory.getInquisitor(stmt);
         if (!forLoop.isCountedLoop()) {
             throw unsupported(stmt);
@@ -120,7 +133,7 @@ public abstract class AbstractDependenceAnalysis {
         collectAccessesFromStatements(stmt.getBody());
     }
 
-    protected void collectAccessesFrom(IASTDeclarationStatement stmt) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTDeclarationStatement stmt) throws DependenceTestFailure {
         if (!(stmt.getDeclaration() instanceof IASTSimpleDeclaration))
             throw unsupported(stmt);
 
@@ -143,16 +156,35 @@ public abstract class AbstractDependenceAnalysis {
         }
     }
 
-    protected void collectAccessesFrom(IASTExpressionStatement stmt) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTExpressionStatement stmt) throws DependenceTestFailure {
         Pair<IASTExpression, IASTExpression> asgt = ASTUtil.getAssignment(stmt.getExpression());
-        if (asgt == null)
-            throw unsupported(stmt);
+        if (asgt != null) {
+            collectAccessesFromAssignmentLHS(asgt.getFirst());
+            collectAccessesFromExpression(asgt.getSecond());
+            return;
+        }
 
-        collectAccessesFromAssignmentLHS(asgt.getFirst());
-        collectAccessesFromExpression(asgt.getSecond());
+        Pair<IASTExpression, IASTExpression> assignEq = ASTUtil.getAssignEq(stmt.getExpression());
+        if (assignEq != null) {
+            // The variable on the LHS is both read and written
+            collectAccessesFromAssignmentLHS(assignEq.getFirst());
+            collectAccessesFromExpression(assignEq.getFirst());
+            collectAccessesFromExpression(assignEq.getSecond());
+            return;
+        }
+
+        IASTExpression incrDecr = ASTUtil.getIncrDecr(stmt.getExpression());
+        if (incrDecr != null) {
+            // The incremented variable/array element is both read and written
+            collectAccessesFromAssignmentLHS(incrDecr);
+            collectAccessesFromExpression(incrDecr);
+            return;
+        }
+
+        throw unsupported(stmt);
     }
 
-    protected void collectAccessesFromAssignmentLHS(IASTExpression expr) throws DependenceTestFailure {
+    private void collectAccessesFromAssignmentLHS(IASTExpression expr) throws DependenceTestFailure {
         IASTName scalar = ASTUtil.getIdExpression(expr);
         if (scalar != null) {
             variableAccesses.add(new VariableAccess(true, scalar));
@@ -177,7 +209,7 @@ public abstract class AbstractDependenceAnalysis {
         throw unsupported(expr);
     }
 
-    protected void collectAccessesFromExpression(IASTExpression expr) throws DependenceTestFailure {
+    private void collectAccessesFromExpression(IASTExpression expr) throws DependenceTestFailure {
         if (expr instanceof IASTBinaryExpression) {
             collectAccessesFrom((IASTBinaryExpression) expr);
         } else if (expr instanceof IASTUnaryExpression) {
@@ -195,7 +227,7 @@ public abstract class AbstractDependenceAnalysis {
         }
     }
 
-    protected void collectAccessesFrom(IASTBinaryExpression expr) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTBinaryExpression expr) throws DependenceTestFailure {
         switch (expr.getOperator()) {
         case IASTBinaryExpression.op_plus:
         case IASTBinaryExpression.op_minus:
@@ -221,7 +253,7 @@ public abstract class AbstractDependenceAnalysis {
         }
     }
 
-    protected void collectAccessesFrom(IASTUnaryExpression expr) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTUnaryExpression expr) throws DependenceTestFailure {
         switch (expr.getOperator()) {
         case IASTUnaryExpression.op_bracketedPrimary:
         case IASTUnaryExpression.op_plus:
@@ -235,18 +267,18 @@ public abstract class AbstractDependenceAnalysis {
         }
     }
 
-    protected void collectAccessesFrom(IASTLiteralExpression expr) {
+    private void collectAccessesFrom(IASTLiteralExpression expr) {
         // Nothing to do
     }
 
-    protected void collectAccessesFrom(IASTIdExpression expr) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTIdExpression expr) throws DependenceTestFailure {
         IASTName name = ASTUtil.getIdExpression(expr);
         if (name == null)
             throw unsupported(expr);
         variableAccesses.add(new VariableAccess(false, name));
     }
 
-    protected void collectAccessesFrom(IASTFieldReference expr) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTFieldReference expr) throws DependenceTestFailure {
         Pair<IASTName, IASTName> pair = ASTUtil.getSimpleFieldReference(expr);
         if (pair == null)
             throw unsupported(expr);
@@ -257,7 +289,7 @@ public abstract class AbstractDependenceAnalysis {
         variableAccesses.add(new VariableAccess(false, field));
     }
 
-    protected void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
+    private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
         Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
         if (arrayAccess == null)
             throw unsupported(expr);
@@ -266,10 +298,10 @@ public abstract class AbstractDependenceAnalysis {
         collectAccessesFromExpression((IASTExpression) expr.getArgument());
     }
 
-    protected static DependenceTestFailure unsupported(IASTNode node) {
-        return new DependenceTestFailure(
-                String.format("Unsupported construct on line %d (%s)", node.getFileLocation().getStartingLineNumber(), //
-                        node.getClass().getSimpleName()));
+    private static DependenceTestFailure unsupported(IASTNode node) {
+        return new DependenceTestFailure(String.format("Unsupported construct on line %d (%s) - %s",
+                node.getFileLocation().getStartingLineNumber(), //
+                node.getClass().getSimpleName(), ASTUtil.toString(node)));
     }
 
     public Set<DataDependence> getDependences() {
@@ -284,12 +316,6 @@ public abstract class AbstractDependenceAnalysis {
         }
         return false;
     }
-    
-    protected void addDependence(DataDependence dependence) {
-        dependences.add(dependence);
-    }
 
-    protected List<VariableAccess> getVariableAccesses() {
-        return variableAccesses;
-    }
+    protected abstract void computeDependences(IProgressMonitor pm) throws DependenceTestFailure;
 }
