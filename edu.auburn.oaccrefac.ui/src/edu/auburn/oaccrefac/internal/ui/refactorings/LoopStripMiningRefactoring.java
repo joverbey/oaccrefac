@@ -20,11 +20,11 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.StripMineAlteration;
 import edu.auburn.oaccrefac.core.transformations.StripMineCheck;
+import edu.auburn.oaccrefac.core.transformations.StripMineParams;
 
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
     private int stripFactor;
-    private int depth;
     private StripMineCheck check;
     
     public LoopStripMiningRefactoring(ICElement element, ISelection selection, ICProject project) {
@@ -40,12 +40,12 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new StripMineCheck(getLoop());
-        check.performChecks(status, pm, null);
+        check.performChecks(status, pm, new StripMineParams(stripFactor));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, stripFactor, depth, check).change();
+        new StripMineAlteration(rewriter, stripFactor, check).change();
     }
     
 }

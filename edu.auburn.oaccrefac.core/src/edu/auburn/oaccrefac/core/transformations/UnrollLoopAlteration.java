@@ -140,7 +140,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
      * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
      *         name_2, etc.) that is not in scope
      */
-    private static String createNewName(String name, IScope scope) {
+    private String createNewName(String name, IScope scope) {
         if (ASTUtil.isNameInScope(name, scope)) {
             for (int i = 0; true; i++) {
                 String newName = name + "_" + i;

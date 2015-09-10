@@ -10,7 +10,6 @@ int main() {
 	int a[N];
 	for (int i = 0; i < i_0; i++) { /*<<<<< 11,1,15,1,2,pass*/
 		a[i] = 0;
-		foo();
 	}
 
 }

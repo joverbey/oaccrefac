@@ -8,7 +8,6 @@ int main() {
 	for (int i_0 = 0; i_0 < N; i_0 += 2) {
 		for (int i = i_0; (i < i_0 + 2 && i < N); i++) {
 			a[i] = 0;
-			foo();
 		}
 	}
 
