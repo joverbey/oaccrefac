@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Adam Eichelkraut (Auburn) - initial API and implementation
+ *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
@@ -79,17 +90,17 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
      * @return -- new name object
      */
     protected final IASTName generateNewName(IASTName base, IScope scope) {
-        String base_str = new String(base.getSimpleID());
+        String basestr = new String(base.getSimpleID());
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         int diffcounter = 0;
-        String gen_str = base_str + "_" + diffcounter;
-        IASTName gen_name = factory.newName(gen_str.toCharArray());
-        while (ASTUtil.isNameInScope(gen_name, scope)) {
+        String genstr = basestr + "_" + diffcounter;
+        IASTName genname = factory.newName(genstr.toCharArray());
+        while (ASTUtil.isNameInScope(genname, scope)) {
             diffcounter++;
-            gen_str = base_str + "_" + diffcounter;
-            gen_name = factory.newName(gen_str.toCharArray());
+            genstr = basestr + "_" + diffcounter;
+            genname = factory.newName(genstr.toCharArray());
         }
-        return gen_name;
+        return genname;
     }
 
     /**
@@ -104,14 +115,14 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
      *            -- optional initializer for variable (null if none)
      * @return -- new variable declaration statement node
      */
-    protected IASTDeclarationStatement generateVariableDecl(IASTName varname, int type, IASTInitializer right_equals) {
+    protected IASTDeclarationStatement generateVariableDecl(IASTName varname, int type, IASTInitializer rightEquals) {
         ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
         IASTSimpleDeclSpecifier declSpecifier = factory.newSimpleDeclSpecifier();
         declSpecifier.setType(type);
         IASTSimpleDeclaration declaration = factory.newSimpleDeclaration(declSpecifier);
-        if (right_equals != null) {
+        if (rightEquals != null) {
             IASTDeclarator declarator = factory.newDeclarator(varname);
-            declarator.setInitializer(right_equals);
+            declarator.setInitializer(rightEquals);
             declaration.addDeclarator(declarator);
         }
         return factory.newDeclarationStatement(declaration);
