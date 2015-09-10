@@ -357,6 +357,10 @@ public class ForStatementInquisitor {
             return 1;
         }
     }
+    
+    public int getIterationFactor() {
+        return getIterationFactor(0);
+    }
 
     public List<IASTPreprocessorPragmaStatement> getLeadingPragmas() {
         int loopLoc = statement.getFileLocation().getNodeOffset();
