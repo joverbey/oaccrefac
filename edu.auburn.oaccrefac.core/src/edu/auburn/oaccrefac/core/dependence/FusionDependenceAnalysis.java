@@ -14,10 +14,10 @@ package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -105,14 +105,13 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
                                 upperBounds[i] = (int)ub.longValue();
                         }
 
-                        otherVars.removeIf(new Predicate<IBinding>() {
-                            
-                            @Override
-                            public boolean test(IBinding name) {
-                                return name.getName().equals(indexVar.getName());
+                        Set<IBinding> otherVarsTmp = new HashSet<IBinding>();
+                        for(IBinding name : otherVars) {
+                            if(!name.getName().equals(indexVar.getName())) {
+                                otherVarsTmp.add(name);
                             }
-                            
-                        });
+                        }
+                        otherVars = otherVarsTmp;
                         
                         DirectionHierarchyTester dht = new DirectionHierarchyTester(lowerBounds, upperBounds,
                                 writeCoefficients, readCoefficients, otherVars.size());
