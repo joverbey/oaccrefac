@@ -100,6 +100,8 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         Long lower = InquisitorFactory.getInquisitor(loop).getLowerBound();
         Long upper = check.getUpperBound();
+        
+        //should have made this check from the UnrollLoopsCheck object already
         if(lower == null || upper == null) {
             throw new IllegalStateException();
         }

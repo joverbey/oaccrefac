@@ -21,8 +21,11 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 
@@ -103,7 +106,21 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
             innerBody += bodyObject.getRawSignature() + System.lineSeparator();
         }
         inner = forLoop(innerInit, innerCond, innerIter, compound(innerBody));
-        outerInit = String.format("int %s = %d", newName, inq.getLowerBound());
+
+        String initRhs;
+        //TODO we're making a lot of typecast assumptions - be sure they won't break anything
+        if(loop.getInitializerStatement() instanceof IASTExpressionStatement) {
+            IASTExpressionStatement es = (IASTExpressionStatement) loop.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+            initRhs = e.getOperand2().getRawSignature();
+        }
+        else {
+            IASTDeclarationStatement ds = (IASTDeclarationStatement) loop.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
+            initRhs = init.getInitializerClause().getRawSignature();
+        }
+        outerInit = String.format("int %s = %s", newName, initRhs);
         outerCond = String.format("%s < %s", newName, ub);
         outerIter = String.format("%s += %d", newName, stripFactor);
         outer = forLoop(outerInit, outerCond, outerIter, compound(inner));
