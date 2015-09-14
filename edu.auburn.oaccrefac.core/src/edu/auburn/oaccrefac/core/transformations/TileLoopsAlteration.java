@@ -102,7 +102,6 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
 //        this.exchangeLoopHeaders(rewriter, byStrip, interchange);
 //        return rewriter;
     }
-    
 //    /**
 //     * Helper method to check the iteration based on set parameters. If the
 //     * propagation factor is unspecified, then do something else.

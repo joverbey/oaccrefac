@@ -62,6 +62,13 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
             status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
             return;
         }
+        
+        // If lower bound is not constant, we can't calculate the number of times to repeat the "trailer"
+        //  after the unrolled loop
+        if (InquisitorFactory.getInquisitor(loop).getLowerBound() == null) {
+            status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+            return;
+        }
     }
 
     @Override

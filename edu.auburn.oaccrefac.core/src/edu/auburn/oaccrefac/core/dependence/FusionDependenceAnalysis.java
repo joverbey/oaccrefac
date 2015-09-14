@@ -38,7 +38,7 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
 
     private static final int NEST_LVL = 1;
     private IBinding indexVar;
-    private int lowerBound;
+    private Long lowerBound;
     private Long inclusiveUpperBound;
     
 
@@ -47,7 +47,7 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
      * 
      * @throws DependenceTestFailure
      */
-    public FusionDependenceAnalysis(IProgressMonitor pm, IBinding indexVar, int lowerBound, Long inclusiveUpperBound, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
+    public FusionDependenceAnalysis(IProgressMonitor pm, IBinding indexVar, Long lowerBound, Long inclusiveUpperBound, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
         super(pm, statements);
         
         this.indexVar = indexVar;
@@ -99,10 +99,14 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
                         int[] lowerBounds = fillArray(NEST_LVL, Integer.MIN_VALUE + 1);
                         int[] upperBounds = fillArray(NEST_LVL, Integer.MAX_VALUE - 1);
                         for (int i = 0; i < NEST_LVL; i++) {
-                            lowerBounds[i] = lowerBound;
-                            Long ub = inclusiveUpperBound;
-                            if (ub != null && Integer.MIN_VALUE+1 <= ub.longValue() && ub.longValue() <= Integer.MAX_VALUE-1)
-                                upperBounds[i] = (int)ub.longValue();
+                            if (lowerBound != null && Integer.MIN_VALUE + 1 <= lowerBound.longValue()
+                                    && lowerBound.longValue() <= Integer.MAX_VALUE - 1) {
+                                lowerBounds[i] = (int) lowerBound.longValue();
+                            }
+                            if (inclusiveUpperBound != null && Integer.MIN_VALUE + 1 <= inclusiveUpperBound.longValue()
+                                    && inclusiveUpperBound.longValue() <= Integer.MAX_VALUE - 1) {
+                                upperBounds[i] = (int) inclusiveUpperBound.longValue();
+                            }
                         }
 
                         Set<IBinding> otherVarsTmp = new HashSet<IBinding>();

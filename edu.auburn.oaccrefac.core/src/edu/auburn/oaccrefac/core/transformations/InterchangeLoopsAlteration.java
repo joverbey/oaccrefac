@@ -92,7 +92,7 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoo
             remove(prag.getFileLocation().getNodeOffset(),
                     prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
         }
-
         finalizeChanges();
+
     }
 }

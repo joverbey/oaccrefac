@@ -163,7 +163,7 @@ public class ForStatementInquisitor {
         return nameFinder.name.resolveBinding();
     }
 
-    public int getLowerBound() {
+    public Long getLowerBound() {
         // This makes assumptions about the tree structure based on the patterns above
         IASTFunctionDefinition enclosingFunction = ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class);
         if (statement.getInitializerStatement() instanceof IASTDeclarationStatement) {
@@ -172,11 +172,11 @@ public class ForStatementInquisitor {
             for (IASTDeclarator declarator : simpleDecl.getDeclarators()) {
                 IASTEqualsInitializer eqInit = (IASTEqualsInitializer) declarator.getInitializer();
                 IASTInitializerClause initializer = eqInit.getInitializerClause();
-                return new ConstantPropagation(enclosingFunction).evaluate((IASTExpression) initializer).intValue();
+                return new ConstantPropagation(enclosingFunction).evaluate((IASTExpression) initializer);
             }
         } else if (statement.getInitializerStatement() instanceof IASTExpressionStatement) {
             IASTExpressionStatement stmt = (IASTExpressionStatement) statement.getInitializerStatement();
-            return new ConstantPropagation(enclosingFunction).evaluate(stmt.getExpression()).intValue();
+            return new ConstantPropagation(enclosingFunction).evaluate(stmt.getExpression());
         }
         throw new IllegalStateException();
     }

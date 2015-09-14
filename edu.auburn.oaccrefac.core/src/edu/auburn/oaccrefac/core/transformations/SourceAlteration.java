@@ -270,4 +270,5 @@ public abstract class SourceAlteration<T extends Check<?>> {
     public Change rewriteAST() {
         return rewriter.rewriteAST();
     }
+    
 }

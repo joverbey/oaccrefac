@@ -83,11 +83,16 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                         int[] upperBounds = fillArray(commonLoops.size(), Integer.MAX_VALUE - 1);
                         for (int i = 0; i < commonLoops.size(); i++) {
                             ForStatementInquisitor thisLoop = InquisitorFactory.getInquisitor(commonLoops.get(i));
-                            lowerBounds[i] = thisLoop.getLowerBound();
+                            Long lb = thisLoop.getLowerBound();
                             Long ub = thisLoop.getInclusiveUpperBound();
+                            if (lb != null && Integer.MIN_VALUE + 1 <= lb.longValue()
+                                    && lb.longValue() <= Integer.MAX_VALUE - 1) {
+                                lowerBounds[i] = (int) lb.longValue();
+                            }
                             if (ub != null && Integer.MIN_VALUE + 1 <= ub.longValue()
-                                    && ub.longValue() <= Integer.MAX_VALUE - 1)
+                                    && ub.longValue() <= Integer.MAX_VALUE - 1) {
                                 upperBounds[i] = (int) ub.longValue();
+                            }
                         }
 
                         DirectionHierarchyTester dht = new DirectionHierarchyTester(lowerBounds, upperBounds,

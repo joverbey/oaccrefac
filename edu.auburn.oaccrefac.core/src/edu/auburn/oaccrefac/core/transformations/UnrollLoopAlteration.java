@@ -98,11 +98,14 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.loop = this.getLoopToChange();
 
-        int lower = InquisitorFactory.getInquisitor(loop).getLowerBound();
-
-        // Get the loop upper bound from the AST. If the conditional expression is '<=',
+        Long lower = InquisitorFactory.getInquisitor(loop).getLowerBound();
+        Long upper = check.getUpperBound();
+        if(lower == null || upper == null) {
+            throw new IllegalStateException();
+        }
+        
+        // If the conditional expression is '<=',
         // change it and adjust the bound to include a +1.
-        int upper = check.getUpperBound().intValue();
         int condOffset = 0;
 
         IASTBinaryExpression condition = (IASTBinaryExpression) loop.getConditionExpression();
@@ -112,7 +115,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         }
 
         // Number of extra iterations to add after loop based on divisibility.
-        this.extras = (upper - lower) % unrollFactor;
+        this.extras = (upper.intValue() - lower.intValue()) % unrollFactor;
         if (extras != 0) {
             condOffset -= extras;
         }
