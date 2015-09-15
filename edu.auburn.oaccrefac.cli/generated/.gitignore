@@ -1,2 +1,5 @@
-test*.c
 a.out
+*.txt
+*.before
+*.after
+*.*.c
