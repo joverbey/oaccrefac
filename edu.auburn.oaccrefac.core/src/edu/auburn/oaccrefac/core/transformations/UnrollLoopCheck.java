@@ -15,6 +15,7 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -51,9 +52,10 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
             return;
         }
 
-        // If the loop is not a 0-based counted loop, fail
-        if (!InquisitorFactory.getInquisitor(loop).areAllInnermostStatementsValid()) {
-            status.addFatalError("Loop contains unsupported statements");
+        // If the loop contains unsupported statements, fail
+        IASTNode unsupported = InquisitorFactory.getInquisitor(loop).getFirstUnsupportedStmt();
+        if (unsupported != null) {
+            status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
             return;
         }
 

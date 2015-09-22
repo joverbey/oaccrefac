@@ -223,42 +223,42 @@ public class ForStatementInquisitor {
     }
 
     /**
-     * Assumes loops are perfectly nested Checks if all innermost statements are valid currently, a valid statement is
+     * Checks if all innermost statements are valid currently, a valid statement is
      * either an assignment statement or null
      * 
      * @param outerLoop
-     * @return
+     * @return first invalid statement or <code>null</code>
      */
-    public boolean areAllInnermostStatementsValid() {
-        return areAllInnermostStatementsValid(statement);
+    public IASTNode getFirstUnsupportedStmt() {
+        return getFirstUnsupportedStmtInLoop(statement);
     }
 
-    private boolean areAllInnermostStatementsValid(IASTForStatement outerLoop) {
+    private IASTNode getFirstUnsupportedStmtInLoop(IASTForStatement outerLoop) {
         IASTNode body = outerLoop.getBody();
         if (body instanceof IASTCompoundStatement) {
             if (body.getChildren().length == 0) {
-                return true;
+                return null;
             } else if (body.getChildren().length == 1 && body.getChildren()[0] instanceof IASTForStatement) {
                 // perfect nesting, so only check children[0]
-                return areAllInnermostStatementsValid((IASTForStatement) body.getChildren()[0]);
+                return getFirstUnsupportedStmtInLoop((IASTForStatement) body.getChildren()[0]);
             } else {
                 // check if all children are assignments or null stmts
                 for (IASTNode child : body.getChildren()) {
                     // to be an asgt, must be an expr stmt with a bin expr child,
                     // which has asgt operator
-                    if (!isLoopBodyStmtValid(child))
-                        return false;
+                    if (!isLoopBodyStmtSupported(child))
+                        return child;
                 }
-                return true;
+                return null;
             }
         } else if (body instanceof IASTForStatement) {
-            return areAllInnermostStatementsValid((IASTForStatement) body);
+            return getFirstUnsupportedStmtInLoop((IASTForStatement) body);
         } else { // neither compound nor for statement - body is the only statement
-            return isLoopBodyStmtValid(body);
+            return isLoopBodyStmtSupported(body) ? null : body;
         }
     }
 
-    private boolean isLoopBodyStmtValid(IASTNode body) {
+    private boolean isLoopBodyStmtSupported(IASTNode body) {
         if (body instanceof IASTNullStatement) {
             return true;
         } else if (body instanceof IASTExpressionStatement) {

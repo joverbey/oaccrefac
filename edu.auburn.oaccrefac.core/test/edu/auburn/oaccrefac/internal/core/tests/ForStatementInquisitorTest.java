@@ -77,49 +77,49 @@ public class ForStatementInquisitorTest {
     @Test
     public void test_areAllInnermostStatementsValid() {
         ForStatementInquisitor inq = getInq(basic);
-        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+        Assert.assertNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidAsgtBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) i=i-1;");
-        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+        Assert.assertNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidEmptyCompBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) {}");
-        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+        Assert.assertNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidForBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) for(j=0;j<10;j++);");
-        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+        Assert.assertNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidForCompBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { for(j=0;j<10;j++) {i=6;} }");
-        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+        Assert.assertNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidNullCompBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { ; }");
-        Assert.assertTrue(inq.areAllInnermostStatementsValid());
+        Assert.assertNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidBadCompBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) { printf(); }");
-        Assert.assertFalse(inq.areAllInnermostStatementsValid());
+        Assert.assertNotNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
     public void test_areAllInnermostStatementsValidBadSimpleBody() {
         ForStatementInquisitor inq = getInq("for(i=0;i<10;i++) printf();");
-        Assert.assertFalse(inq.areAllInnermostStatementsValid());
+        Assert.assertNotNull(inq.getFirstUnsupportedStmt());
     }
     
     @Test
