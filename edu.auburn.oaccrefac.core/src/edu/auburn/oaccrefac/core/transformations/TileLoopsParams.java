@@ -12,26 +12,20 @@
 package edu.auburn.oaccrefac.core.transformations;
 
 public class TileLoopsParams extends RefactoringParams {
-    private int depth;
-    private int stripFactor;
-    private int propagate;
-
-    public TileLoopsParams(int depth, int stripFactor, int propagate) {
-        this.depth = depth;
-        this.stripFactor = stripFactor;
-        this.propagate = propagate;
+    private int width;
+    private int height;    
+    
+    public TileLoopsParams(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 
-    public int getDepth() {
-        return depth;
+    public int getWidth() {
+        return width;
     }
 
-    public int getStripFactor() {
-        return stripFactor;
-    }
-
-    public int getPropagate() {
-        return propagate;
+    public int getHeight() {
+        return height;
     }
 
 }

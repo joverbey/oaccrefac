@@ -39,26 +39,19 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
         LoopRefactoringWizard malfoy = new LoopRefactoringWizard(refactoring, 
                 "Loop Tiling Refactoring");
         LoopRefactoringWizardPage page = malfoy.getInputPage();
-        page.addNumberInputControl("Strip Depth: ", new ValueChangedListener() {
+        page.addNumberInputControl("Tile Width: ", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
-                refac.setStripMineDepth(value);
+                refac.setWidth(value);
             }
         });
-        page.addNumberInputControl("Strip Factor: ", new ValueChangedListener() {
+        page.addNumberInputControl("Tile Height: ", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
-                refac.setStripFactor(value);
+                refac.setHeight(value);
             }
         });
         
-        page.addNumberInputControl("Interchange Propagation (-1 for arbitrary): ", 
-                new ValueChangedListener() {
-                    @Override
-                    public void valueChanged(int value) {
-                        refac.setPropagateInterchange(value);
-                    }
-        });
         return malfoy;
     }
 

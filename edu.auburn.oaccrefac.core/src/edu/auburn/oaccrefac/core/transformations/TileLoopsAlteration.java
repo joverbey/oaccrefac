@@ -11,7 +11,27 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.IASTName;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.eclipse.cdt.core.dom.ast.DOMException;
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTComment;
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IScope;
+
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop tiling refactoring algorithm. Loop tiling takes a
@@ -45,253 +65,155 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
  */
 public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
 
-    private int depth;
-    private int stripFactor;
-    private int propagate;
-    private IASTName generatedName;
+    private int width;
+    private int height;
+    private IASTForStatement outer;
+    private IASTForStatement inner;
 
-    /**
-     * Constructor. Takes strip depth, strip factor, and how many times to propagate interchange for tiling. Loop nest
-     * must be perfectly nested.
-     * @param rewriter
-     *            -- rewriter associated with loop argument
-     * @param stripDepth
-     *            -- strip depth of perfectly nested loop headers
-     * @param stripFactor
-     *            -- strip factor in which to strip mine header at depth
-     * @param propagateInterchange
-     *            -- how many times to interchange headers (-1 for arbitrary)
-     */
-    public TileLoopsAlteration(IASTRewrite rewriter, int stripDepth, int stripFactor, int propagateInterchange,
-            TileLoopsCheck check) {
+    public TileLoopsAlteration(IASTRewrite rewriter, int width, int height, TileLoopsCheck check) {
         super(rewriter, check);
-        this.depth = stripDepth;
-        this.stripFactor = stripFactor;
-        this.propagate = propagateInterchange;
+        this.width = width;
+        this.height = height;
+        this.inner = check.getInner();
+        this.outer = check.getOuter();
     }
-
+    
     @Override
     protected void doChange() {
-//        //Set up which loops we need to deal with
-//        IASTForStatement byStrip = m_inq.getPerfectLoopNestHeaders().get(m_depth);
-//        IASTForStatement inStrip = byStrip.copy();
-//        
-//        //Modify by-strip loop
-//        this.modifyByStrip(rewriter, byStrip);
-//        
-//        //Modify in-strip loop
-//        IASTStatement body = byStrip.getBody();
-//        IASTRewrite inStrip_rewriter = null;
-//        if (body instanceof IASTCompoundStatement) {
-//            IASTNode chilluns[] = body.getChildren();
-//            for (IASTNode child : chilluns) {
-//                safeRemove(rewriter, child);
-//            }
-//            inStrip_rewriter = this.safeInsertBefore(rewriter, body, null, inStrip);
-//        } else {
-//            inStrip_rewriter = this.safeReplace(rewriter, byStrip.getBody(), inStrip);
-//        }
-//        this.modifyInStrip(inStrip_rewriter, inStrip);
-//        this.safeReplace(inStrip_rewriter, inStrip.getBody(), byStrip.getBody().copy());
-//        
-//        //Begin interchanging loop headers for tiling-effect
-//        IASTForStatement interchange = m_inq.getPerfectLoopNestHeaders().get(m_depth-1);
-//        for (int i = 0; checkIteration(i); i++) {
-//            interchange = m_inq.getPerfectLoopNestHeaders().get(m_depth-i-1);
-//        }
-//        this.exchangeLoopHeaders(rewriter, byStrip, interchange);
-//        return rewriter;
+        ForStatementInquisitor innerInq = InquisitorFactory.getInquisitor(inner);
+        ForStatementInquisitor outerInq = InquisitorFactory.getInquisitor(outer);
+        String innerIndexVar = innerInq.getIndexVariable().toString();
+        String outerIndexVar = outerInq.getIndexVariable().toString();
+        String innerUb = ((IASTBinaryExpression) inner.getConditionExpression()).getOperand2().getRawSignature();
+        String outerUb = ((IASTBinaryExpression) outer.getConditionExpression()).getOperand2().getRawSignature();
+        String innerNewName, outerNewName;
+        try {
+            innerNewName = createNewName(innerIndexVar, inner.getScope().getParent());
+            do {
+                outerNewName = createNewName(outerIndexVar, outer.getScope().getParent());
+            } while(innerNewName.equals(outerNewName));
+        } catch (DOMException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+//--------loop4----------------------------
+        
+        String init4, cond4, iter4, body4, loop4;
+        if (inner.getInitializerStatement() instanceof IASTDeclarationStatement) {
+            init4 = String.format("int %s = %s", innerIndexVar, innerNewName);
+        } else {
+            init4 = String.format("%s = %s", innerIndexVar, innerNewName);
+        }
+        cond4 = parenth(String.format("%s <  %s + %d && %s < %s", innerIndexVar, innerNewName, width, innerIndexVar, innerUb));
+        iter4 = inner.getIterationExpression().getRawSignature();
+        body4 = "";
+        IASTNode[] innerBodyObjects = getBodyObjects(inner);
+        for(IASTNode bodyObject : innerBodyObjects) {
+            body4 += bodyObject.getRawSignature() + System.lineSeparator();
+        }
+        loop4 = forLoop(init4, cond4, iter4, compound(body4));
+        
+//--------loop3----------------------------
+        
+        String init3, cond3, iter3, loop3;
+        if (outer.getInitializerStatement() instanceof IASTDeclarationStatement) {
+            init3 = String.format("int %s = %s", outerIndexVar, outerNewName);
+        } else {
+            init3 = String.format("%s = %s", outerIndexVar, outerNewName);
+        }
+        cond3 = parenth(String.format("%s <  %s + %d && %s < %s", outerIndexVar, outerNewName, height, outerIndexVar, outerUb));
+        iter3 = outer.getIterationExpression().getRawSignature();
+        loop3 = forLoop(init3, cond3, iter3, compound(loop4));
+        
+//--------loop2----------------------------
+        
+        String innerInitRhs;
+        String init2, cond2, iter2, loop2;
+        //TODO we're making a lot of typecast assumptions - be sure they won't break anything
+        if(inner.getInitializerStatement() instanceof IASTExpressionStatement) {
+            IASTExpressionStatement es = (IASTExpressionStatement) inner.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+            innerInitRhs = e.getOperand2().getRawSignature();
+        }
+        else {
+            IASTDeclarationStatement ds = (IASTDeclarationStatement) inner.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
+            innerInitRhs = init.getInitializerClause().getRawSignature();
+        }
+        init2 = String.format("int %s = %s", innerNewName, innerInitRhs);
+        cond2 = String.format("%s < %s", innerNewName, innerUb);
+        iter2 = String.format("%s += %d", innerNewName, width);
+        loop2 = forLoop(init2, cond2, iter2, compound(loop3));
+        
+//--------loop1----------------------------
+        
+        String outerInitRhs;
+        String init1, cond1, iter1, loop1;
+        //TODO we're making a lot of typecast assumptions - be sure they won't break anything
+        if(outer.getInitializerStatement() instanceof IASTExpressionStatement) {
+            IASTExpressionStatement es = (IASTExpressionStatement) outer.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+            outerInitRhs = e.getOperand2().getRawSignature();
+        }
+        else {
+            IASTDeclarationStatement ds = (IASTDeclarationStatement) outer.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
+            outerInitRhs = init.getInitializerClause().getRawSignature();
+        }
+        init1 = String.format("int %s = %s", outerNewName, outerInitRhs);
+        cond1 = String.format("%s < %s", outerNewName, outerUb);
+        iter1 = String.format("%s += %d", outerNewName, height);
+        loop1 = forLoop(init1, cond1, iter1, compound(loop2));
+        
+//------Done------------------------
+        
+        this.replace(outer, loop1);
+        finalizeChanges();
+        
     }
-//    /**
-//     * Helper method to check the iteration based on set parameters. If the
-//     * propagation factor is unspecified, then do something else.
-//     * @author Adam Eichelkraut
-//     * @param iteration -- for loop iteration
-//     * @return -- T/F whether to continue interchanging headers
-//     */
-//    private boolean checkIteration(int iteration) {
-//        if (m_propagate < 0) {
-//            return (m_depth-iteration > 0);
-//        } else {
-//            return (iteration < m_propagate && m_depth-iteration > 0);
-//        }
-//    }
-//    
-//    //TODO -- make this better (this stuff is from strip mining-specific code)
-//    /**
-//     * Takes a rewriter and modifies the outer loop's expressions in order to
-//     * iterate in strips rather than sequentially.
-//     * @author Adam Eichelkraut
-//     * @param rewriter -- rewriter associated with strip header
-//     * @param byStripHeader -- for statement to be the by-strip header
-//     */
-//    private void modifyByStrip(IASTRewrite rewriter, IASTForStatement byStripHeader) {
-//        IASTExpression upperBound = this.getUpperBoundExpression(byStripHeader);
-//        //Generate initializer statement
-//        this.genByStripInit(rewriter, byStripHeader);
-//        
-//        //Generate condition expression
-//        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-//        IASTBinaryExpression newCond = factory.newBinaryExpression(
-//                IASTBinaryExpression.op_lessThan, 
-//                factory.newIdExpression(m_generatedName), 
-//                upperBound.copy());
-//        this.safeReplace(rewriter, byStripHeader.getConditionExpression(), newCond);
-//        
-//        //Generate iteration statement
-//        IASTBinaryExpression newIter = factory.newBinaryExpression(
-//                IASTBinaryExpression.op_plusAssign, 
-//                factory.newIdExpression(m_generatedName), 
-//                factory.newLiteralExpression(
-//                        IASTLiteralExpression.lk_integer_constant, m_stripFactor+""));
-//        this.safeReplace(rewriter, byStripHeader.getIterationExpression(), newIter);
-//        
-//    }
     
-//    /**
-//     * Generates the initializer statement for the by-strip loop. Basically, it
-//     * takes the original loop variable name and changes it in order for it to 
-//     * be unique to the scope
-//     * @author Adam Eichelkraut
-//     * @param rewriter -- rewriter associated with the header
-//     * @param header -- for loop header
-//     */
-//    private void genByStripInit(IASTRewrite rewriter, IASTForStatement header) {
-//        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-//        IASTName counter_name = ASTUtil.findOne(header.getInitializerStatement(), IASTName.class);  
-//        //Generate new name from old counter name...
-//        m_generatedName = generateNewName(counter_name, header.getScope());
-//        
-//        //Get the initializer expression if there is one
-//        IASTStatement headerInitializer = header.getInitializerStatement();
-//        IASTInitializer right_equals = ASTUtil
-//                .findOne(headerInitializer, IASTEqualsInitializer.class);
-//        if (right_equals != null) {
-//            right_equals = right_equals.copy();
-//        } else if (headerInitializer instanceof IASTExpressionStatement) {
-//            //Sometimes the loop header isn't a declaration, but instead
-//            //a simple binary expression such as for(i = 0; ...)
-//            IASTExpressionStatement exprSt = 
-//                    (IASTExpressionStatement) headerInitializer;
-//            IASTExpression expr = exprSt.getExpression();
-//            if (expr instanceof IASTBinaryExpression) {
-//                IASTExpression op2 = ((IASTBinaryExpression) expr).getOperand2();
-//                right_equals = factory.newEqualsInitializer(op2.copy());
-//            } else {
-//                throw new UnsupportedOperationException("Loop initialization "
-//                        + "expression is unsupported!");
-//            }
-//        }
-//        //Create the replacement, and replace
-//        IASTDeclarationStatement replacement = this.generateVariableDecl(
-//                m_generatedName, 
-//                IASTSimpleDeclSpecifier.t_int, 
-//                right_equals);
-//        this.safeReplace(rewriter, headerInitializer, replacement);
-//    }
-//
-//    /**
-//     * Modifies the in-strip loop header in order to accommodate the newly-formed
-//     * by-strip loop header. It needs to modify the initializer statement to replace
-//     * the right hand side of the equals to the new by-strip counter. It also needs
-//     * to modify the condition to work with the by-strip loop too.
-//     * @author Adam Eichelkraut
-//     * @param rewriter
-//     * @param inStripHeader
-//     */
-//    private void modifyInStrip(IASTRewrite rewriter, IASTForStatement inStripHeader) {
-//        modifyInStripInit(rewriter, inStripHeader.getInitializerStatement());
-//        modifyInStripCondition(rewriter, inStripHeader);
-//    }
-//
-//    /**
-//     * Modifies the in-strip initializer statement by replacing all of the
-//     * right hand side of initializers and binary expressions to the new
-//     * by-strip id expression.
-//     * @author Adam Eichelkraut
-//     * @param rewriter -- rewriter associated with the tree
-//     * @param tree -- node which is the in-strip initializer
-//     */
-//    private void modifyInStripInit(IASTRewrite rewriter, IASTNode tree) {
-//        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-//        IASTIdExpression byStripIdExp = factory.newIdExpression(m_generatedName);
-//        
-//        class findAndReplace extends ASTVisitor {
-//            IASTIdExpression m_replacement;
-//            IASTRewrite m_rewriter;
-//            public findAndReplace(IASTRewrite rewriter, IASTIdExpression replacement) {
-//                m_rewriter = rewriter;
-//                m_replacement = replacement;
-//                shouldVisitInitializers = true;
-//                shouldVisitExpressions = true;
-//            }
-//            
-//            @Override
-//            public int visit(IASTInitializer visitor) {
-//                if (visitor instanceof IASTEqualsInitializer) {
-//                    safeReplace(m_rewriter, 
-//                            ((IASTEqualsInitializer) visitor).getInitializerClause(),
-//                            m_replacement);
-//                    return PROCESS_ABORT;
-//                }
-//                return PROCESS_CONTINUE;
-//            }
-//            
-//            @Override
-//            public int visit(IASTExpression visitor) {
-//                if (visitor instanceof IASTBinaryExpression) {
-//                    safeReplace(m_rewriter, 
-//                            ((IASTBinaryExpression) visitor).getOperand2(), 
-//                            m_replacement);
-//                    return PROCESS_ABORT;
-//                }
-//                return PROCESS_CONTINUE;
-//            }            
-//        }
-//        tree.accept(new findAndReplace(rewriter, byStripIdExp));
-//    }
+    /**
+     * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
+     *         name_2, etc.) that is not in scope
+     */
+    private String createNewName(String name, IScope scope) {
+        for (int i = 0; true; i++) {
+            String newName = name + "_" + i;
+            if (!ASTUtil.isNameInScope(newName, scope)) {
+                return newName;
+            }
+        }
+    }
     
-//    /**
-//     * Modifies the in-strip condition expression in order to check that the
-//     * in-strip counter is less than the (by-strip counter + strip factor) and
-//     * the upper bound expression
-//     * @author Adam Eichelkraut
-//     * @param rewriter -- rewriter associated with in-strip header
-//     * @param inStripHeader -- in-strip header
-//     * @throws UnsupportedOperationException  if condition is not a binary expression
-//     */
-//    private void modifyInStripCondition(IASTRewrite rewriter, IASTForStatement inStripHeader) {
-//        IASTExpression condition = inStripHeader.getConditionExpression();
-//        
-//        ICNodeFactory factory = ASTNodeFactoryFactory.getDefaultCNodeFactory();
-//        IASTIdExpression byStripIdExp = factory.newIdExpression(m_generatedName);
-//        
-//        IASTBinaryExpression mine_check = null;
-//        if (condition instanceof IASTBinaryExpression) {
-//            mine_check = (IASTBinaryExpression)condition.copy();
-//        } else {
-//            throw new UnsupportedOperationException("Unsupported non-binary condition exprn");
-//        }
-//        
-//        IASTLiteralExpression factorliteral = factory.newLiteralExpression(
-//                IASTLiteralExpression.lk_integer_constant, 
-//                m_stripFactor+"");
-//        IASTBinaryExpression plusfactor = factory.newBinaryExpression(
-//                IASTBinaryExpression.op_plus, 
-//                byStripIdExp, 
-//                factorliteral);
-//        mine_check.setOperand2(plusfactor);
-//        
-//        IASTBinaryExpression logicand = factory.newBinaryExpression(
-//                IASTBinaryExpression.op_logicalAnd, 
-//                mine_check, 
-//                condition.copy());
-//        
-//        IASTUnaryExpression parenth = factory.newUnaryExpression(
-//                IASTUnaryExpression.op_bracketedPrimary, 
-//                logicand);
-//
-//        this.safeReplace(rewriter, inStripHeader.getConditionExpression(), parenth);
-//    }
-    //--------------------------------------------------------------------------------------
+    private IASTStatement[] getBodyStatements(IASTForStatement loop) {
+        if (loop.getBody() instanceof IASTCompoundStatement) {
+            return ((IASTCompoundStatement) loop.getBody()).getStatements();
+        } else {
+            return new IASTStatement[] { loop.getBody() };
+        }
+    }
+    
+    // gets statements AND comments from a loop body in forward order
+    private IASTNode[] getBodyObjects(IASTForStatement loop) {
+        List<IASTNode> objects = new ArrayList<IASTNode>();
+        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        for (IASTComment comment : loop.getTranslationUnit().getComments()) {
+            // if the comment's offset is in between the end of the loop header and the end of the loop body
+            if (comment.getFileLocation()
+                    .getNodeOffset() > loop.getIterationExpression().getFileLocation().getNodeOffset()
+                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
+                    && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
+                            + loop.getBody().getFileLocation().getNodeLength()) {
+                objects.add(comment);
+            }
+        }
+        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
+
+        return objects.toArray(new IASTNode[objects.size()]);
+
+    }
+
 }
