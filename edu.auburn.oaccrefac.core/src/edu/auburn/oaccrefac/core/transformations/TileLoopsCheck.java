@@ -34,9 +34,13 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
     @Override
     protected void doParameterCheck(RefactoringStatus status, TileLoopsParams params) {
         
-        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.loop);
-        if (!inq.isPerfectLoopNest()) {
-            status.addFatalError("Only perfectly nested loops can be tiled.");
+        if(params.getHeight() < 1) {
+            status.addFatalError("Height must be at least 1");
+            return;
+        }
+        
+        if(params.getWidth() < 1) {
+            status.addFatalError("Width must be at least 1");
             return;
         }
         
@@ -46,9 +50,15 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
     protected void doLoopFormCheck(RefactoringStatus status) {
         
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
+
+        if (!inq.isPerfectLoopNest()) {
+            status.addFatalError("Only perfectly nested loops can be tiled.");
+            return;
+        }
+        
         List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
         if (headers.size() < 2) {
-            status.addFatalError("There must be two perfectly nested loop to perform loop tiling.");
+            status.addFatalError("There must be two nested loops to perform loop tiling.");
             return;
         }
         
@@ -66,8 +76,7 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
          * (they involve having a dependence with a great enough distance vector to always reach to a 
          * previous tile), so this check should be a good choice. 
          */
-        InterchangeLoopsCheck check = new InterchangeLoopsCheck(outer, inner);
-        check.performChecks(status, new NullProgressMonitor(), new InterchangeLoopParams(1));        
+        new InterchangeLoopsCheck(outer, inner).dependenceCheck(status, new NullProgressMonitor());        
     }
 
     public IASTForStatement getOuter() {

@@ -57,19 +57,6 @@ public class LoopTilingRefactoring extends ForLoopRefactoring {
         check.performChecks(status, pm, new TileLoopsParams(width, height));
     }
 
-    /** FIXME
-     * Ideally, we could repeatedly create and use StripMineChecks, StripMineAlterations, InterchangeChecks, and
-     * InterchangeAlterations, passing the editions of each alteration on to the next one before performing it
-     * However, we may need to do strip mining, then interchange dep analysis on the result, then interchange. 
-     * So: is it true that if an interchange is valid, it will be valid after strip mining has occurred, 
-     * and is it true that if an interchange is invalid, it will be invalid after strip mining has occurred?
-     * 
-     * What I'm thinking right now is that we can do all of the strip mining first without affecting dependence structure at all, 
-     * then when we do interchange (note, on loops that don't exist yet) on two loops in the new nest, 
-     * we can check whether the interchange is valid for the loops that the loops being interchanged came from. 
-     * I.e., treat either of the loops that resulted from strip mining i as the i loop, either of the ones from strip
-     * mining j as the j loop, etc, and the do the dependence checks on the original i and j loops. 
-     */
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new TileLoopsAlteration(rewriter, width, height, check).change();
