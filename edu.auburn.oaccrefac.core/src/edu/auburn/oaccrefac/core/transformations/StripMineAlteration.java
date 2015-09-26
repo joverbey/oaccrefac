@@ -149,10 +149,8 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
         }
     }
 
-    // gets statements AND comments from a loop body in forward order
-    private IASTNode[] getBodyObjects(IASTForStatement loop) {
-        List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+    private IASTComment[] getBodyComments(IASTForStatement loop) {
+        List<IASTComment> comments = new ArrayList<IASTComment>();
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
@@ -160,11 +158,24 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
                             + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
                     && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
                             + loop.getBody().getFileLocation().getNodeLength()) {
-                objects.add(comment);
+                for(IASTStatement stmt : getBodyStatements(loop)) {
+                    if(!ASTUtil.doesNodeLexicallyContain(stmt, comment)) {
+                        comments.add(comment);      
+                    }
+                }
             }
         }
-        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
+        Collections.sort(comments, ASTUtil.FORWARD_COMPARATOR);
 
+        return comments.toArray(new IASTComment[comments.size()]);
+    }
+
+    // gets statements AND comments from a loop body in forward order
+    private IASTNode[] getBodyObjects(IASTForStatement loop) {
+        List<IASTNode> objects = new ArrayList<IASTNode>();
+        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        objects.addAll(Arrays.asList(getBodyComments(loop)));
+        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
         return objects.toArray(new IASTNode[objects.size()]);
 
     }
