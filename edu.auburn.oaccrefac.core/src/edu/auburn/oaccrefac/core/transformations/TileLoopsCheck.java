@@ -11,61 +11,82 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
+import java.util.List;
+
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
 public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
 
+    private IASTForStatement outer;
+    private IASTForStatement inner;
+    
     public TileLoopsCheck(IASTForStatement loop) {
         super(loop);
+        this.outer = loop;
     }
 
     @Override
     protected void doParameterCheck(RefactoringStatus status, TileLoopsParams params) {
         
-        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.loop);
+        if(params.getHeight() < 1) {
+            status.addFatalError("Height must be at least 1");
+            return;
+        }
+        
+        if(params.getWidth() < 1) {
+            status.addFatalError("Width must be at least 1");
+            return;
+        }
+        
+    }
+    
+    @Override
+    protected void doLoopFormCheck(RefactoringStatus status) {
+        
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
+
         if (!inq.isPerfectLoopNest()) {
             status.addFatalError("Only perfectly nested loops can be tiled.");
             return;
         }
-
-        if (params.getPropagate() > params.getDepth()) {
-            status.addWarning(
-                    "Warning: propagation higher than params.getDepth() -- propagation " + "will occur as many times as possible.");
+        
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        if (headers.size() < 2) {
+            status.addFatalError("There must be two nested loops to perform loop tiling.");
             return;
         }
-
-        // TODO -- make this better (this stuff is from strip mining-specific code)
-        if (params.getStripFactor() <= 0) {
-            status.addFatalError("Invalid strip factor (<= 0).");
-            return;
-        }
-
-        if (params.getDepth() < 0 || params.getDepth() >= inq.getPerfectLoopNestHeaders().size()) {
-            status.addFatalError("There is no for-loop at params.getDepth() " + params.getDepth());
-            return;
-        }
-
-        int iterator = inq.getIterationFactor(params.getDepth());
-        if (params.getStripFactor() % iterator != 0 || params.getStripFactor() <= iterator) {
-            status.addFatalError("Strip mine factor must be greater than and "
-                    + "divisible by the intended loop's iteration factor.");
-            return;
-        }
+        
+        inner = ASTUtil.findDepth(outer, IASTForStatement.class, 1);
+        
     }
 
     @Override
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
-        // TODO dependence analysis??? how to do i dunno
-
-        // DependenceAnalysis dependenceAnalysis = performDependenceAnalysis(status, pm);
-        // if (dependenceAnalysis != null && dependenceAnalysis.()) {
-        // status.addError("This loop cannot be parallelized because it carries a dependence.",
-        // getLocation(getLoop()));
-        // }
+        /**
+         * An interchange check is actually a slightly overly conservative tiling check for 2d tiling. 
+         * The two are prevented by the same sorts of dependence, but interchange is prevented by ANY 
+         * dependences of that type, where tiling may still be legal in some of those cases. However, the
+         * cases in which tiling is legal where interchange is not are expected to be uncommon in practice 
+         * (they involve having a dependence with a great enough distance vector to always reach to a 
+         * previous tile), so this check should be a good choice. 
+         */
+        new InterchangeLoopsCheck(outer, inner).dependenceCheck(status, new NullProgressMonitor());        
     }
+
+    public IASTForStatement getOuter() {
+        return outer;
+    }
+
+    public IASTForStatement getInner() {
+        return inner;
+    }
+    
+    
     
 }

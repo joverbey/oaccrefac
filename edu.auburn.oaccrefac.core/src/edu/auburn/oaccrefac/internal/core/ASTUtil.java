@@ -119,6 +119,14 @@ public class ASTUtil {
         return false;
     }
 
+    public static boolean doesNodeLexicallyContain(IASTNode container, IASTNode containee) {
+        //return (start of container >= start of containee && end of container <= end of containee)
+        return container.getFileLocation().getNodeOffset() <= containee.getFileLocation().getNodeOffset()
+                && container.getFileLocation().getNodeOffset()
+                        + container.getFileLocation().getNodeLength() >= containee.getFileLocation().getNodeOffset()
+                                + containee.getFileLocation().getNodeLength();
+    }
+    
     /**
      * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
      * next sibling after itself with respect to its parent.

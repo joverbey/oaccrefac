@@ -10,6 +10,7 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.CoreException;
@@ -20,6 +21,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.TileLoopsAlteration;
 import edu.auburn.oaccrefac.core.transformations.TileLoopsCheck;
+import edu.auburn.oaccrefac.core.transformations.TileLoopsParams;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
@@ -31,40 +33,32 @@ import edu.auburn.oaccrefac.core.transformations.TileLoopsCheck;
  */
 public class LoopTilingRefactoring extends ForLoopRefactoring {
 
-    private int depth;
-    private int stripFactor;
-    private int propagate;
-    
+    private int width;
+    private int height;
     private TileLoopsCheck check;
     
     public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        this.depth = 0;
-        this.propagate = -1;
-        this.stripFactor = 0;
+        this.width = 0;
+        this.height = 0;
     }
     
-    public void setStripMineDepth(int depth) {
-        this.depth = depth;
+    public void setWidth(int width) {
+        this.width = width;
     }
-    
-    public void setStripFactor(int factor) {
-        this.stripFactor = factor;
-    }
-    
-    public void setPropagateInterchange(int prop) {
-        this.propagate = prop;
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new TileLoopsCheck(getLoop());
-        check.performChecks(status, pm, null);
+        check.performChecks(status, pm, new TileLoopsParams(width, height));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        TileLoopsAlteration change = new TileLoopsAlteration(rewriter, depth, stripFactor, propagate, check);
-        change.change();
+        new TileLoopsAlteration(rewriter, width, height, check).change();
     }
 }
