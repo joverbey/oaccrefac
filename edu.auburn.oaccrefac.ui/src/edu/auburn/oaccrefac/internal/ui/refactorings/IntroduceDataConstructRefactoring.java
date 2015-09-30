@@ -1,6 +1,5 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -8,17 +7,19 @@ import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-@SuppressWarnings("restriction")
-public class IntroduceDataConstructRefactoring extends CRefactoring {
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.IntroduceDataConstructAlteration;
+import edu.auburn.oaccrefac.core.transformations.IntroduceDataConstructCheck;
 
-    private IASTTranslationUnit ast;
+@SuppressWarnings("restriction")
+public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
+
+    private IntroduceDataConstructCheck check;
     
     public IntroduceDataConstructRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -33,10 +34,9 @@ public class IntroduceDataConstructRefactoring extends CRefactoring {
     }
     
     @Override
-    public RefactoringStatus checkInitialConditions(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        ast = getAST(getTranslationUnit(), pm);
-        //TODO create check here
-        return initStatus;
+    public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
+        check = new IntroduceDataConstructCheck(getStatements());
+        check.performChecks(initStatus, pm, null);
     }
 
     @Override
@@ -50,8 +50,8 @@ public class IntroduceDataConstructRefactoring extends CRefactoring {
 
     }
 
-    private void refactor(CDTASTRewriteProxy cdtastRewriteProxy, IProgressMonitor pm) {
-        //TODO create alteration here
+    private void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
+        new IntroduceDataConstructAlteration(rewriter, check).change();
     }
 
 }

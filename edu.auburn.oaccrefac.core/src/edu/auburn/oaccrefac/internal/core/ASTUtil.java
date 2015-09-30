@@ -118,6 +118,19 @@ public class ASTUtil {
         }
         return false;
     }
+    
+    /**
+     * returns <code>true</code> if <code>ancestor</code> is an ancestor of AND is the not
+     * the same node as <code>descendent</code>
+     */
+    public static boolean isStrictAncestor(IASTNode ancestor, IASTNode descendant) {
+        for (IASTNode node = descendant.getParent(); node != null; node = node.getParent()) {
+            if (node.equals(ancestor)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static boolean doesNodeLexicallyContain(IASTNode container, IASTNode containee) {
         //return (start of container >= start of containee && end of container <= end of containee)

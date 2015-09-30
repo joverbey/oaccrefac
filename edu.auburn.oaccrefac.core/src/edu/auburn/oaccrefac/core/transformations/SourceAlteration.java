@@ -69,20 +69,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
         }
     }
 
-    /**
-     * Creates a new change object from an existing one. This allows chaining of changes by ensuring that the new change
-     * contains all of the changes made by the previous one.
-     * 
-     * @param previous
-     *            -- the original change
-     */
-    public SourceAlteration(SourceAlteration<?> previous) {
-        this.tu = previous.tu;
-        this.rewriter = previous.rewriter;
-        this.src = previous.src;
-        this.srcOffset = previous.srcOffset;
-    }
-
     // FIXME: Review/fix comments
 
     /**
@@ -178,11 +164,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final String compound(String code) {
-        return LCURLY + 
-                //(code.startsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
-                code.trim() + 
-                //(code.endsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
-                RCURLY;
+        return LCURLY + code.trim() + RCURLY;
     }
 
     protected final String decompound(String code) {
@@ -260,6 +242,10 @@ public abstract class SourceAlteration<T extends Check<?>> {
         TextEditGroup teg = new TextEditGroup("teg");
         teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, ASTUtil.format(getCurrentText())));
         rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
+    }
+    
+    public IASTTranslationUnit getTranslationUnit() {
+        return tu;
     }
 
     /**
