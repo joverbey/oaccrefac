@@ -63,6 +63,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         this.rewriter = rewriter;
         this.src = null;
         this.srcOffset = 0;
+        this.check = check;
 
         if (this.rewriter == null) {
             throw new IllegalArgumentException("Rewriter cannot be null!");

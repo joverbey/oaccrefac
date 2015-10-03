@@ -82,6 +82,15 @@
                toolbarPath="oaccrefac_group"
                tooltip="Introduces an OpenACC data construct">
          </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.IntroDefaultNoneDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroDefaultNoneDelegate"
+               label="Intro Default None"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               pulldown="false"
+               toolbarPath="oaccrefac_group"
+               tooltip="Introduces a default(none) clause to an OpenACC pragma directive">
+         </action>
       </actionSet>
    </extension>
 
