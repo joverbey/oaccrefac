@@ -40,17 +40,7 @@ public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
     }
 
     @Override
-    protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
-            throws CoreException, OperationCanceledException {
-        
-        pm.subTask("Calculating modifications...");
-        ASTRewrite rewriter = collector.rewriterForTranslationUnit(refactoringContext.getAST(getTranslationUnit(), pm));
-
-        refactor(new CDTASTRewriteProxy(rewriter), pm);
-
-    }
-
-    private void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new IntroduceDataConstructAlteration(rewriter, check).change();
     }
 

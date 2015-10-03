@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
@@ -20,10 +21,11 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
+import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 @SuppressWarnings("restriction")
-public class StatementsRefactoring extends CRefactoring {
+public abstract class StatementsRefactoring extends CRefactoring {
 
     private IASTTranslationUnit ast;
     private IASTStatement[] statements;
@@ -77,10 +79,15 @@ public class StatementsRefactoring extends CRefactoring {
         return null;
     }
 
+    protected abstract void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException;
+    
     @Override
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
-        // TODO Auto-generated method stub
+        pm.subTask("Calculating modifications...");
+        ASTRewrite rewriter = collector.rewriterForTranslationUnit(refactoringContext.getAST(getTranslationUnit(), pm));
+
+        refactor(new CDTASTRewriteProxy(rewriter), pm);
     }
 
     private IASTStatement[] discoverStatementsFromRegion() {
