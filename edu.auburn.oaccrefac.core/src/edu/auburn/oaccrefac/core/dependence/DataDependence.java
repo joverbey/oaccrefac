@@ -13,20 +13,22 @@ package edu.auburn.oaccrefac.core.dependence;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
+import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
+
 /**
  * Container for information about a single data dependence
  */
 public class DataDependence {
 
-    private final IASTStatement statement1;
-    private final IASTStatement statement2;
+    private final VariableAccess access1;
+    private final VariableAccess access2;
     private final Direction[] directionVector;
     private final DependenceType type;
 
-    public DataDependence(IASTStatement statement1, IASTStatement statement2, Direction[] directionVector,
+    public DataDependence(VariableAccess access1, VariableAccess access2, Direction[] directionVector,
             DependenceType type) {
-        this.statement1 = statement1;
-        this.statement2 = statement2;
+        this.access1 = access1;
+        this.access2 = access2;
         this.directionVector = directionVector;
         this.type = type;
     }
@@ -40,11 +42,19 @@ public class DataDependence {
     }
 
     public IASTStatement getStatement1() {
-        return statement1;
+        return access1.getEnclosingStatement();
     }
 
     public IASTStatement getStatement2() {
-        return statement2;
+        return access2.getEnclosingStatement();
+    }
+    
+    public VariableAccess getAccess1() {
+        return access1;
+    }
+
+    public VariableAccess getAccess2() {
+        return access2;
     }
 
     public boolean isLoopCarried() {
@@ -69,9 +79,9 @@ public class DataDependence {
         StringBuilder sb = new StringBuilder();
         sb.append(type);
         sb.append(" ");
-        sb.append(statement1.getFileLocation().getStartingLineNumber());
+        sb.append(getStatement1().getFileLocation().getStartingLineNumber());
         sb.append(" -> ");
-        sb.append(statement2.getFileLocation().getStartingLineNumber());
+        sb.append(getStatement2().getFileLocation().getStartingLineNumber());
         sb.append(" ");
         sb.append('[');
         for (int i = 0; i < directionVector.length; i++) {
@@ -82,4 +92,5 @@ public class DataDependence {
         sb.append(']');
         return sb.toString();
     }
+    
 }

@@ -40,9 +40,12 @@ public abstract class SourceAlteration<T extends Check<?>> {
     public static final String PRAGMA = "#pragma";
     public static final String LCURLY = "{";
     public static final String RCURLY = "}";
-    public static final String LPARENTH = "(";
-    public static final String RPARENTH = ")";
+    public static final String LPAREN = "(";
+    public static final String RPAREN = ")";
     public static final String SEMICOLON = ";";
+    public static final String COMMA = ",";
+    public static final String COPYIN = "copyin";
+    public static final String COPYOUT = "copyout";
 
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
@@ -160,7 +163,33 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final String pragma(String code) {
-        return PRAGMA + " " + code.trim() + System.lineSeparator();
+        return " " + PRAGMA + " " + code.trim() + " ";
+    }
+    
+    protected final String copyin(String... vars) {
+        StringBuilder sb = new StringBuilder(COPYIN + LPAREN);
+        String separator = "";
+        for(String var : vars) {
+            sb.append(separator);
+            sb.append(var.trim());
+            separator = COMMA;
+        }
+        sb.append(RPAREN);
+        sb.append(" ");
+        return sb.toString();
+    }
+    
+    protected final String copyout(String... vars) {
+        StringBuilder sb = new StringBuilder(COPYOUT + LPAREN);
+        String separator = "";
+        for(String var : vars) {
+            sb.append(separator);
+            sb.append(var.trim());
+            separator = COMMA;
+        }
+        sb.append(RPAREN);
+        sb.append(" ");
+        return sb.toString();
     }
 
     protected final String compound(String code) {
@@ -191,7 +220,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
     
     protected final String parenth(String code) {
-        return LPARENTH + code + RPARENTH;
+        return LPAREN + code + RPAREN;
     }
 
     private void updateAlterationTrackingFields(int offset, int length) {

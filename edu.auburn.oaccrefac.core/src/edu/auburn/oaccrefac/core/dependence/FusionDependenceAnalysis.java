@@ -75,13 +75,11 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
             for (VariableAccess v2 : getVariableAccesses()) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite())) {
                     System.out.println(v1.toString() + " " + v2.toString() + ": in if");
-                    IASTStatement s1 = v1.getEnclosingStatement();
-                    IASTStatement s2 = v2.getEnclosingStatement();
                     DependenceType dependenceType = v1.getDependenceTypeTo(v2);
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
                         Direction[] directionVector = new Direction[v1.numEnclosingLoops()];
                         Arrays.fill(directionVector, Direction.ANY);
-                        addDependence(new DataDependence(s1, s2, directionVector, dependenceType));
+                        addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
                     } else {
                         
                         Set<IBinding> otherVars = collectAllVariables(v1.getLinearSubscriptExpressions(),
@@ -121,7 +119,7 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
                                 writeCoefficients, readCoefficients, otherVars.size());
                         Set<Direction[]> dvs = dht.getPossibleDependenceDirections();
                         for (Direction[] directionVector : dvs) {
-                            addDependence(new DataDependence(s1, s2, directionVector, dependenceType));
+                            addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
                         }
                     }
                 }
