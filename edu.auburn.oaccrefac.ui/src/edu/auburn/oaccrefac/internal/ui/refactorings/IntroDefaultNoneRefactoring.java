@@ -21,7 +21,7 @@ public class IntroDefaultNoneRefactoring extends PragmaDirectiveRefactoring {
     
     @Override
     protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroDefaultNoneCheck(getPragma());
+        check = new IntroDefaultNoneCheck(getPragma(), getStatement());
         check.performChecks(status, pm, null);
     }
 

@@ -9,7 +9,7 @@ public class IntroDefaultNoneAlteration extends PragmaDirectiveAlteration<IntroD
     @Override
     protected void doChange() throws Exception {
 //        this.insert(getPragma().getFileLocation().getNodeOffset() + getPragma().getFileLocation().getNodeLength(), "//test");
-        finalizeChanges();
+//        finalizeChanges();
     }
 
 }
