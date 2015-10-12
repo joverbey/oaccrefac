@@ -4,7 +4,7 @@ int main() {
 
 #pragma acc data copyout(b,c) 
 	{
-		b[0] = 1;
+		b[0] = 1;/*<<<<< 5,0,7,0,pass*/
 		c[0] = 3;
 	}
 

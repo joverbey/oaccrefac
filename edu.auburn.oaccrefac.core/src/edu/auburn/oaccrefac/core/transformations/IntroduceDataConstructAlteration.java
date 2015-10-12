@@ -1,12 +1,13 @@
 package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -38,8 +39,8 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
         }
         
         String origRegion = "";
-        for (IASTStatement stmt : stmts) {
-            origRegion += stmt.getRawSignature();
+        for (IASTNode node : getStatementsAndComments()) {
+            origRegion += node.getRawSignature();
         }
         StringBuilder replacement = new StringBuilder();
         replacement.append(pragma("acc data"));
@@ -60,7 +61,7 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
         return false;
     }
     
-    private boolean variableAlreadyInSet(VariableAccess access, Set<VariableAccess> accesses) {
+    private boolean isVariableInSet(VariableAccess access, Set<VariableAccess> accesses) {
         for(VariableAccess var : accesses) {
             try {
                 if(var.refersToSameVariableAs(access)) {
@@ -74,12 +75,12 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
     }
 
     private Set<VariableAccess> inferCopyins(DependenceAnalysis dep) {
-        Set<VariableAccess> copyin = new HashSet<VariableAccess>();
+        Set<VariableAccess> copyin = new TreeSet<VariableAccess>();
         for (VariableAccess write : dep.getVariableAccesses()) {
             for (VariableAccess read : dep.getVariableAccesses()) {
                 if (dep.reaches(write, read)) {
                     if (inRegion(read.getEnclosingStatement()) && !inRegion(write.getEnclosingStatement())
-                            && !variableAlreadyInSet(write, copyin)) {
+                            && !isVariableInSet(write, copyin)) {
                         copyin.add(write);
                     }
                 }
@@ -89,12 +90,12 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
     }
 
     private Set<VariableAccess> inferCopyouts(DependenceAnalysis dep) {
-        Set<VariableAccess> copyout = new HashSet<VariableAccess>();
+        Set<VariableAccess> copyout = new TreeSet<VariableAccess>();
         for (VariableAccess write : dep.getVariableAccesses()) {
             for (VariableAccess read : dep.getVariableAccesses()) {
                 if (dep.reaches(write, read)) {
                     if (inRegion(write.getEnclosingStatement()) && !inRegion(read.getEnclosingStatement())
-                            && !variableAlreadyInSet(read, copyout)) {
+                            && !isVariableInSet(read, copyout)) {
                         copyout.add(read);
                     }
                 }

@@ -6,7 +6,7 @@ int main() {
 	a[1] = 5;
 #pragma acc data copyin(b,c) 
 	{
-		a[2] = b[2];
+		a[2] = b[2];/*<<<<< 7,0,9,0,pass*/
 		a[1] = c[4];
 	}
 
