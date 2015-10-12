@@ -24,7 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.core.dependence.DependenceType;
 
-public class VariableAccess {
+public class VariableAccess implements Comparable<VariableAccess> {
     private final IASTName variable;
     private final IBinding binding;
     private final LinearExpression[] arraySubscripts;
@@ -132,6 +132,13 @@ public class VariableAccess {
             }
         }
         return result;
+    }
+
+    @Override
+    public int compareTo(VariableAccess o) {
+        int thisOffset = variable.getFileLocation().getNodeOffset();
+        int thatOffset = o.variable.getFileLocation().getNodeOffset();
+        return thisOffset - thatOffset;
     }
 
     @Override

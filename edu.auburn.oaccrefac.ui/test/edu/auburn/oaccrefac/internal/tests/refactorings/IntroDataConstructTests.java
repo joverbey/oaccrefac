@@ -19,24 +19,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
+import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceDataConstructRefactoring;
 
 @RunWith(Parameterized.class)
-public class IntroOpenACCParallelTests extends RefactoringTest<IntroOpenACCParallelRefactoring> {
-    
+public class IntroDataConstructTests extends RefactoringTest<IntroduceDataConstructRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/IntroOpenACCParallel");
+        return generateParameters("testcode/IntroDataConstruct");
     }
 
-    public IntroOpenACCParallelTests(String description, File fileContainingMarker, int markerOffset, String markerText)
-            throws Exception {
-        super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public IntroDataConstructTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(IntroduceDataConstructRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(IntroOpenACCParallelRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroduceDataConstructRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
     }
-    
 }

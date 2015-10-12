@@ -68,6 +68,7 @@
                id="edu.auburn.oaccrefac.internal.ui.actions.LoopStripMiningDelegate"
                label="&amp;Strip Mining"
                menubarPath="oaccrefac_menu/oaccrefac_group"
+               pulldown="false"
                toolbarPath="oaccrefac_group"
                tooltip="Rearranges a loop into doubly-nested loops">
          </action>
@@ -76,8 +77,18 @@
                id="edu.auburn.oaccrefac.internal.ui.actions.LoopTilingDelegate"
                label="&amp;Tiling"
                menubarPath="oaccrefac_menu/oaccrefac_group"
+               pulldown="false"
                toolbarPath="oaccrefac_group"
                tooltip="Tiles the iteration ordering of nested loop">
+         </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.IntroduceDataConstructDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceDataConstructDelegate"
+               label="Intro &amp;Data Construct"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               pulldown="false"
+               toolbarPath="oaccrefac_group"
+               tooltip="Introduces an OpenACC data construct">
          </action>
       </actionSet>
    </extension>

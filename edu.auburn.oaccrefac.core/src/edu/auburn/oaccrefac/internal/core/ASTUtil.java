@@ -110,8 +110,25 @@ public class ASTUtil {
         return null;
     }
 
+    /**
+     * returns <code>true</code> if <code>ancestor</code> is an ancestor of or is the
+     * the same node as <code>descendant</code>
+     */
     public static boolean isAncestor(IASTNode ancestor, IASTNode descendant) {
         for (IASTNode node = descendant; node != null; node = node.getParent()) {
+            if (node.equals(ancestor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * returns <code>true</code> if <code>ancestor</code> is an ancestor of AND is the not
+     * the same node as <code>descendant</code>
+     */
+    public static boolean isStrictAncestor(IASTNode ancestor, IASTNode descendant) {
+        for (IASTNode node = descendant.getParent(); node != null; node = node.getParent()) {
             if (node.equals(ancestor)) {
                 return true;
             }

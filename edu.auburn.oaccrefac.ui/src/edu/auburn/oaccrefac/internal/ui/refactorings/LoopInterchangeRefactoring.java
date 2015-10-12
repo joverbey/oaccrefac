@@ -10,9 +10,6 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import java.util.List;
-
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.CoreException;
@@ -24,8 +21,6 @@ import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopParams;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsAlteration;
 import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsCheck;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
 /**
  * This class implements refactoring for loop interchange. Loop interchange is the exchange of the ordering of two
@@ -35,8 +30,6 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     private int depth;
-    private IASTForStatement first;
-    private IASTForStatement second;
     private InterchangeLoopsCheck check;
 
     public LoopInterchangeRefactoring(ICElement element, ISelection selection, ICProject project) {
@@ -50,16 +43,7 @@ public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
-        if (depth < 0 || depth >= headers.size()) {
-            status.addFatalError("There is no for-loop at exchange depth:" + depth);
-        }
-        
-        first = this.getLoop();
-        second = ASTUtil.findDepth(first, IASTForStatement.class, depth);
-
-        check = new InterchangeLoopsCheck(first, second);
+        check = new InterchangeLoopsCheck(getLoop());
         check.performChecks(status, pm, new InterchangeLoopParams(depth));
     }
 

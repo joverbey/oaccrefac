@@ -40,9 +40,12 @@ public abstract class SourceAlteration<T extends Check<?>> {
     public static final String PRAGMA = "#pragma";
     public static final String LCURLY = "{";
     public static final String RCURLY = "}";
-    public static final String LPARENTH = "(";
-    public static final String RPARENTH = ")";
+    public static final String LPAREN = "(";
+    public static final String RPAREN = ")";
     public static final String SEMICOLON = ";";
+    public static final String COMMA = ",";
+    public static final String COPYIN = "copyin";
+    public static final String COPYOUT = "copyout";
 
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
@@ -67,20 +70,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
         if (this.rewriter == null) {
             throw new IllegalArgumentException("Rewriter cannot be null!");
         }
-    }
-
-    /**
-     * Creates a new change object from an existing one. This allows chaining of changes by ensuring that the new change
-     * contains all of the changes made by the previous one.
-     * 
-     * @param previous
-     *            -- the original change
-     */
-    public SourceAlteration(SourceAlteration<?> previous) {
-        this.tu = previous.tu;
-        this.rewriter = previous.rewriter;
-        this.src = previous.src;
-        this.srcOffset = previous.srcOffset;
     }
 
     // FIXME: Review/fix comments
@@ -174,15 +163,37 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final String pragma(String code) {
-        return PRAGMA + " " + code.trim() + System.lineSeparator();
+        return " " + PRAGMA + " " + code.trim() + " ";
+    }
+    
+    protected final String copyin(String... vars) {
+        StringBuilder sb = new StringBuilder(COPYIN + LPAREN);
+        String separator = "";
+        for(String var : vars) {
+            sb.append(separator);
+            sb.append(var.trim());
+            separator = COMMA;
+        }
+        sb.append(RPAREN);
+        sb.append(" ");
+        return sb.toString();
+    }
+    
+    protected final String copyout(String... vars) {
+        StringBuilder sb = new StringBuilder(COPYOUT + LPAREN);
+        String separator = "";
+        for(String var : vars) {
+            sb.append(separator);
+            sb.append(var.trim());
+            separator = COMMA;
+        }
+        sb.append(RPAREN);
+        sb.append(" ");
+        return sb.toString();
     }
 
     protected final String compound(String code) {
-        return LCURLY + 
-                //(code.startsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
-                code.trim() + 
-                //(code.endsWith(System.lineSeparator()) ? "" : System.lineSeparator()) + 
-                RCURLY;
+        return LCURLY + code.trim() + RCURLY;
     }
 
     protected final String decompound(String code) {
@@ -209,7 +220,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
     
     protected final String parenth(String code) {
-        return LPARENTH + code + RPARENTH;
+        return LPAREN + code + RPAREN;
     }
 
     private void updateAlterationTrackingFields(int offset, int length) {
@@ -260,6 +271,10 @@ public abstract class SourceAlteration<T extends Check<?>> {
         TextEditGroup teg = new TextEditGroup("teg");
         teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, ASTUtil.format(getCurrentText())));
         rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
+    }
+    
+    public IASTTranslationUnit getTranslationUnit() {
+        return tu;
     }
 
     /**
