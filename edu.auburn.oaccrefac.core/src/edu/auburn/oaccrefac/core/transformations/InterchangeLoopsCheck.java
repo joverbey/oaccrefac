@@ -21,6 +21,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.Direction;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
@@ -30,12 +31,24 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     private IASTForStatement outer;
     private IASTForStatement inner;
 
-    public InterchangeLoopsCheck(IASTForStatement outer, IASTForStatement inner) {
+    public InterchangeLoopsCheck(IASTForStatement outer) {
         // passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
         super(outer);
         this.outer = outer;
-        this.inner = inner;
         this.inq = InquisitorFactory.getInquisitor(outer);
+    }
+    
+    @Override
+    protected void doParameterCheck(RefactoringStatus status, InterchangeLoopParams params) {
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
+        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        if (params.getDepth() < 0 || params.getDepth() >= headers.size()) {
+            status.addFatalError("There is no for-loop at exchange depth:" + params.getDepth());
+            return;
+        }
+        
+        this.inner = ASTUtil.findDepth(outer, IASTForStatement.class, params.getDepth());
+        
     }
     
     @Override
@@ -43,13 +56,6 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(outer);
         if (!inq.isPerfectLoopNest()) {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
-            return;
-        }
-
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
-        if (!headers.contains(inner)) {
-            status.addFatalError("Second loop is not within headers of first");
-
             return;
         }
     }

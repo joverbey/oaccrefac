@@ -75,8 +75,12 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
          * cases in which tiling is legal where interchange is not are expected to be uncommon in practice 
          * (they involve having a dependence with a great enough distance vector to always reach to a 
          * previous tile), so this check should be a good choice. 
+         * 
+         * TODO only really need to do a check for dependence, not a full performChecks() call, but 
+         * that can't be done since the inner loop in the interchange check is discovered elsewhere
          */
-        new InterchangeLoopsCheck(outer, inner).dependenceCheck(status, new NullProgressMonitor());        
+        
+        new InterchangeLoopsCheck(outer).performChecks(status, new NullProgressMonitor(), new InterchangeLoopParams(1));        
     }
 
     public IASTForStatement getOuter() {

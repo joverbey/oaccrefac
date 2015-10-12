@@ -24,7 +24,6 @@ import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement;
 import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -201,7 +200,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      *            -- our AST to traverse
      * @return CASTForStatement to perform refactoring on
      */
-    protected CASTForStatement findLoop(IASTTranslationUnit ast) {
+    protected IASTForStatement findLoop(IASTTranslationUnit ast) {
         IASTForStatement first_for = null;
         List<IASTForStatement> fors = ASTUtil.find(ast, IASTForStatement.class);
         int begin = selectedRegion.getOffset();
@@ -222,7 +221,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             }
         }
         
-        return (CASTForStatement) first_for;
+        return (IASTForStatement) first_for;
     }
 
     // *************************************************************************
@@ -233,8 +232,8 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return null; // Refactoring history is not supported.
     }
 
-    protected CASTForStatement getLoop() {
-        return (CASTForStatement) forloop;
+    protected IASTForStatement getLoop() {
+        return (IASTForStatement) forloop;
     }
 
     protected IASTTranslationUnit getAST() {

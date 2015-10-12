@@ -14,6 +14,7 @@ package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -58,13 +59,11 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                     v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
             for (VariableAccess v2 : getVariableAccesses()) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)) {
-                    IASTStatement s1 = v1.getEnclosingStatement();
-                    IASTStatement s2 = v2.getEnclosingStatement();
                     DependenceType dependenceType = v1.getDependenceTypeTo(v2);
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
                         Direction[] directionVector = new Direction[v1.numEnclosingLoops()];
                         Arrays.fill(directionVector, Direction.ANY);
-                        addDependence(new DataDependence(s1, s2, directionVector, dependenceType));
+                        addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
                     } else {
                         List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
                         List<IBinding> indexVars = ASTUtil.getLoopIndexVariables(commonLoops);
@@ -99,7 +98,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                                 writeCoefficients, readCoefficients, otherVars.size());
                         Set<Direction[]> dvs = dht.getPossibleDependenceDirections();
                         for (Direction[] directionVector : dvs) {
-                            addDependence(new DataDependence(s1, s2, directionVector, dependenceType));
+                            addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
                         }
                     }
                 }
@@ -111,4 +110,50 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
             }
         }
     }
+    
+    /**
+     * Returns whether the a statement reaches another one. Returns false if the statements 
+     * are not a read and a write, respectively.  
+     * @param write
+     * @param read
+     * @return
+     */
+    public boolean reaches(VariableAccess write, VariableAccess read) {
+        for(DataDependence dep : getDependences()) {
+            if(dep.getAccess1().equals(write) && dep.getAccess2().equals(read) && dep.getType() == DependenceType.FLOW) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+//    /**
+//     * Gets all the statements reached by this definition
+//     * @param write
+//     * @return
+//     */
+//    public Set<IASTStatement> getReachedStatements(IASTStatement write) {
+//        Set<IASTStatement> reached = new HashSet<IASTStatement>();
+//        for(DataDependence dep : getDependences()) {
+//            if(dep.getStatement1().equals(write) && dep.getType() == DependenceType.FLOW) {
+//                reached.add(dep.getStatement2());
+//            }
+//        }
+//        return reached;
+//    }
+//    
+//    /**
+//     * Gets all the definitions that reach the given statement
+//     * @param read
+//     * @return
+//     */
+//    public Set<IASTStatement> getReachingDefinitions(IASTStatement read) {
+//        Set<IASTStatement> reachingDefs = new HashSet<IASTStatement>();
+//        for(DataDependence dep : getDependences()) {
+//            if(dep.getStatement2().equals(read) && dep.getType() == DependenceType.FLOW) {
+//                reachingDefs.add(dep.getStatement1());
+//            }
+//        }
+//        return reachingDefs;
+//    }
 }

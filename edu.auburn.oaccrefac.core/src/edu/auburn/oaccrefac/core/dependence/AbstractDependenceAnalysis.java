@@ -70,7 +70,7 @@ public abstract class AbstractDependenceAnalysis {
         collectAccessesFromStatements(statements);
     }
 
-    protected List<VariableAccess> getVariableAccesses() {
+    public List<VariableAccess> getVariableAccesses() {
         return this.variableAccesses;
     }
 
