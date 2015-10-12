@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Jeff Overbey (Auburn) - Initial API and implementation
+ *    John William O'Rourke (Auburn) - Initial API and implementation
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
@@ -19,23 +19,23 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
+import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceKernelsLoopRefactoring;
 
 @RunWith(Parameterized.class)
-public class IntroOpenACCParallelTests extends RefactoringTest<IntroOpenACCParallelRefactoring> {
-    
+public class IntroduceKernelsLoopTest extends RefactoringTest<IntroduceKernelsLoopRefactoring> {
+
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/IntroOpenACCParallel");
+        return generateParameters("testcode/IntroduceKernelsLoop");
     }
 
-    public IntroOpenACCParallelTests(String description, File fileContainingMarker, int markerOffset, String markerText)
+    public IntroduceKernelsLoopTest(String description, File fileContainingMarker, int markerOffset, String markerText)
             throws Exception {
-        super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
+        super(IntroduceKernelsLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(IntroOpenACCParallelRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroduceKernelsLoopRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
         // String vectorLength = markerFields.removeFirst();
         // refactoring.setMaxVectorLength(vectorLength);
