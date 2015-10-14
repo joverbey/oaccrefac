@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    John William O'Rourke (Auburn) - Initial API and implementation
+ *    Jeff Overbey (Auburn) - Initial API and implementation
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.tests.refactorings;
 
@@ -19,26 +19,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceKernelsLoopRefactoring;
+import edu.auburn.oaccrefac.internal.ui.refactorings.IntroDefaultNoneRefactoring;
 
 @RunWith(Parameterized.class)
-public class IntroduceKernelsLoopTest extends RefactoringTest<IntroduceKernelsLoopRefactoring> {
-
+public class IntroDefaultNoneTests extends RefactoringTest<IntroDefaultNoneRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/IntroduceKernelsLoop");
+        return generateParameters("testcode/IntroDefaultNone");
     }
 
-    public IntroduceKernelsLoopTest(String description, File fileContainingMarker, int markerOffset, String markerText)
-            throws Exception {
-        super(IntroduceKernelsLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public IntroDefaultNoneTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(IntroDefaultNoneRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(IntroduceKernelsLoopRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroDefaultNoneRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-        // String vectorLength = markerFields.removeFirst();
-        // refactoring.setMaxVectorLength(vectorLength);
     }
-    
 }

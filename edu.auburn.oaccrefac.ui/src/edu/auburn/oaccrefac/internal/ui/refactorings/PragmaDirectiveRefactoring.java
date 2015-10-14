@@ -42,13 +42,14 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
         }
 
         ast = getAST(tu, pm);
+        
         pragma = findPragma();
-        statement = findStatement(pragma);
-
         if (pragma == null) {
             initStatus.addFatalError("Please select a pragma directive.");
             return initStatus;
         }
+        
+        statement = findStatement(pragma);
 
         String msg = String.format("Selected \"%s\" on line %d", pragma.getRawSignature(),
                 pragma.getFileLocation().getStartingLineNumber());

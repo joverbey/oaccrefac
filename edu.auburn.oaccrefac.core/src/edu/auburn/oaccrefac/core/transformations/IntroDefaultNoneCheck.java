@@ -38,7 +38,7 @@ public class IntroDefaultNoneCheck extends PragmaDirectiveCheck<RefactoringParam
         }
         
         if(doesACCConstructHaveDefaultNoneClause(pragmaAST)) {
-            status.addFatalError("Pragma directive already has default(none) clause.");
+            status.addFatalError("Pragma directive already has default(none) a clause.");
             return;
         }
     }
