@@ -1,13 +1,9 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
-import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -35,22 +31,12 @@ public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
     
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroduceDataConstructCheck(getStatements());
+        check = new IntroduceDataConstructCheck(getStatements(), getStatementsAndComments());
         check.performChecks(initStatus, pm, null);
     }
 
     @Override
-    protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
-            throws CoreException, OperationCanceledException {
-        
-        pm.subTask("Calculating modifications...");
-        ASTRewrite rewriter = collector.rewriterForTranslationUnit(refactoringContext.getAST(getTranslationUnit(), pm));
-
-        refactor(new CDTASTRewriteProxy(rewriter), pm);
-
-    }
-
-    private void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new IntroduceDataConstructAlteration(rewriter, check).change();
     }
 

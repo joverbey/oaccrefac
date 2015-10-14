@@ -16,7 +16,7 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class ASTAccPresentorcreateClauseNode extends ASTNode implements IAccDataClause, IAccDeclareClause, IAccKernelsClause, IAccKernelsLoopClause, IAccParallelClause, IAccParallelLoopClause
+public class ASTAccPresentorcreateClauseNode extends ASTNode implements IAccDataClause, IAccDeclareClause, IAccEnterDataClause, IAccKernelsClause, IAccKernelsLoopClause, IAccParallelClause, IAccParallelLoopClause
 {
     Token hiddenLiteralStringPresentUnderscoreorUnderscorecreate; // in ASTAccPresentorcreateClauseNode
     Token hiddenLiteralStringPcreate; // in ASTAccPresentorcreateClauseNode
@@ -42,6 +42,7 @@ public class ASTAccPresentorcreateClauseNode extends ASTNode implements IAccData
         visitor.visitASTAccPresentorcreateClauseNode(this);
         visitor.visitIAccDataClause(this);
         visitor.visitIAccDeclareClause(this);
+        visitor.visitIAccEnterDataClause(this);
         visitor.visitIAccKernelsClause(this);
         visitor.visitIAccKernelsLoopClause(this);
         visitor.visitIAccParallelClause(this);

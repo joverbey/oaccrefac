@@ -23,19 +23,20 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefacto
 
 @RunWith(Parameterized.class)
 public class IntroOpenACCParallelTests extends RefactoringTest<IntroOpenACCParallelRefactoring> {
+    
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
         return generateParameters("testcode/IntroOpenACCParallel");
     }
 
-    public IntroOpenACCParallelTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+    public IntroOpenACCParallelTests(String description, File fileContainingMarker, int markerOffset, String markerText)
+            throws Exception {
         super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
     protected void configureRefactoring(IntroOpenACCParallelRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-        // String vectorLength = markerFields.removeFirst();
-        // refactoring.setMaxVectorLength(vectorLength);
     }
+    
 }

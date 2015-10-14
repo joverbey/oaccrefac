@@ -16,7 +16,7 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAccLoopClause, IAccParallelLoopClause
+public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAccLoopClause, IAccParallelLoopClause, IAccRoutineClause
 {
     Token hiddenLiteralStringSeq; // in CAccSeqClause
 
@@ -27,6 +27,7 @@ public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAc
         visitor.visitIAccKernelsLoopClause(this);
         visitor.visitIAccLoopClause(this);
         visitor.visitIAccParallelLoopClause(this);
+        visitor.visitIAccRoutineClause(this);
         visitor.visitASTNode(this);
     }
 

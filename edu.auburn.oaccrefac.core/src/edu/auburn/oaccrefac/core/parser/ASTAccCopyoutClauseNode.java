@@ -16,7 +16,7 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class ASTAccCopyoutClauseNode extends ASTNode implements IAccDataClause, IAccDeclareClause, IAccKernelsClause, IAccKernelsLoopClause, IAccParallelClause, IAccParallelLoopClause
+public class ASTAccCopyoutClauseNode extends ASTNode implements IAccDataClause, IAccDeclareClause, IAccExitDataClause, IAccKernelsClause, IAccKernelsLoopClause, IAccParallelClause, IAccParallelLoopClause
 {
     Token hiddenLiteralStringCopyout; // in ASTAccCopyoutClauseNode
     Token hiddenLiteralStringLparen; // in ASTAccCopyoutClauseNode
@@ -41,6 +41,7 @@ public class ASTAccCopyoutClauseNode extends ASTNode implements IAccDataClause, 
         visitor.visitASTAccCopyoutClauseNode(this);
         visitor.visitIAccDataClause(this);
         visitor.visitIAccDeclareClause(this);
+        visitor.visitIAccExitDataClause(this);
         visitor.visitIAccKernelsClause(this);
         visitor.visitIAccKernelsLoopClause(this);
         visitor.visitIAccParallelClause(this);
