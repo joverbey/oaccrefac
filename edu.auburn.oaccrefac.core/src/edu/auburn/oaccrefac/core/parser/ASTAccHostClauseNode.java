@@ -16,7 +16,7 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class ASTAccHostClauseNode extends ASTNode implements IAccUpdateClause
+public class ASTAccHostClauseNode extends ASTNode implements IAccEnterDataClause, IAccExitDataClause, IAccUpdateClause
 {
     Token hiddenLiteralStringHost; // in ASTAccHostClauseNode
     Token hiddenLiteralStringLparen; // in ASTAccHostClauseNode
@@ -39,6 +39,8 @@ public class ASTAccHostClauseNode extends ASTNode implements IAccUpdateClause
     public void accept(IASTVisitor visitor)
     {
         visitor.visitASTAccHostClauseNode(this);
+        visitor.visitIAccEnterDataClause(this);
+        visitor.visitIAccExitDataClause(this);
         visitor.visitIAccUpdateClause(this);
         visitor.visitASTNode(this);
     }

@@ -16,21 +16,21 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class ASTAccVectorClauseNode extends ASTNode implements IAccKernelsLoopClause, IAccLoopClause, IAccParallelLoopClause, IAccRoutineClause
+public class ASTAccWaitClauseNode extends ASTNode implements IAccEnterDataClause, IAccExitDataClause, IAccKernelsClause, IAccKernelsLoopClause, IAccParallelClause, IAccParallelLoopClause, IAccUpdateClause
 {
-    Token hiddenLiteralStringVector; // in ASTAccVectorClauseNode
-    Token hiddenLiteralStringLparen; // in ASTAccVectorClauseNode
-    IConstantExpression count; // in ASTAccVectorClauseNode
-    Token hiddenLiteralStringRparen; // in ASTAccVectorClauseNode
+    Token hiddenLiteralStringWait; // in ASTAccWaitClauseNode
+    Token hiddenLiteralStringLparen; // in ASTAccWaitClauseNode
+    IASTListNode<IAssignmentExpression> argList; // in ASTAccWaitClauseNode
+    Token hiddenLiteralStringRparen; // in ASTAccWaitClauseNode
 
-    public IConstantExpression getCount()
+    public IASTListNode<IAssignmentExpression> getArgList()
     {
-        return this.count;
+        return this.argList;
     }
 
-    public void setCount(IConstantExpression newValue)
+    public void setArgList(IASTListNode<IAssignmentExpression> newValue)
     {
-        this.count = newValue;
+        this.argList = newValue;
         if (newValue != null) newValue.setParent(this);
     }
 
@@ -38,11 +38,14 @@ public class ASTAccVectorClauseNode extends ASTNode implements IAccKernelsLoopCl
     @Override
     public void accept(IASTVisitor visitor)
     {
-        visitor.visitASTAccVectorClauseNode(this);
+        visitor.visitASTAccWaitClauseNode(this);
+        visitor.visitIAccEnterDataClause(this);
+        visitor.visitIAccExitDataClause(this);
+        visitor.visitIAccKernelsClause(this);
         visitor.visitIAccKernelsLoopClause(this);
-        visitor.visitIAccLoopClause(this);
+        visitor.visitIAccParallelClause(this);
         visitor.visitIAccParallelLoopClause(this);
-        visitor.visitIAccRoutineClause(this);
+        visitor.visitIAccUpdateClause(this);
         visitor.visitASTNode(this);
     }
 
@@ -55,9 +58,9 @@ public class ASTAccVectorClauseNode extends ASTNode implements IAccKernelsLoopCl
     {
         switch (index)
         {
-        case 0:  return this.hiddenLiteralStringVector;
+        case 0:  return this.hiddenLiteralStringWait;
         case 1:  return this.hiddenLiteralStringLparen;
-        case 2:  return this.count;
+        case 2:  return this.argList;
         case 3:  return this.hiddenLiteralStringRparen;
         default: throw new IllegalArgumentException("Invalid index");
         }
@@ -67,9 +70,9 @@ public class ASTAccVectorClauseNode extends ASTNode implements IAccKernelsLoopCl
     {
         switch (index)
         {
-        case 0:  this.hiddenLiteralStringVector = (Token)value; if (value != null) value.setParent(this); return;
+        case 0:  this.hiddenLiteralStringWait = (Token)value; if (value != null) value.setParent(this); return;
         case 1:  this.hiddenLiteralStringLparen = (Token)value; if (value != null) value.setParent(this); return;
-        case 2:  this.count = (IConstantExpression)value; if (value != null) value.setParent(this); return;
+        case 2:  this.argList = (IASTListNode<IAssignmentExpression>)value; if (value != null) value.setParent(this); return;
         case 3:  this.hiddenLiteralStringRparen = (Token)value; if (value != null) value.setParent(this); return;
         default: throw new IllegalArgumentException("Invalid index");
         }

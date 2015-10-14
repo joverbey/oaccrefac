@@ -16,31 +16,41 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAccLoopClause, IAccParallelLoopClause, IAccRoutineClause
+public class ASTAccEnterDataClauseListNode extends ASTNode
 {
-    Token hiddenLiteralStringSeq; // in CAccSeqClause
+    Token hiddenLiteralStringComma; // in ASTAccEnterDataClauseListNode
+    IAccEnterDataClause accEnterDataClause; // in ASTAccEnterDataClauseListNode
+
+    public IAccEnterDataClause getAccEnterDataClause()
+    {
+        return this.accEnterDataClause;
+    }
+
+    public void setAccEnterDataClause(IAccEnterDataClause newValue)
+    {
+        this.accEnterDataClause = newValue;
+        if (newValue != null) newValue.setParent(this);
+    }
+
 
     @Override
     public void accept(IASTVisitor visitor)
     {
-        visitor.visitCAccSeqClause(this);
-        visitor.visitIAccKernelsLoopClause(this);
-        visitor.visitIAccLoopClause(this);
-        visitor.visitIAccParallelLoopClause(this);
-        visitor.visitIAccRoutineClause(this);
+        visitor.visitASTAccEnterDataClauseListNode(this);
         visitor.visitASTNode(this);
     }
 
     @Override protected int getNumASTFields()
     {
-        return 1;
+        return 2;
     }
 
     @Override protected IASTNode getASTField(int index)
     {
         switch (index)
         {
-        case 0:  return this.hiddenLiteralStringSeq;
+        case 0:  return this.hiddenLiteralStringComma;
+        case 1:  return this.accEnterDataClause;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }
@@ -49,7 +59,8 @@ public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAc
     {
         switch (index)
         {
-        case 0:  this.hiddenLiteralStringSeq = (Token)value; if (value != null) value.setParent(this); return;
+        case 0:  this.hiddenLiteralStringComma = (Token)value; if (value != null) value.setParent(this); return;
+        case 1:  this.accEnterDataClause = (IAccEnterDataClause)value; if (value != null) value.setParent(this); return;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }

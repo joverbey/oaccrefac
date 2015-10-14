@@ -16,17 +16,14 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAccLoopClause, IAccParallelLoopClause, IAccRoutineClause
+public class CAccNoHostClause extends ASTNode implements IAccRoutineClause
 {
-    Token hiddenLiteralStringSeq; // in CAccSeqClause
+    Token hiddenLiteralStringNohost; // in CAccNoHostClause
 
     @Override
     public void accept(IASTVisitor visitor)
     {
-        visitor.visitCAccSeqClause(this);
-        visitor.visitIAccKernelsLoopClause(this);
-        visitor.visitIAccLoopClause(this);
-        visitor.visitIAccParallelLoopClause(this);
+        visitor.visitCAccNoHostClause(this);
         visitor.visitIAccRoutineClause(this);
         visitor.visitASTNode(this);
     }
@@ -40,7 +37,7 @@ public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAc
     {
         switch (index)
         {
-        case 0:  return this.hiddenLiteralStringSeq;
+        case 0:  return this.hiddenLiteralStringNohost;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }
@@ -49,7 +46,7 @@ public class CAccSeqClause extends ASTNode implements IAccKernelsLoopClause, IAc
     {
         switch (index)
         {
-        case 0:  this.hiddenLiteralStringSeq = (Token)value; if (value != null) value.setParent(this); return;
+        case 0:  this.hiddenLiteralStringNohost = (Token)value; if (value != null) value.setParent(this); return;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }

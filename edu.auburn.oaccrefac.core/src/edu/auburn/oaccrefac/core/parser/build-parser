@@ -12,12 +12,12 @@ java -Xmx1024M -cp $SRCDIR/ludwig.jar \
 	-package "edu.auburn.oaccrefac.core.parser" \
 	-imports "import edu.auburn.oaccrefac.core.parser.SyntaxException; \
                   import java.io.IOException;" \
-	-description "An LALR(1) parser for OpenACC 1.0" \
+	-description "An LALR(1) parser for OpenACC 2.0" \
 	-throws "IOException, SyntaxException, Exception" \
 	-onError "throw new SyntaxException(parserStack.getLookahead(), describeTerminalsExpectedInCurrentState());" \
 	-parserClass OpenACCParser \
 	-autolabel true \
-	OpenACC-1.0.ebnf
+	OpenACC-2.0.ebnf
 
 cat >SyntaxException.java <<EOF
 package edu.auburn.oaccrefac.core.parser;

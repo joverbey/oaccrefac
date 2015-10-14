@@ -16,14 +16,14 @@ import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 
 @SuppressWarnings("all")
-public class ASTAccWaitNode extends ASTNode implements IAccConstruct
+public class ASTAccRoutineNode extends ASTNode implements IAccConstruct
 {
-    Token pragmaAcc; // in ASTAccWaitNode
-    Token hiddenLiteralStringWait; // in ASTAccWaitNode
-    Token hiddenLiteralStringLparen; // in ASTAccWaitNode
-    IConstantExpression waitParameter; // in ASTAccWaitNode
-    Token hiddenLiteralStringRparen; // in ASTAccWaitNode
-    IASTListNode<ASTAccWaitClauseListNode> accWaitClauseList; // in ASTAccWaitNode
+    Token pragmaAcc; // in ASTAccRoutineNode
+    Token hiddenLiteralStringRoutine; // in ASTAccRoutineNode
+    Token hiddenLiteralStringLparen; // in ASTAccRoutineNode
+    ASTIdentifierNode name; // in ASTAccRoutineNode
+    Token hiddenLiteralStringRparen; // in ASTAccRoutineNode
+    IASTListNode<ASTAccRoutineClauseListNode> accRoutineClauseList; // in ASTAccRoutineNode
 
     public Token getPragmaAcc()
     {
@@ -37,26 +37,26 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
     }
 
 
-    public IConstantExpression getWaitParameter()
+    public ASTIdentifierNode getName()
     {
-        return this.waitParameter;
+        return this.name;
     }
 
-    public void setWaitParameter(IConstantExpression newValue)
+    public void setName(ASTIdentifierNode newValue)
     {
-        this.waitParameter = newValue;
+        this.name = newValue;
         if (newValue != null) newValue.setParent(this);
     }
 
 
-    public IASTListNode<ASTAccWaitClauseListNode> getAccWaitClauseList()
+    public IASTListNode<ASTAccRoutineClauseListNode> getAccRoutineClauseList()
     {
-        return this.accWaitClauseList;
+        return this.accRoutineClauseList;
     }
 
-    public void setAccWaitClauseList(IASTListNode<ASTAccWaitClauseListNode> newValue)
+    public void setAccRoutineClauseList(IASTListNode<ASTAccRoutineClauseListNode> newValue)
     {
-        this.accWaitClauseList = newValue;
+        this.accRoutineClauseList = newValue;
         if (newValue != null) newValue.setParent(this);
     }
 
@@ -64,7 +64,7 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
     @Override
     public void accept(IASTVisitor visitor)
     {
-        visitor.visitASTAccWaitNode(this);
+        visitor.visitASTAccRoutineNode(this);
         visitor.visitIAccConstruct(this);
         visitor.visitASTNode(this);
     }
@@ -79,11 +79,11 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
         switch (index)
         {
         case 0:  return this.pragmaAcc;
-        case 1:  return this.hiddenLiteralStringWait;
+        case 1:  return this.hiddenLiteralStringRoutine;
         case 2:  return this.hiddenLiteralStringLparen;
-        case 3:  return this.waitParameter;
+        case 3:  return this.name;
         case 4:  return this.hiddenLiteralStringRparen;
-        case 5:  return this.accWaitClauseList;
+        case 5:  return this.accRoutineClauseList;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }
@@ -93,11 +93,11 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
         switch (index)
         {
         case 0:  this.pragmaAcc = (Token)value; if (value != null) value.setParent(this); return;
-        case 1:  this.hiddenLiteralStringWait = (Token)value; if (value != null) value.setParent(this); return;
+        case 1:  this.hiddenLiteralStringRoutine = (Token)value; if (value != null) value.setParent(this); return;
         case 2:  this.hiddenLiteralStringLparen = (Token)value; if (value != null) value.setParent(this); return;
-        case 3:  this.waitParameter = (IConstantExpression)value; if (value != null) value.setParent(this); return;
+        case 3:  this.name = (ASTIdentifierNode)value; if (value != null) value.setParent(this); return;
         case 4:  this.hiddenLiteralStringRparen = (Token)value; if (value != null) value.setParent(this); return;
-        case 5:  this.accWaitClauseList = (IASTListNode<ASTAccWaitClauseListNode>)value; if (value != null) value.setParent(this); return;
+        case 5:  this.accRoutineClauseList = (IASTListNode<ASTAccRoutineClauseListNode>)value; if (value != null) value.setParent(this); return;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }
