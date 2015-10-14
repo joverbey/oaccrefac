@@ -1,0 +1,11 @@
+int main() {
+
+	int N = 12;
+	int a[N];
+	for (int i_0 = 0; i_0 < N / 4; i_0++) {
+		for (int i = i_0; (i < N); i += N / 4) {/*<<<<< 5,1,7,6,4,pass*/
+			a[i] = 0;
+		}
+	}
+
+}

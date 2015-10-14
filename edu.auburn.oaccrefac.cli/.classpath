@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/edu.auburn.oaccrefac.core"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.cdt.core_5.10.0.201506020305.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.cdt.core_5.10.0.201506020305.jar" sourcepath="/home/jan0018/eclipse/plugins/org.eclipse.cdt.core.source_5.11.0.201509131935.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.ltk.core.refactoring_3.6.200.v20140826-0859.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.text_3.5.400.v20150505-1044.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.core.runtime_3.11.0.v20150405-1723.jar"/>

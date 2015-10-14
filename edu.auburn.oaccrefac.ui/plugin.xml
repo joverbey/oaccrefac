@@ -71,6 +71,14 @@
                toolbarPath="oaccrefac_group"
                tooltip="Tiles the iteration ordering of nested loop">
          </action>
+         <action
+               class="edu.auburn.oaccrefac.internal.ui.actions.LoopCuttingDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.LoopCuttingDelegate"
+               label="&amp;Cutting"
+               menubarPath="oaccrefac_menu/oaccrefac_group"
+               toolbarPath="oaccrefac_group"
+               tooltip="Cuts the loop">
+         </action>
       </actionSet>
    </extension>
 
