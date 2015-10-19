@@ -13,6 +13,8 @@ package edu.auburn.oaccrefac.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 
 public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
@@ -23,7 +25,9 @@ public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
  
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
-        // TODO: Check for existing/conflicting OpenACC pragma
+        if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
+            status.addError("This loop contains an ACC pragma.");
+        }
     }
     
     @Override
