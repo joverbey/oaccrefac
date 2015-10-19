@@ -37,8 +37,7 @@ public class IntroduceKernelsLoopTest extends RefactoringTest<IntroduceKernelsLo
     @Override
     protected void configureRefactoring(IntroduceKernelsLoopRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-        // String vectorLength = markerFields.removeFirst();
-        // refactoring.setMaxVectorLength(vectorLength);
+
     }
     
 }

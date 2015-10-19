@@ -9,7 +9,7 @@ int main() {
 		a[i] = 0;
 	}
 	a[0] = 1;
-#pragma acc kernels loop
+#pragma acc kernels loop 
 	for (int i = 1; i < N; i++) /*<<<<< 12,5,15,10,pass*/
     {
     	a[i] = a[i-1] + 1;

@@ -26,6 +26,7 @@ public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
         if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
+            // Should specific types of pragmas be checked for?
             status.addError("This loop contains an ACC pragma.");
         }
     }
