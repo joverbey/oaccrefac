@@ -32,31 +32,31 @@ State 0:
     ^..^ => State 173
     _.._ => State 156
     a..a => State 174
-    b..b => State 156
-    c..c => State 179
-    d..d => State 203
-    e..e => State 156
-    f..f => State 229
-    g..g => State 241
-    h..h => State 245
-    i..i => State 254
+    b..b => State 187
+    c..c => State 191
+    d..d => State 220
+    e..e => State 255
+    f..f => State 263
+    g..g => State 275
+    h..h => State 279
+    i..i => State 288
     j..j => State 156
-    k..k => State 266
-    l..l => State 273
-    m..m => State 277
-    n..n => State 282
+    k..k => State 300
+    l..l => State 307
+    m..m => State 314
+    n..n => State 319
     o..o => State 156
-    p..p => State 298
+    p..p => State 342
     q..q => State 156
-    r..r => State 349
-    s..s => State 358
-    t..t => State 156
-    u..u => State 366
-    v..v => State 381
-    w..w => State 394
+    r..r => State 393
+    s..s => State 410
+    t..t => State 420
+    u..u => State 424
+    v..v => State 439
+    w..w => State 452
     x..z => State 156
-    |..| => State 403
-    ~..~ => State 405
+    |..| => State 465
+    ~..~ => State 467
 
 State 1 (FINAL - (skip)):
     0x9..0x9 => State 1 (Back Edge)
@@ -1029,7 +1029,9 @@ State 174 (FINAL - IDENTIFIER):
     _.._ => State 157 (Back Edge)
     a..r => State 157 (Back Edge)
     s..s => State 175
-    t..z => State 157 (Back Edge)
+    t..t => State 179
+    u..u => State 184
+    v..z => State 157 (Back Edge)
 
 State 175 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1070,41 +1072,38 @@ State 179 (FINAL - IDENTIFIER):
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 180
-    b..n => State 157 (Back Edge)
-    o..o => State 184
-    p..q => State 157 (Back Edge)
-    r..r => State 198
-    s..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 180
+    p..z => State 157 (Back Edge)
 
 State 180 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 181
-    d..z => State 157 (Back Edge)
+    a..l => State 157 (Back Edge)
+    m..m => State 181
+    n..z => State 157 (Back Edge)
 
 State 181 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..g => State 157 (Back Edge)
-    h..h => State 182
-    i..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 182
+    j..z => State 157 (Back Edge)
 
 State 182 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 183
-    f..z => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 183
+    d..z => State 157 (Back Edge)
 
-State 183 (FINAL - literal-string-cache):
+State 183 (FINAL - literal-string-atomic):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
@@ -1116,57 +1115,54 @@ State 184 (FINAL - IDENTIFIER):
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 185
-    m..o => State 157 (Back Edge)
-    p..p => State 191
-    q..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 185
+    u..z => State 157 (Back Edge)
 
 State 185 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 186
-    m..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 186
+    p..z => State 157 (Back Edge)
 
-State 186 (FINAL - IDENTIFIER):
+State 186 (FINAL - literal-string-auto):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 187
-    b..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 187 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 188
-    q..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 188
+    j..z => State 157 (Back Edge)
 
 State 188 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 189
-    t..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 189
+    o..z => State 157 (Back Edge)
 
 State 189 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 190
-    f..z => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 190
+    e..z => State 157 (Back Edge)
 
-State 190 (FINAL - literal-string-collapse):
+State 190 (FINAL - literal-string-bind):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
@@ -1178,45 +1174,48 @@ State 191 (FINAL - IDENTIFIER):
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..x => State 157 (Back Edge)
-    y..y => State 192
-    z..z => State 157 (Back Edge)
+    a..a => State 192
+    b..n => State 157 (Back Edge)
+    o..o => State 201
+    p..q => State 157 (Back Edge)
+    r..r => State 215
+    s..z => State 157 (Back Edge)
 
-State 192 (FINAL - literal-string-copy):
+State 192 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 193
-    j..n => State 157 (Back Edge)
-    o..o => State 195
-    p..z => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 193
+    d..o => State 157 (Back Edge)
+    p..p => State 196
+    q..z => State 157 (Back Edge)
 
 State 193 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 194
-    o..z => State 157 (Back Edge)
+    a..g => State 157 (Back Edge)
+    h..h => State 194
+    i..z => State 157 (Back Edge)
 
-State 194 (FINAL - literal-string-copyin):
+State 194 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 195
+    f..z => State 157 (Back Edge)
+
+State 195 (FINAL - literal-string-cache):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
-
-State 195 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..t => State 157 (Back Edge)
-    u..u => State 196
-    v..z => State 157 (Back Edge)
 
 State 196 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1227,54 +1226,59 @@ State 196 (FINAL - IDENTIFIER):
     t..t => State 197
     u..z => State 157 (Back Edge)
 
-State 197 (FINAL - literal-string-copyout):
+State 197 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 198
+    v..z => State 157 (Back Edge)
 
 State 198 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 199
-    f..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 199
+    s..z => State 157 (Back Edge)
 
 State 199 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 200
-    b..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 200
+    f..z => State 157 (Back Edge)
 
-State 200 (FINAL - IDENTIFIER):
+State 200 (FINAL - literal-string-capture):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 201
-    u..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 201 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 202
-    f..z => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 202
+    m..o => State 157 (Back Edge)
+    p..p => State 208
+    q..z => State 157 (Back Edge)
 
-State 202 (FINAL - literal-string-create):
+State 202 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 203
+    m..z => State 157 (Back Edge)
 
 State 203 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1282,104 +1286,102 @@ State 203 (FINAL - IDENTIFIER):
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..a => State 204
-    b..d => State 157 (Back Edge)
-    e..e => State 207
-    f..z => State 157 (Back Edge)
+    b..z => State 157 (Back Edge)
 
 State 204 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 205
-    u..z => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 205
+    q..z => State 157 (Back Edge)
 
 State 205 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 206
-    b..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 206
+    t..z => State 157 (Back Edge)
 
-State 206 (FINAL - literal-string-data):
+State 206 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 207
+    f..z => State 157 (Back Edge)
+
+State 207 (FINAL - literal-string-collapse):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
-
-State 207 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 208
-    d..u => State 157 (Back Edge)
-    v..v => State 213
-    w..z => State 157 (Back Edge)
 
 State 208 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 209
-    m..z => State 157 (Back Edge)
+    a..x => State 157 (Back Edge)
+    y..y => State 209
+    z..z => State 157 (Back Edge)
 
-State 209 (FINAL - IDENTIFIER):
+State 209 (FINAL - literal-string-copy):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 210
-    b..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 210
+    j..n => State 157 (Back Edge)
+    o..o => State 212
+    p..z => State 157 (Back Edge)
 
 State 210 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 211
-    s..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 211
+    o..z => State 157 (Back Edge)
 
-State 211 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 212
-    f..z => State 157 (Back Edge)
-
-State 212 (FINAL - literal-string-declare):
+State 211 (FINAL - literal-string-copyin):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
 
+State 212 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 213
+    v..z => State 157 (Back Edge)
+
 State 213 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 214
-    j..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 214
+    u..z => State 157 (Back Edge)
 
-State 214 (FINAL - IDENTIFIER):
+State 214 (FINAL - literal-string-copyout):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 215
-    d..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 215 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1390,23 +1392,22 @@ State 215 (FINAL - IDENTIFIER):
     e..e => State 216
     f..z => State 157 (Back Edge)
 
-State 216 (FINAL - literal-string-device):
+State 216 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 217
-    a..o => State 157 (Back Edge)
-    p..p => State 226
-    q..z => State 157 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 217
+    b..z => State 157 (Back Edge)
 
 State 217 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 218
-    s..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 218
+    u..z => State 157 (Back Edge)
 
 State 218 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1417,75 +1418,78 @@ State 218 (FINAL - IDENTIFIER):
     e..e => State 219
     f..z => State 157 (Back Edge)
 
-State 219 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 220
-    t..z => State 157 (Back Edge)
-
-State 220 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 221
-    j..z => State 157 (Back Edge)
-
-State 221 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 222
-    e..z => State 157 (Back Edge)
-
-State 222 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 223
-    f..z => State 157 (Back Edge)
-
-State 223 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 224
-    o..z => State 157 (Back Edge)
-
-State 224 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 225
-    u..z => State 157 (Back Edge)
-
-State 225 (FINAL - literal-string-device-underscoreresident):
+State 219 (FINAL - literal-string-create):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
 
-State 226 (FINAL - IDENTIFIER):
+State 220 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 221
+    b..d => State 157 (Back Edge)
+    e..e => State 224
+    f..z => State 157 (Back Edge)
+
+State 221 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..s => State 157 (Back Edge)
-    t..t => State 227
+    t..t => State 222
     u..z => State 157 (Back Edge)
+
+State 222 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 223
+    b..z => State 157 (Back Edge)
+
+State 223 (FINAL - literal-string-data):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 224 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 225
+    d..e => State 157 (Back Edge)
+    f..f => State 230
+    g..k => State 157 (Back Edge)
+    l..l => State 235
+    m..u => State 157 (Back Edge)
+    v..v => State 239
+    w..z => State 157 (Back Edge)
+
+State 225 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 226
+    m..z => State 157 (Back Edge)
+
+State 226 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 227
+    b..z => State 157 (Back Edge)
 
 State 227 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1496,252 +1500,257 @@ State 227 (FINAL - IDENTIFIER):
     r..r => State 228
     s..z => State 157 (Back Edge)
 
-State 228 (FINAL - literal-string-deviceptr):
+State 228 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 229
+    f..z => State 157 (Back Edge)
+
+State 229 (FINAL - literal-string-declare):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
-
-State 229 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 230
-    j..z => State 157 (Back Edge)
 
 State 230 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 231
-    s..z => State 157 (Back Edge)
+    a..a => State 231
+    b..z => State 157 (Back Edge)
 
 State 231 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 232
-    t..z => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 232
+    v..z => State 157 (Back Edge)
 
 State 232 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 233
-    u..z => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 233
+    m..z => State 157 (Back Edge)
 
 State 233 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 234
-    q..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 234
+    u..z => State 157 (Back Edge)
 
-State 234 (FINAL - IDENTIFIER):
+State 234 (FINAL - literal-string-default):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 235
-    s..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 235 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 236
-    j..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 236
+    f..z => State 157 (Back Edge)
 
 State 236 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..u => State 157 (Back Edge)
-    v..v => State 237
-    w..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 237
+    u..z => State 157 (Back Edge)
 
 State 237 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 238
-    b..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 238
+    f..z => State 157 (Back Edge)
 
-State 238 (FINAL - IDENTIFIER):
+State 238 (FINAL - literal-string-delete):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 239
-    u..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 239 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 240
-    f..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 240
+    j..z => State 157 (Back Edge)
 
-State 240 (FINAL - literal-string-firstprivate):
+State 240 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 241
+    d..z => State 157 (Back Edge)
 
 State 241 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 242
-    b..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 242
+    f..z => State 157 (Back Edge)
 
-State 242 (FINAL - IDENTIFIER):
+State 242 (FINAL - literal-string-device):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 243
-    o..z => State 157 (Back Edge)
+    _.._ => State 243
+    a..o => State 157 (Back Edge)
+    p..p => State 252
+    q..z => State 157 (Back Edge)
 
 State 243 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..f => State 157 (Back Edge)
-    g..g => State 244
-    h..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 244
+    s..z => State 157 (Back Edge)
 
-State 244 (FINAL - literal-string-gang):
+State 244 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 245
+    f..z => State 157 (Back Edge)
 
 State 245 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 246
-    p..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 246
+    t..z => State 157 (Back Edge)
 
 State 246 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 247
-    t..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 247
+    j..z => State 157 (Back Edge)
 
 State 247 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 248
-    u..z => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 248
+    e..z => State 157 (Back Edge)
 
-State 248 (FINAL - literal-string-host):
+State 248 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 249
-    a..z => State 157 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 249
+    f..z => State 157 (Back Edge)
 
 State 249 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 250
-    e..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 250
+    o..z => State 157 (Back Edge)
 
 State 250 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 251
-    b..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 251
+    u..z => State 157 (Back Edge)
 
-State 251 (FINAL - IDENTIFIER):
+State 251 (FINAL - literal-string-device-underscoreresident):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 252
-    u..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 252 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 253
-    b..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 253
+    u..z => State 157 (Back Edge)
 
-State 253 (FINAL - literal-string-host-underscoredata):
+State 253 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 254
+    s..z => State 157 (Back Edge)
+
+State 254 (FINAL - literal-string-deviceptr):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
 
-State 254 (FINAL - IDENTIFIER):
+State 255 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..e => State 157 (Back Edge)
-    f..f => State 255
-    g..m => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
     n..n => State 256
-    o..z => State 157 (Back Edge)
-
-State 255 (FINAL - literal-string-if):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    o..w => State 157 (Back Edge)
+    x..x => State 260
+    y..z => State 157 (Back Edge)
 
 State 256 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 257
-    e..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 257
+    u..z => State 157 (Back Edge)
 
 State 257 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -1757,243 +1766,239 @@ State 258 (FINAL - IDENTIFIER):
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 259
-    q..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 259
+    s..z => State 157 (Back Edge)
 
-State 259 (FINAL - IDENTIFIER):
+State 259 (FINAL - literal-string-enter):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 260
-    f..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 260 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 261
-    o..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 261
+    j..z => State 157 (Back Edge)
 
 State 261 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 262
-    e..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 262
+    u..z => State 157 (Back Edge)
 
-State 262 (FINAL - IDENTIFIER):
+State 262 (FINAL - literal-string-exit):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 263
-    f..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 263 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 264
-    o..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 264
+    j..z => State 157 (Back Edge)
 
 State 264 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 265
-    u..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 265
+    s..z => State 157 (Back Edge)
 
-State 265 (FINAL - literal-string-independent):
+State 265 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 266
+    t..z => State 157 (Back Edge)
 
 State 266 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 267
-    f..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 267
+    u..z => State 157 (Back Edge)
 
 State 267 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 268
-    s..z => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 268
+    q..z => State 157 (Back Edge)
 
 State 268 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 269
-    o..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 269
+    s..z => State 157 (Back Edge)
 
 State 269 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 270
-    f..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 270
+    j..z => State 157 (Back Edge)
 
 State 270 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 271
-    m..z => State 157 (Back Edge)
+    a..u => State 157 (Back Edge)
+    v..v => State 271
+    w..z => State 157 (Back Edge)
 
 State 271 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 272
-    t..z => State 157 (Back Edge)
+    a..a => State 272
+    b..z => State 157 (Back Edge)
 
-State 272 (FINAL - literal-string-kernels):
+State 272 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 273
+    u..z => State 157 (Back Edge)
 
 State 273 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 274
-    p..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 274
+    f..z => State 157 (Back Edge)
 
-State 274 (FINAL - IDENTIFIER):
+State 274 (FINAL - literal-string-firstprivate):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 275
-    p..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 275 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 276
-    q..z => State 157 (Back Edge)
+    a..a => State 276
+    b..z => State 157 (Back Edge)
 
-State 276 (FINAL - literal-string-loop):
+State 276 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 277
+    o..z => State 157 (Back Edge)
 
 State 277 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 278
-    b..h => State 157 (Back Edge)
-    i..i => State 280
-    j..z => State 157 (Back Edge)
+    a..f => State 157 (Back Edge)
+    g..g => State 278
+    h..z => State 157 (Back Edge)
 
-State 278 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..w => State 157 (Back Edge)
-    x..x => State 279
-    y..z => State 157 (Back Edge)
-
-State 279 (FINAL - literal-string-max):
+State 278 (FINAL - literal-string-gang):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 279 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 280
+    p..z => State 157 (Back Edge)
 
 State 280 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 281
-    o..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 281
+    t..z => State 157 (Back Edge)
 
-State 281 (FINAL - literal-string-min):
+State 281 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 282
+    u..z => State 157 (Back Edge)
+
+State 282 (FINAL - literal-string-host):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 283
     a..z => State 157 (Back Edge)
-
-State 282 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..t => State 157 (Back Edge)
-    u..u => State 283
-    v..z => State 157 (Back Edge)
 
 State 283 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..l => State 157 (Back Edge)
-    m..m => State 284
-    n..z => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 284
+    e..z => State 157 (Back Edge)
 
 State 284 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 285
-    a..z => State 157 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 285
+    b..z => State 157 (Back Edge)
 
 State 285 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..f => State 157 (Back Edge)
-    g..g => State 286
-    h..v => State 157 (Back Edge)
-    w..w => State 291
-    x..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 286
+    u..z => State 157 (Back Edge)
 
 State 286 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -2003,147 +2008,145 @@ State 286 (FINAL - IDENTIFIER):
     a..a => State 287
     b..z => State 157 (Back Edge)
 
-State 287 (FINAL - IDENTIFIER):
+State 287 (FINAL - literal-string-host-underscoredata):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 288
-    o..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 288 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..f => State 157 (Back Edge)
-    g..g => State 289
-    h..z => State 157 (Back Edge)
+    a..e => State 157 (Back Edge)
+    f..f => State 289
+    g..m => State 157 (Back Edge)
+    n..n => State 290
+    o..z => State 157 (Back Edge)
 
-State 289 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 290
-    t..z => State 157 (Back Edge)
-
-State 290 (FINAL - literal-string-num-underscoregangs):
+State 289 (FINAL - literal-string-if):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 290 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 291
+    e..z => State 157 (Back Edge)
 
 State 291 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 292
-    p..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 292
+    f..z => State 157 (Back Edge)
 
 State 292 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 293
-    s..z => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 293
+    q..z => State 157 (Back Edge)
 
 State 293 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..j => State 157 (Back Edge)
-    k..k => State 294
-    l..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 294
+    f..z => State 157 (Back Edge)
 
 State 294 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 295
-    f..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 295
+    o..z => State 157 (Back Edge)
 
 State 295 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 296
-    s..z => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 296
+    e..z => State 157 (Back Edge)
 
 State 296 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 297
-    t..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 297
+    f..z => State 157 (Back Edge)
 
-State 297 (FINAL - literal-string-num-underscoreworkers):
+State 297 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 298
+    o..z => State 157 (Back Edge)
 
 State 298 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 299
-    b..b => State 157 (Back Edge)
-    c..c => State 306
-    d..q => State 157 (Back Edge)
-    r..r => State 320
-    s..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 299
+    u..z => State 157 (Back Edge)
 
-State 299 (FINAL - IDENTIFIER):
+State 299 (FINAL - literal-string-independent):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 300
-    s..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 300 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 301
-    b..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 301
+    f..z => State 157 (Back Edge)
 
 State 301 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 302
-    m..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 302
+    s..z => State 157 (Back Edge)
 
 State 302 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 303
-    m..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 303
+    o..z => State 157 (Back Edge)
 
 State 303 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -2163,207 +2166,205 @@ State 304 (FINAL - IDENTIFIER):
     l..l => State 305
     m..z => State 157 (Back Edge)
 
-State 305 (FINAL - literal-string-parallel):
+State 305 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 306
+    t..z => State 157 (Back Edge)
+
+State 306 (FINAL - literal-string-kernels):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
-
-State 306 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 307
-    p..q => State 157 (Back Edge)
-    r..r => State 315
-    s..z => State 157 (Back Edge)
 
 State 307 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 308
-    q..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 308
+    j..n => State 157 (Back Edge)
+    o..o => State 311
+    p..z => State 157 (Back Edge)
 
 State 308 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..x => State 157 (Back Edge)
-    y..y => State 309
-    z..z => State 157 (Back Edge)
-
-State 309 (FINAL - literal-string-pcopy):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 310
-    j..n => State 157 (Back Edge)
-    o..o => State 312
-    p..z => State 157 (Back Edge)
-
-State 310 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
     a..m => State 157 (Back Edge)
-    n..n => State 311
+    n..n => State 309
     o..z => State 157 (Back Edge)
 
-State 311 (FINAL - literal-string-pcopyin):
+State 309 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..j => State 157 (Back Edge)
+    k..k => State 310
+    l..z => State 157 (Back Edge)
+
+State 310 (FINAL - literal-string-link):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 311 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 312
+    p..z => State 157 (Back Edge)
 
 State 312 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..t => State 157 (Back Edge)
-    u..u => State 313
-    v..z => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 313
+    q..z => State 157 (Back Edge)
 
-State 313 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 314
-    u..z => State 157 (Back Edge)
-
-State 314 (FINAL - literal-string-pcopyout):
+State 313 (FINAL - literal-string-loop):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 314 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 315
+    b..h => State 157 (Back Edge)
+    i..i => State 317
+    j..z => State 157 (Back Edge)
 
 State 315 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 316
-    f..z => State 157 (Back Edge)
+    a..w => State 157 (Back Edge)
+    x..x => State 316
+    y..z => State 157 (Back Edge)
 
-State 316 (FINAL - IDENTIFIER):
+State 316 (FINAL - literal-string-max):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 317
-    b..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 317 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 318
-    u..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 318
+    o..z => State 157 (Back Edge)
 
-State 318 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 319
-    f..z => State 157 (Back Edge)
-
-State 319 (FINAL - literal-string-pcreate):
+State 318 (FINAL - literal-string-min):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 319 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 320
+    p..t => State 157 (Back Edge)
+    u..u => State 327
+    v..z => State 157 (Back Edge)
 
 State 320 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 321
-    f..h => State 157 (Back Edge)
-    i..i => State 344
-    j..z => State 157 (Back Edge)
+    a..g => State 157 (Back Edge)
+    h..h => State 321
+    i..m => State 157 (Back Edge)
+    n..n => State 325
+    o..z => State 157 (Back Edge)
 
 State 321 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..r => State 157 (Back Edge)
-    s..s => State 322
-    t..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 322
+    p..z => State 157 (Back Edge)
 
 State 322 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 323
-    f..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 323
+    t..z => State 157 (Back Edge)
 
 State 323 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 324
-    o..z => State 157 (Back Edge)
-
-State 324 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
     a..s => State 157 (Back Edge)
-    t..t => State 325
+    t..t => State 324
     u..z => State 157 (Back Edge)
 
-State 325 (FINAL - literal-string-present):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 326
-    a..z => State 157 (Back Edge)
-
-State 326 (FINAL - IDENTIFIER):
+State 324 (FINAL - literal-string-nohost):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 327
-    p..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 325 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 326
+    f..z => State 157 (Back Edge)
+
+State 326 (FINAL - literal-string-none):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 327 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 328
-    s..z => State 157 (Back Edge)
+    a..l => State 157 (Back Edge)
+    m..m => State 328
+    n..z => State 157 (Back Edge)
 
 State 328 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -2377,158 +2378,161 @@ State 329 (FINAL - IDENTIFIER):
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 330
-    d..z => State 157 (Back Edge)
+    a..f => State 157 (Back Edge)
+    g..g => State 330
+    h..v => State 157 (Back Edge)
+    w..w => State 335
+    x..z => State 157 (Back Edge)
 
 State 330 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 331
-    p..q => State 157 (Back Edge)
-    r..r => State 339
-    s..z => State 157 (Back Edge)
+    a..a => State 331
+    b..z => State 157 (Back Edge)
 
 State 331 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 332
-    q..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 332
+    o..z => State 157 (Back Edge)
 
 State 332 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..x => State 157 (Back Edge)
-    y..y => State 333
-    z..z => State 157 (Back Edge)
+    a..f => State 157 (Back Edge)
+    g..g => State 333
+    h..z => State 157 (Back Edge)
 
-State 333 (FINAL - literal-string-present-underscoreor-underscorecopy):
+State 333 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 334
-    j..n => State 157 (Back Edge)
-    o..o => State 336
-    p..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 334
+    t..z => State 157 (Back Edge)
 
-State 334 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 335
-    o..z => State 157 (Back Edge)
-
-State 335 (FINAL - literal-string-present-underscoreor-underscorecopyin):
+State 334 (FINAL - literal-string-num-underscoregangs):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 335 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 336
+    p..z => State 157 (Back Edge)
 
 State 336 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..t => State 157 (Back Edge)
-    u..u => State 337
-    v..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 337
+    s..z => State 157 (Back Edge)
 
 State 337 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 338
-    u..z => State 157 (Back Edge)
+    a..j => State 157 (Back Edge)
+    k..k => State 338
+    l..z => State 157 (Back Edge)
 
-State 338 (FINAL - literal-string-present-underscoreor-underscorecopyout):
+State 338 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 339
+    f..z => State 157 (Back Edge)
 
 State 339 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 340
-    f..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 340
+    s..z => State 157 (Back Edge)
 
 State 340 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 341
-    b..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 341
+    t..z => State 157 (Back Edge)
 
-State 341 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 342
-    u..z => State 157 (Back Edge)
-
-State 342 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 343
-    f..z => State 157 (Back Edge)
-
-State 343 (FINAL - literal-string-present-underscoreor-underscorecreate):
+State 341 (FINAL - literal-string-num-underscoreworkers):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
 
+State 342 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 343
+    b..b => State 157 (Back Edge)
+    c..c => State 350
+    d..q => State 157 (Back Edge)
+    r..r => State 364
+    s..z => State 157 (Back Edge)
+
+State 343 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 344
+    s..z => State 157 (Back Edge)
+
 State 344 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..u => State 157 (Back Edge)
-    v..v => State 345
-    w..z => State 157 (Back Edge)
+    a..a => State 345
+    b..z => State 157 (Back Edge)
 
 State 345 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 346
-    b..z => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 346
+    m..z => State 157 (Back Edge)
 
 State 346 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 347
-    u..z => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 347
+    m..z => State 157 (Back Edge)
 
 State 347 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -2539,126 +2543,128 @@ State 347 (FINAL - IDENTIFIER):
     e..e => State 348
     f..z => State 157 (Back Edge)
 
-State 348 (FINAL - literal-string-private):
+State 348 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 349
+    m..z => State 157 (Back Edge)
+
+State 349 (FINAL - literal-string-parallel):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
-
-State 349 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 350
-    f..z => State 157 (Back Edge)
 
 State 350 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 351
-    e..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 351
+    p..q => State 157 (Back Edge)
+    r..r => State 359
+    s..z => State 157 (Back Edge)
 
 State 351 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..t => State 157 (Back Edge)
-    u..u => State 352
-    v..z => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 352
+    q..z => State 157 (Back Edge)
 
 State 352 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 353
-    d..z => State 157 (Back Edge)
+    a..x => State 157 (Back Edge)
+    y..y => State 353
+    z..z => State 157 (Back Edge)
 
-State 353 (FINAL - IDENTIFIER):
+State 353 (FINAL - literal-string-pcopy):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 354
-    u..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 354
+    j..n => State 157 (Back Edge)
+    o..o => State 356
+    p..z => State 157 (Back Edge)
 
 State 354 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 355
-    j..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 355
+    o..z => State 157 (Back Edge)
 
-State 355 (FINAL - IDENTIFIER):
+State 355 (FINAL - literal-string-pcopyin):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 356
-    p..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 356 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 357
-    o..z => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 357
+    v..z => State 157 (Back Edge)
 
-State 357 (FINAL - literal-string-reduction):
+State 357 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 358
+    u..z => State 157 (Back Edge)
+
+State 358 (FINAL - literal-string-pcopyout):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
-
-State 358 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 359
-    f..h => State 157 (Back Edge)
-    i..i => State 361
-    j..z => State 157 (Back Edge)
 
 State 359 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..p => State 157 (Back Edge)
-    q..q => State 360
-    r..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 360
+    f..z => State 157 (Back Edge)
 
-State 360 (FINAL - literal-string-seq):
+State 360 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..a => State 361
+    b..z => State 157 (Back Edge)
 
 State 361 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..y => State 157 (Back Edge)
-    z..z => State 362
+    a..s => State 157 (Back Edge)
+    t..t => State 362
+    u..z => State 157 (Back Edge)
 
 State 362 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -2669,273 +2675,276 @@ State 362 (FINAL - IDENTIFIER):
     e..e => State 363
     f..z => State 157 (Back Edge)
 
-State 363 (FINAL - IDENTIFIER):
+State 363 (FINAL - literal-string-pcreate):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 364
-    p..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 364 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..e => State 157 (Back Edge)
-    f..f => State 365
-    g..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 365
+    f..h => State 157 (Back Edge)
+    i..i => State 388
+    j..z => State 157 (Back Edge)
 
-State 365 (FINAL - literal-string-sizeof):
+State 365 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..r => State 157 (Back Edge)
+    s..s => State 366
+    t..z => State 157 (Back Edge)
 
 State 366 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..o => State 157 (Back Edge)
-    p..p => State 367
-    q..r => State 157 (Back Edge)
-    s..s => State 372
-    t..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 367
+    f..z => State 157 (Back Edge)
 
 State 367 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 368
-    e..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 368
+    o..z => State 157 (Back Edge)
 
 State 368 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..a => State 369
-    b..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 369
+    u..z => State 157 (Back Edge)
 
-State 369 (FINAL - IDENTIFIER):
+State 369 (FINAL - literal-string-present):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 370
-    u..z => State 157 (Back Edge)
+    _.._ => State 370
+    a..z => State 157 (Back Edge)
 
 State 370 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 371
-    f..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 371
+    p..z => State 157 (Back Edge)
 
-State 371 (FINAL - literal-string-update):
+State 371 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..z => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 372
+    s..z => State 157 (Back Edge)
 
 State 372 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 373
-    f..z => State 157 (Back Edge)
+    _.._ => State 373
+    a..z => State 157 (Back Edge)
 
 State 373 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
-    _.._ => State 374
-    a..z => State 157 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 374
+    d..z => State 157 (Back Edge)
 
 State 374 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..c => State 157 (Back Edge)
-    d..d => State 375
-    e..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 375
+    p..q => State 157 (Back Edge)
+    r..r => State 383
+    s..z => State 157 (Back Edge)
 
 State 375 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 376
-    f..z => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 376
+    q..z => State 157 (Back Edge)
 
 State 376 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..u => State 157 (Back Edge)
-    v..v => State 377
-    w..z => State 157 (Back Edge)
+    a..x => State 157 (Back Edge)
+    y..y => State 377
+    z..z => State 157 (Back Edge)
 
-State 377 (FINAL - IDENTIFIER):
+State 377 (FINAL - literal-string-present-underscoreor-underscorecopy):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..h => State 157 (Back Edge)
     i..i => State 378
-    j..z => State 157 (Back Edge)
+    j..n => State 157 (Back Edge)
+    o..o => State 380
+    p..z => State 157 (Back Edge)
 
 State 378 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 379
-    d..z => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 379
+    o..z => State 157 (Back Edge)
 
-State 379 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 380
-    f..z => State 157 (Back Edge)
-
-State 380 (FINAL - literal-string-use-underscoredevice):
+State 379 (FINAL - literal-string-present-underscoreor-underscorecopyin):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 380 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 381
+    v..z => State 157 (Back Edge)
 
 State 381 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 382
-    f..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 382
+    u..z => State 157 (Back Edge)
 
-State 382 (FINAL - IDENTIFIER):
+State 382 (FINAL - literal-string-present-underscoreor-underscorecopyout):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..b => State 157 (Back Edge)
-    c..c => State 383
-    d..z => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 383 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 384
-    u..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 384
+    f..z => State 157 (Back Edge)
 
 State 384 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..n => State 157 (Back Edge)
-    o..o => State 385
-    p..z => State 157 (Back Edge)
+    a..a => State 385
+    b..z => State 157 (Back Edge)
 
 State 385 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 386
-    s..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 386
+    u..z => State 157 (Back Edge)
 
-State 386 (FINAL - literal-string-vector):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 387
-    a..z => State 157 (Back Edge)
-
-State 387 (FINAL - IDENTIFIER):
+State 386 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..k => State 157 (Back Edge)
-    l..l => State 388
-    m..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 387
+    f..z => State 157 (Back Edge)
+
+State 387 (FINAL - literal-string-present-underscoreor-underscorecreate):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
 
 State 388 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 389
-    f..z => State 157 (Back Edge)
+    a..u => State 157 (Back Edge)
+    v..v => State 389
+    w..z => State 157 (Back Edge)
 
 State 389 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..m => State 157 (Back Edge)
-    n..n => State 390
-    o..z => State 157 (Back Edge)
+    a..a => State 390
+    b..z => State 157 (Back Edge)
 
 State 390 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..f => State 157 (Back Edge)
-    g..g => State 391
-    h..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 391
+    u..z => State 157 (Back Edge)
 
 State 391 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 392
-    u..z => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 392
+    f..z => State 157 (Back Edge)
 
-State 392 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..g => State 157 (Back Edge)
-    h..h => State 393
-    i..z => State 157 (Back Edge)
-
-State 393 (FINAL - literal-string-vector-underscorelength):
+State 392 (FINAL - literal-string-private):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 393 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 394
+    f..n => State 157 (Back Edge)
+    o..o => State 404
+    p..z => State 157 (Back Edge)
 
 State 394 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
@@ -2943,85 +2952,624 @@ State 394 (FINAL - IDENTIFIER):
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..a => State 395
-    b..n => State 157 (Back Edge)
-    o..o => State 398
-    p..z => State 157 (Back Edge)
+    b..c => State 157 (Back Edge)
+    d..d => State 397
+    e..z => State 157 (Back Edge)
 
 State 395 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..h => State 157 (Back Edge)
-    i..i => State 396
-    j..z => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 396
+    e..z => State 157 (Back Edge)
 
-State 396 (FINAL - IDENTIFIER):
-    0..9 => State 157 (Back Edge)
-    A..Z => State 157 (Back Edge)
-    \..\ => State 158 (Back Edge)
-    _.._ => State 157 (Back Edge)
-    a..s => State 157 (Back Edge)
-    t..t => State 397
-    u..z => State 157 (Back Edge)
-
-State 397 (FINAL - literal-string-wait):
+State 396 (FINAL - literal-string-read):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
+
+State 397 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 398
+    v..z => State 157 (Back Edge)
 
 State 398 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 399
-    s..z => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 399
+    d..z => State 157 (Back Edge)
 
 State 399 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..j => State 157 (Back Edge)
-    k..k => State 400
-    l..z => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 400
+    u..z => State 157 (Back Edge)
 
 State 400 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..d => State 157 (Back Edge)
-    e..e => State 401
-    f..z => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 401
+    j..z => State 157 (Back Edge)
 
 State 401 (FINAL - IDENTIFIER):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
-    a..q => State 157 (Back Edge)
-    r..r => State 402
-    s..z => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 402
+    p..z => State 157 (Back Edge)
 
-State 402 (FINAL - literal-string-worker):
+State 402 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 403
+    o..z => State 157 (Back Edge)
+
+State 403 (FINAL - literal-string-reduction):
     0..9 => State 157 (Back Edge)
     A..Z => State 157 (Back Edge)
     \..\ => State 158 (Back Edge)
     _.._ => State 157 (Back Edge)
     a..z => State 157 (Back Edge)
 
-State 403 (FINAL - literal-string-vbar):
-    |..| => State 404
+State 404 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..t => State 157 (Back Edge)
+    u..u => State 405
+    v..z => State 157 (Back Edge)
 
-State 404 (FINAL - literal-string-vbar-vbar):
+State 405 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 406
+    u..z => State 157 (Back Edge)
+
+State 406 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 407
+    j..z => State 157 (Back Edge)
+
+State 407 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 408
+    o..z => State 157 (Back Edge)
+
+State 408 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 409
+    f..z => State 157 (Back Edge)
+
+State 409 (FINAL - literal-string-routine):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 410 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 411
+    f..h => State 157 (Back Edge)
+    i..i => State 415
+    j..z => State 157 (Back Edge)
+
+State 411 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 412
+    m..p => State 157 (Back Edge)
+    q..q => State 414
+    r..z => State 157 (Back Edge)
+
+State 412 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..e => State 157 (Back Edge)
+    f..f => State 413
+    g..z => State 157 (Back Edge)
+
+State 413 (FINAL - literal-string-self):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 414 (FINAL - literal-string-seq):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 415 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..y => State 157 (Back Edge)
+    z..z => State 416
+
+State 416 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 417
+    f..z => State 157 (Back Edge)
+
+State 417 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 418
+    p..z => State 157 (Back Edge)
+
+State 418 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..e => State 157 (Back Edge)
+    f..f => State 419
+    g..z => State 157 (Back Edge)
+
+State 419 (FINAL - literal-string-sizeof):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 420 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 421
+    j..z => State 157 (Back Edge)
+
+State 421 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 422
+    m..z => State 157 (Back Edge)
+
+State 422 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 423
+    f..z => State 157 (Back Edge)
+
+State 423 (FINAL - literal-string-tile):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 424 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..o => State 157 (Back Edge)
+    p..p => State 425
+    q..r => State 157 (Back Edge)
+    s..s => State 430
+    t..z => State 157 (Back Edge)
+
+State 425 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 426
+    e..z => State 157 (Back Edge)
+
+State 426 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 427
+    b..z => State 157 (Back Edge)
+
+State 427 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 428
+    u..z => State 157 (Back Edge)
+
+State 428 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 429
+    f..z => State 157 (Back Edge)
+
+State 429 (FINAL - literal-string-update):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 430 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 431
+    f..z => State 157 (Back Edge)
+
+State 431 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 432
+    a..z => State 157 (Back Edge)
+
+State 432 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..c => State 157 (Back Edge)
+    d..d => State 433
+    e..z => State 157 (Back Edge)
+
+State 433 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 434
+    f..z => State 157 (Back Edge)
+
+State 434 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..u => State 157 (Back Edge)
+    v..v => State 435
+    w..z => State 157 (Back Edge)
+
+State 435 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 436
+    j..z => State 157 (Back Edge)
+
+State 436 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 437
+    d..z => State 157 (Back Edge)
+
+State 437 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 438
+    f..z => State 157 (Back Edge)
+
+State 438 (FINAL - literal-string-use-underscoredevice):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 439 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 440
+    f..z => State 157 (Back Edge)
+
+State 440 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..b => State 157 (Back Edge)
+    c..c => State 441
+    d..z => State 157 (Back Edge)
+
+State 441 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 442
+    u..z => State 157 (Back Edge)
+
+State 442 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..n => State 157 (Back Edge)
+    o..o => State 443
+    p..z => State 157 (Back Edge)
+
+State 443 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 444
+    s..z => State 157 (Back Edge)
+
+State 444 (FINAL - literal-string-vector):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 445
+    a..z => State 157 (Back Edge)
+
+State 445 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..k => State 157 (Back Edge)
+    l..l => State 446
+    m..z => State 157 (Back Edge)
+
+State 446 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 447
+    f..z => State 157 (Back Edge)
+
+State 447 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..m => State 157 (Back Edge)
+    n..n => State 448
+    o..z => State 157 (Back Edge)
+
+State 448 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..f => State 157 (Back Edge)
+    g..g => State 449
+    h..z => State 157 (Back Edge)
+
+State 449 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 450
+    u..z => State 157 (Back Edge)
+
+State 450 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..g => State 157 (Back Edge)
+    h..h => State 451
+    i..z => State 157 (Back Edge)
+
+State 451 (FINAL - literal-string-vector-underscorelength):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 452 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..a => State 453
+    b..n => State 157 (Back Edge)
+    o..o => State 456
+    p..q => State 157 (Back Edge)
+    r..r => State 461
+    s..z => State 157 (Back Edge)
+
+State 453 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 454
+    j..z => State 157 (Back Edge)
+
+State 454 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 455
+    u..z => State 157 (Back Edge)
+
+State 455 (FINAL - literal-string-wait):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 456 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 457
+    s..z => State 157 (Back Edge)
+
+State 457 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..j => State 157 (Back Edge)
+    k..k => State 458
+    l..z => State 157 (Back Edge)
+
+State 458 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 459
+    f..z => State 157 (Back Edge)
+
+State 459 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..q => State 157 (Back Edge)
+    r..r => State 460
+    s..z => State 157 (Back Edge)
+
+State 460 (FINAL - literal-string-worker):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 461 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..h => State 157 (Back Edge)
+    i..i => State 462
+    j..z => State 157 (Back Edge)
+
+State 462 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..s => State 157 (Back Edge)
+    t..t => State 463
+    u..z => State 157 (Back Edge)
+
+State 463 (FINAL - IDENTIFIER):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..d => State 157 (Back Edge)
+    e..e => State 464
+    f..z => State 157 (Back Edge)
+
+State 464 (FINAL - literal-string-write):
+    0..9 => State 157 (Back Edge)
+    A..Z => State 157 (Back Edge)
+    \..\ => State 158 (Back Edge)
+    _.._ => State 157 (Back Edge)
+    a..z => State 157 (Back Edge)
+
+State 465 (FINAL - literal-string-vbar):
+    |..| => State 466
+
+State 466 (FINAL - literal-string-vbar-vbar):
     (empty)
 
-State 405 (FINAL - literal-string-tilde):
+State 467 (FINAL - literal-string-tilde):
     (empty)
 
 
@@ -3054,7 +3602,7 @@ public final class Lexer implements ILexer
             System.out.println(t);
     }
 
-    protected static final int NUM_TERMINALS = 82;
+    protected static final int NUM_TERMINALS = 98;
 
     protected final Reader input;
     protected StringBuilder currentTokenText;
@@ -3293,7 +3841,7 @@ public final class Lexer implements ILexer
  */
     protected static final class DFATransitionTable
     {
-        protected static final int[] rowmap = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1, 0, 21, 22, 0, 1, 23, 24, 25, 26, 2, 6, 27, 28, 29, 30, 31, 32, 2, 27, 2, 33, 1, 1, 34, 28, 35, 1, 33, 0, 0, 1, 0, 36, 2, 0, 37, 6, 33, 34, 27, 38, 39, 40, 41, 28, 42, 43, 0, 0, 0, 1, 0, 0, 1, 0, 0, 35, 44, 45, 46, 47, 0, 48, 27, 49, 50, 51, 52, 53, 54, 55, 0, 56, 2, 6, 0, 0, 1, 6, 0, 2, 0, 27, 28, 57, 58, 59, 60, 61, 62, 0, 63, 64, 65, 30, 33, 0, 0, 66, 67, 68, 0, 69, 28, 27, 0, 6, 0, 34, 35, 70, 71, 72, 38, 39, 0, 0, 33, 34, 0, 30, 0, 40, 41, 0, 2, 0, 0, 6, 0, 27, 0, 0, 0, 73, 74, 42, 75, 76, 77, 78, 79, 80, 0, 43, 81, 82, 83, 84, 85, 0, 0, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 1, 0, 0 };
+        protected static final int[] rowmap = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1, 0, 21, 22, 0, 1, 23, 24, 25, 26, 2, 6, 27, 28, 29, 30, 31, 32, 2, 27, 2, 33, 1, 1, 34, 28, 35, 1, 33, 0, 0, 1, 0, 36, 2, 0, 37, 6, 33, 34, 27, 38, 39, 40, 41, 28, 42, 43, 0, 0, 0, 1, 0, 0, 1, 0, 0, 35, 44, 45, 46, 47, 0, 48, 27, 49, 50, 51, 52, 53, 54, 55, 0, 56, 2, 6, 0, 0, 1, 6, 0, 2, 0, 27, 28, 57, 58, 59, 60, 61, 62, 0, 63, 64, 65, 30, 33, 0, 0, 66, 67, 68, 0, 69, 28, 27, 0, 6, 0, 34, 35, 70, 71, 72, 38, 39, 0, 0, 33, 34, 0, 30, 0, 40, 41, 0, 2, 0, 0, 6, 0, 27, 0, 0, 0, 73, 74, 42, 75, 76, 77, 78, 79, 80, 0, 43, 81, 82, 83, 84, 85, 0, 0, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 1, 0, 0 };
         protected static final int[] columnmap = { 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 0 };
 
         public static int get(int row, int col)
@@ -3324,22 +3872,22 @@ public final class Lexer implements ILexer
         {
             try
             {
-                final int rows = 406;
+                final int rows = 468;
                 final int cols = 3;
-                final int compressedBytes = 320;
-                final int uncompressedBytes = 4873;
+                final int compressedBytes = 323;
+                final int uncompressedBytes = 5617;
                 
                 byte[] decoded = new byte[compressedBytes];
                 base64Decode(decoded,
-                    "eNrtl7FqwzAQhk8iLhkydOiQLRJ06d4HEHqCvEEeIEszdLbrtS" +
-                    "/RR9Gb9BGylkBQBU6ck+xLJNxChvvB8CHf/fKdzwLrvd/X/tv7" +
-                    "QwMaJFxke6r9WY5knLtF6zlcF/Jf+QTNYESUfyQrPsAum8+v8n" +
-                    "oBhHuDVdMZ3WYql/LXp0dU4cJ81rynR1yRQSwgidHoph7kzgge" +
-                    "EXF7e0Q1SiIX9TyKkaIZZ5xc1nMyV+L4HKmMmLm8HSMc5lcQbc" +
-                    "cvjop5Amiv+1i0XrnntZBCpf5h3YT1E6t+NKbsG8bAoCEz0cBR" +
-                    "YyMzJmy8jwbkcK+KnIFdYDW5xsq9m1WrB56ltU/s87/2LZ6NC9" +
-                    "/D+420yPgIqW0foEjC1YeN9z8p42crPIuwj008kxN8sn9xXczM" +
-                    "zMzMzMzMzMz3xlf/Hjr9Aho/g94=");
+                    "eNrtlzFuwzAMRSkhLjJk6NAhWySgS/ceQNAJcoMcIEszdLbrtZ" +
+                    "foUXSTHiFrESBQBThxKNlMJLgtOvADBh5k8sukaQHWe7+v/af3" +
+                    "hwY0SLjI9lT7sxzJOHeL1nO4LuSf8gmawYgo/0hWvIFdNu8f5f" +
+                    "UCCPcCq6Yzus1ULuWvT4+owoX5rHlP97gig1hAEqPRTT3InRE8" +
+                    "IuL29ohqlEQu6nkUI0Uzzji5rOdkrsTxOVIZMXN5O0Y4zM8g2o" +
+                    "6fHBXzANBe97FovXKPayGFSv3DugnrJ1b9aEzZN4yBQUNmooGj" +
+                    "xkZmTNh4Hw3I4V4VOQO7wGpyjZV7NatWDzxLa5/Y51/tWzwbF/" +
+                    "4P7zfSIuMjpLa9gyIJVx823n+ljJ+t8CzCPjbxTE7wyf7FdTEz" +
+                    "MzMzMzMzMzMzMzP/PV/9S+70Dbwu3I8=");
                 
                 byte[] buffer = new byte[uncompressedBytes];
                 Inflater inflater = new Inflater();
@@ -3380,44 +3928,44 @@ public final class Lexer implements ILexer
             {
                 final int rows = 120;
                 final int cols = 41;
-                final int compressedBytes = 1209;
+                final int compressedBytes = 1205;
                 final int uncompressedBytes = 19681;
                 
                 byte[] decoded = new byte[compressedBytes];
                 base64Decode(decoded,
-                    "eNrtWeef1UQUPcGOoKIiyKIIKCI2bKBSFBQbFgQVWVwVUOyIqI" +
-                    "Diil1ZxAYq4Cp2VFDAjoK99y/+Cf4BfOCr8c5kNgnJnWSeSfZN" +
-                    "3ibnd2funLl39uydTPblrevCcdUFB73RB4eTdwJOxAhMwFk4G+" +
-                    "fgPEzEhbgUl+FhwjM0vxzPYSVeIK9d4XXf8/AG3sR6vIt2inmP" +
-                    "xh/gV2r/wTZsx79od7o7vZzeTj/yhpG1OLOpneO0Om1evus6y8" +
-                    "me7VAWaCRrUv5Jvncu2flk3dAf/f3YA3BBR4QcX6P6AT7TFHiE" +
-                    "45R3lM/OxtH+z2iScwNkf6jHOStCqw+Ne3J0smx38se74RAB6a" +
-                    "9Ax2+oOFytxjPd2OXFBNmKvU71R5AN0+VKfucU7JIaUTAaTuOu" +
-                    "9dIYPTPR+zE07oaBAmr0vOoVh2vVeAZzPw0MEGLvj8XN0NyPu2" +
-                    "MP0XoemR7dE2cLQ6Wx0zTu6Xv71E1jD/Sk09NDWk+yKPbyvV7M" +
-                    "bCeg0lgHjXvXTWMZzkwjnOt9fW//EtyP+1mrsQx1tEFjX/QVre" +
-                    "cRDlR9dvTLZ51KY100HkSwXePBhGqvWY01fQcwSECNVmG17BWH" +
-                    "xQnfAQwKEGJvCL4D0OeqmWPjHvdeSMxgAZ7DvQnvhYMDhNj7jN" +
-                    "8LS7HX5hcOE+A53KnGC3R50Ww8GYtbkEMdh0ikc9E6Dgmh6HNd" +
-                    "J40JOxs/M6MxWhv9uOrnM3NHkh0fY5+IMfPdGi9G4xiM0UYvS7" +
-                    "gfj2EzHjS9H/XPHibyIoGUGK6Oww2roqkjRmKkaD0vjDhTI07J" +
-                    "mO/riGk+Ne75zCiM4mND3FhupQ4/mhHmKWqs7M9wM1w4TYDn8J" +
-                    "gat+nyuOxIXJub+cLpAskclujyuOxI3JIcNI4TSObYOo4LEGKf" +
-                    "LqSO4wWSObaO4wMUXsczBZI5rNHlcdmRuDU5PMNNNK7NoHFtDn" +
-                    "Vkn+GYhCnUTjHInxSOMskwVnYx2SXSmyzgWn2VWaPpXu8Ylede" +
-                    "l6eOmEp2OWFabKZZtlep0SyyGzVrNO8wuj42P0u2DzXmua69jt" +
-                    "o1jOqYUeM0geSfnLhGc2F34nSyK6V3hYDlz54Sa0SLZwYrtPB+" +
-                    "16kjbiKbJxDhGS6WOy9A4TpvFkjn+DyTyOI14pb/o1GXVZOyOW" +
-                    "S3Se9WAcvPdYk1Yq5nBivM5f2uU0fcnvzswR1kC8laTZ89eED1" +
-                    "C32mtaHP9V1k90jvbgHLz0yJNWKRZwYrLOL9rlPHMnymkO8Kjw" +
-                    "ho3mceVaOlxu8zT8Xmlza+RrnGiwIcFwfNvOTN62OS0NAaXxZI" +
-                    "5/g8k8gc9voVgXSOzzOJzEHjqwLpHJ9nEpmDxtcE0jk+zySycc" +
-                    "41+vjeiFKe67cE0jk+zyQyh71+WyCd4/NMInPQ+I5AOsfnmUTm" +
-                    "oHGdQDrH55lEVn+vM2vcULLPFBut0rjJqr1+v/r8mFnjhwlqPp" +
-                    "XtD1bU8aNS7fXHVmv8pDozBWjcrPovLdb4mVV1/Lz0nym2lObM" +
-                    "bLVE4xfVs6dTNX5lgcavQ/631tfxm+p+LEDjd9Zr/L7aa0ONP1" +
-                    "qs8aeGOTM/W6Hxl+rvdSaNvyn2z9LX8fe6avyj+n9hbhr/MtL2" +
-                    "N6cR/wHeSjy/");
+                    "eNrtWOe/1EQUPYMFC6iA+tCHUsWGFQWlCjZERRRFeYqK2CuiAo" +
+                    "rY2wNBRUXFp1hQsHexgBV71w9+8X+JdybzkpDcSWbZ5O1kX3J+" +
+                    "N3PnzL2z53dnJrtZz4Pw9AWBPdCC/ckbiaMwCifiJJyMKZiKUz" +
+                    "EN52Am7iespPHHsQpP41nyOjTWBp6PV/Aq3sRb6KCYt/E5vsR/" +
+                    "8ERP0U+0iEHoECPESDFGTCRvJlm7WC3WivVig9js53ue+Ivsn0" +
+                    "5loUayVu0fHXinkJ1G1gMDMCCI3ROnd0ao/qW6HRgwraFHOEJ7" +
+                    "IwL2chwSfEarGhuo2mE+J/6OzH5A0lO9Y9R9m6DfE4MklP8Ent" +
+                    "Ss5nCx7l/iJS4/JszW7BW6PZDsIFOu4rfNwHaZEQWj6TRu3yiN" +
+                    "8TMT34+Rfg8MltC9p3SrOVym+3OY/TQ4RIS9OxE3x7Afd8CO8u" +
+                    "57ZGbslDpaGCqNXaZx58DbrWEae6E3nZ5eynqTxbFL4PVhRrsA" +
+                    "lcYGaNy1YRrLcGaa4Vz3DbzdS7Af+zmrsQx1dEFjf/SXd98j7K" +
+                    "Xb+rF3PvNUGhuicR+C6xr3JVRrzWqs6T+AIRK69wxWq1ZzuDPl" +
+                    "P4AhISLsVeF/AOZcPXJY0uPeC4kZKsFzuCPlvXBoiAh7l/V7YS" +
+                    "nW2v7CfhI8h1t0f6EpL56NRxJxC3Oo43CFbC5ex+ERFH2uG6Qx" +
+                    "ZWWTZ2YcxhmjH9btAmbsYLIjE+yKBLPAq/FiNI7HeGP08pT9eC" +
+                    "ibca/tfjQ/e5jIMyQyYrg6Hm5ZFUMdMRqj5d33okgyNeLYOvMD" +
+                    "HQnNY5JewIzFWD42wk3gZur04xlRnqImqPZ4r44LEyV4Dg/p/l" +
+                    "JTHpcdi1vq1X3hOIl0Du2mPC47Fteeg8ZJEukcW8dJISLsY4XU" +
+                    "cbJEOsfWcXKIwut4gkQ6hzWmPC47Frcmh2e4jcZ1dWhcl0Md2W" +
+                    "c4pmMG3WdY5E+PRtlkWCs7k+xs5Z0l4Tl9lVmj7VpvGZXnWpen" +
+                    "jjiX7DzCrMRIm7pfpHtzya42zNG2Re/KxPhcdb+vOc917XU0zm" +
+                    "FVxzo1zpJI/+TUOdoK24nnk12ovAskHH/2lFgjZvtmMcNs3u8+" +
+                    "dcQ1ZPMlYjzDJXLnhyhc57US2RyfZxNZvEZctzUaTVk1Kbue7E" +
+                    "bl3SDh+LkusUbM881ihnm8333qiJvSnz24mWwR2RLbZw/u0e2i" +
+                    "gFnS1Of6VrLblXebhONnpsQasdg3ixkW8373qWMZflOod4UHJA" +
+                    "zvMw/q3jLr95lHE+PLml+jmuM5CY5Lgkae98fNMWloao0vSGRz" +
+                    "fJ5NZA5r/aJENsfn2UTmoPEliWyOz7OJzEHjyxLZHJ9nE9k85x" +
+                    "otgTeqlOd6vUQ2x+fZROaw1q9JZHN8nk1kDhpfl8jm+DybyBw0" +
+                    "viGRzfF5NpHV93XdGt/BB/ikRL8p3nVK43tOrfX71e/HQjV+6L" +
+                    "jGjxyu48eOrvWG6sx0kcZPndX4WbXWW61xY6n24ybHNH5RPXvq" +
+                    "1PhVipqf1P1fJ+r4tVHlZgfX+hun9+O31ZnpAo3flaKO3zut8Q" +
+                    "dn1vrH6swUoPFn3f7psMZfnKrjr6V/Pv5WmjPzuyMa/2jeZw/+" +
+                    "B3zsPHs=");
                 
                 byte[] buffer = new byte[uncompressedBytes];
                 Inflater inflater = new Inflater();
@@ -3458,20 +4006,20 @@ public final class Lexer implements ILexer
                 
                 byte[] decoded = new byte[compressedBytes];
                 base64Decode(decoded,
-                    "eNrtmudOAlEQhRm7sUaNJfausffesTyCL6fvZIm9a+wtauwGsf" +
-                    "wwIOwii3vOZtgECCzhyzlzZ+bOrsdj/uGa+Th++8z/8H4z+/V9" +
-                    "wHPmAv3W/1/+gXE+GA0IozHTAgzjIrWOeIxLoIzLJDqugDKuGs" +
-                    "bjHsmaWYNhXCfPPRtgjJuwOm5R5J5tynjcIavXu9pTWMK4D854" +
-                    "oP3jHxgPKePxiMLrY4p4PAFmPCWJxzM4xnPq/fWFbYyXjqnXVx" +
-                    "CM1zrvCYvxhjoebyEZ7zQeI8J4T6TjA4XXj7YxPlHF4zM044tj" +
-                    "eopXWxnfHKMjCqPP+eJSHUNlFGHwWqJY14xEQ+kYw6ijxIKtmT" +
-                    "iKNRNP6XUCVw6XRK0zJuMxibnvkWTgNZMC53Uqm9eSxtaHS7r2" +
-                    "uOEwSgYBYyZFj5uley5zjJLto1wu+wxActTrkOt1ns4prGeUfD" +
-                    "xGKcDQUQr5vJYiA7/LbcrhxdS5pwTS61Le3CNlmsPD6nEraGYA" +
-                    "lYiMUgU676mmnvfUUOSeWs09hvW6zqtTa1AVhwnisd52HRtY64" +
-                    "w0EjA2QebwZjqvW/R+Cgt7s7bP5z7w+WM7o9fSYT+jdP543w2/" +
-                    "d+3SdR2BuVkP/DX2XvXaZL3uB+7DB5yyZmQQwushvY/UEh1Hvl" +
-                    "+nSeePoyA6jlHOw91kuWfctmtIEw7Yz0zSzB+ngjG63gGk+LeV");
+                    "eNrtmgdLA0EQhTM27A0Vu9gbVqxYsOufjP/JigV7772XWMEjJn" +
+                    "hHTva9Y7IQjivk48282dm9BAL2Pz7/xwh17vd4vzL5dT38PWHH" +
+                    "VPCvGGCcthzPhnveMOPPmAn/PAyjn45xDp5xXmNtk3EBmHHRM5" +
+                    "5ZgmBc9kDtMcm48n12nV7HVaOMax6aC00zbnx+71ruOQrx3BmY" +
+                    "jptQOm55Ih+3YRh31NcRMe55qD7uwzEeEOp4qJ6xyXhM75kTCM" +
+                    "ZTreGuMp6DMl6Q6HgJynj1Zz4+k3jmGobxhrz23IIx3sHqeE9R" +
+                    "ex4o8/GRbL5+0p7CFcYXcMZX7R8jYRRfiHMxuDqKIOgoUcy+lm" +
+                    "j1jHNGiWWt4RKnsXYY63hKXycw5KMkUngmCZdRkknyMQXO16nM" +
+                    "+4+SZopR0r2ynpEMiP4xU/fDI8rHLOo1VzYio+RoPv4Ho+Ty6C" +
+                    "h5FDU83xSjFDDloxRC1/Aiz/QUxUZ1LNH/P7rLKKVB8S1THR3X" +
+                    "nnKGWEsFq2ekEkrHKso+vBrMMzUUnqmljHUdWU9Rr/OMzXxsoH" +
+                    "4X1wjsmSa4WDezxVpa2PpwadUe1/F7hTbLcSf8XNiOnI/SoWtX" +
+                    "V/cfuyjWM90aa5v7PT1ByvWx7/dIr8bacQ3v1/roUn0csByPoz" +
+                    "DKoOV4lELHIaIed5hiD2BEfW1zXTim7z7+g1Em7DH63gBUwLmq");
                 
                 byte[] buffer = new byte[uncompressedBytes];
                 Inflater inflater = new Inflater();
@@ -3505,23 +4053,28 @@ public final class Lexer implements ILexer
         {
             try
             {
-                final int rows = 75;
+                final int rows = 120;
                 final int cols = 41;
-                final int compressedBytes = 362;
-                final int uncompressedBytes = 12301;
+                final int compressedBytes = 553;
+                final int uncompressedBytes = 19681;
                 
                 byte[] decoded = new byte[compressedBytes];
                 base64Decode(decoded,
-                    "eNrtmltPwlAQhJmf5w3FC0QxoqhRUOMVETWId42K6Lv81VIaH0" +
-                    "gEQmrJmTnZnqQUysOX3TPT3YUgGP1I/XRXv8/+rvBOu3sfE4O/" +
-                    "M2wFMY84jNFV+B6T/IyDFqai8wIzY8g3zR7HvtQz7hmR7rmeY9" +
-                    "+PmFXQjBojMuyMmLdcj8aIRV5GLPmiGWQpcp3T9x4NRiw708yK" +
-                    "N5rJU2hm1TSTSBzX2BlR8KI2W3fcu2544T1FJkZsis0Atuj7wm" +
-                    "3z8BgevvP7WtLTNXYt1+NhRNnZftwTnZHuszHiwGrcsc2aD6Pz" +
-                    "GUWNe8QcRxx707ueUDyvT613TSSOFU5GnCvFEVWJXF94MX+s0f" +
-                    "Sul6S/sV+JeM+1eXgicayT/+fjxou6p0Hbc92qxBF3TmuKe+We" +
-                    "Cw+U3vOoqGs8MTLiWdofX3gY8Wo1Rcw5xduQDDc544h3Wc182H" +
-                    "78d03xyciIFmmv8CWd6291D091AKMNcrA=");
+                    "eNrtW9dOw0AQzH4evYvee++9d0TvRUBoAkTviA5/FhIrQlGAEE" +
+                    "UON3M6W7JPth9Gs7e7s3tnlyv4w7HpOX969v10v3F63kvE798E" +
+                    "Ol0hHqFgtEY+zyUyMDaJU4NRorh49GMtGtLWMWw8+mCPxceIzK" +
+                    "PEs9haEhAxSiKmrSWJcz560SdTxJ4UE3v+zNepbp5yArJYRTAf" +
+                    "05TzmM6aZySDAGMmZAzPorN1Npt+hNZmuda1FJtHyWO0teSrxy" +
+                    "gFPuMi+Nq10Pi1/RilGB2jlBhbB5mvy4B1eLkuPiMVELau5I89" +
+                    "EDxWe+9DpP3HGhAeayn74XVksadeFUZp0KCeaaTpPzapxCjNPL" +
+                    "aWFuL52Gpde8Hr6zbK+rodoL7u8Bl3wefCTqMfw1Bfd8Nrih5j" +
+                    "6yA1bh9wfd2vTX09AGHrQVNf/w9GGVbmMyPa+MwohM+MGZ+xhc" +
+                    "fxHyy8CJJnJiw0U/g8yqQe8ZFA404r7gHMaBHDZ5EwyhxZL2Ue" +
+                    "vr5eMLEnDLFnCd6vl6H8eoVqfWYVTputGU1hC4/r3vsWzd7Cja" +
+                    "+REwmjmPloMPrP1W1lfr1Duha3i4ZR9ozP2Kh79mnyzAFkvj40" +
+                    "MTyMa+xH1vUcom92DP0/14k2PftTCL8+M35tC48XmBjlkolHua" +
+                    "Kw9bUW6643MNrsFnRv4R1J7Lk3MdwWHh/A97o+aqF7nmB7AM80" +
+                    "+8NflGqKV+aaS94gY8875f8zH8FgdHwCf/rAaQ==");
                 
                 byte[] buffer = new byte[uncompressedBytes];
                 Inflater inflater = new Inflater();
@@ -3549,16 +4102,62 @@ public final class Lexer implements ILexer
             }
         }
 
+        protected static int[][] value3 = null;
+
+        protected static void value3Init()
+        {
+            try
+            {
+                final int rows = 17;
+                final int cols = 41;
+                final int compressedBytes = 115;
+                final int uncompressedBytes = 2789;
+                
+                byte[] decoded = new byte[compressedBytes];
+                base64Decode(decoded,
+                    "eNr7/594wDAXBLGJYUKgzDyIPKoaxoO4dKDrJw9Qw424IeOhwe" +
+                    "NGxsNDNxwH1o2MR/HE8AkweXawhSPjsSGbZ46PpkdK3ch4cjC6" +
+                    "kfHU4AxHxtNDOq7PjJbhZJSP54Zs+Xh+UOSZC0M5z+B3IwMADk" +
+                    "DsLQ==");
+                
+                byte[] buffer = new byte[uncompressedBytes];
+                Inflater inflater = new Inflater();
+                inflater.setInput(decoded, 0, compressedBytes);
+                inflater.inflate(buffer);
+                inflater.end();
+                
+                value3 = new int[rows][cols];
+                for (int index = 0; index < uncompressedBytes-1; index += 4)
+                {
+                    int byte1 = 0x000000FF & (int)buffer[index + 0];
+                    int byte2 = 0x000000FF & (int)buffer[index + 1];
+                    int byte3 = 0x000000FF & (int)buffer[index + 2];
+                    int byte4 = 0x000000FF & (int)buffer[index + 3];
+                    
+                    int element = index / 4;
+                    int row = element / cols;
+                    int col = element % cols;
+                    value3[row][col] = byte1 << 24 | byte2 << 16 | byte3 << 8 | byte4;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Error(e);
+            }
+        }
+
         protected static int lookupValue(int row, int col)
         {
             if (row <= 119)
                 return value[row][col];
             else if (row >= 120 && row <= 239)
                 return value1[row-120][col];
-            else if (row >= 240)
+            else if (row >= 240 && row <= 359)
                 return value2[row-240][col];
+            else if (row >= 360)
+                return value3[row-360][col];
             else
-                throw new IllegalArgumentException("Unexpected location requested in value2 lookup");
+                throw new IllegalArgumentException("Unexpected location requested in value3 lookup");
         }
 
         static
@@ -3567,6 +4166,7 @@ public final class Lexer implements ILexer
             valueInit();
             value1Init();
             value2Init();
+            value3Init();
         }
     }
 
@@ -3803,7 +4403,24 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_ATOMIC,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_AUTO,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_BIND,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_CACHE,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_CAPTURE,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -3836,6 +4453,15 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_DEFAULT,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_DELETE,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_DEVICE,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -3849,6 +4475,14 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_DEVICEPTR,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_ENTER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_EXIT,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -3896,6 +4530,9 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_LINK,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_LOOP,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -3903,6 +4540,13 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_MIN,
         Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_NOHOST,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_NONE,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -3972,6 +4616,8 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_READ,
+        Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -3980,12 +4626,24 @@ public final class Lexer implements ILexer
         Terminal.LITERAL_STRING_REDUCTION,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_ROUTINE,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_SELF,
         Terminal.LITERAL_STRING_SEQ,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_SIZEOF,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_TILE,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
@@ -4023,6 +4681,10 @@ public final class Lexer implements ILexer
         Terminal.IDENTIFIER,
         Terminal.IDENTIFIER,
         Terminal.LITERAL_STRING_WORKER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.IDENTIFIER,
+        Terminal.LITERAL_STRING_WRITE,
         Terminal.LITERAL_STRING_VBAR,
         Terminal.LITERAL_STRING_VBAR_VBAR,
         Terminal.LITERAL_STRING_TILDE,

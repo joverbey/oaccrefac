@@ -9,7 +9,6 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizard;
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceDataConstructRefactoring;
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopTilingRefactoring;
 
 @SuppressWarnings("restriction")
 public class IntroduceDataConstructDelegate extends RefactoringActionDelegate {
@@ -25,7 +24,7 @@ public class IntroduceDataConstructDelegate extends RefactoringActionDelegate {
             throw new ClassCastException("Refactoring not IntroduceDataConstructRefactoring!");
         
         IntroduceDataConstructRefactoring refac = (IntroduceDataConstructRefactoring) refactoring;
-        LoopRefactoringWizard wiz = new LoopRefactoringWizard(refac, "Introduce Data Construct Refactoring");
+        LoopRefactoringWizard wiz = new LoopRefactoringWizard(refac, "Introduce Default None Refactoring");
         return wiz;
     }
 

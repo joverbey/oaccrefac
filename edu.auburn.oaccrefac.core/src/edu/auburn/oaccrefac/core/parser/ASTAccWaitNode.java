@@ -23,6 +23,7 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
     Token hiddenLiteralStringLparen; // in ASTAccWaitNode
     IConstantExpression waitParameter; // in ASTAccWaitNode
     Token hiddenLiteralStringRparen; // in ASTAccWaitNode
+    IASTListNode<ASTAccWaitClauseListNode> accWaitClauseList; // in ASTAccWaitNode
 
     public Token getPragmaAcc()
     {
@@ -48,6 +49,18 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
     }
 
 
+    public IASTListNode<ASTAccWaitClauseListNode> getAccWaitClauseList()
+    {
+        return this.accWaitClauseList;
+    }
+
+    public void setAccWaitClauseList(IASTListNode<ASTAccWaitClauseListNode> newValue)
+    {
+        this.accWaitClauseList = newValue;
+        if (newValue != null) newValue.setParent(this);
+    }
+
+
     @Override
     public void accept(IASTVisitor visitor)
     {
@@ -58,7 +71,7 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
 
     @Override protected int getNumASTFields()
     {
-        return 5;
+        return 6;
     }
 
     @Override protected IASTNode getASTField(int index)
@@ -70,6 +83,7 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
         case 2:  return this.hiddenLiteralStringLparen;
         case 3:  return this.waitParameter;
         case 4:  return this.hiddenLiteralStringRparen;
+        case 5:  return this.accWaitClauseList;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }
@@ -83,6 +97,7 @@ public class ASTAccWaitNode extends ASTNode implements IAccConstruct
         case 2:  this.hiddenLiteralStringLparen = (Token)value; if (value != null) value.setParent(this); return;
         case 3:  this.waitParameter = (IConstantExpression)value; if (value != null) value.setParent(this); return;
         case 4:  this.hiddenLiteralStringRparen = (Token)value; if (value != null) value.setParent(this); return;
+        case 5:  this.accWaitClauseList = (IASTListNode<ASTAccWaitClauseListNode>)value; if (value != null) value.setParent(this); return;
         default: throw new IllegalArgumentException("Invalid index");
         }
     }

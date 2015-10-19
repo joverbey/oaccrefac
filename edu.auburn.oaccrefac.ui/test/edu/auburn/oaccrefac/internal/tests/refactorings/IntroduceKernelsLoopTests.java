@@ -22,14 +22,14 @@ import org.junit.runners.Parameterized.Parameters;
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceKernelsLoopRefactoring;
 
 @RunWith(Parameterized.class)
-public class IntroduceKernelsLoopTest extends RefactoringTest<IntroduceKernelsLoopRefactoring> {
+public class IntroduceKernelsLoopTests extends RefactoringTest<IntroduceKernelsLoopRefactoring> {
 
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
         return generateParameters("testcode/IntroduceKernelsLoop");
     }
 
-    public IntroduceKernelsLoopTest(String description, File fileContainingMarker, int markerOffset, String markerText)
+    public IntroduceKernelsLoopTests(String description, File fileContainingMarker, int markerOffset, String markerText)
             throws Exception {
         super(IntroduceKernelsLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }

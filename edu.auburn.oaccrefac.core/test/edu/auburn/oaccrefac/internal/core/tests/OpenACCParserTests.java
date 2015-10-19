@@ -291,11 +291,39 @@ public class OpenACCParserTests {
             "//#pragma acc update host(u1_real,u1_imag)", //
     };
 
+    private String[] version20Pragmas = { //
+            "#pragma acc parallel default(none)", //
+            "#pragma acc kernels default(none)", //
+            "#pragma acc parallel loop default(none)", //
+            "#pragma acc kernels loop default(none)", //
+            "#pragma acc parallel wait(var)", //
+            "#pragma acc parallel wait(var1, var2)", //
+            "#pragma acc parallel wait(var1, 2)", //
+            "#pragma acc wait async(5)", //
+            "#pragma acc wait async(var)", //
+            "#pragma acc enter data copyin(CG[0:n*n]), present_or_copyin(A[0:n*n], B[0:n*n])", //
+            "#pragma acc exit data copyout(CG[0:n*n]), delete(A[0:n*n], B[0:n*n])", //
+            "#pragma acc declare link(a)", //
+            "#pragma acc loop tile(3, 5)", //
+            "#pragma acc parallel loop tile(3, 5)", //
+            "#pragma acc kernels loop tile(3, 5)", //
+            "#pragma acc loop auto", //
+            "#pragma acc parallel loop auto", //
+            "#pragma acc kernels loop auto", //
+            "#pragma acc update self(a)", //
+            "#pragma acc atomic", //
+            "#pragma acc atomic read", //
+            "#pragma acc atomic write", //
+            "#pragma acc atomic update", //
+            "#pragma acc atomic capture", //
+    };
+
     @Test
     public void testOpenACCPragmas() throws IOException, SyntaxException, Exception {
         test(epccPragmas);
         test(openaccExamplePragmas);
         test(npbPragmas);
+        test(version20Pragmas);
     }
 
     private void test(String[] pragmas) throws Exception {

@@ -66,6 +66,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         this.rewriter = rewriter;
         this.src = null;
         this.srcOffset = 0;
+        this.check = check;
 
         if (this.rewriter == null) {
             throw new IllegalArgumentException("Rewriter cannot be null!");
@@ -268,9 +269,11 @@ public abstract class SourceAlteration<T extends Check<?>> {
      * actually occur
      */
     public final void finalizeChanges() {
-        TextEditGroup teg = new TextEditGroup("teg");
-        teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, ASTUtil.format(getCurrentText())));
-        rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
+        if (getCurrentText() != null) {
+            TextEditGroup teg = new TextEditGroup("teg");
+            teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, ASTUtil.format(getCurrentText())));
+            rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
+        }
     }
     
     public IASTTranslationUnit getTranslationUnit() {
