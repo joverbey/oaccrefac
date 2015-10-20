@@ -164,7 +164,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final String pragma(String code) {
-        return " " + PRAGMA + " " + code.trim() + " ";
+        return " " + PRAGMA + " " + code.trim();
     }
     
     protected final String copyin(String... vars) {
@@ -176,7 +176,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
             separator = COMMA;
         }
         sb.append(RPAREN);
-        sb.append(" ");
         return sb.toString();
     }
     
@@ -189,7 +188,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
             separator = COMMA;
         }
         sb.append(RPAREN);
-        sb.append(" ");
         return sb.toString();
     }
 

@@ -44,8 +44,14 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
         }
         StringBuilder replacement = new StringBuilder();
         replacement.append(pragma("acc data"));
-        replacement.append(copyin.isEmpty() ? "" : copyin(copyinStr));
-        replacement.append(copyout.isEmpty() ? "" : copyout(copyoutStr));
+        if(!copyin.isEmpty()) {
+            replacement.append(" ");
+            replacement.append(copyin(copyinStr));
+        }
+        if(!copyout.isEmpty()) {
+            replacement.append(" ");
+            replacement.append(copyout(copyoutStr));
+        }
         replacement.append(System.lineSeparator());
         replacement.append(compound(decompound(origRegion)));
         this.replace(getOffset(), getLength(), replacement.toString());
