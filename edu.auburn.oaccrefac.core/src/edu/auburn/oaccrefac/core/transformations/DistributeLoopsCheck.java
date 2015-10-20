@@ -15,7 +15,10 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.core.dependence.DependenceType;
+import edu.auburn.oaccrefac.core.dependence.Direction;
 
 public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
@@ -27,17 +30,30 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
     public void doLoopFormCheck(RefactoringStatus status) {
         // If the loop doesn't have children, bail.
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {
-            status.addFatalError("Body does not have any statements, so loop fission is useless.");
+            status.addFatalError("Body is not compound, so fission cannot be performed.");
+            return;
         }
 
         if (loop.getBody().getChildren().length < 2) {
-            status.addFatalError("Loop fission refactoring requires more than one statement.");
+            status.addFatalError("Fission requires more than one statement.");
+            return;
         }
     }
 
     @Override
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
-        //TODO figure out how to do this dependence analysis
+        for (DataDependence d : dep.getDependences()) {
+            // if there is a loop-carried anti-dependence in the less-than direction
+            if (d.isLoopCarried()
+                    && (d.getDirectionVector()[d.getLevel() - 1] == Direction.LT
+                            || d.getDirectionVector()[d.getLevel() - 1] == Direction.LE)
+                    && d.getType() == DependenceType.ANTI) {
+
+                status.addError("A dependence in the loops is fission-preventing");
+
+            }
+
+        }
     }
     
 }
