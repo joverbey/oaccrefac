@@ -58,6 +58,41 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
             return;
         }
+ 
+        // OpenACC pragmas do not need to be checked for on either loop because
+        //
+        // Outer loop carries dependence:
+        //
+        // do i = 1, 10
+        //     parallel do j = 1, 10
+        //         a[i][j] = a[i-1][j]    ; Carried by i-loop
+        //
+        // If the outer loop carries the dependence, and the loops are 
+        // interchanged, then the j-loop will still run in parallel, which
+        // is fine because the i-loop carries the dependence and it is still
+        // not parallel.
+        //
+        // Inner loop carries dependence:
+        //
+        // parallel do i = 1, 10
+        //     do j = 1, 10
+        //         a[i][j] = a[i][j-1]    ; Carried by j-loop
+        //
+        // If the inner loop carries the dependence, and the loops are 
+        // interchanged, hen the i-loop will still run in parallel, which
+        // is fine because the j-loop carries the dependence and it is still
+        // not parallel.
+        //
+        // If both carry dependence:
+        //
+        // There are no pragmas anyways in this case, so they don't need to be
+        // investigated.
+        //
+        // If both have pragmas:
+        //
+        // Interchange is fine in all cases because neither loop carries a 
+        // dependence.
+        
     }
 
     @Override
