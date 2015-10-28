@@ -3,7 +3,7 @@ int main() {
 
 	int a = 0;
 
-	for (int i = 0; i < 100; i++) { /*<<<<< 6,1,9,1,fail */
+	for (int i = 0; i < 100; i++) { /*<<<<< 6,5,9,1,fail */
 		a = 10;
 	}
 

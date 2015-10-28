@@ -75,7 +75,10 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     public void doLoopFormCheck(RefactoringStatus status) {
         if (second == null) {
             status.addFatalError("There is no for loop for fusion to be possible.");
+            return;
         }
+        //breaks test 02 because only one loop
+        checkPragma(status);
     }
   
     @Override
@@ -135,4 +138,23 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
                 (ASTUtil.isAncestorOf(l1, s2) && ASTUtil.isAncestorOf(l2, s1));
     }
     
+    private void checkPragma(RefactoringStatus status) {
+        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
+        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
+        if(comparePragma() && (loop1.getPragmas().length != 0 && loop2.getPragmas().length != 0 || loop1.getPragmas().length != loop2.getPragmas().length)) {
+                    status.addFatalError("When a loop has a pragma associated with it, it cannot be fused unless both loops have identical pragmas.");
+        }
+    }
+    
+    //if both pragmas are not identical returns true
+    private boolean comparePragma(){
+        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
+        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
+        String loop1String;
+        String loop2String;
+        loop1String = Arrays.toString(loop1.getPragmas());
+        loop2String = Arrays.toString(loop2.getPragmas());
+        boolean loopBool = !loop1String.equals(loop2String); 
+        return loopBool;
+    }
 }

@@ -34,11 +34,11 @@ import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
  * 
  * (Example taken from Wikipedia's web page on loop Fission.)
  */
-public class LoopFissionRefactoring extends ForLoopRefactoring {
+public class DistributeLoopsRefactoring extends ForLoopRefactoring {
 
     private DistributeLoopsCheck check;
     
-    public LoopFissionRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public DistributeLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 

@@ -18,19 +18,19 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 import edu.auburn.oaccrefac.internal.ui.LoopRefactoringWizard;
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFissionRefactoring;
+import edu.auburn.oaccrefac.internal.ui.refactorings.DistributeLoopsRefactoring;
 
 @SuppressWarnings("restriction")
-public class LoopFissionDelegate extends RefactoringActionDelegate {
+public class DistributeLoopsDelegate extends RefactoringActionDelegate {
     
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new LoopFissionRefactoring(wc, selection, project);
+        return new DistributeLoopsRefactoring(wc, selection, project);
     }
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopFissionRefactoring))
+        if (!(refactoring instanceof DistributeLoopsRefactoring))
             throw new ClassCastException("Refactoring not LoopFissionRefactoring!");
         LoopRefactoringWizard tomRiddle = 
                 new LoopRefactoringWizard(refactoring, "LoopFissionRefactoring");

@@ -14,6 +14,9 @@ package edu.auburn.oaccrefac.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
+
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fission refactoring algorithm. Loop fission takes
  * the body of a for-loop and splits the statements into separate for-loops with the same header, if possible.
@@ -59,7 +62,7 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         String init = this.getLoopToChange().getInitializerStatement().getRawSignature();
         String cond = this.getLoopToChange().getConditionExpression().getRawSignature();
         String incr = this.getLoopToChange().getIterationExpression().getRawSignature();
-
+        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(getLoopToChange());
         // Remove the old loop from the statement list
         this.remove(getLoopToChange());
 
@@ -69,7 +72,11 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         // For each child, create new for loop with same header and child as body
         IASTStatement[] stmts = body.getStatements();
         int offset = this.getLoopToChange().getFileLocation().getNodeOffset();
+        
         for (int i = stmts.length - 1; i >= 0; i--) {
+            if(loop.getPragmas().length != 0){
+                this.insert(offset, pragma("acc parallel loop"));
+            }
             this.insert(offset, forLoop(init, cond, incr, compound(stmts[i].getRawSignature())));
         }
 
