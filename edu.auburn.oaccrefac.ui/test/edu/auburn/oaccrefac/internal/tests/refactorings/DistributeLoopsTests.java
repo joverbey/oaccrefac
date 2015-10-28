@@ -16,16 +16,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFissionRefactoring;
+import edu.auburn.oaccrefac.internal.ui.refactorings.DistributeLoopsRefactoring;
 
 @RunWith(Parameterized.class)
-public class LoopFissionTests extends RefactoringTest<LoopFissionRefactoring> {
+public class DistributeLoopsTests extends RefactoringTest<DistributeLoopsRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/LoopFission");
+        return generateParameters("testcode/DistributeLoops");
     }
 
-    public LoopFissionTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(LoopFissionRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public DistributeLoopsTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(DistributeLoopsRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 }

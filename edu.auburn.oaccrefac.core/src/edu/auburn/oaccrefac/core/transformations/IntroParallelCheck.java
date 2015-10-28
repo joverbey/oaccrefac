@@ -15,6 +15,8 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public class IntroParallelCheck extends ForLoopCheck<RefactoringParams> {
 
@@ -24,13 +26,20 @@ public class IntroParallelCheck extends ForLoopCheck<RefactoringParams> {
 
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
-      //TODO: Check for existing/conflicting OpenACC pragma
+        checkPragma(status);
     }
 
     @Override
     public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
         if (dep != null && dep.hasLevel1CarriedDependence()) {
             status.addError("This loop cannot be parallelized because it carries a dependence.");
+        }
+    }
+    
+    private void checkPragma(RefactoringStatus status) {
+        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(loop);
+        if(loop1.getPragmas().length != 0) {
+            status.addFatalError("When a loop has a pragma associated with it, it cannot have another pragma added to it.");
         }
     }
 

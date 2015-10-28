@@ -4,7 +4,7 @@ int main() {
 	int a = 0;
 	int b = 10;
 
-	for (int i = 0; i < 100; i++) { /*<<<<< 6,1,12,1,fail */
+	for (int i = 0; i < 100; i++) { /*<<<<< 7,5,12,1,fail */
 		a = 10;
 		a++;
 		b = a;

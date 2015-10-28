@@ -34,6 +34,8 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fusion refactoring algorithm. Loop fusion takes the
@@ -113,7 +115,13 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         }
 
         body = compound(body);
-
+        // remove second pragma if loops are matching
+        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
+        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
+        if(loop1.getPragmas() == loop2.getPragmas()){
+            removePragma(second);
+        }
+        
         this.replace(first, forLoop(first.getInitializerStatement(), first.getConditionExpression(), first.getIterationExpression(), body));
 
 //        for (int i = getBodyObjects(first).length - 1; i >= 0; i--) {
@@ -173,7 +181,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
             }
         }
         Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
-
+        
         return objects.toArray(new IASTNode[objects.size()]);
 
     }
@@ -265,6 +273,15 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         Collections.sort(refsToMod, ASTUtil.REVERSE_COMPARATOR);
 
         return refsToMod.toArray(new IASTName[refsToMod.size()]);
+    }
+    private void removePragma(IASTForStatement loopIn){
+        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loopIn);
+        List<IASTPreprocessorPragmaStatement> list = loop.getLeadingPragmas();
+        int lineNumber = loop.getStatement().getFileLocation().getStartingLineNumber();
+        remove(loop.getStatement().getFileLocation().getNodeOffset() - 1, loop.getStatement().getFileLocation().getNodeLength());
+        /*        for (int i = 0; i < list.size(); i++){
+            remove(list.get(i));
+        }*/
     }
 
 }

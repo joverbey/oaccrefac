@@ -19,6 +19,8 @@ import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceType;
 import edu.auburn.oaccrefac.core.dependence.Direction;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
+import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
@@ -52,7 +54,13 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
                 status.addError("A dependence in the loops is fission-preventing");
 
             }
-
+        }
+        checkPragma(status);
+    }
+    private void checkPragma(RefactoringStatus status) {
+        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(loop);
+        if(loop1.getPragmas().length != 0) {
+            status.addFatalError("When a loop has a pragma associated with it, it cannot have another pragma added to it.");
         }
     }
     
