@@ -40,6 +40,7 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
             status.addFatalError("Fission requires more than one statement.");
             return;
         }
+        checkPragma(status);
     }
 
     @Override
@@ -51,16 +52,15 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
                             || d.getDirectionVector()[d.getLevel() - 1] == Direction.LE)
                     && d.getType() == DependenceType.ANTI) {
 
-                status.addError("A dependence in the loops is fission-preventing");
+                status.addError("A dependence in the loops is distribute-preventing");
 
             }
         }
-        checkPragma(status);
     }
     private void checkPragma(RefactoringStatus status) {
         ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(loop);
         if(loop1.getPragmas().length != 0) {
-            status.addFatalError("When a loop has a pragma associated with it, it cannot have another pragma added to it.");
+            status.addFatalError("When a loop has a pragma associated with it, it cannot have another pragma attatched to it.");
         }
     }
     
