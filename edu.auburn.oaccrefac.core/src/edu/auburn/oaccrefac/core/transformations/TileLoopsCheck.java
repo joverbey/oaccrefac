@@ -48,6 +48,12 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
     
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
+    	
+    	// Presence of a openacc pragma doesn't influence whether or not  
+    	// tiling can be performed. This is because for tiling cutting to be 
+    	// performed, each loop iteration must be independent from another.
+    	// If this is the case, then sections of the iterations will also be 
+    	// independent, meaning they are still parellelizable.
         
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
 

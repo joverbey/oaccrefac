@@ -8,6 +8,7 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
+ *     John William O'Rourke (Auburn) - openacc Awareness
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
@@ -25,6 +26,13 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
 
     @Override
     protected void doParameterCheck(RefactoringStatus status, StripMineParams params) {
+    	
+    	// Presence of a openacc pragma doesn't influence whether or not strip 
+    	// mining can be performed. This is because for strip mining to be 
+    	// performed, each loop iteration must be independent from another.
+    	// If this is the case, then sections of the iterations will also be 
+    	// independent, meaning they are still parellelizable.
+    	
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.loop);
 
         // Check strip factor validity...
@@ -48,6 +56,7 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
                     + "divisible by the intended loop's iteration factor.");
             return;
         }
+        
     }
     
     
