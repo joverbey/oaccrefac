@@ -48,14 +48,17 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
     
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
-    	
-    	// Presence of a openacc pragma doesn't influence whether or not  
-    	// tiling can be performed. This is because for tiling cutting to be 
-    	// performed, each loop iteration must be independent from another.
-    	// If this is the case, then sections of the iterations will also be 
-    	// independent, meaning they are still parellelizable.
         
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
+        
+        // For now, we will disallow pragmas on loops to be tiled. This is 
+        // of complexity in placing the pragma on any of the four loops 
+        // created by tiling. Some dependencies that are allowed with tiling
+        // are not allowed by pragmas.
+        
+        if (inq.getPragmas().length > 0) {
+            status.addError("This loop contains an ACC pragma.");
+        }
 
         if (!inq.isPerfectLoopNest()) {
             status.addFatalError("Only perfectly nested loops can be tiled.");
