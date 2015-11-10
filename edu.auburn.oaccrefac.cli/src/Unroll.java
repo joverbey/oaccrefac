@@ -10,6 +10,7 @@ import edu.auburn.oaccrefac.core.transformations.UnrollLoopParams;
  * Command line driver to unroll a loop.
  */
 public class Unroll extends Main<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
+    
     public static void main(String[] args) {
         new Unroll().run(args);
     }
@@ -34,7 +35,7 @@ public class Unroll extends Main<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAl
     }
 
     private void printUsage() {
-        System.err.println("Usage: unroll <filename.c> <factor>");
+        System.err.println("Usage: Unroll <filename.c> <factor>");
     }
 
     @Override
@@ -51,4 +52,5 @@ public class Unroll extends Main<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAl
     protected UnrollLoopAlteration createAlteration(IASTRewrite rewriter, UnrollLoopCheck check) throws CoreException {
         return new UnrollLoopAlteration(rewriter, unrollFactor, check);
     }
+    
 }
