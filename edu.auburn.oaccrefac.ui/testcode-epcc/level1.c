@@ -227,7 +227,7 @@ double threemm(){
   }
 
   /* F := C*D */
-  for (i = 0; i < n; i++) { /*<<<<< 230, 1, 237, 4, loopouter*/
+  for (i = 0; i < n; i++) { /*<<<<< 230, 1, 237, 4, loop8outer*/
     for (j = 0; j < n; j++) { /*<<<<< 231, 1, 236, 6, loop8inner*/
       F[i*n+j] = 0;
       for (k = 0; k < n; k++){ /*<<<<< 233, 1, 235, 8, loop8inner2*/
