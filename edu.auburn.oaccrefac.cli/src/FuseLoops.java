@@ -12,7 +12,7 @@ import edu.auburn.oaccrefac.core.transformations.FuseLoopsAlteration;
 public class FuseLoops extends Main<RefactoringParams, FuseLoopsCheck, FuseLoopsAlteration> {
     
     public static void main(String[] args) {
-        new IntroduceKernelsLoop().run(args);
+        new FuseLoops().run(args);
     }
 
     @Override
