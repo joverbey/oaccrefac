@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.core.dataflow;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,6 +9,13 @@ import java.util.Set;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
+/**
+ * Reaching definitions entry/exit set for a block. Essentially a mapping of variables to sets of statements
+ * that generated a definition that may reach that block's entry/exit. 
+ * 
+ * @author alexander
+ *
+ */
 public class RDVarSet {
 
     private Map<IBinding, Set<IASTStatement>> set;
@@ -32,6 +40,10 @@ public class RDVarSet {
             }
             set.get(var).removeAll(definitions.get(var));
         }
+    }
+    
+    public void killAll(IBinding var) {
+        set.put(var, new HashSet<IASTStatement>());
     }
 
     /**
@@ -58,6 +70,27 @@ public class RDVarSet {
     
     public Set<IASTStatement> get(IBinding var) {
         return set.get(var);
+    }
+    
+    public Map<IBinding, Set<IASTStatement>> getMap() {
+        return Collections.unmodifiableMap(set);
+    }
+    
+    public boolean isEmpty() {
+        return set.isEmpty();
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        for(IBinding binding : set.keySet()) {
+            for(IASTStatement stmt : set.get(binding)) {
+                sb.append("(" + binding + ", " + stmt.getFileLocation().getStartingLineNumber() + ") ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
 }
