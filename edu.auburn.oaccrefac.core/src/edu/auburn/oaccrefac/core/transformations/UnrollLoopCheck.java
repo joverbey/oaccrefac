@@ -71,6 +71,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
             status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
             return;
         }
+
     }
 
     @Override
@@ -78,6 +79,14 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
         // Check unroll factor validity...
         if (params.getUnrollFactor() <= 0) {
             status.addFatalError("Invalid loop unroll factor! (<= 0)");
+            return;
+        }
+        
+        // If we are unrolling more than the number of times the loop will 
+        // run (upper bound - lower bound), we can't do the refactoring.
+        long loopRunTimes = upperBound.longValue() - InquisitorFactory.getInquisitor(loop).getLowerBound().longValue();
+        if (params.getUnrollFactor() > loopRunTimes) {
+            status.addFatalError("Can't unroll loop more times than the loop runs!");
             return;
         }
     }

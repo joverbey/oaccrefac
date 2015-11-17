@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     John William O'Rourke (Auburn) - initial API and implementation
+ *******************************************************************************/
+
 /*
  * Runner class for all other refactorings from command line.
  */
@@ -23,42 +34,40 @@ public class Refactor {
             System.err.println("TileLoops");
             System.err.println("Unroll");
         } else {
+            // Find way to get rid of this warning
+            Main refactoring = getMain(args[0]);
             String[] refactoringArgs = new String[args.length - 1];
             for (int i = 1; i < args.length; i++) {
                 refactoringArgs[i-1] = args[i];
             }
-            switch (args[0]) {
-            case "DistributeLoops":
-                new DistributeLoops().run(refactoringArgs);
-                break;
-            case "FuseLoops":
-                new FuseLoops().run(refactoringArgs);
-                break;
-            case "InterchangeLoops":
-                new InterchangeLoops().run(refactoringArgs);
-                break;
-            case "IntroduceDefaultNone":
-                // new IntroduceDefaultNone(); Has different constructor
-                break;
-            case "IntroduceKernelsLoop":
-                new IntroduceKernelsLoop().run(refactoringArgs);
-                break;
-            case "IntroduceParallelLoop":
-                new IntroduceParallelLoop().run(refactoringArgs);
-                break;
-            case "LoopCutting":
-                new LoopCutting().run(refactoringArgs);
-                break;
-            case "StripMine":
-                new StripMine().run(refactoringArgs);
-                break;
-            case "TileLoops":
-                new TileLoops().run(refactoringArgs);;
-                break;
-            case "Unroll":
-                new Unroll().run(refactoringArgs);
-                break;
-            }
+            refactoring.run(refactoringArgs);
+        }
+    }
+    
+    private Main getMain(String refactoringName) {
+        switch (refactoringName) {
+        case "DistributeLoops":
+            return new DistributeLoops();
+        case "FuseLoops":
+            return new FuseLoops();
+        case "InterchangeLoops":
+            return new InterchangeLoops();
+        case "IntroduceDefaultNone":
+            return new IntroduceDefaultNone();
+        case "IntroduceKernelsLoop":
+            return new IntroduceKernelsLoop();
+        case "IntroduceParallelLoop":
+            return new IntroduceParallelLoop();
+        case "LoopCutting":
+            return new LoopCutting();
+        case "StripMine":
+            return new StripMine();
+        case "TileLoops":
+            return new TileLoops();
+        case "Unroll":
+            return new Unroll();
+        default:
+            return null;
         }
     }
 

@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,6 +8,7 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *******************************************************************************/
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
