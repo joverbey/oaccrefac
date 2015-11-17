@@ -2,22 +2,30 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
-import edu.auburn.oaccrefac.core.transformations.IntroduceKernelsLoopCheck;
-import edu.auburn.oaccrefac.core.transformations.IntroduceKernelsLoopAlteration;
+import edu.auburn.oaccrefac.core.transformations.StripMineParams;
+import edu.auburn.oaccrefac.core.transformations.StripMineCheck;
+import edu.auburn.oaccrefac.core.transformations.StripMineAlteration;
 
 /**
- * Command line driver to introduce a kernels loop.
+ * Command line driver to strip mine.
  */
-public class IntroduceKernelsLoop extends Main<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
+public class StripMine extends Main<StripMineParams, StripMineCheck, StripMineAlteration> {
     
     public static void main(String[] args) {
-        new IntroduceKernelsLoop().run(args);
+        new StripMine().run(args);
     }
 
+    private int stripFactor = 0;
+    
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
+            printUsage();
+            return false;
+        }
+        try {
+            stripFactor = Integer.parseInt(args[1]);
+        } except (NumberFormatException e) {
             printUsage();
             return false;
         }
@@ -25,23 +33,22 @@ public class IntroduceKernelsLoop extends Main<RefactoringParams, IntroduceKerne
     }
 
     private void printUsage() {
-        System.err.println("Usage: IntroduceKernelsLoop <filename.c>");
+        System.err.println("Usage: StripMine <filename.c> <strip_factor>");
     }
 
     @Override
-    protected IntroduceKernelsLoopCheck createCheck(IASTForStatement loop) {
-        return new IntroduceKernelsLoopCheck(loop);
+    protected StripMineCheck createCheck(IASTForStatement loop) {
+        return new StripMineCheck(loop);
     }
 
     @Override
-    protected RefactoringParams createParams(IASTForStatement forLoop) {
-        // RefactoringParams is abstract
-        return null;
+    protected StripMineParams createParams(IASTForStatement forLoop) {
+        return new StripMineParams(stripFactor);
     }
 
     @Override
-    protected IntroduceKernelsLoopAlteration createAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check) throws CoreException {
-        return new IntroduceKernelsLoopAlteration(rewriter, check);
+    protected StripMineAlteration createAlteration(IASTRewrite rewriter, StripMineCheck check) throws CoreException {
+        return new StripMineAlteration(rewriter, stripFactor, check);
     }
     
 }

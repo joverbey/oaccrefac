@@ -2,22 +2,33 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
-import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
-import edu.auburn.oaccrefac.core.transformations.IntroduceKernelsLoopCheck;
-import edu.auburn.oaccrefac.core.transformations.IntroduceKernelsLoopAlteration;
+import edu.auburn.oaccrefac.core.transformations.TileLoopsParams;
+import edu.auburn.oaccrefac.core.transformations.TileLoopsCheck;
+import edu.auburn.oaccrefac.core.transformations.TileLoopsAlteration;
 
 /**
- * Command line driver to introduce a kernels loop.
+ * Command line driver to tile loops.
  */
-public class IntroduceKernelsLoop extends Main<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
+public class TileLoops extends Main<TileLoopsParams, TileLoopsCheck, TileLoopsAlteration> {
     
     public static void main(String[] args) {
-        new IntroduceKernelsLoop().run(args);
+        new TileLoops().run(args);
     }
 
+    private int width = 0;
+    
+    private int height = 0;
+    
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 1) {
+        if (args.length != 3) {
+            printUsage();
+            return false;
+        }
+        try {
+            width = Integer.parseInt(args[1]);
+            height = Integer.parseInt(args[2]);
+        } catch (NumberFormatException e) {
             printUsage();
             return false;
         }
@@ -25,23 +36,22 @@ public class IntroduceKernelsLoop extends Main<RefactoringParams, IntroduceKerne
     }
 
     private void printUsage() {
-        System.err.println("Usage: IntroduceKernelsLoop <filename.c>");
+        System.err.println("Usage: TileLoops <filename.c> <width> <height>");
     }
 
     @Override
-    protected IntroduceKernelsLoopCheck createCheck(IASTForStatement loop) {
-        return new IntroduceKernelsLoopCheck(loop);
+    protected TileLoopsCheck createCheck(IASTForStatement loop) {
+        return new TileLoopsCheck(loop);
     }
 
     @Override
-    protected RefactoringParams createParams(IASTForStatement forLoop) {
-        // RefactoringParams is abstract
-        return null;
+    protected TileLoopsParams createParams(IASTForStatement forLoop) {
+        return new TileLoopsParams(width, height);
     }
 
     @Override
-    protected IntroduceKernelsLoopAlteration createAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check) throws CoreException {
-        return new IntroduceKernelsLoopAlteration(rewriter, check);
+    protected TileLoopsAlteration createAlteration(IASTRewrite rewriter, TileLoopsCheck check) throws CoreException {
+        return new TileLoopsAlteration(rewriter, width, height, check);
     }
     
 }
