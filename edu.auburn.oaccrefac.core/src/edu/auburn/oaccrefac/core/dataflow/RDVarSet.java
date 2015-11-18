@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
@@ -18,10 +19,10 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
  */
 public class RDVarSet {
 
-    private Map<IBinding, Set<IASTStatement>> set;
+    private Map<IBinding, Set<IASTNode>> set;
 
     public RDVarSet() {
-        set = new HashMap<IBinding, Set<IASTStatement>>();
+        set = new HashMap<IBinding, Set<IASTNode>>();
     }
 
     /**
@@ -33,17 +34,17 @@ public class RDVarSet {
     public void subtract(RDVarSet definitions) {
         subtract(definitions.set);
     }
-    public void subtract(Map<IBinding, Set<IASTStatement>> definitions) {
+    public void subtract(Map<IBinding, Set<IASTNode>> definitions) {
         for (IBinding var : definitions.keySet()) {
             if(set.get(var) == null) {
-                set.put(var, new HashSet<IASTStatement>());
+                set.put(var, new HashSet<IASTNode>());
             }
             set.get(var).removeAll(definitions.get(var));
         }
     }
     
     public void killAll(IBinding var) {
-        set.put(var, new HashSet<IASTStatement>());
+        set.put(var, new HashSet<IASTNode>());
     }
 
     /**
@@ -55,24 +56,24 @@ public class RDVarSet {
     public void union(RDVarSet definitions) {
         union(definitions.set);
     }
-    public void union(Map<IBinding, Set<IASTStatement>> definitions) {
+    public void union(Map<IBinding, Set<IASTNode>> definitions) {
         for (IBinding var : definitions.keySet()) {
             if(set.get(var) == null) {
-                set.put(var, new HashSet<IASTStatement>());
+                set.put(var, new HashSet<IASTNode>());
             }
             set.get(var).addAll(definitions.get(var));
         }
     }
 
-    public void add(IBinding var, IASTStatement definition) {
+    public void add(IBinding var, IASTNode definition) {
         set.get(var).add(definition);
     }
     
-    public Set<IASTStatement> get(IBinding var) {
+    public Set<IASTNode> get(IBinding var) {
         return set.get(var);
     }
     
-    public Map<IBinding, Set<IASTStatement>> getMap() {
+    public Map<IBinding, Set<IASTNode>> getMap() {
         return Collections.unmodifiableMap(set);
     }
     
@@ -85,7 +86,7 @@ public class RDVarSet {
         StringBuilder sb = new StringBuilder();
         sb.append("[ ");
         for(IBinding binding : set.keySet()) {
-            for(IASTStatement stmt : set.get(binding)) {
+            for(IASTNode stmt : set.get(binding)) {
                 sb.append("(" + binding + ", " + stmt.getFileLocation().getStartingLineNumber() + ") ");
             }
         }

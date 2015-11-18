@@ -11,7 +11,6 @@
  ******************************************************************************/
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.CoreException;
@@ -19,11 +18,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import edu.auburn.oaccrefac.core.dataflow.OpenACCReachingDefinitions;
-import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
+import edu.auburn.oaccrefac.core.transformations.IntroParallelAlteration;
 import edu.auburn.oaccrefac.core.transformations.IntroParallelCheck;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
  * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.
@@ -47,15 +45,9 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-//        IntroParallelAlteration change = new IntroParallelAlteration(rewriter, check);
-//        change.change();
-        OpenACCReachingDefinitions x;
-        try {
-            x = new OpenACCReachingDefinitions(ASTUtil.findNearestAncestor(getLoop(), IASTFunctionDefinition.class));
-        } catch (DependenceTestFailure e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        IntroParallelAlteration change = new IntroParallelAlteration(rewriter, check);
+        change.change();
+        
     }
 
     @Override

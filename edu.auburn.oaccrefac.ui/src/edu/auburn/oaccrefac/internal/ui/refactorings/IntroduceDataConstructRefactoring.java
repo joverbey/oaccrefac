@@ -1,5 +1,6 @@
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.CoreException;
@@ -8,9 +9,12 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import edu.auburn.oaccrefac.core.dataflow.OpenACCReachingDefinitions;
+import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.IntroduceDataConstructAlteration;
 import edu.auburn.oaccrefac.core.transformations.IntroduceDataConstructCheck;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 @SuppressWarnings("restriction")
 public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
