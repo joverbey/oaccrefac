@@ -9,6 +9,7 @@ import java.util.Set;
 import org.eclipse.cdt.codan.core.model.cfg.IBasicBlock;
 import org.eclipse.cdt.codan.core.model.cfg.ICfgData;
 import org.eclipse.cdt.codan.core.model.cfg.IControlFlowGraph;
+import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -17,6 +18,7 @@ import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -24,10 +26,11 @@ import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 
 @SuppressWarnings("restriction")
-public class OpenACCReachingDefinitions { 
+public class ReachingDefinitions { 
 
     private IControlFlowGraph cfg;
     
@@ -35,12 +38,14 @@ public class OpenACCReachingDefinitions {
     private Map<IBasicBlock, RDVarSet> entrySets;
     private Map<IBasicBlock, RDVarSet> exitSets;
     
-    public OpenACCReachingDefinitions(IASTFunctionDefinition func) throws DependenceTestFailure {
+    public ReachingDefinitions(IASTFunctionDefinition func) throws DependenceTestFailure {
         this.cfg = new ControlFlowGraphBuilder().build(func);
         
         this.reachingDefs = new HashMap<VariableAccess, Set<IASTStatement>>();
         this.entrySets = new HashMap<IBasicBlock, RDVarSet>();
         this.exitSets = new HashMap<IBasicBlock, RDVarSet>();
+        
+//        System.out.println(ASTUtil.isNameInScope("a", func.getScope()));
         
         identifyReachingDefinitions(cfg);
         
@@ -48,13 +53,13 @@ public class OpenACCReachingDefinitions {
     
     private void identifyReachingDefinitions(IControlFlowGraph cfg) throws DependenceTestFailure {
         boolean changed;
-        for(IBasicBlock bb : cfg.getNodes()) {
-            System.out.println(bb);
-            System.out.println("Preds: ");
-            for(IBasicBlock pred : bb.getIncomingNodes()) {
-                System.out.println("\t" + pred);
-            }
-        }
+//        for(IBasicBlock bb : cfg.getNodes()) {
+//            System.out.println(bb);
+//            System.out.println("Preds: ");
+//            for(IBasicBlock pred : bb.getIncomingNodes()) {
+//                System.out.println("\t" + pred);
+//            }
+//        }
         do {
             changed = false;
             
@@ -99,19 +104,57 @@ public class OpenACCReachingDefinitions {
             }
             
         } while (changed);
+        return;
     }
     
     //FIXME finish this
-    public boolean reaches(IASTStatement definition, VariableAccess use) {
+    //use should be either an IASTStatement or an IASTExpression
+    public boolean reaches(IASTName definition, IASTNode use) {
+        IASTStatement defStmt = ASTUtil.findNearestAncestor(definition, IASTStatement.class);
+        IASTUnaryExpression defUnaryExpr = ASTUtil.findNearestAncestor(definition, IASTUnaryExpression.class);
+        IASTBinaryExpression defBinaryExpr = ASTUtil.findNearestAncestor(definition, IASTBinaryExpression.class);
+        if(!isDefinition(definition)) {
+            throw new IllegalArgumentException();
+        }
         for(IBasicBlock bb : entrySets.keySet()) {
             Object data = ((ICfgData) bb).getData();
-            if (data == null || !(data instanceof IASTNode)) {
-                return false;
+            if (data != null && data instanceof IASTNode && data.equals(use)) {
+                RDVarSet entrySetForBlock = entrySets.get(bb);
+                if(entrySetForBlock != null) {
+                    Set<IASTNode> defsOfDefThatReachBlock = entrySetForBlock.get(definition.resolveBinding());
+                    if(defsOfDefThatReachBlock != null) {
+                        /**
+                         * TODO add a check for scope here i.e., in: 
+                         * <code>
+                         * for(int i = 0; i < 10; i++) {
+                         *     for(int j = 0; j < 10; j++) {
+                         *     }
+                         * }
+                         * </code> 
+                         * the definition at <int j = 0> is said to reach the first line of the outer loop; the
+                         * CFG gives that impression, but scoping actually disallows this. 
+                         * 
+                         */
+                        return defsOfDefThatReachBlock.contains(defStmt) || 
+                                defsOfDefThatReachBlock.contains(defUnaryExpr) || 
+                                defsOfDefThatReachBlock.contains(defBinaryExpr);
+                    }
+                }
+                //If we get here, we found the right block for the given use, but either there is no
+                //entry set for it or there is no set of definitions that reach it. This should not
+                //be able to happen. 
+                throw new IllegalStateException();
             }
-            if(data.equals(use.getEnclosingStatement())) {
-                return entrySets.get(bb).get(use.getVariableName().resolveBinding()).contains(definition);
+            else {
+                //This block does not represent the given use node; keep looking
             }
         }
+        //The use node given is not represented by any block; it should be either an IASTStatement
+        //or, in a few cases, an IASTExpression
+        throw new IllegalArgumentException();
+    }
+    
+    private boolean isDefinition(IASTName name) {
         return true;
     }
     
