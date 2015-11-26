@@ -17,10 +17,7 @@ import edu.auburn.oaccrefac.core.transformations.UnrollLoopAlteration;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopCheck;
 import edu.auburn.oaccrefac.core.transformations.UnrollLoopParams;
 
-/**
- * Command line driver to unroll a loop.
- */
-public class Unroll extends Main<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
+public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
     
     public static void main(String[] args) {
         new Unroll().run(args);

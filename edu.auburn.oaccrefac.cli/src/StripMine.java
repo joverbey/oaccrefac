@@ -17,10 +17,7 @@ import edu.auburn.oaccrefac.core.transformations.StripMineParams;
 import edu.auburn.oaccrefac.core.transformations.StripMineCheck;
 import edu.auburn.oaccrefac.core.transformations.StripMineAlteration;
 
-/**
- * Command line driver to strip mine.
- */
-public class StripMine extends Main<StripMineParams, StripMineCheck, StripMineAlteration> {
+public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMineAlteration> {
     
     public static void main(String[] args) {
         new StripMine().run(args);

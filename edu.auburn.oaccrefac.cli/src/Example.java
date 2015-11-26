@@ -31,6 +31,8 @@ import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
+// File might not need to exist any more.
+
 /**
  * Example command line driver -- how to run a refactoring from the CLI.
  */

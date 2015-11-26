@@ -17,10 +17,7 @@ import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
 import edu.auburn.oaccrefac.core.transformations.IntroduceKernelsLoopCheck;
 import edu.auburn.oaccrefac.core.transformations.IntroduceKernelsLoopAlteration;
 
-/**
- * Command line driver to introduce a kernels loop.
- */
-public class IntroduceKernelsLoop extends Main<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
+public class IntroduceKernelsLoop extends LoopMain<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
     
     public static void main(String[] args) {
         new IntroduceKernelsLoop().run(args);

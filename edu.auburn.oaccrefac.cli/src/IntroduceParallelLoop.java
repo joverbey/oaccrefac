@@ -17,10 +17,7 @@ import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
 import edu.auburn.oaccrefac.core.transformations.IntroParallelCheck;
 import edu.auburn.oaccrefac.core.transformations.IntroParallelAlteration;
 
-/**
- * Command line driver to introduce a parallel loop.
- */
-public class IntroduceParallelLoop extends Main<RefactoringParams, IntroParallelCheck, IntroParallelAlteration> {
+public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroParallelCheck, IntroParallelAlteration> {
     
     public static void main(String[] args) {
         new IntroduceParallelLoop().run(args);

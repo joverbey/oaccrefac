@@ -17,10 +17,7 @@ import edu.auburn.oaccrefac.core.transformations.LoopCuttingParams;
 import edu.auburn.oaccrefac.core.transformations.LoopCuttingCheck;
 import edu.auburn.oaccrefac.core.transformations.LoopCuttingAlteration;
 
-/**
- * Command line driver to introduce a kernels loop.
- */
-public class LoopCutting extends Main<LoopCuttingParams, LoopCuttingCheck, LoopCuttingAlteration> {
+public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, LoopCuttingAlteration> {
     
     public static void main(String[] args) {
         new IntroduceKernelsLoop().run(args);

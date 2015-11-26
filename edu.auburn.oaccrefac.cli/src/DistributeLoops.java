@@ -18,14 +18,24 @@ import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.DistributeLoopsAlteration;
 
 /**
- * Command line driver to introduce a kernels loop.
+ * DistributeLoops performs the distribute loops refactoring.
  */
-public class DistributeLoops extends Main<RefactoringParams, DistributeLoopsCheck, DistributeLoopsAlteration> {
+public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoopsCheck, DistributeLoopsAlteration> {
     
+    /**
+     * main begins refactoring execution.
+     * 
+     * @param args Arguments to the refactoring.
+     */
     public static void main(String[] args) {
         new IntroduceKernelsLoop().run(args);
     }
 
+    /**
+     * checkArgs checks the arguments to the refactoring.
+     * 
+     * @param args Arguments to the refactoring.
+     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 1) {
@@ -35,21 +45,44 @@ public class DistributeLoops extends Main<RefactoringParams, DistributeLoopsChec
         return true;
     }
 
+    /**
+     * printUsage prints the usage of the refactoring.
+     */
     private void printUsage() {
         System.err.println("Usage: DistributeLoops <filename.c>");
     }
 
+    /**
+     * createCheck creates a DistributeLoopsCheck.
+     * 
+     * @param loop Loop to create the check for.
+     * @return Check to be performed on the loop.
+     */
     @Override
     protected DistributeLoopsCheck createCheck(IASTForStatement loop) {
         return new DistributeLoopsCheck(loop);
     }
-
+    
+    /**
+     * createParams creates generic RefactoringParams.
+     * 
+     * @param forLoop Not used.
+     * @return null because parameters are not used in this refactoring.
+     */
     @Override
     protected RefactoringParams createParams(IASTForStatement forLoop) {
         // RefactoringParams is abstract
         return null;
     }
 
+    /**
+     * createAlteration creates a DistributeLoopsAlteration.
+     * 
+     * @param reweriter Rewriter for the alteration.
+     * @param check Checker for the alteration.
+     * @return Alteration for the refactoring.
+     * @throws CoreException if creating the alteration fails.
+     */
     @Override
     protected DistributeLoopsAlteration createAlteration(IASTRewrite rewriter, DistributeLoopsCheck check) throws CoreException {
         return new DistributeLoopsAlteration(rewriter, check);

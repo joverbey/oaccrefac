@@ -17,10 +17,7 @@ import edu.auburn.oaccrefac.core.transformations.TileLoopsParams;
 import edu.auburn.oaccrefac.core.transformations.TileLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.TileLoopsAlteration;
 
-/**
- * Command line driver to tile loops.
- */
-public class TileLoops extends Main<TileLoopsParams, TileLoopsCheck, TileLoopsAlteration> {
+public class TileLoops extends LoopMain<TileLoopsParams, TileLoopsCheck, TileLoopsAlteration> {
     
     public static void main(String[] args) {
         new TileLoops().run(args);

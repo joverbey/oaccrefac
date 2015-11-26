@@ -9,65 +9,73 @@
  *     John William O'Rourke (Auburn) - initial API and implementation
  *******************************************************************************/
 
-/*
- * Runner class for all other refactorings from command line.
+import java.util.TreeMap;
+
+/**
+ * Refactor is a main class for running many different refactorings.
  */
 public class Refactor {
     
+    private TreeMap<String, Runnable> refactorings;
+    
+    /**
+     * Refactor constructor initializes all refactorings with their runnables.
+     */
+    public Refactor() {
+        refactorings = new TreeMap<>();
+        refactorings.put("DistributeLoops", new DistributeLoops());
+        refactorings.put("FuseLoops", new FuseLoops());
+        refactorings.put("InterchangeLoops", new InterchangeLoops());
+        refactorings.put("IntroduceDefaultNone", new IntroduceDefaultNone());
+        refactorings.put("IntroduceKernelsLoop", new IntroduceKernelsLoop());
+        refactorings.put("IntroduceParallelLoop", new IntroduceParallelLoop());
+        refactorings.put("LoopCutting", new LoopCutting());
+        refactorings.put("StripMine", new StripMine());
+        refactorings.put("TileLoops", new TileLoops());
+        refactorings.put("Unroll", new Unroll());
+    }
+    
+    /**
+     * main begins refactoring execution
+     * 
+     * @param args First argument is the refactoring. Second is the file 
+     * name. The rest are refactoring specific parameters.
+     */
     public static void main(String[] args) { 
         new Refactor().run(args);
     }
     
+    /**
+     * printUsage prints how the refactoring class is used.
+     */
+    public void printUsage() {
+        System.err.println("Usage: Refactor <refactoring> <args>");
+        System.err.println();
+        System.err.println("Available refactorings are:");
+        for (String key : refactorings.keySet()) {
+            System.err.println(key);
+        }
+    }
+    
+    /**
+     * run begins execution of the actual refactoring.
+     * 
+     * @param args Arguments to the refactoring.
+     */
     public void run(String[] args) {
         if (args.length < 1) {
-            System.err.println("Usage: Refactor <refactoring> <args>");
-            System.err.println();
-            System.err.println("Available refactorings are:");
-            System.err.println("DistributeLoops");
-            System.err.println("FuseLoops");
-            System.err.println("InterchangeLoops");
-            System.err.println("IntroduceDefaultNone:");
-            System.err.println("IntroduceKernelsLoop");
-            System.err.println("IntroduceParallelLoop");
-            System.err.println("LoopCutting");
-            System.err.println("StripMine");
-            System.err.println("TileLoops");
-            System.err.println("Unroll");
+            printUsage();
         } else {
-            // Find way to get rid of this warning
-            Main refactoring = getMain(args[0]);
             String[] refactoringArgs = new String[args.length - 1];
             for (int i = 1; i < args.length; i++) {
                 refactoringArgs[i-1] = args[i];
             }
-            refactoring.run(refactoringArgs);
-        }
-    }
-    
-    private Main getMain(String refactoringName) {
-        switch (refactoringName) {
-        case "DistributeLoops":
-            return new DistributeLoops();
-        case "FuseLoops":
-            return new FuseLoops();
-        case "InterchangeLoops":
-            return new InterchangeLoops();
-        case "IntroduceDefaultNone":
-            return new IntroduceDefaultNone();
-        case "IntroduceKernelsLoop":
-            return new IntroduceKernelsLoop();
-        case "IntroduceParallelLoop":
-            return new IntroduceParallelLoop();
-        case "LoopCutting":
-            return new LoopCutting();
-        case "StripMine":
-            return new StripMine();
-        case "TileLoops":
-            return new TileLoops();
-        case "Unroll":
-            return new Unroll();
-        default:
-            return null;
+            Runnable refactoring = refactorings.get(args[0]);
+            if (refactoring == null) {
+                printUsage();
+            } else {
+                refactorings.get(args[0]).run(refactoringArgs);
+            }
         }
     }
 

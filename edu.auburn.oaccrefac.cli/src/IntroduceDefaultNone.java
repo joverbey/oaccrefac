@@ -9,27 +9,35 @@
  *     John William O'Rourke (Auburn) - initial API and implementation
  *******************************************************************************/
 
-import java.util.List;
-
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
 import edu.auburn.oaccrefac.core.transformations.IntroDefaultNoneCheck;
 import edu.auburn.oaccrefac.core.transformations.IntroDefaultNoneAlteration;
 
 /**
- * Command line driver to introduce a kernels loop.
+ * IntroduceDefaultNone performs the introduce default none refactoring.
  */
-public class IntroduceDefaultNone extends Main<RefactoringParams, IntroDefaultNoneCheck, IntroDefaultNoneAlteration> {
+public class IntroduceDefaultNone extends StatementMain<RefactoringParams, IntroDefaultNoneCheck, IntroDefaultNoneAlteration> {
     
+    /**
+     * main begins refactoring execution.
+     * 
+     * @param args Arguments to the refactoring.
+     */
     public static void main(String[] args) {
         new IntroduceDefaultNone().run(args);
     }
 
+    /**
+     * checkArgs checks the arguments to the refactoring.
+     * 
+     * @param args Arguments to the refactoring.
+     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 1) {
@@ -39,20 +47,34 @@ public class IntroduceDefaultNone extends Main<RefactoringParams, IntroDefaultNo
         return true;
     }
 
+    /**
+     * printUsage prints the usage of the refactoring.
+     */
     private void printUsage() {
         System.err.println("Usage: IntroduceDefaultNone <filename.c>");
     }
 
+    /**
+     * createCheck creates an IntroduceDefaultNoneCheck.
+     * 
+     * @param statement Statement to create the check for.
+     * @return Check to be performed on the statement.
+     */
     @Override
-    protected IntroDefaultNoneCheck createCheck(IASTForStatement loop) {
-        // What if there is more than one pragma on the loop?
-        List<IASTPreprocessorPragmaStatement> pragmas = ForStatementInquisitor.getInquisitor(loop).getLeadingPragmas();
-        // What is the second parameter to this?
-        return new IntroDefaultNoneCheck(pragmas.get(0), null);
+    protected IntroDefaultNoneCheck createCheck(IASTStatement statement) {
+        int pragmaPosition = statement.getFileLocation().getStartingLineNumber() - 1;
+        IASTPreprocessorPragmaStatement pragma = null;
+        for (IASTPreprocessorStatement otherPragma : statement.getTranslationUnit().getAllPreprocessorStatements()) {
+            if (otherPragma.getFileLocation().getStartingLineNumber() == pragmaPosition) {
+                pragma = (IASTPreprocessorPragmaStatement) otherPragma;
+                break;
+            }
+        }
+        return new IntroDefaultNoneCheck(pragma, statement);
     }
 
     @Override
-    protected RefactoringParams createParams(IASTForStatement forLoop) {
+    protected RefactoringParams createParams(IASTStatement statement) {
         // RefactoringParams is abstract
         return null;
     }
