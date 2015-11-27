@@ -10,7 +10,6 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.ui.refactorings;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.runtime.CoreException;
