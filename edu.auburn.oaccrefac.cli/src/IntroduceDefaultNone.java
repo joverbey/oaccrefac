@@ -37,6 +37,7 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
      * checkArgs checks the arguments to the refactoring.
      * 
      * @param args Arguments to the refactoring.
+     * @return Value representing the result of checking the arguments.
      */
     @Override
     protected boolean checkArgs(String[] args) {
@@ -73,12 +74,26 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
         return new IntroDefaultNoneCheck(pragma, statement);
     }
 
+    /**
+     * createParams creates generic RefactoringParams.
+     * 
+     * @param statement Not used.
+     * @return null because parameters are not used in this refactoring.
+     */
     @Override
     protected RefactoringParams createParams(IASTStatement statement) {
         // RefactoringParams is abstract
         return null;
     }
 
+    /**
+     * createAlteration creates a IntroduceDefaultNoneAlteration.
+     * 
+     * @param reweriter Rewriter for the alteration.
+     * @param check Checker for the alteration.
+     * @return Alteration for the refactoring.
+     * @throws CoreException if creating the alteration fails.
+     */
     @Override
     protected IntroDefaultNoneAlteration createAlteration(IASTRewrite rewriter, IntroDefaultNoneCheck check) throws CoreException {
         return new IntroDefaultNoneAlteration(rewriter, check);

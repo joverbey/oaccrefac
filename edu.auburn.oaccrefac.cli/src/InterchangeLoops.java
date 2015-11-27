@@ -40,6 +40,7 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
      * checkArgs checks the arguments to the refactoring.
      * 
      * @param args Arguments to the refactoring.
+     * @return Value representing the result of checking the arguments.
      */
     @Override
     protected boolean checkArgs(String[] args) {
