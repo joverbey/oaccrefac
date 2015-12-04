@@ -21,7 +21,7 @@ import org.junit.runners.Parameterized;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopUnrollingRefactoring;
 
 @RunWith(Parameterized.class)
-public class LoopUnrollingTestslevel1 extends RefactoringTestLL<LoopUnrollingRefactoring> {
+public class LoopUnrollingTestslevel1 extends RefactoringTestlevel1<LoopUnrollingRefactoring> {
     
     private static final String m_testDir = "testcode-level1/LoopUnrolling/";
     
