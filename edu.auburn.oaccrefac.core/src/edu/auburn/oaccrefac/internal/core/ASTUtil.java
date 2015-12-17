@@ -170,6 +170,7 @@ public class ASTUtil {
         return isNameInScope(new String(varname.getSimpleID()), scope);
     }
 
+    //return true if a variable by the given name exists in the scope 
     public static boolean isNameInScope(String varname, IScope scope) {
         IBinding[] bindings = scope.find(varname);
         if (bindings.length > 0) {
