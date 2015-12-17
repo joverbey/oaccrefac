@@ -164,10 +164,13 @@ public class ASTUtil {
         return null;
     }
 
+    //FIXME if two variables have the same name, this always returns the same thing for both for any scope
+    //should check based on the name's binding somehow
     public static boolean isNameInScope(IASTName varname, IScope scope) {
         return isNameInScope(new String(varname.getSimpleID()), scope);
     }
 
+    //return true if a variable by the given name exists in the scope 
     public static boolean isNameInScope(String varname, IScope scope) {
         IBinding[] bindings = scope.find(varname);
         if (bindings.length > 0) {
