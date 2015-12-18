@@ -36,12 +36,6 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
      */
     private int unrollFactor = 0;
 
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     * @return Value representing the result of checking the arguments.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 2) {
@@ -77,25 +71,11 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
         return new UnrollLoopCheck(loop);
     }
 
-    /**
-     * createParams creates UnrollLoopParams.
-     * 
-     * @param forLoop Not used.
-     * @return UnrollLoopParams made with the unrollFactor.
-     */
     @Override
     protected UnrollLoopParams createParams(IASTForStatement forLoop) {
         return new UnrollLoopParams(unrollFactor);
     }
 
-    /**
-     * createAlteration creates an UnrollLoopAlteration.
-     * 
-     * @param reweriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException if creating the alteration fails.
-     */
     @Override
     protected UnrollLoopAlteration createAlteration(IASTRewrite rewriter, UnrollLoopCheck check) throws CoreException {
         return new UnrollLoopAlteration(rewriter, unrollFactor, check);

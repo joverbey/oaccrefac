@@ -36,12 +36,6 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
      */
     private int depth = 0;
 
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     * @return Value representing the result of checking the arguments.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 2) {
@@ -66,36 +60,16 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
         System.err.println("Usage: InterchangeLoops <filename.c> <depth>");
     }
 
-    /**
-     * createCheck creates an InterchangeLoopsCheck.
-     * 
-     * @param loop Loop to create the check for.
-     * @return Check to be performed on the loop.
-     */
     @Override
     protected InterchangeLoopsCheck createCheck(IASTForStatement loop) {
         return new InterchangeLoopsCheck(loop);
     }
 
-    /**
-     * createParams creates InterchangeLoopParams.
-     * 
-     * @param forLoop Loop to create the parameters for.
-     * @return Parameters for the refactoring.
-     */
     @Override
     protected InterchangeLoopParams createParams(IASTForStatement forLoop) {
         return new InterchangeLoopParams(depth);
     }
 
-    /**
-     * createAlteration creates an InterchangeLoopsAlteration.
-     * 
-     * @param rewriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException If creating the alteration fails.
-     */
     @Override
     protected InterchangeLoopsAlteration createAlteration(IASTRewrite rewriter, InterchangeLoopsCheck check) throws CoreException {
         return new InterchangeLoopsAlteration(rewriter, check);

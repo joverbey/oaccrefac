@@ -31,12 +31,6 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
         new IntroduceKernelsLoop().run(args);
     }
 
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     * @return Value representing the result of checking the arguments.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 1) {
@@ -53,37 +47,17 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
         System.err.println("Usage: DistributeLoops <filename.c>");
     }
 
-    /**
-     * createCheck creates a DistributeLoopsCheck.
-     * 
-     * @param loop Loop to create the check for.
-     * @return Check to be performed on the loop.
-     */
     @Override
     protected DistributeLoopsCheck createCheck(IASTForStatement loop) {
         return new DistributeLoopsCheck(loop);
     }
     
-    /**
-     * createParams creates generic RefactoringParams.
-     * 
-     * @param forLoop Not used.
-     * @return null because parameters are not used in this refactoring.
-     */
     @Override
     protected RefactoringParams createParams(IASTForStatement forLoop) {
         // RefactoringParams is abstract
         return null;
     }
 
-    /**
-     * createAlteration creates a DistributeLoopsAlteration.
-     * 
-     * @param reweriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException if creating the alteration fails.
-     */
     @Override
     protected DistributeLoopsAlteration createAlteration(IASTRewrite rewriter, DistributeLoopsCheck check) throws CoreException {
         return new DistributeLoopsAlteration(rewriter, check);

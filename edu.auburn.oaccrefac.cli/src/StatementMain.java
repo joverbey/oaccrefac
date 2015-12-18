@@ -24,11 +24,6 @@ import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
  */
 public abstract class StatementMain<P extends RefactoringParams, C extends Check<P>, A extends SourceAlteration<C>> extends Main<IASTStatement, P, C, A> {
     
-    /**
-     * convertStatement returns the statement passed to it.
-     * 
-     * @param statement Statement to convert.
-     */
     @Override
     protected IASTStatement convertStatement(IASTStatement statement) {
         return statement;

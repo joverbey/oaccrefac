@@ -36,12 +36,6 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
      */
     private int cutFactor = 0;
     
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     * @return Value representing the result of checking the arguments.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 2) {
@@ -66,36 +60,16 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
         System.err.println("Usage: LoopCutting <filename.c> <cut_factor>");
     }
 
-    /**
-     * createCheck creates a LoopCuttingCheck.
-     * 
-     * @param loop Loop to create the check for.
-     * @return Check to be performed on the loop.
-     */
     @Override
     protected LoopCuttingCheck createCheck(IASTForStatement loop) {
         return new LoopCuttingCheck(loop);
     }
 
-    /**
-     * createParams creates LoopCuttingparams.
-     * 
-     * @param forLoop Not used.
-     * @return LoopCuttingParams made with the cutFactor.
-     */
     @Override
     protected LoopCuttingParams createParams(IASTForStatement forLoop) {
         return new LoopCuttingParams(cutFactor);
     }
 
-    /**
-     * createAlteration creates a LoopCuttingAlteration.
-     * 
-     * @param reweriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException if creating the alteration fails.
-     */
     @Override
     protected LoopCuttingAlteration createAlteration(IASTRewrite rewriter, LoopCuttingCheck check) throws CoreException {
         return new LoopCuttingAlteration(rewriter, cutFactor, check);

@@ -31,11 +31,6 @@ public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseL
         new FuseLoops().run(args);
     }
 
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 1) {
@@ -52,37 +47,17 @@ public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseL
         System.err.println("Usage: FuseLoops <filename.c>");
     }
 
-    /**
-     * createCheck creates a FuseLoopseCheck.
-     * 
-     * @param loop Loop to crete the check for.
-     * @return Check to be performed on the loop.
-     */
     @Override
     protected FuseLoopsCheck createCheck(IASTForStatement loop) {
         return new FuseLoopsCheck(loop);
     }
 
-    /**
-     * createParams creates generic RefactoringParams.
-     * 
-     * @param forLoop Not used.
-     * @return null because parameters are not used in this refactoring.
-     */
     @Override
     protected RefactoringParams createParams(IASTForStatement forLoop) {
         // RefactoringParams is abstract
         return null;
     }
 
-    /**
-     * createAlteration creates a FuseLoopsAlteration.
-     * 
-     * @param rewriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException if creating the alteration fails.
-     */
     @Override
     protected FuseLoopsAlteration createAlteration(IASTRewrite rewriter, FuseLoopsCheck check) throws CoreException {
         return new FuseLoopsAlteration(rewriter, check);

@@ -33,12 +33,6 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
         new IntroduceDefaultNone().run(args);
     }
 
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     * @return Value representing the result of checking the arguments.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
         if (args.length != 1) {
@@ -54,13 +48,7 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
     private void printUsage() {
         System.err.println("Usage: IntroduceDefaultNone <filename.c>");
     }
-
-    /**
-     * createCheck creates an IntroduceDefaultNoneCheck.
-     * 
-     * @param statement Statement to create the check for.
-     * @return Check to be performed on the statement.
-     */
+    
     @Override
     protected IntroDefaultNoneCheck createCheck(IASTStatement statement) {
         int pragmaPosition = statement.getFileLocation().getStartingLineNumber() - 1;
@@ -74,26 +62,12 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
         return new IntroDefaultNoneCheck(pragma, statement);
     }
 
-    /**
-     * createParams creates generic RefactoringParams.
-     * 
-     * @param statement Not used.
-     * @return null because parameters are not used in this refactoring.
-     */
     @Override
     protected RefactoringParams createParams(IASTStatement statement) {
         // RefactoringParams is abstract
         return null;
     }
 
-    /**
-     * createAlteration creates a IntroduceDefaultNoneAlteration.
-     * 
-     * @param reweriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException if creating the alteration fails.
-     */
     @Override
     protected IntroDefaultNoneAlteration createAlteration(IASTRewrite rewriter, IntroDefaultNoneCheck check) throws CoreException {
         return new IntroDefaultNoneAlteration(rewriter, check);
