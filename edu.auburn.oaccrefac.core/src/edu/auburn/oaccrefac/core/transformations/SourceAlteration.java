@@ -54,8 +54,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
 
     /**
      * Offset into the file that the StringBuilder starts at.
-     * <p>
-     * Should be the affected function definition's offset.
      */
     private int srcOffset;
     protected T check;
@@ -232,15 +230,15 @@ public abstract class SourceAlteration<T extends Check<?>> {
                 originalLength = originalLength + length - (offset + length - srcOffset); 
             }
             //edit area overlaps end of src
-            else if(offset < srcOffset + originalLength && srcOffset + originalLength < offset + length) {
+            if(offset < srcOffset + originalLength && srcOffset + originalLength < offset + length) {
                 originalLength = originalLength + length - (srcOffset + originalLength - offset);
             }
             //edit area is entirely before src
-            else if(offset + length <= srcOffset) {
+            if(offset + length <= srcOffset) {
                 originalLength = originalLength + length + (srcOffset - (offset + length));
             }
             //edit area is entirely after src
-            else if(srcOffset + originalLength <= offset) {
+            if(srcOffset + originalLength <= offset) {
                 originalLength = originalLength + length + (offset - (srcOffset + originalLength));
             }
             //otherwise, edit area is contained in src, so no update to originalLength are needed
@@ -256,7 +254,8 @@ public abstract class SourceAlteration<T extends Check<?>> {
                 srcOffset = offset;
             }
             if(offset + length > srcOffset + src.length()) {
-                src.append(tu.getRawSignature().substring(srcOffset + src.length(), offset));
+                //added " + length" 12/23/2015
+                src.append(tu.getRawSignature().substring(srcOffset + src.length(), offset + length));
             }
         }
         

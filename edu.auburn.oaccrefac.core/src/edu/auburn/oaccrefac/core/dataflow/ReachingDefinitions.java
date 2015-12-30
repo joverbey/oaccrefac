@@ -21,11 +21,9 @@ import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 @SuppressWarnings("restriction")
@@ -48,7 +46,19 @@ public class ReachingDefinitions {
         
     }
 
+    /**
+     * Returns a set of all definitions of a variable that reach this occurrence of the variable. If the variable is being
+     * defined at this occurrence, it is treated as if no definitions reach it. 
+     * @param varUse a use a variable
+     * @return a set of IASTNode definitions reaching the variable use
+     */
     public Set<IASTNode> reachingDefinitions(IASTName varUse) {
+        
+        //if this occurrence of the var is a definition of var, treat it as if nothing reaches it
+        if(ASTUtil.isDefinition(varUse)) {
+            return new HashSet<IASTNode>();
+        }
+        
         //use should be a block, since that is what can be "reached" by a definition
         //returns a list of definitions of variable that reach the given use
         IBinding variable = varUse.resolveBinding();
@@ -66,6 +76,20 @@ public class ReachingDefinitions {
         }
         
         return entrySet.get(variable) == null ? new HashSet<IASTNode>() : entrySet.get(variable);
+    }
+    
+    /**
+     * Returns a set of all definitions of that reach occurrences of variables used in the given node. If a variable 
+     * is being defined at an occurrence, it is treated as if no definitions reach that occurrence. 
+     * @param node a tree node that may or may not contain variable uses
+     * @return a set of IASTNode definitions reaching the variable uses in the node
+     */
+    public Set<IASTNode> reachingDefinitions(IASTNode node) {
+        Set<IASTNode> defs = new HashSet<IASTNode>();
+        for(IASTName name : ASTUtil.find(node, IASTName.class)) {
+            defs.addAll(reachingDefinitions(name));
+        }
+        return defs;
     }
     
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
@@ -177,89 +201,6 @@ public class ReachingDefinitions {
 //                || defsOfDefThatReachBlock.contains(defBinaryExpr);
 //
 //    }
-    
-    private boolean isDefinition(IASTName name) {
-        //should correspond to varsWrittenToIn on our definition of a "definition"
-        IASTStatement defStmt = ASTUtil.findNearestAncestor(name, IASTStatement.class);
-        IASTUnaryExpression defUnaryExpr = ASTUtil.findNearestAncestor(name, IASTUnaryExpression.class);
-        IASTBinaryExpression defBinaryExpr = ASTUtil.findNearestAncestor(name, IASTBinaryExpression.class);
-        if(defStmt instanceof IASTDeclarationStatement) {
-            if(((IASTDeclarationStatement) defStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
-                IASTSimpleDeclaration simpleDec = (IASTSimpleDeclaration) (((IASTDeclarationStatement) defStmt).getDeclaration());
-                //int x; int x, y; int x = 1;
-                for(IASTDeclarator decl : simpleDec.getDeclarators()) {
-                    if(decl.getName().equals(name)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        else {
-            if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression) || defUnaryExpr != null) {
-                //x++; x--; ++x; --x;
-                IASTUnaryExpression unary;
-                if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
-                    unary = (IASTUnaryExpression) (((IASTExpressionStatement) defStmt).getExpression());
-                }
-                else {
-                    unary = defUnaryExpr;
-                }
-                if(unary.getOperand() instanceof IASTIdExpression && 
-                        (unary.getOperator() == IASTUnaryExpression.op_postFixIncr || 
-                        unary.getOperator() == IASTUnaryExpression.op_prefixIncr ||
-                        unary.getOperator() == IASTUnaryExpression.op_postFixDecr ||
-                        unary.getOperator() == IASTUnaryExpression.op_prefixIncr)) {
-                    if(((IASTIdExpression) unary.getOperand()).getName().equals(name)) {
-                        return true;
-                    }
-                }
-                else if(unary.getOperand() instanceof IASTArraySubscriptExpression) {
-                    IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) unary.getOperand();
-                    if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
-                        if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            
-            if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTBinaryExpression) || defBinaryExpr != null) {
-                //x = 1; x += 1; ...
-                IASTBinaryExpression binary;
-                if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
-                    binary = (IASTBinaryExpression) (((IASTExpressionStatement) defStmt).getExpression());
-                }
-                else {
-                    binary = defBinaryExpr;
-                }
-                if(binary.getOperand1() instanceof IASTIdExpression && 
-                        (binary.getOperator() == IASTBinaryExpression.op_assign ||
-                        binary.getOperator() == IASTBinaryExpression.op_binaryAndAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_binaryOrAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_binaryXorAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_divideAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_minusAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_moduloAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_multiplyAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_plusAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_shiftLeftAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign)) {
-                    if(((IASTIdExpression) binary.getOperand1()).getName().equals(name)) {
-                        return true;
-                    }
-                }
-                else if(binary.getOperand1() instanceof IASTArraySubscriptExpression) {
-                    IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) binary.getOperand1();
-                    if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
-                        if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
     
     private List<IBinding> varsWrittenToIn(IBasicBlock bb) {
         List<IBinding> writeAccesses = new ArrayList<IBinding>();
