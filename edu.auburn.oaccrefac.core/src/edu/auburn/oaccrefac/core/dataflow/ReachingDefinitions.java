@@ -79,7 +79,7 @@ public class ReachingDefinitions {
     }
     
     /**
-     * Returns a set of all definitions of that reach occurrences of variables used in the given node. If a variable 
+     * Returns a set of all definitions that reach occurrences of variables used in the given node. If a variable 
      * is being defined at an occurrence, it is treated as if no definitions reach that occurrence. 
      * @param node a tree node that may or may not contain variable uses
      * @return a set of IASTNode definitions reaching the variable uses in the node
