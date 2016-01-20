@@ -45,6 +45,14 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
         }
         return true;
     }
+    
+    /**
+     * <filename.c> 
+     * If arg is only file name and no refactoring, take this branch
+     * Define intermediate methods to find all loop statements
+     * When you find the loop statements
+     * Refactoring args to the refactoring
+     */
 
     /**
      * printUsage prints the usage of the refactoring.

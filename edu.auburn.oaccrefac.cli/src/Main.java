@@ -164,7 +164,7 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
                         int finish = comment.getFileLocation().getEndingLineNumber();
                         if (start - finish == 0 && start == statement.getFileLocation().getStartingLineNumber() - (pragmasToSkip + 1)) {
                             String commentLower = String.valueOf(comment.getComment()).toLowerCase();
-                            if (commentLower.contains("autotune") || commentLower.contains("refactor")) {
+                            if (commentLower.contains("loop60inner") || commentLower.contains("refactor")) {
                                 found = convertStatement(statement);
                                 return PROCESS_ABORT;
                             }
