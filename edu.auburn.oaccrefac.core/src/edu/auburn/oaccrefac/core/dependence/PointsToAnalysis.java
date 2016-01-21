@@ -11,58 +11,88 @@
 
 package edu.auburn.oaccrefac.core.dependence;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
-import org.eclipse.cdt.core.dom.ast.IFunction;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
- * Performs points-to analysis.
+ * Performs points-to analysis on the IASTFunctionDefinition passed to the constructor.
  */
 public class PointsToAnalysis {
 
     /**
-     * Stores points-to analysis results.
+     * Stores IVariables which may be aliased.
+     * 
+     * This is only modified when the constructor is called.
      */
-    private HashMap<IVariable, Boolean> analysisResults;
+    private HashSet<IVariable> mayBeAliased;
     
     /**
-     * Function analyzed.
+     * Stores all local variables found in function.
+     * 
+     * This is only modified when the constructor is called.
      */
-    private IFunction function;
-    
+    private HashSet<IVariable> variables;
+       
     /**
-     * Progress monitor for analysis.
+     * Performs a points-to analysis on the given function. 
+     * 
+     * Use mayBeAliased to get results of analysis for a specific variable.
+     * 
+     * The results of the analysis are constant, so a new PointsToAnalysis object will
+     * have to be created for further analysis.
+     * 
+     * @param function IASTFunctionDefinition to perform analysis on.
+     * @param monitor IProgressMonitor for analysis project. May be null.
      */
-    private IProgressMonitor monitor;
-    
-    /**
-     * Performs a points-to analysis on the given function. Use mayBeAliased
-     * to get results of analysis for a specific variable.
-     */
-    public PointsToAnalysis(IFunction function, IProgressMonitor monitor) {
-        analysisResults = new HashMap<>();
-        this.function = function;
-        this.monitor = monitor;
-        performAnalysis();
+    public PointsToAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
+        mayBeAliased = new HashSet<>();
+        variables = new HashSet<>();
+        if (monitor != null) {
+            monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
+        }
+        performAnalysis(monitor, function, false);
+        if (monitor != null) {
+            monitor.done();
+        }
     }
     
     /**
-     * Retrieves analysis results for a sepcific variable.
+     * Retrieves analysis results for a specific local IVariable.
      * 
-     * @param variable
-     * @return
+     * @param variable IVariable to find results of analysis for.
+     * @return Whether or not the given IVariable may be aliased.
      */
     public boolean mayBeAliased(IVariable variable) {
-        return false;
+        if (!variables.contains(variable)) {
+            throw new IllegalArgumentException(variable.getName() + " is not a local variable.");
+        }
+        return mayBeAliased.contains(variable);
     }
     
     /**
      * Helper method for performing a points-to analysis.
+     * 
+     * True if true in default map or not in default map
+     * False otherwise
+     * 
+     * Algorithm:
+     *  Traverse function given
+     *      look for &
+     *      if &, continue recursively descending
+     *      find which variable has address taken
+     *      add to set
+     *  Also track what is and isn't local variable so exception can be thrown.
+     * 
+     * @param monitor IProgressMonitor which monitors progress of analysis.
+     * @param current Current IASTNode being investigated.
+     * @param foundOperator Found state of address of operator.
      */
-    private void performAnalysis() {
-        
+    private void performAnalysis(IProgressMonitor monitor, IASTNode current, boolean foundOperator) {
+        monitor.worked(1);
     }
     
 }
