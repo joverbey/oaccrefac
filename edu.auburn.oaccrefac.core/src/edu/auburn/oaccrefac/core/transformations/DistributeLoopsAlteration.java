@@ -11,9 +11,11 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
+import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
@@ -77,7 +79,13 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
             if(loop.getPragmas().length != 0){
                 this.insert(offset, pragma("acc parallel loop"));
             }
-            this.insert(offset, forLoop(init, cond, incr, compound(stmts[i].getRawSignature())));
+            String newBody = "";
+            for(IASTComment comment : ASTUtil.getLeadingComments(stmts[i])) {
+                newBody += comment.getRawSignature() + System.lineSeparator();
+            }
+            newBody += stmts[i].getRawSignature();
+            newBody = compound(newBody);
+            this.insert(offset, forLoop(init, cond, incr, newBody));
         }
 
         finalizeChanges();
