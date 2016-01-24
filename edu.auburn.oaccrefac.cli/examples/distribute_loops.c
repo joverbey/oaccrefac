@@ -1,6 +1,6 @@
 int main() {
     int a, b, c, d;
-    /* refactor */
+    /* blah */
     for (int i = 0; i < 100; i++) {
         a = 5;
         b = 6;
