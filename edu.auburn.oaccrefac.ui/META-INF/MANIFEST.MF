@@ -8,7 +8,6 @@ Bundle-Vendor: Auburn University
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
- edu.auburn.oaccrefac.core,
  org.eclipse.cdt.core,
  org.eclipse.cdt.ui,
  org.eclipse.text,
@@ -19,6 +18,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide,
  org.eclipse.ui.workbench.texteditor,
+ edu.auburn.oaccrefac.core;visibility:=reexport,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

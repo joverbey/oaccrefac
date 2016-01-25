@@ -58,6 +58,7 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
         finalizeChanges();
     }
 
+    //TODO move to superclass
     private boolean inRegion(IASTStatement statement) {
         for (IASTStatement stmtInRegion : getStatements()) {
             if (ASTUtil.isAncestor(stmtInRegion, statement)) {
