@@ -28,7 +28,7 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
      * @param args Arguments to the refactoring.
      */
     public static void main(String[] args) {
-        new IntroduceKernelsLoop().run(args);
+        new LoopCutting().run(args);
     }
 
     /**
@@ -44,13 +44,13 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
      */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 3) {
             printUsage();
             return false;
         }
         
         try {
-            cutFactor = Integer.parseInt(args[1]);
+            cutFactor = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;

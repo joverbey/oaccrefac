@@ -44,7 +44,7 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
      */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 3) {
             printUsage();
             return false;
         }

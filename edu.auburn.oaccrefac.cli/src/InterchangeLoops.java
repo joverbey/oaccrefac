@@ -44,13 +44,13 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
      */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 3) {
             printUsage();
             return false;
         }
         
         try {
-            depth = Integer.parseInt(args[1]);
+            depth = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;

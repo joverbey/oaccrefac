@@ -56,15 +56,7 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
      */
     public final void run(String[] args) {
         String loopName = new String();
-        String choice = new String();
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Enter specific loop name?(y/n)");
-        choice = scan.next();
-        if(choice.equals("y") || choice.equals("yes")){
-            System.out.println("Please enter the loop name.");
-            loopName = scan.next();
-        }
-        scan.close();
+        loopName = args[1];
         if (!checkArgs(args)) {
             System.exit(1);
         }
@@ -80,7 +72,7 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
         S statement = findStatementToAutotune(translationUnit, rw, loopName);
         if (statement == null) {
             System.err.println(
-                    "Please add a comment containing \"autotune\" or \"refactor\" immediately above the loop to refactor.");
+                    "Please add a comment containing the loop name entered immediately above the loop to refactor and make sure it is spelled correctly.");
             System.exit(3);
         }
         C check = createCheck(statement);
@@ -141,7 +133,8 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
      * 
      * @param translationUnit Translation unit being altered
      * @param rw Rewriter for the translation unit.
-     * @return Statement to autotune.
+     * @param loopName Name of statement to be altered
+     * @return Statement to be altered.
      */
     protected S findStatementToAutotune(final IASTTranslationUnit translationUnit, final IASTRewrite rw, final String loopName) {
         class V extends ASTVisitor {
@@ -175,7 +168,7 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
                         int finish = comment.getFileLocation().getEndingLineNumber();
                         if (start - finish == 0 && start == statement.getFileLocation().getStartingLineNumber() - (pragmasToSkip + 1)) {
                             String commentLower = String.valueOf(comment.getComment()).toLowerCase();
-                            if (commentLower.contains("autotune") || commentLower.contains("refactor") || commentLower.contains(loopName)) {
+                            if (commentLower.contains(loopName)) {
                                 found = convertStatement(statement);
                                 return PROCESS_ABORT;
                             }

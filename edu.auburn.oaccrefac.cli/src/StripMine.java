@@ -44,7 +44,7 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 3) {
             printUsage();
             return false;
         }

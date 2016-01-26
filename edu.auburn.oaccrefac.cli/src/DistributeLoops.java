@@ -28,7 +28,7 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
      * @param args Arguments to the refactoring.
      */
     public static void main(String[] args) {
-        new IntroduceKernelsLoop().run(args);
+        new DistributeLoops().run(args);
     }
 
     /**
@@ -39,7 +39,7 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
      */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
             printUsage();
             return false;
         }

@@ -49,7 +49,7 @@ public class TileLoops extends LoopMain<TileLoopsParams, TileLoopsCheck, TileLoo
      */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 3) {
+        if (args.length != 4) {
             printUsage();
             return false;
         }
