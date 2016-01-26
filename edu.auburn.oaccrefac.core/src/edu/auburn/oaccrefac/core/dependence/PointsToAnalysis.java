@@ -17,6 +17,7 @@ import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
  * Performs points-to analysis on the IASTFunctionDefinition passed to the constructor.
@@ -51,13 +52,10 @@ public class PointsToAnalysis {
     public PointsToAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
         mayBeAliased = new HashSet<>();
         variables = new HashSet<>();
-        if (monitor != null) {
-            monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
-        }
-        performAnalysis(monitor, function, false);
-        if (monitor != null) {
-            monitor.done();
-        }
+        if (monitor == null) monitor = new NullProgressMonitor();
+        monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
+        performAnalysis(monitor, function);
+        monitor.done();
     }
     
     /**
@@ -67,6 +65,9 @@ public class PointsToAnalysis {
      * @return Whether or not the given IVariable may be aliased.
      */
     public boolean mayBeAliased(IVariable variable) {
+        if (variable == null) {
+            throw new IllegalArgumentException("variable can't be null.");
+        }
         if (!variables.contains(variable)) {
             throw new IllegalArgumentException(variable.getName() + " is not a local variable.");
         }
@@ -80,18 +81,26 @@ public class PointsToAnalysis {
      * False otherwise
      * 
      * Algorithm:
-     *  Traverse function given
-     *      look for &
-     *      if &, continue recursively descending
-     *      find which variable has address taken
-     *      add to set
-     *  Also track what is and isn't local variable so exception can be thrown.
+     *     Bottom up traversal
+     *     Look for names on up-trip
+     *     Return "evaluated" form of nodes.
+     *     Use those to figure out which name & is applied to
+     *     Store.
+     *     
+     *     Problem is, what if there is no ampersand?
+     *     Case is on the other side.
+     *     
      * 
      * @param monitor IProgressMonitor which monitors progress of analysis.
      * @param current Current IASTNode being investigated.
-     * @param foundOperator Found state of address of operator.
      */
-    private void performAnalysis(IProgressMonitor monitor, IASTNode current, boolean foundOperator) {
+    private void performAnalysis(IProgressMonitor monitor, IASTNode current) {
+        for (IASTNode child : current.getChildren()) {
+            performAnalysis(monitor, child);
+        }
+        if (current instanceof IVariable) {
+            variables.add((IVariable) current);
+        }
         monitor.worked(1);
     }
     

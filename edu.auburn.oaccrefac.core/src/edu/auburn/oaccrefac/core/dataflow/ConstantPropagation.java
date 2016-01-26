@@ -199,7 +199,7 @@ public final class ConstantPropagation {
         Kind kind = ((IBasicType) type).getKind();
         return kind == Kind.eInt;
     }
-
+    
     /**
      * @return true if the given value is in the range of constant values that can be tracked for the given binding
      */
