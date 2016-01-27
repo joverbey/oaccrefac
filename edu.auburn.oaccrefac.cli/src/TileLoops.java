@@ -54,8 +54,8 @@ public class TileLoops extends LoopMain<TileLoopsParams, TileLoopsCheck, TileLoo
             return false;
         }
         try {
-            width = Integer.parseInt(args[1]);
-            height = Integer.parseInt(args[2]);
+            width = Integer.parseInt(args[2]);
+            height = Integer.parseInt(args[3]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;

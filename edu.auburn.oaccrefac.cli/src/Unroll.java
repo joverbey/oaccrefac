@@ -50,7 +50,7 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
         }
 
         try {
-            unrollFactor = Integer.parseInt(args[1]);
+            unrollFactor = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;

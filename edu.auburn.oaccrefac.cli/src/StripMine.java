@@ -49,7 +49,7 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
             return false;
         }
         try {
-            stripFactor = Integer.parseInt(args[1]);
+            stripFactor = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;
