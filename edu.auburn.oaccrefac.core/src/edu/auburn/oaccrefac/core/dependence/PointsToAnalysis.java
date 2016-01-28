@@ -14,34 +14,36 @@ package edu.auburn.oaccrefac.core.dependence;
 import java.util.HashSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
+import org.eclipse.cdt.core.dom.ast.c.ICASTPointer;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
- * Performs points-to analysis on the IASTFunctionDefinition passed to the constructor.
+ * Performs a very crude address-taken analysis on the IASTFunctionDefinition
+ * passed to the constructor to determine if two variables, a and b, could
+ * possibly point to the same thing.
+ * 
+ * The analysis can be made more thorough later.
  */
 public class PointsToAnalysis {
 
     /**
-     * Stores IVariables which may be aliased.
-     * 
-     * This is only modified when the constructor is called.
+     * notRestrictPointers holds all pointer variables without the restrict
+     * qualifier in the IASTFunctionDefinition.
      */
-    private HashSet<IVariable> mayBeAliased;
+    private HashSet<IVariable> notRestrictPointers;
     
     /**
-     * Stores all local variables found in function.
-     * 
-     * This is only modified when the constructor is called.
+     * variables holds all variables found in the IASTFunctionDefinition.
      */
     private HashSet<IVariable> variables;
        
     /**
-     * Performs a points-to analysis on the given function. 
-     * 
-     * Use mayBeAliased to get results of analysis for a specific variable.
+     * PointsToAnalysis constructor.
      * 
      * The results of the analysis are constant, so a new PointsToAnalysis object will
      * have to be created for further analysis.
@@ -50,9 +52,14 @@ public class PointsToAnalysis {
      * @param monitor IProgressMonitor for analysis project. May be null.
      */
     public PointsToAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
-        mayBeAliased = new HashSet<>();
+        notRestrictPointers = new HashSet<>();
         variables = new HashSet<>();
-        if (monitor == null) monitor = new NullProgressMonitor();
+        if (function == null) {
+            throw new IllegalArgumentException("function may not be null.");
+        }
+        if (monitor == null) {
+            monitor = new NullProgressMonitor();
+        }
         monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
         performAnalysis(monitor, function);
         monitor.done();
@@ -64,44 +71,66 @@ public class PointsToAnalysis {
      * @param variable IVariable to find results of analysis for.
      * @return Whether or not the given IVariable may be aliased.
      */
-    public boolean mayBeAliased(IVariable variable) {
-        if (variable == null) {
-            throw new IllegalArgumentException("variable can't be null.");
+    public boolean variablesMayPointToSame(IVariable a, IVariable b) {
+        if (a == null || b == null) {
+            throw new IllegalArgumentException("Variables can't be null.");
         }
-        if (!variables.contains(variable)) {
-            throw new IllegalArgumentException(variable.getName() + " is not a local variable.");
+        if (!variables.contains(a)) {
+            throw new IllegalArgumentException(
+                    "a, called " + a.getName() + ", is not a local variable."
+            );
         }
-        return mayBeAliased.contains(variable);
+        if (!variables.contains(b)) {
+            throw new IllegalArgumentException(
+                    "b, called " + b.getName() + ", is not a local variable."
+            );
+        }
+        return notRestrictPointers.contains(a) && notRestrictPointers.contains(b);
     }
     
     /**
-     * Helper method for performing a points-to analysis.
+     * performAnalysis does the crude analysis recursively.
      * 
-     * True if true in default map or not in default map
-     * False otherwise
-     * 
-     * Algorithm:
-     *     Bottom up traversal
-     *     Look for names on up-trip
-     *     Return "evaluated" form of nodes.
-     *     Use those to figure out which name & is applied to
-     *     Store.
-     *     
-     *     Problem is, what if there is no ampersand?
-     *     Case is on the other side.
-     *     
-     * 
-     * @param monitor IProgressMonitor which monitors progress of analysis.
-     * @param current Current IASTNode being investigated.
+     * @param monitor IProgressMonitor to check process of analysis.
+     * @param current IASTNode being looked at.
      */
     private void performAnalysis(IProgressMonitor monitor, IASTNode current) {
-        for (IASTNode child : current.getChildren()) {
-            performAnalysis(monitor, child);
-        }
-        if (current instanceof IVariable) {
-            variables.add((IVariable) current);
-        }
         monitor.worked(1);
+        boolean dontRecurse = false;
+        if (current instanceof IASTName) {
+            IBinding binding = ((IASTName) current).resolveBinding();
+            if (binding instanceof IVariable) {
+                dontRecurse = true;
+                variables.add((IVariable) binding);
+                if (isPointerAndNotRestrict(current.getParent())) {
+                    notRestrictPointers.add((IVariable) binding);
+                }
+            }
+        }
+        if (!dontRecurse) {
+            for (IASTNode child : current.getChildren()) {
+                performAnalysis(monitor, child);
+            }
+        }
+    }
+    
+    /**
+     * isPointerAndNotRestrict checks if an IASTNode is a pointer without the
+     * restrict qualifier.
+     * 
+     * @param current IASTNode being looked at.
+     * 
+     * @return True if the IASTNode is a pointer without restrict. False
+     * otherwise.
+     */
+    private boolean isPointerAndNotRestrict(IASTNode current) {
+        if (current instanceof ICASTPointer && !((ICASTPointer) current).isRestrict()) {
+            return true;
+        }
+        for (IASTNode child : current.getChildren()) {
+            return isPointerAndNotRestrict(child);
+        }
+        return false;
     }
     
 }
