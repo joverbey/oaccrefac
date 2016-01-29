@@ -13,6 +13,7 @@
 package edu.auburn.oaccrefac.internal.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,21 +21,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.ToolFactory;
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -559,6 +565,71 @@ public class ASTUtil {
         return false;
     }
 
+    public static String[] getPragmas(IASTStatement statement) {
+        List<IASTPreprocessorPragmaStatement> p = getLeadingPragmas(statement);
+        String[] pragCode = new String[p.size()];
+        for (int i = 0; i < pragCode.length; i++) {
+            pragCode[i] = p.get(i).getRawSignature();
+        }
+        return pragCode;
+    }
+    
+    public static List<IASTPreprocessorPragmaStatement> getLeadingPragmas(IASTStatement statement) {
+        int loopLoc = statement.getFileLocation().getNodeOffset();
+        int precedingStmtOffset = getNearestPrecedingStatementOffset(statement);
+        List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
+        for (IASTPreprocessorStatement pre : statement.getTranslationUnit().getAllPreprocessorStatements()) {
+            if (pre instanceof IASTPreprocessorPragmaStatement
+                    && ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < loopLoc
+                    && ((IASTPreprocessorPragmaStatement) pre).getFileLocation()
+                            .getNodeOffset() > precedingStmtOffset) {
+                pragmas.add((IASTPreprocessorPragmaStatement) pre);
+            }
+        }
+        Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
+        return pragmas;
+    }
+    
+    private static int getNearestPrecedingStatementOffset(IASTStatement stmt) {
+
+        class OffsetFinder extends ASTVisitor {
+
+            // the offset of the nearest lexical predecessor of the given node
+            int finalOffset;
+            int thisOffset;
+
+            public OffsetFinder(int offset) {
+                shouldVisitStatements = true;
+                shouldVisitDeclarations = true;
+                this.thisOffset = offset;
+            }
+
+            @Override
+            public int visit(IASTStatement stmt) {
+                int foundOffset = stmt.getFileLocation().getNodeOffset();
+                if (thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
+                    this.finalOffset = foundOffset;
+                }
+                return PROCESS_CONTINUE;
+            }
+
+            @Override
+            public int visit(IASTDeclaration dec) {
+                int foundOffset = dec.getFileLocation().getNodeOffset();
+                if (thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
+                    this.finalOffset = foundOffset;
+                }
+                return PROCESS_CONTINUE;
+            }
+
+        }
+
+        OffsetFinder finder = new OffsetFinder(stmt.getFileLocation().getNodeOffset());
+        IASTFunctionDefinition containingFunc = ASTUtil.findNearestAncestor(stmt, IASTFunctionDefinition.class);
+        containingFunc.accept(finder);
+        return finder.finalOffset;
+    }
+    
     private ASTUtil() {
     }
 }
