@@ -27,6 +27,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * passed to the constructor to determine if two variables, a and b, could
  * possibly point to the same thing.
  * 
+ * The analysis works by finding any pointers that aren't restrict and adding
+ * them to a set. If two queried IVariables are in this set, then the analysis
+ * assumes they may point to the same variable.
+ * 
  * The analysis can be made more thorough later.
  */
 public class PointsToAnalysis {
@@ -128,7 +132,10 @@ public class PointsToAnalysis {
             return true;
         }
         for (IASTNode child : current.getChildren()) {
-            return isPointerAndNotRestrict(child);
+            boolean found = isPointerAndNotRestrict(child);
+            if (found) {
+                return found;
+            }
         }
         return false;
     }

@@ -11,11 +11,12 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
@@ -32,53 +33,149 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  */
 public class PointsToAnalysisTest {
     
+    /**
+     * checkTwoPointers checks that the analysis works in the simple case of
+     * two just two pointers.
+     * 
+     * @throws CoreException
+     */
     @Test
     public void checkTwoPointers() throws CoreException {
-        IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(
-                "void foo(int* restrict e) {\n"
-                        + "    int* a;\n"
-                        + "    int* b;\n"
-                        + "    int* const c;\n"
-                        + "    int* d;\n"
-                        + "}"
+        IASTFunctionDefinition function = makeFunction(
+                "void foo() {",
+                "    int* a;",
+                "    int* b;",
+                "}"
         );
-        IASTFunctionDefinition function = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
+        assertNotNull(function);
         PointsToAnalysis analysis = new PointsToAnalysis(function, null);
-        assertTrue(analysis.variablesMayPointToSame(
-                findVariable(translationUnit, "a"), findVariable(translationUnit, "b")
-        ));
-        assertFalse(analysis.variablesMayPointToSame(
-                findVariable(translationUnit, "a"), findVariable(translationUnit, "e")
-        ));
+        IVariable a = findVariable(function, "a");
+        assertNotNull(a);
+        IVariable b = findVariable(function, "b");
+        assertNotNull(b);
+        assertTrue(analysis.variablesMayPointToSame(a, b));
     }
     
     /**
-     * findVariable finds the IVariable in a given translationUnit give its name.
+     * checkRestrictPointers checks that restrict pointers aren't said to
+     * point to the same variable as any other pointer.
      * 
-     * @param translationUnit Where to search for the variable at.
-     * @param variableName The name of the variable to search for.
-     * 
-     * @return IVariable represented by the variable name.
+     * @throws CoreException
      */
-    private IVariable findVariable(IASTTranslationUnit translationUnit, final String variableName) {
-        class NameVisitor extends ASTVisitor {
-            private IVariable variable = null;
-            public NameVisitor() {
-                this.shouldVisitNames = true;
-            }
-            @Override
-            public int visit(IASTName name) {
-                IBinding binding = name.resolveBinding();
-                if (binding instanceof IVariable && binding.getName().equals(variableName)) {
-                    this.variable = (IVariable) binding;
-                    return PROCESS_ABORT;
-                }
-                return PROCESS_CONTINUE;
+    @Test
+    public void checkRestrictPointers() throws CoreException {
+        IASTFunctionDefinition function = makeFunction(
+                "void foo() {",
+                "    int* restrict a;",
+                "    int* restrict b;",
+                "    int* c;",
+                "}"
+        );
+        assertNotNull(function);
+        PointsToAnalysis analysis = new PointsToAnalysis(function, null);
+        IVariable a = findVariable(function, "a");
+        assertNotNull(a);
+        IVariable b = findVariable(function, "b");
+        assertNotNull(b);
+        IVariable c = findVariable(function, "c");
+        assertNotNull(c);
+        assertFalse(analysis.variablesMayPointToSame(a, b));
+        assertFalse(analysis.variablesMayPointToSame(a, c));
+    }
+    
+    /**
+     * checkFunctionParameters checks that function pointers are also found.
+     * @throws CoreException
+     */
+    @Test
+    public void checkFunctionParameters() throws CoreException {
+        IASTFunctionDefinition function = makeFunction(
+                "void foo(int* restrict a, int* restrict b, int* c, int* d) {",
+                "}"
+        );
+        assertNotNull(function);
+        PointsToAnalysis analysis = new PointsToAnalysis(function, null);
+        IVariable a = findVariable(function, "a");
+        assertNotNull(a);
+        IVariable b = findVariable(function, "b");
+        assertNotNull(b);
+        IVariable c = findVariable(function, "c");
+        assertNotNull(c);
+        IVariable d = findVariable(function, "d");
+        assertNotNull(d);
+        assertFalse(analysis.variablesMayPointToSame(a, b));
+        assertFalse(analysis.variablesMayPointToSame(a, c));
+        assertTrue(analysis.variablesMayPointToSame(c, d));
+    }
+    
+    /**
+     * checksQualifiedParameters checks that the analysis still finds qualified
+     * pointers.
+     * 
+     * @throws CoreException
+     */
+    @Test
+    public void checkQualifiedParameters() throws CoreException {
+        IASTFunctionDefinition function = makeFunction(
+                "void foo() {",
+                "    const int* a;",
+                "    int const * b;",
+                "    int* const c;",
+                "}"
+        );
+        assertNotNull(function);
+        PointsToAnalysis analysis = new PointsToAnalysis(function, null);
+        IVariable a = findVariable(function, "a");
+        assertNotNull(a);
+        IVariable b = findVariable(function, "b");
+        assertNotNull(b);
+        IVariable c = findVariable(function, "c");
+        assertNotNull(c);
+        assertTrue(analysis.variablesMayPointToSame(a, b));
+        assertTrue(analysis.variablesMayPointToSame(a, c));
+    }
+    
+    //  Test exception cases
+    
+    /**
+     * makeFunction converts a lines representing a function into an
+     * IASTFunctionDefinition.
+     * 
+     * @param lines Function.
+     * @return IASTFunctionDefinition made out of the lines.
+     * @throws CoreException
+     */
+    private IASTFunctionDefinition makeFunction(String... lines) throws CoreException {
+        String function = "";
+        for (String line : lines) {
+            function += line + "\n";
+        }
+        function = function.substring(0, function.length()-1);
+        IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(function);
+        return ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
+    }
+    
+    /**
+     * findVariable finds a variable in the given IASTNode.
+     * 
+     * @param current IASTNode to look in.
+     * @param variableName IVariable being searched for.
+     * @return IVariable with given name if found.
+     */
+    private IVariable findVariable(IASTNode current, final String variableName) {
+        if (current instanceof IASTName) {
+            IBinding binding = ((IASTName) current).resolveBinding();
+            if (binding instanceof IVariable && binding.getName().equals(variableName)) {
+                return (IVariable) binding;
             }
         }
-        NameVisitor visitor = new NameVisitor();
-        translationUnit.accept(visitor);
-        return visitor.variable;
+        for (IASTNode child : current.getChildren()) {
+           IVariable found = findVariable(child, variableName);
+           if (found != null) {
+               return found;
+           }
+        }
+        return null;
     }
 
 }
