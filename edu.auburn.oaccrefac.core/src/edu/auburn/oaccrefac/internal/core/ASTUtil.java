@@ -13,6 +13,7 @@
 package edu.auburn.oaccrefac.internal.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,6 +24,7 @@ import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -164,6 +166,18 @@ public class ASTUtil {
         return null;
     }
 
+    public static IASTNode getPreviousSibling(IASTNode n) {
+        if (n.getParent() != null) {
+            IASTNode[] chilluns = n.getParent().getChildren();
+            for (int i = 0; i < chilluns.length; i++) {
+                if (n == chilluns[i] && i > 0) {
+                    return chilluns[i - 1];
+                }
+            }
+        }
+        return null;
+    }
+    
     //FIXME if two variables have the same name, this always returns the same thing for both for any scope
     //should check based on the name's binding somehow
     public static boolean isNameInScope(IASTName varname, IScope scope) {
@@ -461,7 +475,36 @@ public class ASTUtil {
         return false;
         
     }
-
+    
+    public static List<IASTComment> getLeadingComments(IASTStatement statement) {
+        int stmtOffset = statement.getFileLocation().getNodeOffset();
+        List<IASTComment> comments = new ArrayList<IASTComment>();
+        if(ASTUtil.getPreviousSibling(statement) != null) {
+            int precedingEnd = ASTUtil.getPreviousSibling(statement).getFileLocation().getNodeOffset() +
+                    ASTUtil.getPreviousSibling(statement).getFileLocation().getNodeLength();
+            
+            for (IASTComment comment : statement.getTranslationUnit().getComments()) {
+                if (comment.getFileLocation().getNodeOffset() < stmtOffset
+                        && comment.getFileLocation().getNodeOffset() > precedingEnd) {
+                    comments.add(comment);
+                }
+            }
+            
+        }
+        else {
+            for (IASTComment comment : statement.getTranslationUnit().getComments()) {
+                int comStart = comment.getFileLocation().getNodeOffset();
+                if (comStart < stmtOffset && comStart > statement.getParent().getFileLocation().getNodeOffset()) {
+                    //comment.start 
+                    comments.add(comment);
+                }
+            }
+        }
+                
+        Collections.sort(comments, ASTUtil.FORWARD_COMPARATOR);
+        return comments;
+    }
+    
     private ASTUtil() {
     }
 }
