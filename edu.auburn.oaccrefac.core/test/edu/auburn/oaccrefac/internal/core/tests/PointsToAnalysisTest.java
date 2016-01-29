@@ -135,7 +135,53 @@ public class PointsToAnalysisTest {
         assertTrue(analysis.variablesMayPointToSame(a, c));
     }
     
-    //  Test exception cases
+    /**
+     * checkNullFunction checks that the constructor throws an exception if
+     * function is null.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void checkNullFunction() {
+        new PointsToAnalysis(null, null);
+    }
+    
+    /**
+     * checkNulls checks that null IVariables throw exceptions.
+     * 
+     * @throws CoreException
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void checkNulls() throws CoreException {
+        IASTFunctionDefinition function = makeFunction(
+                "void foo() { }"
+        );
+        assertNotNull(function);
+        PointsToAnalysis analysis = new PointsToAnalysis(function, null);
+        analysis.variablesMayPointToSame(null, null);
+    }
+    
+    /**
+     * checkNotLocals checks that IVariables that aren't local variables throw
+     * exceptions.
+     * 
+     * @throws CoreException
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void checkNotLocals() throws CoreException {
+        IASTFunctionDefinition dummyFunction = makeFunction(
+                "void foo(int* a, int* b) { }"
+        );
+        assertNotNull(dummyFunction);
+        IASTFunctionDefinition function = makeFunction(
+                "void foo() { }"
+        );
+        assertNotNull(function);
+        PointsToAnalysis analysis = new PointsToAnalysis(function, null);
+        IVariable a = findVariable(dummyFunction, "a");
+        assertNotNull(a);
+        IVariable b = findVariable(dummyFunction, "b");
+        assertNotNull(b);
+        analysis.variablesMayPointToSame(a, b);
+    }
     
     /**
      * makeFunction converts a lines representing a function into an
