@@ -44,31 +44,8 @@ public class ReachingDefinitionsTest extends TestCase {
         rd = new ReachingDefinitions(ASTUtil.findOne(tu, IASTFunctionDefinition.class));
     }
     
-    private List<IASTName> getNames() {
-        class NameGetter extends ASTVisitor {
-            
-            public List<IASTName> names;
-            
-            public NameGetter() {
-                names = new ArrayList<IASTName>();
-                shouldVisitNames = true;
-            }
-            
-            @Override
-            public int visit(IASTName name) {
-                names.add(name);
-                return PROCESS_CONTINUE;
-            }
-            
-        }
-        NameGetter nameGetter = new NameGetter();
-        tu.accept(nameGetter);
-        Collections.sort(nameGetter.names, ASTUtil.FORWARD_COMPARATOR);
-        return nameGetter.names;
-    }
-    
     private IASTName getName(String varname, int occurrence) {
-        List<IASTName> names = getNames();
+        List<IASTName> names = ASTUtil.getNames(tu);
         int oc = 0;
         for(IASTName name : names) {
             if(name.getRawSignature().equals(varname)) {

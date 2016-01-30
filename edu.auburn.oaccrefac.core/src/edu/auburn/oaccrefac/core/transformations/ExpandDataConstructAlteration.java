@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
@@ -95,8 +96,10 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 Expansion exp = new Expansion(expstart, expend, osize + i + j, expcopyin, expcopyout); //num items in copyset for this expansion
                 if(exp.getCopyin().size() <= ocopyinsize)
                 if(exp.getCopyout().size() <= ocopyoutsize)
-                if(areCopyinDefsTheSame(gpuvars, exp, getStatement(), rd)) //be sure set of defs reaching into the construct hasnt changed for variables in both the original and the expansion copyin sets
-                if(areCopyoutDefsTheSame(gpuvars, exp, getStatement(), rd)) //be sure set of defs reaching out the construct hasnt changed for variables in both the original and the expansion copyout sets
+                //be sure set of defs reaching into the construct hasnt changed for variables in both the original and the expansion copyin sets
+                if(areCopyinDefsTheSame(gpuvars, exp, getStatement(), rd)) 
+                  //be sure set of defs reaching out the construct hasnt changed for variables in both the original and the expansion copyout sets
+                if(areCopyoutDefsTheSame(gpuvars, exp, getStatement(), rd)) 
                 //if a var is used on the gpu inside the construct and was copied in, we cant remove it from the copyin set in the expansion
                 if(isAIntersectedWithBASubsetOfC(gpuvars, copyin, expcopyin))
                 //if a var is used on the gpu inside the construct and was not copied in, we cannot add it to the copyset
@@ -121,7 +124,38 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
     }
     
     private Set<String> getGpuVars(IASTStatement statement) {
-        // TODO Auto-generated method stub
+        Set<String> gpuVars = new HashSet<String>();
+        if(statement instanceof IASTCompoundStatement) {
+            IASTCompoundStatement comp = (IASTCompoundStatement) statement;
+            for(IASTStatement stmt : comp.getStatements()) {
+                String[] prags = ASTUtil.getPragmas(stmt);
+                for(String prag : prags) {
+                    //TODO should we parse this instead?
+                    if(prag.startsWith("#pragma acc parallel") || prag.startsWith("#pragma acc kernels")) {
+                        List<IASTName> names = ASTUtil.getNames(stmt);
+                        for(IASTName name : names) {
+                            if(!ASTUtil.isDefinition(name)) {
+                                gpuVars.add(name.getRawSignature());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            String[] prags = ASTUtil.getPragmas(statement);
+            for(String prag : prags) {
+                //TODO should we parse this instead?
+                if(prag.startsWith("#pragma acc parallel") || prag.startsWith("#pragma acc kernels")) {
+                    List<IASTName> names = ASTUtil.getNames(statement);
+                    for(IASTName name : names) {
+                        if(!ASTUtil.isDefinition(name)) {
+                            gpuVars.add(name.getRawSignature());
+                        }
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -171,11 +205,17 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
 
     private Set<String> getCopyout(IASTStatement expstart, IASTStatement expend, ReachingDefinitions rd) {
         // TODO Auto-generated method stub
+        // should return the variables defined in all definitions that A) are in expstart, expend, or anything lexically in between and B) reach any statements not in expstart, expend, or anything lexically in between
         return null;
     }
 
     private Set<String> getCopyin(IASTStatement expstart, IASTStatement expend, ReachingDefinitions rd) {
-        // TODO Auto-generated method stub
+        // should return the variables defined in all definitions that A) reach expstart, expend, or anything lexically in between and B) are not in expstart, expend, or anything lexically in between 
+        //TODO type checking? also finish this
+        for(IASTStatement stmt = expstart; !stmt.equals(expend); stmt = (IASTStatement) ASTUtil.getNextSibling(stmt)) {
+            //get the definitions of stmt that occur outside this expansion
+        }
+        //loop doesn't cover expend, so get appropriate definitions or it here
         return null;
     }
 

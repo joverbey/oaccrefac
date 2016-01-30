@@ -630,6 +630,29 @@ public class ASTUtil {
         return finder.finalOffset;
     }
     
+    public static List<IASTName> getNames(IASTNode node) {
+        class NameGetter extends ASTVisitor {
+            
+            public List<IASTName> names;
+            
+            public NameGetter() {
+                names = new ArrayList<IASTName>();
+                shouldVisitNames = true;
+            }
+            
+            @Override
+            public int visit(IASTName name) {
+                names.add(name);
+                return PROCESS_CONTINUE;
+            }
+            
+        }
+        NameGetter nameGetter = new NameGetter();
+        node.accept(nameGetter);
+        Collections.sort(nameGetter.names, ASTUtil.FORWARD_COMPARATOR);
+        return nameGetter.names;
+    }
+    
     private ASTUtil() {
     }
 }
