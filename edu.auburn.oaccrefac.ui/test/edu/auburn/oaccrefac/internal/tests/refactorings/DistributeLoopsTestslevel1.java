@@ -20,7 +20,7 @@ import org.junit.runners.Parameterized;
 import edu.auburn.oaccrefac.internal.ui.refactorings.DistributeLoopsRefactoring;
 
 @RunWith(Parameterized.class)
-public class DistributeLoopsTestslevel1 extends RefactoringTestlevel1<DistributeLoopsRefactoring> {
+public class DistributeLoopsTestslevel1 extends RefactoringTestEPCC<DistributeLoopsRefactoring> {
     
     private static final String m_testDir = "testcode-level1/DistributeLoops/";
     

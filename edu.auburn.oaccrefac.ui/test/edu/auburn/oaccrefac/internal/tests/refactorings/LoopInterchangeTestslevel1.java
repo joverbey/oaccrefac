@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopInterchangeRefactoring;
 
 @RunWith(Parameterized.class)
-public class LoopInterchangeTestslevel1 extends RefactoringTestlevel1<LoopInterchangeRefactoring> {
+public class LoopInterchangeTestslevel1 extends RefactoringTestEPCC<LoopInterchangeRefactoring> {
     
     private static final String m_testDir = "testcode-level1/LoopInterchange/";
     

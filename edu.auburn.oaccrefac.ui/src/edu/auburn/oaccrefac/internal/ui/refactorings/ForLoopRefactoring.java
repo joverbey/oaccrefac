@@ -131,7 +131,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         pm.subTask("Checking initial conditions...");
         if (!forLoop.isCountedLoop()) {
-            initStatus.addFatalError("Loop form not supported!", getLocation(forloop));
+            initStatus.addFatalError("Loop form not supported (not a 0-based counted loop).", getLocation(forloop));
             return initStatus;
         }
 

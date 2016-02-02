@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopTilingRefactoring;
 
 @RunWith(Parameterized.class)
-public class LoopTilingTestslevel1 extends RefactoringTestlevel1<LoopTilingRefactoring> {
+public class LoopTilingTestslevel1 extends RefactoringTestEPCC<LoopTilingRefactoring> {
     
     private static final String m_testDir = "testcode-level1/LoopTiling/";
     

@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
 
 @RunWith(Parameterized.class)
-public class IntroOpenACCParallelTestsLevel1 extends RefactoringTestlevel1<IntroOpenACCParallelRefactoring> {
+public class IntroOpenACCParallelTestsLevel1 extends RefactoringTestEPCC<IntroOpenACCParallelRefactoring> {
     
     private static final String m_testDir = "testcode-level1/IntroOpenACCParallel/";
     

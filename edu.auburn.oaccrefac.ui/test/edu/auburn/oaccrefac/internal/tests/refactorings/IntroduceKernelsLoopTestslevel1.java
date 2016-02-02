@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceKernelsLoopRefactoring;
 
 @RunWith(Parameterized.class)
-public class IntroduceKernelsLoopTestslevel1 extends RefactoringTestlevel1<IntroduceKernelsLoopRefactoring> {
+public class IntroduceKernelsLoopTestslevel1 extends RefactoringTestEPCC<IntroduceKernelsLoopRefactoring> {
     
     private static final String m_testDir = "testcode-level1/IntroduceKernelsLoop/";
     

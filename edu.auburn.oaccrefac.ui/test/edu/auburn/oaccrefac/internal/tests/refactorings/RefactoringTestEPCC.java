@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Base class for testing C refactorings on the Livermore Loops.
+ * Base class for testing C refactorings on the EPCC OpenACC benchmarks.
  * 
  * @author Jeff Overbey
  *
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(Parameterized.class)
 @SuppressWarnings("restriction")
-public abstract class RefactoringTestLL<R extends CRefactoring> extends RefactoringTestNamedLoops<R> {
+public abstract class RefactoringTestEPCC<R extends CRefactoring> extends RefactoringTestNamedLoops<R> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        Iterable<Object[]> result = generateParameters("testcode-ll/llloops.c");
+        Iterable<Object[]> result = generateParameters("testcode-epcc/level1.c");
         return result;
     }
 
-    protected RefactoringTestLL(Class<R> refactoringClass, File fileContainingMarker, int markerOffset,
+    protected RefactoringTestEPCC(Class<R> refactoringClass, File fileContainingMarker, int markerOffset,
             String markerText) throws Exception {
         super(refactoringClass, fileContainingMarker, markerOffset, markerText);
     }
