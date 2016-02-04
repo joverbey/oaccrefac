@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
@@ -54,6 +55,8 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
      * @param args Arguments passed to the refactoring.
      */
     public final void run(String[] args) {
+        String loopName = new String();
+        loopName = args[1];
         if (!checkArgs(args)) {
             System.exit(1);
         }
@@ -66,10 +69,10 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
             System.exit(2);
         }
         IASTRewrite rw = ASTRewrite.create(translationUnit);
-        S statement = findStatementToAutotune(translationUnit, rw);
+        S statement = findStatementToAutotune(translationUnit, rw, loopName);
         if (statement == null) {
             System.err.println(
-                    "Please add a comment containing \"autotune\" or \"refactor\" immediately above the loop to refactor.");
+                    "Please add a comment containing the loop name entered immediately above the loop to refactor and make sure it is spelled correctly.");
             System.exit(3);
         }
         C check = createCheck(statement);
@@ -130,9 +133,10 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
      * 
      * @param translationUnit Translation unit being altered
      * @param rw Rewriter for the translation unit.
-     * @return Statement to autotune.
+     * @param loopName Name of statement to be altered
+     * @return Statement to be altered.
      */
-    protected S findStatementToAutotune(final IASTTranslationUnit translationUnit, final IASTRewrite rw) {
+    protected S findStatementToAutotune(final IASTTranslationUnit translationUnit, final IASTRewrite rw, final String loopName) {
         class V extends ASTVisitor {
             private S found = null;
 
@@ -164,7 +168,7 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
                         int finish = comment.getFileLocation().getEndingLineNumber();
                         if (start - finish == 0 && start == statement.getFileLocation().getStartingLineNumber() - (pragmasToSkip + 1)) {
                             String commentLower = String.valueOf(comment.getComment()).toLowerCase();
-                            if (commentLower.contains("autotune") || commentLower.contains("refactor")) {
+                            if (commentLower.contains(loopName)) {
                                 found = convertStatement(statement);
                                 return PROCESS_ABORT;
                             }

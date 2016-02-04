@@ -1126,7 +1126,7 @@ void kernels()
     
     do
      {
-        for ( k=0 ; k<n ; k++ ) /*<<<<< 1129, 1, 1134, 1, Kernel1 */
+        for ( k=0 ; k<n ; k++ ) /*<<<<< 1129, 1, 1132, 10, Kernel1 */
         {
             x[k] = q + y[k]*( r*z[k+10] + t*z[k+11] );
         }

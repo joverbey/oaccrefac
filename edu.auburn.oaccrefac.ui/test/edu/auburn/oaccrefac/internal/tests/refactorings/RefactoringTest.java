@@ -124,7 +124,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
         }
     };
 
-    private static final FilenameFilter C_FILENAME_FILTER = new FilenameFilter() {
+    protected static final FilenameFilter C_FILENAME_FILTER = new FilenameFilter() {
         public boolean accept(File dir, String name) {
             return new File(dir, name).isDirectory() && !name.equalsIgnoreCase("CVS") && !name.equalsIgnoreCase(".svn")
                     || name.endsWith(".c");
@@ -144,16 +144,17 @@ public abstract class RefactoringTest<R extends CRefactoring> {
      */
     protected static Iterable<Object[]> generateParameters(String directory) throws Exception {
         File fileOrDirectory = new File(directory);
-
+        
         List<Object[]> result = new ArrayList<Object[]>();
         addTestsForFileOrDirectory(fileOrDirectory, result);
+        
         if (result.size() == 0)
             throw new Exception(
                     String.format("No markers of the form %s found in %s", MARKER, fileOrDirectory.getName()));
         return result;
     }
 
-    private static void addTestsForFileOrDirectory(File fileOrDirectory, List<Object[]> result) throws Exception {
+    protected static void addTestsForFileOrDirectory(File fileOrDirectory, List<Object[]> result) throws Exception {
         if (!fileOrDirectory.exists())
             throw new FileNotFoundException(String.format("%s not found", fileOrDirectory.getAbsolutePath()));
         if (!fileOrDirectory.canRead())
@@ -166,7 +167,7 @@ public abstract class RefactoringTest<R extends CRefactoring> {
             addTestForFile(fileOrDirectory, result);
     }
 
-    private static void addTestForFile(File file, List<Object[]> result) throws IOException, Exception {
+    protected static void addTestForFile(File file, List<Object[]> result) throws IOException, Exception {
         String fileContents = IOUtil.read(file);
         for (int index = fileContents.indexOf(MARKER); index >= 0; index = fileContents.indexOf(MARKER, index + 1)) {
             int endOfLine = fileContents.indexOf(MARKER_END, index);
