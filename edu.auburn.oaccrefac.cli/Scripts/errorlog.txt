@@ -1,49 +1,231 @@
-
-
-FATALERROR: Fission requires more than one statement.
-Context: <Unspecified context>
-code: none
-Data: null
-Exception in thread "main" java.lang.ClassCastException: org.eclipse.cdt.internal.core.dom.parser.c.CASTExpressionStatement cannot be cast to org.eclipse.cdt.core.dom.ast.IASTForStatement
-	at LoopMain.convertStatement(LoopMain.java:36)
-	at LoopMain.convertStatement(LoopMain.java:1)
-	at Main$1V.visit(Main.java:172)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTExpressionStatement.accept(CASTExpressionStatement.java:66)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement.accept(CASTCompoundStatement.java:81)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement.accept(CASTForStatement.java:146)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement.accept(CASTCompoundStatement.java:81)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement.accept(CASTForStatement.java:146)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement.accept(CASTCompoundStatement.java:81)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionDefinition.accept(CASTFunctionDefinition.java:133)
-	at org.eclipse.cdt.internal.core.dom.parser.ASTTranslationUnit.accept(ASTTranslationUnit.java:266)
-	at Main.findStatementToAutotune(Main.java:182)
-	at Main.run(Main.java:72)
-	at DistributeLoops.main(DistributeLoops.java:31)
-Please add a comment containing the loop name entered immediately above the loop to refactor and make sure it is spelled correctly.
-
-FATALERROR: Fission requires more than one statement.
-Context: <Unspecified context>
-code: none
-Data: null
-Exception in thread "main" java.lang.ClassCastException: org.eclipse.cdt.internal.core.dom.parser.c.CASTExpressionStatement cannot be cast to org.eclipse.cdt.core.dom.ast.IASTForStatement
-	at LoopMain.convertStatement(LoopMain.java:36)
-	at LoopMain.convertStatement(LoopMain.java:1)
-	at Main$1V.visit(Main.java:172)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTExpressionStatement.accept(CASTExpressionStatement.java:66)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement.accept(CASTCompoundStatement.java:81)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement.accept(CASTForStatement.java:146)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement.accept(CASTCompoundStatement.java:81)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement.accept(CASTForStatement.java:146)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTCompoundStatement.accept(CASTCompoundStatement.java:81)
-	at org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionDefinition.accept(CASTFunctionDefinition.java:133)
-	at org.eclipse.cdt.internal.core.dom.parser.ASTTranslationUnit.accept(ASTTranslationUnit.java:266)
-	at Main.findStatementToAutotune(Main.java:182)
-	at Main.run(Main.java:72)
-	at DistributeLoops.main(DistributeLoops.java:31)
-Please add a comment containing the loop name entered immediately above the loop to refactor and make sure it is spelled correctly.
-
-FATALERROR: Fission requires more than one statement.
-Context: <Unspecified context>
-code: none
-Data: null
-Please add a comment containing the loop name entered immediately above the loop to refactor and make sure it is spelled correctly.
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
+./CMDTestTool.sh: line 20: java: command not found
