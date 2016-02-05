@@ -32,14 +32,12 @@ import edu.auburn.oaccrefac.core.transformations.TileLoopsParams;
  */
 public class LoopTilingRefactoring extends ForLoopRefactoring {
 
-    private int width;
-    private int height;
+    private int width = 0;
+    private int height = 0;
     private TileLoopsCheck check;
     
     public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        this.width = 0;
-        this.height = 0;
     }
     
     public void setWidth(int width) {

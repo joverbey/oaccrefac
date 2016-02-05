@@ -17,7 +17,7 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
     private int cutFactor;
     private LoopCuttingCheck check;
     
-    //?
+    // TODO: put a good comment here
     public LoopCuttingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }

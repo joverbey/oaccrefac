@@ -27,65 +27,55 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
 
 /**
- * Our action implements workbench action delegate.
- * The action proxy will be created by the workbench and
- * shown in the UI. When the user tries to use the action,
- * this delegate will be created and execution will be 
- * delegated to it.
+ * Our action implements workbench action delegate. The action proxy will be created by the workbench and shown in the
+ * UI. When the user tries to use the action, this delegate will be created and execution will be delegated to it.
+ * 
  * @see IWorkbenchWindowActionDelegate
  */
 @SuppressWarnings("restriction")
 public class IntroOpenACCParallelDelegate extends RefactoringActionDelegate {
-	
-	/**
-	 * The constructor.
-	 */
-	public IntroOpenACCParallelDelegate() {
-		super();
-	}
 
-	
-	@Override
-	public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-		return new IntroOpenACCParallelRefactoring(wc, selection, project);
-	}
+    @Override
+    public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
+        return new IntroOpenACCParallelRefactoring(wc, selection, project);
+    }
 
-	@Override
-	public RefactoringWizard createWizard(Refactoring refactoring) {
-		return new Wizard(refactoring);
-	}
-	
+    @Override
+    public RefactoringWizard createWizard(Refactoring refactoring) {
+        return new Wizard(refactoring);
+    }
+
     private static class Wizard extends RefactoringWizard {
 
-    	public Wizard(Refactoring refactoring) {
-    		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-    		setDefaultPageTitle("Introduce OpenACC Parallel");
-    		setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
-    	}
+        public Wizard(Refactoring refactoring) {
+            super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
+            setDefaultPageTitle("Introduce OpenACC Parallel");
+            setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
+        }
 
-    	@Override
-    	protected void addUserInputPages() {
-    		//addPage(new EmptyPage());
-    	}
+        @Override
+        protected void addUserInputPages() {
+            // addPage(new EmptyPage());
+        }
     }
 
     @SuppressWarnings("unused")
     private static class EmptyPage extends UserInputWizardPage {
-    	
-    	public EmptyPage() {
-			super("(empty)");
-		}
 
-    	@Override
-    	public void createControl(Composite parent) {
-    		Composite c = new Composite(parent, SWT.NONE);
-    		c.setLayout(new ColumnLayout());
-    		new Button(c, SWT.CHECK).setText("Infer copy clauses");
-    		new Button(c, SWT.CHECK).setText("Infer private clause");
-    		setControl(c);
-    		setTitle(getName());
-    		setPageComplete(true);
-    	}
+        public EmptyPage() {
+            super("(empty)");
+        }
+
+        @Override
+        public void createControl(Composite parent) {
+            Composite c = new Composite(parent, SWT.NONE);
+            c.setLayout(new ColumnLayout());
+            new Button(c, SWT.CHECK).setText("Infer copy clauses");
+            new Button(c, SWT.CHECK).setText("Infer private clause");
+            setControl(c);
+            setTitle(getName());
+            setPageComplete(true);
+        }
     }
-    
+
 }

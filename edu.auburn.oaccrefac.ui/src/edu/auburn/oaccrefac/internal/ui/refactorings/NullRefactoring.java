@@ -44,5 +44,4 @@ public class NullRefactoring extends ForLoopRefactoring {
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new NullAlteration(rewriter, check).change();
     }
-
 }

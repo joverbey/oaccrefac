@@ -23,7 +23,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopInterchangeRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopInterchangeDelegate extends RefactoringActionDelegate {
-    
+
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
         return new LoopInterchangeRefactoring(wc, selection, project);
@@ -31,19 +31,18 @@ public class LoopInterchangeDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopInterchangeRefactoring))
+        if (!(refactoring instanceof LoopInterchangeRefactoring)) {
             throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
-        LoopRefactoringWizard harryP = new LoopRefactoringWizard(refactoring, 
-                "Loop Interchange Refactoring");
+        }
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Loop Interchange Refactoring");
         final LoopInterchangeRefactoring refac = (LoopInterchangeRefactoring) refactoring;
-        harryP.getInputPage().addNumberInputControl("Interchange Depth: ", 
-                new ValueChangedListener() {
-                    @Override
-                    public void valueChanged(int value) {
-                        refac.setExchangeDepth(value);
-                    }
-                });
-        return harryP;
+        wizard.getInputPage().addNumberInputControl("Interchange Depth: ", new ValueChangedListener() {
+            @Override
+            public void valueChanged(int value) {
+                refac.setExchangeDepth(value);
+            }
+        });
+        return wizard;
     }
 
 }

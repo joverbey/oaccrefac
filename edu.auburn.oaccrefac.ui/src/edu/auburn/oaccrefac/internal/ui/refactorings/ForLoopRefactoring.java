@@ -55,7 +55,7 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 public abstract class ForLoopRefactoring extends CRefactoring {
 
     private IASTTranslationUnit ast;
-    private IASTForStatement forloop;
+    private IASTForStatement forLoop;
 
     /**
      * The constructor for ForLoopRefactoring takes items for refactoring and tosses them up to the super class as well
@@ -64,8 +64,9 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     public ForLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
 
-        if (selection == null || tu.getResource() == null || project == null)
+        if (selection == null || tu.getResource() == null || project == null) {
             initStatus.addFatalError("Invalid selection");
+        }
     }
 
     /**
@@ -91,7 +92,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     @Override
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
-
         pm.subTask("Calculating modifications...");
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
         // Other initialization stuff here...
@@ -117,29 +117,29 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         SubMonitor progress = SubMonitor.convert(pm, 10);
         ast = getAST(tu, progress.newChild(9));
-        forloop = findLoop(ast);
-        if (forloop == null) {
+        forLoop = findLoop(ast);
+        if (forLoop == null) {
             initStatus.addFatalError("Please select a for loop.");
             return initStatus;
         }
 
-        String msg = String.format("Selected loop (line %d) is: %s",
-                forloop.getFileLocation().getStartingLineNumber(), ASTUtil.summarize(forloop));
-        initStatus.addInfo(msg, getLocation(forloop));
+        String msg = String.format("Selected loop (line %d) is: %s", forLoop.getFileLocation().getStartingLineNumber(),
+                ASTUtil.summarize(forLoop));
+        initStatus.addInfo(msg, getLocation(forLoop));
 
-        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(forloop);
+        ForStatementInquisitor forLoopInquisitor = ForStatementInquisitor.getInquisitor(forLoop);
 
         pm.subTask("Checking initial conditions...");
-        if (!forLoop.isCountedLoop()) {
-            initStatus.addFatalError("Loop form not supported (not a 0-based counted loop).", getLocation(forloop));
+        if (!forLoopInquisitor.isCountedLoop()) {
+            initStatus.addFatalError("Loop form not supported (not a 0-based counted loop).", getLocation(forLoop));
             return initStatus;
         }
 
         doCheckInitialConditions(initStatus, progress.newChild(1));
 
-        if (containsUnsupportedOp(forloop)) {
+        if (containsUnsupportedOp(forLoop)) {
             initStatus.addFatalError(
-                    "Cannot refactor -- loop contains " + "iteration augment statement (break or continue or goto)");
+                    "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
         }
 
         pm.subTask("Done checking initial conditions");
@@ -183,11 +183,13 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         IIndexManager im = CCorePlugin.getIndexManager();
         while (!im.isProjectIndexed(project)) {
             im.joinIndexer(500, pm);
-            if (pm.isCanceled())
+            if (pm.isCanceled()) {
                 throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
+            }
         }
-        if (!im.isProjectIndexed(project))
+        if (!im.isProjectIndexed(project)) {
             throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
+        }
     }
 
     /**
@@ -201,27 +203,27 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      * @return CASTForStatement to perform refactoring on
      */
     protected IASTForStatement findLoop(IASTTranslationUnit ast) {
-        IASTForStatement first_for = null;
-        List<IASTForStatement> fors = ASTUtil.find(ast, IASTForStatement.class);
+        IASTForStatement firstFor = null;
+        List<IASTForStatement> loops = ASTUtil.find(ast, IASTForStatement.class);
         int begin = selectedRegion.getOffset();
         int end = selectedRegion.getLength() + begin;
-        
-        for (IASTForStatement loop : fors) {
-            IASTFileLocation loc = loop.getFileLocation(); 
-            if (loc.getNodeOffset() >= begin
-               && loc.getNodeOffset() < end) {
-                if (first_for != null) {
-                    IASTFileLocation firstloc = first_for.getFileLocation();
+
+        // TODO: Check this out to see if firstFor can be assigned before the loop
+        for (IASTForStatement loop : loops) {
+            IASTFileLocation loc = loop.getFileLocation();
+            if (loc.getNodeOffset() >= begin && loc.getNodeOffset() < end) {
+                if (firstFor != null) {
+                    IASTFileLocation firstloc = firstFor.getFileLocation();
                     if (firstloc.getNodeOffset() > loc.getNodeOffset()) {
-                        first_for = loop;
+                        firstFor = loop;
                     }
                 } else {
-                    first_for = loop;
+                    firstFor = loop;
                 }
             }
         }
-        
-        return (IASTForStatement) first_for;
+
+        return (IASTForStatement) firstFor;
     }
 
     // *************************************************************************
@@ -233,7 +235,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     }
 
     protected IASTForStatement getLoop() {
-        return (IASTForStatement) forloop;
+        return (IASTForStatement) forLoop;
     }
 
     protected IASTTranslationUnit getAST() {

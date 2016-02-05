@@ -63,5 +63,4 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
         UnrollLoopAlteration unroll = new UnrollLoopAlteration(rewriter, unrollFactor, check);
         unroll.change();
     }
-
 }

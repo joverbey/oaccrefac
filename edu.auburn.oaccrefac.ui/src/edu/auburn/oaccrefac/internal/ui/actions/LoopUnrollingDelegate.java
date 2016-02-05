@@ -25,24 +25,28 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopUnrollingRefactoring;
 public class LoopUnrollingDelegate extends RefactoringActionDelegate {
     
     @Override
-    public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
+    public CRefactoring createRefactoring(IWorkingCopy wc,
+            ITextSelection selection, ICProject project) {
         return new LoopUnrollingRefactoring(wc, selection, project);
     }
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopUnrollingRefactoring))
+        if (!(refactoring instanceof LoopUnrollingRefactoring)) {
             throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
-        final LoopUnrollingRefactoring refac = (LoopUnrollingRefactoring) refactoring;
-        LoopRefactoringWizard weasley = 
-                new LoopRefactoringWizard(refactoring, "LoopUnrollingRefactoring");
-        weasley.getInputPage().addNumberInputControl("Unroll Factor", new ValueChangedListener() {
-            @Override
-            public void valueChanged(int value) {
-                refac.setUnrollFactor(value);
-                
-            }
-        });
-        return weasley;
+        }
+        final LoopUnrollingRefactoring refac =
+                (LoopUnrollingRefactoring) refactoring;
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring,
+                "LoopUnrollingRefactoring");
+        wizard.getInputPage().addNumberInputControl("Unroll Factor", 
+                new ValueChangedListener() {
+                    @Override
+                    public void valueChanged(int value) {
+                        refac.setUnrollFactor(value);
+                        
+                    }
+                });
+        return wizard;
     }
 }

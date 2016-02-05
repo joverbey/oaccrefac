@@ -20,8 +20,9 @@ public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
     public IntroduceDataConstructRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
         
-        if (selection == null || tu.getResource() == null || project == null)
+        if (selection == null || tu.getResource() == null || project == null) {
             initStatus.addFatalError("Invalid selection");
+        }
     }
 
     @Override

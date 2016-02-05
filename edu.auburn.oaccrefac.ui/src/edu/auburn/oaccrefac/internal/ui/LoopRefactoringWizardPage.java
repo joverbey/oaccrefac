@@ -20,16 +20,14 @@ import org.eclipse.swt.widgets.Composite;
 import edu.auburn.oaccrefac.internal.ui.NumberInputComposite.ValueChangedListener;
 
 public class LoopRefactoringWizardPage extends UserInputWizardPage {
-    
-    private ArrayList<String> controlLabels;
-    private ArrayList<ValueChangedListener> controlListeners;
+
+    private final ArrayList<String> controlLabels = new ArrayList<>();
+    private final ArrayList<ValueChangedListener> controlListeners = new ArrayList<>();
 
     public LoopRefactoringWizardPage(String name) {
         super(name);
-        controlLabels = new ArrayList<>();
-        controlListeners = new ArrayList<>();
     }
-    
+
     public void addNumberInputControl(String label, ValueChangedListener callback) {
         controlLabels.add(label);
         controlListeners.add(callback);
@@ -39,13 +37,13 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
     public void createControl(Composite parent) {
         Composite c = new Composite(parent, SWT.NONE);
         c.setLayout(new GridLayout());
-        
+
         for (int i = 0; i < controlListeners.size(); i++) {
             NumberInputComposite nic = new NumberInputComposite(c, SWT.NONE);
             nic.setLabelText(controlLabels.get(i));
             nic.setListener(controlListeners.get(i));
         }
-        
+
         setControl(c);
         setTitle(getName());
         setPageComplete(true);

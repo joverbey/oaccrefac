@@ -22,10 +22,6 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.NullRefactoring;
 
 @SuppressWarnings("restriction")
 public class AnalyzeLoopDelegate extends RefactoringActionDelegate {
-	
-	public AnalyzeLoopDelegate() {
-		super();
-	}
 
 	@Override
 	public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
@@ -38,7 +34,6 @@ public class AnalyzeLoopDelegate extends RefactoringActionDelegate {
 	}
 	
     private static class Wizard extends RefactoringWizard {
-
     	public Wizard(Refactoring refactoring) {
     		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
     		setDefaultPageTitle("Analyze Loop");

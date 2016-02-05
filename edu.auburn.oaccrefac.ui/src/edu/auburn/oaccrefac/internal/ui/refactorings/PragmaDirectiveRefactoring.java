@@ -42,13 +42,13 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
         }
 
         ast = getAST(tu, pm);
-        
+
         pragma = findPragma();
         if (pragma == null) {
             initStatus.addFatalError("Please select a pragma directive.");
             return initStatus;
         }
-        
+
         statement = findStatement(pragma);
 
         String msg = String.format("Selected \"%s\" on line %d", pragma.getRawSignature(),
@@ -79,7 +79,7 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
     protected RefactoringDescriptor getRefactoringDescriptor() {
         return null;
     }
-    
+
     protected abstract void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException;
 
     @Override
@@ -108,36 +108,37 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
         }
         return selectedPrags.size() > 0 ? selectedPrags.get(0) : null;
     }
-    
+
     private IASTStatement findStatement(IASTPreprocessorPragmaStatement pragma) {
-        
+
+        // TODO: find a better way to do this
         class PragmaStatementFinder extends ASTVisitor {
-            
+
             IASTStatement nearestFollowingStatement;
             int after;
-            
+
             public PragmaStatementFinder(IASTPreprocessorPragmaStatement pragma) {
                 shouldVisitStatements = true;
                 after = pragma.getFileLocation().getNodeOffset() + pragma.getFileLocation().getNodeLength();
             }
-            
+
             @Override
             public int visit(IASTStatement stmt) {
-                if(stmt.getFileLocation().getNodeOffset() >= after) {
-                    if(nearestFollowingStatement == null
-                            || stmt.getFileLocation().getNodeOffset() < nearestFollowingStatement.getFileLocation().getNodeOffset()) {
-                        nearestFollowingStatement = stmt;
-                    }
+                if (stmt.getFileLocation().getNodeOffset() >= after
+                        && nearestFollowingStatement == null
+                        || stmt.getFileLocation().getNodeOffset() < nearestFollowingStatement.getFileLocation()
+                                .getNodeOffset()) {
+                    nearestFollowingStatement = stmt;
                 }
                 return PROCESS_CONTINUE;
             }
-            
+
         }
-        
+
         PragmaStatementFinder finder = new PragmaStatementFinder(pragma);
         ast.accept(finder);
         return finder.nearestFollowingStatement;
-        
+
     }
 
     public IASTPreprocessorPragmaStatement getPragma() {

@@ -21,28 +21,28 @@ public class CDTASTRewriteProxy implements IASTRewrite {
 
     private final ASTRewrite rewrite;
 
-    public CDTASTRewriteProxy(ASTRewrite rewrite) {
-        this.rewrite = rewrite;
+    public CDTASTRewriteProxy(ASTRewrite r) {
+        rewrite = r;
     }
 
     public IASTNode createLiteralNode(String code) {
-        return this.rewrite.createLiteralNode(code);
+        return rewrite.createLiteralNode(code);
     }
 
     public void remove(IASTNode node, TextEditGroup editGroup) {
-        this.rewrite.remove(node, editGroup);
+        rewrite.remove(node, editGroup);
     }
 
     public CDTASTRewriteProxy replace(IASTNode node, IASTNode replacement, TextEditGroup editGroup) {
-        return new CDTASTRewriteProxy(this.rewrite.replace(node, replacement, editGroup));
+        return new CDTASTRewriteProxy(rewrite.replace(node, replacement, editGroup));
     }
 
     public CDTASTRewriteProxy insertBefore(IASTNode parent, IASTNode insertionPoint, IASTNode newNode,
             TextEditGroup editGroup) {
-        return new CDTASTRewriteProxy(this.rewrite.insertBefore(parent, insertionPoint, newNode, editGroup));
+        return new CDTASTRewriteProxy(rewrite.insertBefore(parent, insertionPoint, newNode, editGroup));
     }
 
     public Change rewriteAST() {
-        return this.rewrite.rewriteAST();
+        return rewrite.rewriteAST();
     }
 }

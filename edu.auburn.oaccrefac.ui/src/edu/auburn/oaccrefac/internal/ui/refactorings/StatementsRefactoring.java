@@ -154,7 +154,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         statementsAndComments.addAll(comments);
         Collections.sort(statements, ASTUtil.FORWARD_COMPARATOR);
         Collections.sort(statementsAndComments, ASTUtil.FORWARD_COMPARATOR);
-        
+
         this.statements = statements.toArray(new IASTStatement[statements.size()]);
         this.statementsAndComments = statementsAndComments.toArray(new IASTNode[statementsAndComments.size()]);
 
@@ -167,5 +167,4 @@ public abstract class StatementsRefactoring extends CRefactoring {
     public IASTNode[] getStatementsAndComments() {
         return statementsAndComments;
     }
-
 }

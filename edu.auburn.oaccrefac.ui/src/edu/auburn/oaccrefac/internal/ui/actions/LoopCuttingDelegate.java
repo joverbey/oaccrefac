@@ -12,7 +12,7 @@ import edu.auburn.oaccrefac.internal.ui.NumberInputComposite.ValueChangedListene
 import edu.auburn.oaccrefac.internal.ui.refactorings.LoopCuttingRefactoring;
 
 @SuppressWarnings("restriction")
-public class LoopCuttingDelegate extends RefactoringActionDelegate{
+public class LoopCuttingDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
@@ -21,20 +21,17 @@ public class LoopCuttingDelegate extends RefactoringActionDelegate{
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopCuttingRefactoring))
+        if (!(refactoring instanceof LoopCuttingRefactoring)) {
             throw new ClassCastException("Refactoring not LoopCuttingRefactoring!");
+        }
         final LoopCuttingRefactoring refac = (LoopCuttingRefactoring) refactoring;
-        LoopRefactoringWizard GUI = 
-                new LoopRefactoringWizard(refactoring, "LoopCuttingRefactoring");
-        GUI.getInputPage().addNumberInputControl("Cut Factor", new ValueChangedListener() {
+        LoopRefactoringWizard gui = new LoopRefactoringWizard(refactoring, "LoopCuttingRefactoring");
+        gui.getInputPage().addNumberInputControl("Cut Factor", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setCutFactor(value);
-                
             }
         });
-        return GUI;
-        
+        return gui;
     }
-
 }

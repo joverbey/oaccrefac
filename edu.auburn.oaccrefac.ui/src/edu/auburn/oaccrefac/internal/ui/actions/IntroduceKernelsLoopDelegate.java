@@ -34,30 +34,25 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.IntroduceKernelsLoopRefacto
  * delegated to it.
  * @see IWorkbenchWindowActionDelegate
  */
-@SuppressWarnings("restrictions")
+@SuppressWarnings("restriction")
 public class IntroduceKernelsLoopDelegate extends RefactoringActionDelegate {
 
-   /**
-    * The constructor.
-    */
-   public IntroduceKernelsLoopDelegate() {
-       super();
-   }
-   
    @Override
-   public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
+   public CRefactoring createRefactoring(IWorkingCopy wc,
+           ITextSelection selection, ICProject project) {
        return new IntroduceKernelsLoopRefactoring(wc, selection, project);
    }
-   
+
    @Override
    public RefactoringWizard createWizard(Refactoring refactoring) {
        return new Wizard(refactoring);
    }
 
    private static class Wizard extends RefactoringWizard {
-       
+
        public Wizard(Refactoring refactoring) {
-           super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
+           super(refactoring, DIALOG_BASED_USER_INTERFACE 
+                   | PREVIEW_EXPAND_FIRST_NODE);
            setDefaultPageTitle("Introduce OpenACC Kernels Loop");
            setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
        }
@@ -67,10 +62,10 @@ public class IntroduceKernelsLoopDelegate extends RefactoringActionDelegate {
            // addPage(new EmptyPage());
        }
    }
-   
+
    @SuppressWarnings("unused")
    private static class EmptyPage extends UserInputWizardPage {
-       
+
        public EmptyPage() {
            super("(empty)");
        }
@@ -85,6 +80,5 @@ public class IntroduceKernelsLoopDelegate extends RefactoringActionDelegate {
            setTitle(getName());
            setPageComplete(true);
        }
-       
    }
 }

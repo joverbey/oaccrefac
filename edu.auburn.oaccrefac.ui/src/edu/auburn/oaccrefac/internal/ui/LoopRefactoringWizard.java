@@ -18,23 +18,23 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 public class LoopRefactoringWizard extends RefactoringWizard {
 
-    private String title;
-    private LoopRefactoringWizardPage inputpage;
-    
-    public LoopRefactoringWizard(Refactoring refactoring, String titleIn) {
+    private LoopRefactoringWizardPage inputPage;
+
+    public LoopRefactoringWizard(Refactoring refactoring, String title) {
         super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-        
-        title = titleIn;
+
         setDefaultPageTitle(title);
         setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
-        
-        inputpage = new LoopRefactoringWizardPage(title);
+
+        inputPage = new LoopRefactoringWizardPage(title);
     }
-    
+
     @Override
     protected void addUserInputPages() {
-        addPage(inputpage);
+        addPage(inputPage);
     }
-    
-    public LoopRefactoringWizardPage getInputPage() { return inputpage; }
+
+    public LoopRefactoringWizardPage getInputPage() {
+        return inputPage;
+    }
 }
