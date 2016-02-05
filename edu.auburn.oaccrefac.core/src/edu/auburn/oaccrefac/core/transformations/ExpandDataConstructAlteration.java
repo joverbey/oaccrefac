@@ -98,7 +98,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 if(exp.getCopyout().size() <= ocopyoutsize)
                 //be sure set of defs reaching into the construct hasnt changed for variables in both the original and the expansion copyin sets
                 if(areCopyinDefsTheSame(gpuvars, exp, getStatement(), rd)) 
-                  //be sure set of defs reaching out the construct hasnt changed for variables in both the original and the expansion copyout sets
+                //be sure set of defs reaching out the construct hasnt changed for variables in both the original and the expansion copyout sets
                 if(areCopyoutDefsTheSame(gpuvars, exp, getStatement(), rd)) 
                 //if a var is used on the gpu inside the construct and was copied in, we cant remove it from the copyin set in the expansion
                 if(isAIntersectedWithBASubsetOfC(gpuvars, copyin, expcopyin))
@@ -156,7 +156,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 }
             }
         }
-        return null;
+        return gpuVars;
     }
 
     private int getMaxDown(IASTStatement statement) {
@@ -204,19 +204,44 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
     }
 
     private Set<String> getCopyout(IASTStatement expstart, IASTStatement expend, ReachingDefinitions rd) {
-        // TODO Auto-generated method stub
+        Set<String> copyout = new HashSet<String>();
+        for(IASTStatement statement = expstart; !statement.equals(ASTUtil.getNextSibling(expend)); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
+            Set<IASTName> uses = rd.reachedUses(statement);
+            for(IASTName use : uses) {
+                boolean inConstruct = false;
+                for(IASTStatement stmt = expstart; !stmt.equals(ASTUtil.getNextSibling(expend)); stmt = (IASTStatement) ASTUtil.getNextSibling(stmt)) {
+                    if(ASTUtil.isAncestor(stmt, use)) {
+                        inConstruct = true;
+                    }
+                }
+                if(!inConstruct) {
+                    copyout.add(use.getRawSignature());
+                }
+            }
+        }
         // should return the variables defined in all definitions that A) are in expstart, expend, or anything lexically in between and B) reach any statements not in expstart, expend, or anything lexically in between
         return null;
     }
 
     private Set<String> getCopyin(IASTStatement expstart, IASTStatement expend, ReachingDefinitions rd) {
-        // should return the variables defined in all definitions that A) reach expstart, expend, or anything lexically in between and B) are not in expstart, expend, or anything lexically in between 
+        Set<String> copyin = new HashSet<String>();
         //TODO type checking? also finish this
-        for(IASTStatement stmt = expstart; !stmt.equals(expend); stmt = (IASTStatement) ASTUtil.getNextSibling(stmt)) {
-            //get the definitions of stmt that occur outside this expansion
+        for(IASTStatement statement = expstart; !statement.equals(ASTUtil.getNextSibling(expend)); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
+            Set<IASTName> defs = rd.reachingDefinitions(statement);
+            //for each name, if that name is not in the construct, add to copyin
+            for(IASTName def : defs) {
+                boolean inConstruct = false;
+                for(IASTStatement stmt = expstart; !stmt.equals(ASTUtil.getNextSibling(expend)); stmt = (IASTStatement) ASTUtil.getNextSibling(stmt)) {
+                    if(ASTUtil.isAncestor(stmt, def)) {
+                        inConstruct = true;
+                    }
+                }
+                if(inConstruct) {
+                    copyin.add(def.getRawSignature());
+                }
+            }
         }
-        //loop doesn't cover expend, so get appropriate definitions or it here
-        return null;
+        return copyin;
     }
 
     private IASTStatement getExpansionEnd(int stmtsDown, IASTStatement original) {

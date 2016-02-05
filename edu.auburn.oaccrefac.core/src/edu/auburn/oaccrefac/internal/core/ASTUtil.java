@@ -630,6 +630,7 @@ public class ASTUtil {
         return finder.finalOffset;
     }
     
+    //FIXME this is used often, but is redundant; should use ASTUtil.find(..., IASTName.class)
     public static List<IASTName> getNames(IASTNode node) {
         class NameGetter extends ASTVisitor {
             

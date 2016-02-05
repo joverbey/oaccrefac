@@ -6,8 +6,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
  * Reaching definitions entry/exit set for a block. Essentially a mapping of variables to sets of statements
@@ -70,6 +73,19 @@ public class RDVarSet {
     
     public Set<IASTNode> get(IBinding var) {
         return set.get(var);
+    }
+    
+    public boolean contains(IASTName definition) {
+        for(IBinding binding : set.keySet()) {
+            if(binding.equals(definition.resolveBinding())) {
+                for(IASTNode node : set.get(binding)) {
+                    if(ASTUtil.isAncestor(node, definition)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     public Map<IBinding, Set<IASTNode>> getMap() {

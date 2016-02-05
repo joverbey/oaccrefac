@@ -40,8 +40,6 @@ public class ReachingDefinitions {
         this.entrySets = new HashMap<IBasicBlock, RDVarSet>();
         this.exitSets = new HashMap<IBasicBlock, RDVarSet>();
         
-//        System.out.println(ASTUtil.isNameInScope("a", func.getScope()));
-        
         identifyReachingDefinitions(cfg);
         
     }
@@ -50,13 +48,13 @@ public class ReachingDefinitions {
      * Returns a set of all definitions of a variable that reach this occurrence of the variable. If the variable is being
      * defined at this occurrence, it is treated as if no definitions reach it. 
      * @param varUse a use a variable
-     * @return a set of IASTNode definitions reaching the variable use
+     * @return a set of <code>IASTNode</code> definitions reaching the variable use
      */
-    public Set<IASTNode> reachingDefinitions(IASTName varUse) {
+    public Set<IASTName> reachingDefinitions(IASTName varUse) {
         
         //if this occurrence of the var is a definition of var, treat it as if nothing reaches it
         if(ASTUtil.isDefinition(varUse)) {
-            return new HashSet<IASTNode>();
+            return new HashSet<IASTName>();
         }
         
         //use should be a block, since that is what can be "reached" by a definition
@@ -72,10 +70,65 @@ public class ReachingDefinitions {
         }
         if(entrySet == null) {
             //the use node had no entry set, either because there are no reaching defs or because it wasn't a valid block node
-            return new HashSet<IASTNode>();
+            return new HashSet<IASTName>();
         }
         
-        return entrySet.get(variable) == null ? new HashSet<IASTNode>() : entrySet.get(variable);
+        Set<IASTNode> reachingDefs = entrySet.get(variable);
+        if(reachingDefs == null) {
+            return new HashSet<IASTName>();
+        }
+        
+        /* get the names from the given nodes that represent the definitions of varUse
+         * such as the "x" in "int x = y;" or the "y" in "y++"
+         */
+        Set<IASTName> reachingDefNames = new HashSet<IASTName>();
+        for(IASTNode def : reachingDefs) {
+            for(IASTName name : ASTUtil.getNames(def)) {
+                //if a name found under the definition node is a definition and refers to the right variable
+                if(ASTUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
+                    reachingDefNames.add(name);
+                }
+            }
+        }
+        return reachingDefNames;
+        
+    }
+    
+    /**
+     * Given a name which is used as a definition, returns a set of every use of the same variable
+     * that the definition reaches. 
+     * 
+     * @param def the definition (i.e., the <code>x</code> in <code>int x = y;</code> or <code>x++</code>)
+     * @return the set of uses reached by <code>def</code>
+     */
+    public Set<IASTName> reachedUses(IASTName def) {
+        
+        if(!ASTUtil.isDefinition(def)) {
+            return new HashSet<IASTName>();
+        }
+        
+        Set<IASTNode> uses = new HashSet<IASTNode>();
+        
+        for(IBasicBlock bb : entrySets.keySet()) {
+            Object data = ((ICfgData) bb).getData();
+            if (data != null) {
+                RDVarSet entrySet = entrySets.get(bb);
+                if(entrySet != null && entrySet.contains(def)) {
+                    uses.add(def);
+                }
+            }
+        }
+       
+        Set<IASTName> reachingDefNames = new HashSet<IASTName>();
+        for(IASTNode use : uses) {
+            for(IASTName name : ASTUtil.getNames(use)) {
+                if(name.resolveBinding().equals(def.resolveBinding())) {
+                    reachingDefNames.add(name);
+                }
+            }
+        }
+        return reachingDefNames;
+        
     }
     
     /**
@@ -84,23 +137,25 @@ public class ReachingDefinitions {
      * @param node a tree node that may or may not contain variable uses
      * @return a set of IASTNode definitions reaching the variable uses in the node
      */
-    public Set<IASTNode> reachingDefinitions(IASTNode node) {
-        Set<IASTNode> defs = new HashSet<IASTNode>();
+
+    public Set<IASTName> reachingDefinitions(IASTNode node) {
+        Set<IASTName> defs = new HashSet<IASTName>();
         for(IASTName name : ASTUtil.find(node, IASTName.class)) {
             defs.addAll(reachingDefinitions(name));
         }
         return defs;
     }
     
+    public Set<IASTName> reachedUses(IASTNode node) {
+        Set<IASTName> uses = new HashSet<IASTName>();
+        for(IASTName name : ASTUtil.find(node, IASTName.class)) {
+            uses.addAll(reachedUses(name));
+        }
+        return uses;
+    }
+    
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
         boolean changed;
-//        for(IBasicBlock bb : cfg.getNodes()) {
-//            System.out.println(bb);
-//            System.out.println("Preds: ");
-//            for(IBasicBlock pred : bb.getIncomingNodes()) {
-//                System.out.println("\t" + pred);
-//            }
-//        }
         do {
             changed = false;
             
@@ -147,60 +202,6 @@ public class ReachingDefinitions {
         } while (changed);
         return;
     }
-    
-//    //TODO finish this?
-//    //use should be either an IASTStatement or an IASTExpression
-//    public boolean reaches(IASTName definition, IASTNode use) {
-//        
-//        if(!isDefinition(definition)) {
-//            throw new IllegalArgumentException("Definition given is not a variable definition");
-//        }
-//        
-//        IBasicBlock useBB = null;
-//        for(IBasicBlock bb : entrySets.keySet()) {
-//            Object data = ((ICfgData) bb).getData();
-//            if (data != null && data instanceof IASTNode && data.equals(use)) {
-//                useBB = bb; 
-//                break;
-//            }
-//        }
-//        
-//        if(useBB == null) {
-//            // The use node given is not represented by any block
-//            // (it should be either an IASTStatement or, in a few cases, an IASTExpression)
-//            throw new IllegalArgumentException("No block for the node");
-//        }
-//        
-//        RDVarSet entrySetForBlock = entrySets.get(useBB);
-//        if (entrySetForBlock == null) {
-//            // If we get here, we found the right block for the given use, but there is no set of
-//            // definitions that reach it. This should not be able to happen.
-//            throw new IllegalStateException("No entry set for use or no definitions reaching the use");
-//        }
-//        
-//        //all definitions of the variable represented by the argument called "definition" that reach the block represented by the argument "use"
-//        Set<IASTNode> defsOfDefThatReachBlock = entrySetForBlock.get(definition.resolveBinding());
-//        if (defsOfDefThatReachBlock == null) {
-//            return false;
-//        }
-//        
-//        IASTStatement defStmt = ASTUtil.findNearestAncestor(definition, IASTStatement.class);
-//        IASTUnaryExpression defUnaryExpr = ASTUtil.findNearestAncestor(definition, IASTUnaryExpression.class);
-//        IASTBinaryExpression defBinaryExpr = ASTUtil.findNearestAncestor(definition, IASTBinaryExpression.class);
-//        /**
-//         * TODO add a check for scope here i.e., in: <code>
-//         * for(int i = 0; i < 10; i++) {
-//         *     for(int j = 0; j < 10; j++) {
-//         *     }
-//         * }
-//         * </code> the definition at <int j = 0> is said to reach the first line of the outer loop; the CFG
-//         * gives that impression, but scoping actually disallows this.
-//         * 
-//         */
-//        return defsOfDefThatReachBlock.contains(defStmt) || defsOfDefThatReachBlock.contains(defUnaryExpr)
-//                || defsOfDefThatReachBlock.contains(defBinaryExpr);
-//
-//    }
     
     private List<IBinding> varsWrittenToIn(IBasicBlock bb) {
         List<IBinding> writeAccesses = new ArrayList<IBinding>();
