@@ -39,12 +39,12 @@ public class PointsToAnalysis {
      * notRestrictPointers holds all pointer variables without the restrict
      * qualifier in the IASTFunctionDefinition.
      */
-    private HashSet<IVariable> notRestrictPointers;
+    private final HashSet<IVariable> notRestrictPointers;
     
     /**
      * variables holds all variables found in the IASTFunctionDefinition.
      */
-    private HashSet<IVariable> variables;
+    private final HashSet<IVariable> variables;
        
     /**
      * PointsToAnalysis constructor.
