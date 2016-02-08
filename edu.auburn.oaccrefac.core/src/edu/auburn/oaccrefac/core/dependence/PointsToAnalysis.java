@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
- * Performs a very crude address-taken analysis on the IASTFunctionDefinition
+ * Performs a very crude points-to analysis on the IASTFunctionDefinition
  * passed to the constructor to determine if two variables, a and b, could
  * possibly point to the same thing.
  * 
@@ -47,7 +47,7 @@ public class PointsToAnalysis {
     private final HashSet<IVariable> variables;
        
     /**
-     * PointsToAnalysis constructor.
+     * PointsToAnalysis performs the analysis on the given function and monitor.
      * 
      * The results of the analysis are constant, so a new PointsToAnalysis object will
      * have to be created for further analysis.

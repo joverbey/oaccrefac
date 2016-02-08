@@ -85,6 +85,7 @@ public class PointsToAnalysisTest {
     
     /**
      * checkFunctionParameters checks that function pointers are also found.
+     * 
      * @throws CoreException
      */
     @Test
