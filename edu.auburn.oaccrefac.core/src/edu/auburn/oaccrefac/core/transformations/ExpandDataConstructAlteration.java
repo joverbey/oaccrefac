@@ -2,6 +2,7 @@ package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -262,16 +263,73 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         return end;
     }
 
-    private boolean areCopyoutDefsTheSame(Set<String> gpuvars, Expansion exp, IASTStatement statement,
+    private boolean areCopyoutDefsTheSame(Set<String> gpuvars, Expansion exp, IASTStatement construct,
             ReachingDefinitions rd) {
-        // TODO Auto-generated method stub
-        return false;
+        Set<IASTName> rdc = new HashSet<IASTName>();
+        Set<IASTName> rde = new HashSet<IASTName>();
+        
+        //get definitions in the construct that reach outside of it
+        for(IASTName name : ASTUtil.find(construct, IASTName.class)) {
+            Set<IASTName> uses = rd.reachedUses(name);
+            if(uses != null && !uses.isEmpty()) {
+                for(IASTName use : uses) {
+                    if(!ASTUtil.isAncestor(construct, use)) {
+                        rdc.add(use);
+                        break;
+                    }
+                }
+            }
+        }
+        
+      //get definitions in the expansion that reach outside of it
+        //TODO type checking?
+        for(IASTStatement statement = exp.getStartOffset(); !statement.equals(ASTUtil.getNextSibling(exp.getEndOffset())); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
+            for(IASTName name : ASTUtil.find(statement, IASTName.class)) {
+                Set<IASTName> uses = rd.reachedUses(name);
+                if(uses != null && !uses.isEmpty()) {
+                    for(IASTName use : uses) {
+                        if(!ASTUtil.isAncestor(statement, use)) {
+                            rde.add(use);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        return rdc.contains(rde) && rdc.size() == rde.size();
     }
 
-    private boolean areCopyinDefsTheSame(Set<String> gpuvars, Expansion exp, IASTStatement statement,
+    private boolean areCopyinDefsTheSame(Set<String> gpuvars, Expansion exp, IASTStatement construct,
             ReachingDefinitions rd) {
-        // TODO Auto-generated method stub
-        return false;
+        
+        //definitions reaching into the construct from outside
+        Set<IASTName> rdc = new HashSet<IASTName>();
+        //definitions reaching into the expansion from outside
+        Set<IASTName> rde = new HashSet<IASTName>();
+        
+        //get all definitions reaching into the construct
+        rdc.addAll(rd.reachingDefinitions(construct));
+        //remove those definitions that are inside the construct
+        for(Iterator<IASTName> iter = rdc.iterator(); iter.hasNext();) {
+            if(ASTUtil.isAncestor(construct, iter.next())) {
+                iter.remove();
+            }
+        }
+        
+        //get all definitions reaching into the expansion
+        //TODO type checking?
+        for(IASTStatement statement = exp.getStartOffset(); !statement.equals(ASTUtil.getNextSibling(exp.getEndOffset())); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
+            rde.addAll(rd.reachingDefinitions(statement));
+        }
+        //remove those definitions that are inside the construct
+        for(Iterator<IASTName> iter = rde.iterator(); iter.hasNext();) {
+            if(ASTUtil.isAncestor(construct, iter.next())) {
+                iter.remove();
+            }
+        }
+        return rdc.containsAll(rde) && rdc.size() == rde.size();
     }
 
     private boolean isAIntersectedWithBASubsetOfC(Set<String> a, Set<String> b, Set<String> c) {
@@ -280,47 +338,28 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         return c.containsAll(intersection);
     }
     
-//    private boolean areCopyinDefsTheSame(Set<String> ocopyset, Set<String> newcopyset, ReachingDefinitions rd) {
-//        Set<String> varsInBoth = new HashSet<String>(ocopyset);
-//        varsInBoth.retainAll(newcopyset);
-//        Set<IASTNode> reachingDefinitions = rd.reachingDefinitions(getStatement());
-//        for(String var : varsInBoth) {
-//            for(IASTNode definition : reachingDefinitions) {
-//                if(/*definition is a definition of var*/) {
-//                    /*
-//                     * if(definition is outside the original construct and inside the expansion || 
-//                     * definition is inside the original construct and outside the expansion) {
-//                     *     return false;
-//                     * }
-//                     */
-//                }
-//            }
-//        }
-//        return true;
-//    }
-    
     private class Expansion {
         
-        private IASTStatement startOffset;
-        private IASTStatement endOffset;
+        private IASTStatement start;
+        private IASTStatement end;
         private int size;
         private Set<String> copyin;
         private Set<String> copyout;
         
         public Expansion(IASTStatement first, IASTStatement last, int size, Set<String> copyin, Set<String> copyout) {
-            this.startOffset = first;
-            this.endOffset = last;
+            this.start = first;
+            this.end = last;
             this.size = size;
             this.copyin = copyin;
             this.copyout = copyout;
         }
 
         public IASTStatement getStartOffset() {
-            return startOffset;
+            return start;
         }
 
         public IASTStatement getEndOffset() {
-            return endOffset;
+            return end;
         }
 
         public int getSize() {
