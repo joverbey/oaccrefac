@@ -19,11 +19,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class NumberInputComposite extends Composite {
-    
+
     private Label label;
     private Text inputText;
     private ValueChangedListener listener;
-    
+
     public NumberInputComposite(Composite parent, int style) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
@@ -36,7 +36,7 @@ public class NumberInputComposite extends Composite {
             public void modifyText(ModifyEvent e) {
                 Text source = (Text) e.getSource();
                 String newText = source.getText();
-                
+
                 if (!newText.matches("[0-9]*")) {
                     source.setText("");
                     // TODO: Should we update the listener's value when we
@@ -47,11 +47,11 @@ public class NumberInputComposite extends Composite {
             }
         });
     }
-    
+
     public void setListener(ValueChangedListener listenerIn) {
         listener = listenerIn;
     }
-    
+
     public void setLabelText(String text) {
         label.setText(text);
     }

@@ -73,7 +73,7 @@ public class Activator extends AbstractUIPlugin {
      * Logs the specified status with this plug-in's log.
      *
      * @param status
-     *        status to log
+     *            status to log
      */
     public static void log(IStatus status) {
         getDefault().getLog().log(status);
@@ -83,7 +83,7 @@ public class Activator extends AbstractUIPlugin {
      * Logs an internal error with the specified {@code Throwable}.
      *
      * @param t
-     *        the {@code Throwable} to be logged
+     *            the {@code Throwable} to be logged
      */
     public static void log(Throwable t) {
         log(new Status(IStatus.ERROR, PLUGIN_ID, 1, "Internal Error", t)); //$NON-NLS-1$
@@ -93,7 +93,7 @@ public class Activator extends AbstractUIPlugin {
      * Logs an internal error with the specified message.
      *
      * @param message
-     *        the error message to log
+     *            the error message to log
      */
     public static void log(String message) {
         log(new Status(IStatus.ERROR, PLUGIN_ID, 1, message, null));
@@ -103,9 +103,9 @@ public class Activator extends AbstractUIPlugin {
      * Logs an internal error with the specified message and {@code Throwable}.
      *
      * @param message
-     *        the error message to log
+     *            the error message to log
      * @param t
-     *        the {@code Throwable} to be logged
+     *            the {@code Throwable} to be logged
      *
      * @since 2.1
      */
