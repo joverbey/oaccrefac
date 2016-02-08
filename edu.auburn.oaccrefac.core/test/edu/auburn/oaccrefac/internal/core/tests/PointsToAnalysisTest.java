@@ -90,8 +90,7 @@ public class PointsToAnalysisTest {
     @Test
     public void checkFunctionParameters() throws CoreException {
         IASTFunctionDefinition function = makeFunction(
-                "void foo(int* restrict a, int* restrict b, int* c, int* d) {",
-                "}"
+                "void foo(int* restrict a, int* restrict b, int* c, int* d) { }"
         );
         assertNotNull(function);
         PointsToAnalysis analysis = new PointsToAnalysis(function, null);
@@ -181,6 +180,26 @@ public class PointsToAnalysisTest {
         IVariable b = findVariable(dummyFunction, "b");
         assertNotNull(b);
         analysis.variablesMayPointToSame(a, b);
+    }
+    
+    /**
+     * checkOneRestrict checks that an IVariable that is restrict and another
+     * that isn't can't point to the same variable.
+     * 
+     * @throws CoreException
+     */
+    @Test
+    public void checkOneRestrict() throws CoreException {
+        IASTFunctionDefinition function = makeFunction(
+                "void foo(int* restrict a, int* b) { }"
+        );
+        assertNotNull(function);
+        PointsToAnalysis analysis = new PointsToAnalysis(function, null);
+        IVariable a = findVariable(function, "a");
+        assertNotNull(a);
+        IVariable b = findVariable(function, "b");
+        assertNotNull(b);
+        assertFalse(analysis.variablesMayPointToSame(a, b));
     }
     
     /**
