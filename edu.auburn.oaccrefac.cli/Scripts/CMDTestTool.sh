@@ -11,19 +11,14 @@ outerinner[1]="inner"
 outerinner[2]="inner2"
 
 >./Scripts/errorlog.txt
->./Scripts/output.txt
->./Scripts/outputtemp.txt
-cp examples/level1-CMD.c ./Scripts/inputtemp.txt
+>./Scripts/output.c
+>./Scripts/outputtemp.c
+cp /home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/level1-CMD.c /home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/inputtemp.c
 
 
 
-g++ ./examples/distribute_loops.c -o ./Scripts/runnable
-./Scripts/runnable > result.txt
-
-
-
-
-
+g++ /home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/level1-CMD.c /home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/inputtemp.c -o /home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/runnable
+/home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/runnable > ./Scripts/result.txt
 
 for i in $(seq 77)
 do
@@ -34,17 +29,17 @@ do
 	for j in "${outerinner[@]}"
 	do
 		loopname+="$j"
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" DistributeLoops ./Scripts/inputtemp.txt "$loopname"  > ./Scripts/outputtemp.txt 2>> ./Scripts/errorlog.txt	
-		if [[ -s ./Scripts/outputtemp.txt ]]; then
-			cp ./Scripts/outputtemp.txt ./Scripts/output.txt
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" DistributeLoops ./Scripts/inputtemp.c "$loopname"  > ./Scripts/outputtemp.c 2>> ./Scripts/errorlog.txt	
+		if [[ -s ./Scripts/outputtemp.c ]]; then
+			cp ./Scripts/outputtemp.c ./Scripts/inputtemp.c
 		fi
 		echo $loopname
 		loopname=$loopnameTemp
 	done
 done
 
-g++ ./examples/distribute_loops.c -o ./Scripts/runnable
-./Scriptsrunnable > result2.txt
+g++ ./Scripts/output.c -o /home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/runnable
+/home/stupideclipse/Code/oaccrefac/edu.auburn.oaccrefac.ui/testcode-epcc/runnable > result2.txt
 
 if cmp -s result.txt result2.txt
 then
@@ -53,5 +48,5 @@ else
 	echo "The results did not match"
 fi
 
-rm ./Scripts/outputtemp.txt
-rm ./Scripts/inputtemp.txt
+rm ./Scripts/outputtemp.c
+rm ./Scripts/inputtemp.c
