@@ -66,7 +66,7 @@
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.DistributeLoopsDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.LoopFissionDelegate"
-               label="&amp;Fission"
+               label="&amp;Distribute"
                menubarPath="oaccrefac_menu/oaccrefac_group"
                toolbarPath="oaccrefac_group"
                tooltip="Apply loop fission on a compound for body.">

@@ -33,7 +33,7 @@ public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseL
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
             printUsage();
             return false;
         }

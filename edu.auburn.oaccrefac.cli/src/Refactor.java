@@ -66,9 +66,9 @@ public class Refactor {
         if (args.length < 1) {
             printUsage();
         } else {
-            String[] refactoringArgs = new String[args.length - 1];
+            String[] refactoringArgs = new String[args.length];
             for (int i = 1; i < args.length; i++) {
-                refactoringArgs[i-1] = args[i];
+                refactoringArgs[i] = args[i];
             }
             Runnable refactoring = refactorings.get(args[0]);
             if (refactoring == null) {
