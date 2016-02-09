@@ -13,13 +13,24 @@ package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.HashSet;
 
+import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IPointerType;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
- * AddressTakenAnalysis performs an address taken analysis on a given function.
+ * AddressTakenAnalysis performs a simple address taken analysis on a given 
+ * function.
+ * 
+ * The analysis attempts to find any proper binding below an & operator.
  * 
  * The progress of analyzing the function is stored in the monitor.
  */
@@ -55,7 +66,12 @@ public class AddressTakenAnalysis {
             monitor = new NullProgressMonitor();
         }
         monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
+        try {
         performAnalysis(function, monitor);
+        } catch (IllegalArgumentException exception) {
+            monitor.done();
+            throw exception;
+        }
         monitor.done();
     }
     
@@ -83,11 +99,67 @@ public class AddressTakenAnalysis {
      * performAnalysis performs the address taken analysis recursively on the
      * given function.
      * 
-     * @param function IASTFunctionDefinition to check for variables with their
+     * @param function IASTNode to check for variables with their
      * addresses taken in.
      * @param monitor IProgressMonitor which holds the analysis progress.
+     * @throws IllegalArgumentException
      */
-    private void performAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
-        // start by printing all names and types below & symbol
+    private void performAnalysis(IASTNode current, IProgressMonitor monitor) {
+        monitor.worked(1);
+        if (current instanceof IASTName) {
+            IBinding binding = ((IASTName) current).resolveBinding();
+            if (binding instanceof IVariable) {
+                variables.add((IVariable) binding);
+            }
+        }
+        if (current instanceof IASTUnaryExpression) {
+            IASTUnaryExpression unary = (IASTUnaryExpression) current;
+            if (unary.getOperator() == IASTUnaryExpression.op_amper) {
+                if (unary.getOperand().isLValue()) {
+                    findAddressBinding(unary.getOperand(), false);
+                } else {
+                    throw new IllegalArgumentException(
+                            "Address of non LValue (" + unary.getRawSignature() + ") taken."
+                    );
+                }
+            }
+        }
+        for (IASTNode other : current.getChildren()) {
+            performAnalysis(other, monitor);
+        }
     }
+    
+    /**
+     * findAddressBinding finds the binding which had its address taken in
+     * current and adds it to addressTakenVariables
+     * 
+     * @param current IASTExpression to search in.
+     * @param foundBinary Whether a unary or binary expression is being
+     * searched in.
+     */
+    private void findAddressBinding(IASTExpression current, boolean foundBinary) {
+        if (current instanceof IASTUnaryExpression) {
+            IASTUnaryExpression unary = (IASTUnaryExpression) current;
+            findAddressBinding(unary.getOperand(), foundBinary);
+        } else if (current instanceof IASTBinaryExpression) {
+            IASTBinaryExpression binary = (IASTBinaryExpression) current;
+            if (binary.getOperand1().isLValue()) {
+                findAddressBinding(binary.getOperand1(), true);
+            }
+            if (binary.getOperand2().isLValue()) {
+                findAddressBinding(binary.getOperand2(), true);
+            }
+        } else {
+            if (current instanceof IASTIdExpression) {
+               IBinding binding = ((IASTIdExpression) current).getName().resolveBinding();
+               if (binding instanceof IVariable) {
+                   IVariable variable = (IVariable) binding;
+                   if (foundBinary && variable.getType() instanceof IPointerType || !foundBinary) {
+                       addressTakenVariables.add(variable);
+                   }
+               }
+            }
+        }
+    }
+    
 }
