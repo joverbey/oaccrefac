@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * AddressTakenAnalysis performs a simple address taken analysis on a given 
  * function.
  * 
- * The analysis attempts to find any proper binding below an & operator.
  * 
  * The progress of analyzing the function is stored in the monitor.
  */
@@ -69,21 +68,21 @@ public class AddressTakenAnalysis {
         try {
         performAnalysis(function, monitor);
         } catch (IllegalArgumentException exception) {
-            monitor.done();
             throw exception;
+        } finally {
+            monitor.done();
         }
-        monitor.done();
     }
     
     /**
-     * addressTaken reports the results of the analysis for a given IVariable.
+     * isAddressTaken reports the results of the analysis for a given IVariable.
      * 
      * Throws an IllegalArgumentException if the given variable is null.
      * 
      * @param variable IVariable to check if its address has been taken.
      * @return true if variable had its address taken anywhere in the function body.
      */
-    public boolean addressTaken(IVariable variable) {
+    public boolean isAddressTaken(IVariable variable) {
         if (variable == null) {
             throw new IllegalArgumentException("variable may not be null.");
         }

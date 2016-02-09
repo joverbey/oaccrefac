@@ -16,16 +16,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
 import edu.auburn.oaccrefac.core.dependence.AddressTakenAnalysis;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.tests.TestUtilities;
 
 /**
  * Unit tests for {@link AddressTakenAnalysis}.
@@ -42,20 +38,20 @@ public class AddressTakenAnalysisTest {
      */
     @Test
     public void checkSimpleAddress() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() {",
                 "    int a = 0;",
                 "    int* b = &a;",
                 "}"
         );
         assertNotNull(function);
-        IVariable a = findVariable(function, "a");
+        IVariable a = TestUtilities.findVariable(function, "a");
         assertNotNull(a);
-        IVariable b = findVariable(function, "b");
+        IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        assertTrue(analysis.addressTaken(a));
-        assertFalse(analysis.addressTaken(b));
+        assertTrue(analysis.isAddressTaken(a));
+        assertFalse(analysis.isAddressTaken(b));
     }
 
     /**
@@ -65,20 +61,20 @@ public class AddressTakenAnalysisTest {
      */
     @Test
     public void checkNested() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() {",
                 "    int a = 0;",
                 "    int* b = &(((a)));",
                 "}"
         );
         assertNotNull(function);
-        IVariable a = findVariable(function, "a");
+        IVariable a = TestUtilities.findVariable(function, "a");
         assertNotNull(a);
-        IVariable b = findVariable(function, "b");
+        IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        assertTrue(analysis.addressTaken(a));
-        assertFalse(analysis.addressTaken(b));
+        assertTrue(analysis.isAddressTaken(a));
+        assertFalse(analysis.isAddressTaken(b));
     }
     
     /**
@@ -89,20 +85,20 @@ public class AddressTakenAnalysisTest {
      */
     @Test
     public void checkUnary() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() {",
                 "    int* a;",
                 "    int* b = &*a++;",
                 "}"
         );
         assertNotNull(function);
-        IVariable a = findVariable(function, "a");
+        IVariable a = TestUtilities.findVariable(function, "a");
         assertNotNull(a);
-        IVariable b = findVariable(function, "b");
+        IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        assertTrue(analysis.addressTaken(a));
-        assertFalse(analysis.addressTaken(b));
+        assertTrue(analysis.isAddressTaken(a));
+        assertFalse(analysis.isAddressTaken(b));
     }
     
     /**
@@ -113,7 +109,7 @@ public class AddressTakenAnalysisTest {
      */
     @Test
     public void checkComplicated() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() {",
                 "    int* a;",
                 "    int* b;",
@@ -123,22 +119,22 @@ public class AddressTakenAnalysisTest {
                 "}"
         );
         assertNotNull(function);
-        IVariable a = findVariable(function, "a");
+        IVariable a = TestUtilities.findVariable(function, "a");
         assertNotNull(a);
-        IVariable b = findVariable(function, "b");
+        IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
-        IVariable c = findVariable(function, "c");
+        IVariable c = TestUtilities.findVariable(function, "c");
         assertNotNull(c);
-        IVariable d = findVariable(function, "d");
+        IVariable d = TestUtilities.findVariable(function, "d");
         assertNotNull(d);
-        IVariable e = findVariable(function, "e");
+        IVariable e = TestUtilities.findVariable(function, "e");
         assertNotNull(e);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        assertTrue(analysis.addressTaken(a));
-        assertFalse(analysis.addressTaken(b));
-        assertFalse(analysis.addressTaken(c));
-        assertFalse(analysis.addressTaken(d));
-        assertFalse(analysis.addressTaken(e));
+        assertTrue(analysis.isAddressTaken(a));
+        assertFalse(analysis.isAddressTaken(b));
+        assertFalse(analysis.isAddressTaken(c));
+        assertFalse(analysis.isAddressTaken(d));
+        assertFalse(analysis.isAddressTaken(e));
     }
     
     /**
@@ -149,7 +145,7 @@ public class AddressTakenAnalysisTest {
      */
     @Test
     public void checkNestedAddresses() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() {",
                 "    int* a;",
                 "    int* b;",
@@ -158,19 +154,19 @@ public class AddressTakenAnalysisTest {
                 "}"
         );
         assertNotNull(function);
-        IVariable a = findVariable(function, "a");
+        IVariable a = TestUtilities.findVariable(function, "a");
         assertNotNull(a);
-        IVariable b = findVariable(function, "b");
+        IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
-        IVariable c = findVariable(function, "c");
+        IVariable c = TestUtilities.findVariable(function, "c");
         assertNotNull(c);
-        IVariable d = findVariable(function, "d");
+        IVariable d = TestUtilities.findVariable(function, "d");
         assertNotNull(d);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        assertTrue(analysis.addressTaken(a));
-        assertTrue(analysis.addressTaken(b));
-        assertFalse(analysis.addressTaken(c));
-        assertFalse(analysis.addressTaken(d));
+        assertTrue(analysis.isAddressTaken(a));
+        assertTrue(analysis.isAddressTaken(b));
+        assertFalse(analysis.isAddressTaken(c));
+        assertFalse(analysis.isAddressTaken(d));
     }
     
     /**
@@ -190,12 +186,12 @@ public class AddressTakenAnalysisTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void checkNullVariable() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() { }"
         );
         assertNotNull(function);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        analysis.addressTaken(null);
+        analysis.isAddressTaken(null);
     }
     
     /**
@@ -206,18 +202,18 @@ public class AddressTakenAnalysisTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void checkNotLocalVariable() throws CoreException {
-        IASTFunctionDefinition dummyFunction = makeFunction(
+        IASTFunctionDefinition dummyFunction = TestUtilities.makeFunction(
                 "void foo(int a) { }"
         );
         assertNotNull(dummyFunction);
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() { }"
         );
         assertNotNull(function);
         AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
-        IVariable a = findVariable(dummyFunction, "a");
+        IVariable a = TestUtilities.findVariable(dummyFunction, "a");
         assertNotNull(a);
-        analysis.addressTaken(a);
+        analysis.isAddressTaken(a);
     }
     
     /**
@@ -228,7 +224,7 @@ public class AddressTakenAnalysisTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void checkBadExpression() throws CoreException {
-        IASTFunctionDefinition function = makeFunction(
+        IASTFunctionDefinition function = TestUtilities.makeFunction(
                 "void foo() {",
                 "    int* a;",
                 "    int* b;",
@@ -239,44 +235,4 @@ public class AddressTakenAnalysisTest {
         new AddressTakenAnalysis(function, null);
     }
 
-    /**
-     * makeFunction converts a lines representing a function into an
-     * IASTFunctionDefinition.
-     * 
-     * @param lines Function.
-     * @return IASTFunctionDefinition made out of the lines.
-     * @throws CoreException
-     */
-    private IASTFunctionDefinition makeFunction(String... lines) throws CoreException {
-        String function = "";
-        for (String line : lines) {
-            function += line + "\n";
-        }
-        function = function.substring(0, function.length()-1);
-        IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(function);
-        return ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
-    }
-    
-    /**
-     * findVariable finds a variable in the given IASTNode.
-     * 
-     * @param current IASTNode to look in.
-     * @param variableName IVariable being searched for.
-     * @return IVariable with given name if found.
-     */
-    private IVariable findVariable(IASTNode current, final String variableName) {
-        if (current instanceof IASTName) {
-            IBinding binding = ((IASTName) current).resolveBinding();
-            if (binding instanceof IVariable && binding.getName().equals(variableName)) {
-                return (IVariable) binding;
-            }
-        }
-        for (IASTNode child : current.getChildren()) {
-           IVariable found = findVariable(child, variableName);
-           if (found != null) {
-               return found;
-           }
-        }
-        return null;
-    }
 }
