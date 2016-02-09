@@ -15,6 +15,16 @@ outerinner[2]="inner2"
 >./Scripts/outputtemp.txt
 cp examples/level1-CMD.c ./Scripts/inputtemp.txt
 
+
+
+g++ ./examples/distribute_loops.c -o ./Scripts/runnable
+./Scripts/runnable > result.txt
+
+
+
+
+
+
 for i in $(seq 77)
 do
 	loopname="loop"
@@ -32,6 +42,16 @@ do
 		loopname=$loopnameTemp
 	done
 done
+
+g++ ./examples/distribute_loops.c -o ./Scripts/runnable
+./Scriptsrunnable > result2.txt
+
+if cmp -s result.txt result2.txt
+then
+	echo "The results match"
+else
+	echo "The results did not match"
+fi
 
 rm ./Scripts/outputtemp.txt
 rm ./Scripts/inputtemp.txt
