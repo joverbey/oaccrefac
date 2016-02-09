@@ -38,14 +38,12 @@ public class DistributeLoopsRefactoring extends ForLoopRefactoring {
 
     private DistributeLoopsCheck check;
     
-    public DistributeLoopsRefactoring(ICElement element, ISelection selection,
-            ICProject project) {
+    public DistributeLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
     @Override
-    protected void doCheckFinalConditions(RefactoringStatus status,
-            IProgressMonitor pm) {
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new DistributeLoopsCheck(this.getLoop());
         check.performChecks(status, pm, null);
     }

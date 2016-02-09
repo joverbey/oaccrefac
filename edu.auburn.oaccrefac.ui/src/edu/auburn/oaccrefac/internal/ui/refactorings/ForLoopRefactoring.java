@@ -72,7 +72,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     /**
      * This is the abstract method that is the implementation for all refactorings. Override this method in inherited
      * classes and use the rewriter to collect changes for refactoring. Tip: Make bigger changes at a time -- making a
-     * ton of small replacements and additions in the rewriter may cause issues with overwritting text edits and nodes
+     * ton of small replacements and additions in the rewriter may cause issues with overwriting text edits and nodes
      * that don't appear to be in the AST. You can create new nodes using a node factory of the form ICNodeFactory
      * factory = ASTNodeFactoryFactory.getCDefaultFactory(); Tip: While some cases it may be helpful to do the above,
      * see 'LoopInterchangeRefactoring' for a case in which it is more practical to simply use the replace method on the
@@ -93,8 +93,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
         pm.subTask("Calculating modifications...");
-        ASTRewrite rewriter = collector.rewriterForTranslationUnit(getAST());
-        // Other initialization stuff here...
+        ASTRewrite rewriter = collector.rewriterForTranslationUnit(ast);
 
         refactor(new CDTASTRewriteProxy(rewriter), pm);
     }
@@ -203,27 +202,25 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      * @return CASTForStatement to perform refactoring on
      */
     protected IASTForStatement findLoop(IASTTranslationUnit ast) {
-        IASTForStatement firstFor = null;
         List<IASTForStatement> loops = ASTUtil.find(ast, IASTForStatement.class);
+        if (loops.size() == 0) {
+            return null;
+        }
+        
         int begin = selectedRegion.getOffset();
         int end = selectedRegion.getLength() + begin;
-
-        // TODO: Check this out to see if firstFor can be assigned before the loop
+        IASTForStatement firstFor = loops.get(0); // Get the first for loop out of the list. 
         for (IASTForStatement loop : loops) {
             IASTFileLocation loc = loop.getFileLocation();
             if (loc.getNodeOffset() >= begin && loc.getNodeOffset() < end) {
-                if (firstFor != null) {
-                    IASTFileLocation firstloc = firstFor.getFileLocation();
-                    if (firstloc.getNodeOffset() > loc.getNodeOffset()) {
-                        firstFor = loop;
-                    }
-                } else {
+                IASTFileLocation firstloc = firstFor.getFileLocation();
+                if (firstloc.getNodeOffset() > loc.getNodeOffset()) {
                     firstFor = loop;
                 }
             }
         }
 
-        return (IASTForStatement) firstFor;
+        return firstFor;
     }
 
     // *************************************************************************
@@ -234,10 +231,12 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return null; // Refactoring history is not supported.
     }
 
+    // TODO: Determine whether this is truly necessary either; it doesn't seem to be
     protected IASTForStatement getLoop() {
-        return (IASTForStatement) forLoop;
+        return forLoop;
     }
 
+    // TODO: Determine whether or not this is truly necessary – spoiler: I don't think it is
     protected IASTTranslationUnit getAST() {
         return ast;
     }

@@ -18,7 +18,7 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 public class LoopRefactoringWizard extends RefactoringWizard {
 
-    private LoopRefactoringWizardPage inputPage;
+    private final LoopRefactoringWizardPage inputPage;
 
     public LoopRefactoringWizard(Refactoring refactoring, String title) {
         super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);

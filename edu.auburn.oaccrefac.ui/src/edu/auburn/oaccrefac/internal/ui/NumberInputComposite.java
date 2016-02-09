@@ -20,15 +20,15 @@ import org.eclipse.swt.widgets.Text;
 
 public class NumberInputComposite extends Composite {
 
-    private Label label;
-    private Text inputText;
-    private ValueChangedListener listener;
+    private final Label label;
+    private final ValueChangedListener listener;
 
-    public NumberInputComposite(Composite parent, int style) {
+    public NumberInputComposite(Composite parent, int style, ValueChangedListener listener) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
         label = new Label(this, SWT.NONE);
-        inputText = new Text(this, SWT.LEFT | SWT.BORDER);
+        Text inputText = new Text(this, SWT.LEFT | SWT.BORDER);
+        this.listener = listener;
 
         // Ensure that only numbers are added to the text field.
         inputText.addModifyListener(new ModifyListener() {
@@ -42,14 +42,10 @@ public class NumberInputComposite extends Composite {
                     // TODO: Should we update the listener's value when we
                     // reset the text to ""?
                 } else {
-                    listener.valueChanged(Integer.parseInt(newText));
+                    NumberInputComposite.this.listener.valueChanged(Integer.parseInt(newText));
                 }
             }
         });
-    }
-
-    public void setListener(ValueChangedListener listenerIn) {
-        listener = listenerIn;
     }
 
     public void setLabelText(String text) {

@@ -39,9 +39,8 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         c.setLayout(new GridLayout());
 
         for (int i = 0; i < controlListeners.size(); i++) {
-            NumberInputComposite nic = new NumberInputComposite(c, SWT.NONE);
+            NumberInputComposite nic = new NumberInputComposite(c, SWT.NONE, controlListeners.get(i));
             nic.setLabelText(controlLabels.get(i));
-            nic.setListener(controlListeners.get(i));
         }
 
         setControl(c);

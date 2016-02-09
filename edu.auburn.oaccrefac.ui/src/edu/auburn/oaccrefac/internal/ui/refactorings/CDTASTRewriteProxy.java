@@ -25,18 +25,22 @@ public class CDTASTRewriteProxy implements IASTRewrite {
         rewrite = r;
     }
 
+    @Override
     public IASTNode createLiteralNode(String code) {
         return rewrite.createLiteralNode(code);
     }
 
+    @Override
     public void remove(IASTNode node, TextEditGroup editGroup) {
         rewrite.remove(node, editGroup);
     }
 
+    @Override
     public CDTASTRewriteProxy replace(IASTNode node, IASTNode replacement, TextEditGroup editGroup) {
         return new CDTASTRewriteProxy(rewrite.replace(node, replacement, editGroup));
     }
 
+    @Override
     public CDTASTRewriteProxy insertBefore(IASTNode parent, IASTNode insertionPoint, IASTNode newNode,
             TextEditGroup editGroup) {
         return new CDTASTRewriteProxy(rewrite.insertBefore(parent, insertionPoint, newNode, editGroup));
