@@ -35,12 +35,12 @@ endif
 objects = common.o main.o level0.o level1.o 27stencil.o le_core.o himeno.o
 
 default: oa
-
+	
 %.o : %.c
 	$(CC) $(CFLAGS) -c $<
 
 oa : $(objects)
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS) -lm -fopenmp
 
 .PHONY: clean
 
