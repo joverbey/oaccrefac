@@ -116,7 +116,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         SubMonitor progress = SubMonitor.convert(pm, 10);
         ast = getAST(tu, progress.newChild(9));
-        forLoop = findLoop(ast);
+        forLoop = findFirstLoop(ast);
         if (forLoop == null) {
             initStatus.addFatalError("Please select a for loop.");
             return initStatus;
@@ -201,12 +201,12 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      *            -- our AST to traverse
      * @return CASTForStatement to perform refactoring on
      */
-    protected IASTForStatement findLoop(IASTTranslationUnit ast) {
+    private IASTForStatement findFirstLoop(IASTTranslationUnit ast) {
         List<IASTForStatement> loops = ASTUtil.find(ast, IASTForStatement.class);
         if (loops.size() == 0) {
             return null;
         }
-        
+
         int begin = selectedRegion.getOffset();
         int end = selectedRegion.getLength() + begin;
         IASTForStatement firstFor = loops.get(0); // Get the first for loop out of the list. 
@@ -223,24 +223,12 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         return firstFor;
     }
 
-    // *************************************************************************
-    // Getters & Setters
-
     @Override
     protected RefactoringDescriptor getRefactoringDescriptor() {
         return null; // Refactoring history is not supported.
     }
 
-    // TODO: Determine whether this is truly necessary either; it doesn't seem to be
     protected IASTForStatement getLoop() {
         return forLoop;
     }
-
-    // TODO: Determine whether or not this is truly necessary – spoiler: I don't think it is
-    protected IASTTranslationUnit getAST() {
-        return ast;
-    }
-
-    // *************************************************************************
-
 }

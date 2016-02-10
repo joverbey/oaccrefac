@@ -31,10 +31,8 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
         super(element, selection, project);
     }
 
-    // TODO: Why does this return a boolean?
-    public boolean setStripFactor(int factor) {
+    public void setStripFactor(int factor) {
         stripFactor = factor;
-        return true;
     }
 
     @Override

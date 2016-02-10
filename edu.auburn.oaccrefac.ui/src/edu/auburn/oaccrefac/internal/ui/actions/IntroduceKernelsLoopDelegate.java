@@ -55,10 +55,12 @@ public class IntroduceKernelsLoopDelegate extends RefactoringActionDelegate {
 
         @Override
         protected void addUserInputPages() {
+            // TODO: Why is this commented out?
             // addPage(new EmptyPage());
         }
     }
 
+    // TODO: do we need this?
     @SuppressWarnings("unused")
     private static class EmptyPage extends UserInputWizardPage {
 

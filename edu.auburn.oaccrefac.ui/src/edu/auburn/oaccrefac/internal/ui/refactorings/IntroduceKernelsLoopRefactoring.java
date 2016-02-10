@@ -40,13 +40,12 @@ public class IntroduceKernelsLoopRefactoring extends ForLoopRefactoring {
         check = new IntroduceKernelsLoopCheck(getLoop());
         check.performChecks(status, pm, null);
     }
-    
+
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        IntroduceKernelsLoopAlteration change = new IntroduceKernelsLoopAlteration(rewriter, check);
-        change.change();
+        new IntroduceKernelsLoopAlteration(rewriter, check).change();
     }
-    
+
     @Override
     protected RefactoringDescriptor getRefactoringDescriptor() {
         return null; // Refactoring history is not supported.

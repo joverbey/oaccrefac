@@ -24,8 +24,7 @@ public class IntroDefaultNoneDelegate extends RefactoringActionDelegate {
             throw new ClassCastException("Refactoring not IntroduceDataConstructRefactoring!");
         }
 
-        IntroDefaultNoneRefactoring refac = (IntroDefaultNoneRefactoring) refactoring;
-        return new LoopRefactoringWizard(refac, "Introduce Data Construct Refactoring");
+        return new LoopRefactoringWizard(refactoring, "Introduce Data Construct Refactoring");
     }
 
 }

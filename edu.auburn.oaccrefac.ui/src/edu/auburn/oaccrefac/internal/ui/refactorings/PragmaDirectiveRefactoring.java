@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -124,11 +125,12 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
 
             @Override
             public int visit(IASTStatement stmt) {
+                // TODO: Fix breaking tests because nearestFollowingStatement might be null.
                 if (stmt.getFileLocation().getNodeOffset() >= after
                         && nearestFollowingStatement == null
                         || stmt.getFileLocation().getNodeOffset() < nearestFollowingStatement.getFileLocation()
                                 .getNodeOffset()) {
-                    nearestFollowingStatement = stmt;
+                        nearestFollowingStatement = stmt;
                 }
                 return PROCESS_CONTINUE;
             }

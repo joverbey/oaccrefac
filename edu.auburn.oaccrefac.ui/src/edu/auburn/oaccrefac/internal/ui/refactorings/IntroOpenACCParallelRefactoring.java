@@ -45,8 +45,7 @@ public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        IntroParallelAlteration change = new IntroParallelAlteration(rewriter, check);
-        change.change();
+        new IntroParallelAlteration(rewriter, check).change();
         
     }
 

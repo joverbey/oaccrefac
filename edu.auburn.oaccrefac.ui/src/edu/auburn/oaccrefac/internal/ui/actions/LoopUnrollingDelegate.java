@@ -35,18 +35,14 @@ public class LoopUnrollingDelegate extends RefactoringActionDelegate {
         if (!(refactoring instanceof LoopUnrollingRefactoring)) {
             throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
         }
-        final LoopUnrollingRefactoring refac =
-                (LoopUnrollingRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring,
-                "LoopUnrollingRefactoring");
-        wizard.getInputPage().addNumberInputControl("Unroll Factor", 
-                new ValueChangedListener() {
-                    @Override
-                    public void valueChanged(int value) {
-                        refac.setUnrollFactor(value);
-                        
-                    }
-                });
+        final LoopUnrollingRefactoring refac = (LoopUnrollingRefactoring) refactoring;
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "LoopUnrollingRefactoring"); 
+        wizard.getInputPage().addNumberInputControl("Unroll Factor", new ValueChangedListener() {
+            @Override
+            public void valueChanged(int value) {
+                refac.setUnrollFactor(value);
+            }
+        });
         return wizard;
     }
 }
