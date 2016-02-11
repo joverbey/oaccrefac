@@ -55,28 +55,6 @@ public class IntroduceKernelsLoopDelegate extends RefactoringActionDelegate {
 
         @Override
         protected void addUserInputPages() {
-            // TODO: Why is this commented out?
-            // addPage(new EmptyPage());
-        }
-    }
-
-    // TODO: do we need this?
-    @SuppressWarnings("unused")
-    private static class EmptyPage extends UserInputWizardPage {
-
-        public EmptyPage() {
-            super("(empty)");
-        }
-
-        @Override
-        public void createControl(Composite parent) {
-            Composite c = new Composite(parent, SWT.NONE);
-            c.setLayout(new ColumnLayout());
-            new Button(c, SWT.CHECK).setText("Infer copy clauses");
-            new Button(c, SWT.CHECK).setText("Infer private clause");
-            setControl(c);
-            setTitle(getName());
-            setPageComplete(true);
         }
     }
 }

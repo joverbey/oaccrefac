@@ -112,7 +112,6 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
 
     private IASTStatement findStatement(IASTPreprocessorPragmaStatement pragma) {
 
-        // TODO: find a better way to do this
         class PragmaStatementFinder extends ASTVisitor {
 
             IASTStatement nearestFollowingStatement;
