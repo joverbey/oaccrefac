@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
   benchmark(testName, &threedconv);
 
 
-  /* Level 0 Tests - Speeds and Feeds */
+/*   Level 0 Tests - Speeds and Feeds
   sprintf(testName, "ContigH2D");
   benchmark(testName, &contig_htod);
 
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
   sprintf(testName, "Kernels_Reduction");
   benchmark(testName, &kernels_reduction);
 
-  /* Level 2 Tests - small applications */
+   Level 2 Tests - small applications
 
   sprintf(testName, "27S");
   benchmark(testName, &stencil);
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
   benchmark(testName, &le_main);
 
   sprintf(testName, "HIMENO");
-  benchmark(testName, &himeno_main);
+  benchmark(testName, &himeno_main);*/
 
   /* Print results & free results storage */
   finalise();

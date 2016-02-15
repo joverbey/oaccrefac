@@ -32,7 +32,7 @@ CFLAGS = -hlist=a -h acc_model=auto_async_none
 LFLAGS = 
 endif
 
-objects = common.o main.o level0.o level1.o 27stencil.o le_core.o himeno.o
+objects = common.o main.o level0.o level1-CMD.o 27stencil.o le_core.o himeno.o
 
 default: oa
 	
