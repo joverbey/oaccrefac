@@ -11,8 +11,8 @@
 package edu.auburn.oaccrefac.internal.ui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -21,29 +21,23 @@ import org.eclipse.swt.widgets.Text;
 public class NumberInputComposite extends Composite {
 
     private final Label label;
-    private final ValueChangedListener listener;
 
     public NumberInputComposite(Composite parent, int style, ValueChangedListener listener) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
         label = new Label(this, SWT.NONE);
         Text inputText = new Text(this, SWT.LEFT | SWT.BORDER);
-        this.listener = listener;
 
-        // Ensure that only numbers are added to the text field.
-        inputText.addModifyListener(new ModifyListener() {
+        inputText.addVerifyListener(new VerifyListener() {
             @Override
-            public void modifyText(ModifyEvent e) {
+            public void verifyText(VerifyEvent e) {
                 Text source = (Text) e.getSource();
-                String newText = source.getText();
 
-                if (!newText.matches("[0-9]*")) {
-                    source.setText("");
-                    // TODO: Should we update the listener's value when we
-                    // reset the text to ""?
-                } else {
-                    NumberInputComposite.this.listener.valueChanged(Integer.parseInt(newText));
-                }
+                // get old text and create new text by using the VerifyEvent.text
+                final String oldS = source.getText();
+                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+                
+                e.doit = newS.matches("[0-9]*");
             }
         });
     }
