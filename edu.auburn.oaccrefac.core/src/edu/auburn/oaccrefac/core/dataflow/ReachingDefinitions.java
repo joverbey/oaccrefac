@@ -107,27 +107,21 @@ public class ReachingDefinitions {
             return new HashSet<IASTName>();
         }
         
-        Set<IASTNode> uses = new HashSet<IASTNode>();
+        Set<IASTName> reachedUses = new HashSet<IASTName>();
         
         for(IBasicBlock bb : entrySets.keySet()) {
             Object data = ((ICfgData) bb).getData();
-            if (data != null) {
-                RDVarSet entrySet = entrySets.get(bb);
-                if(entrySet != null && entrySet.contains(def)) {
-                    uses.add(def);
+            if(data != null && data instanceof IASTNode) {
+                for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
+                    if(!ASTUtil.isDefinition(use)) {
+                        if(reachingDefinitions(use).contains(def)) {
+                            reachedUses.add(use);
+                        }
+                    }
                 }
             }
         }
-       
-        Set<IASTName> reachingDefNames = new HashSet<IASTName>();
-        for(IASTNode use : uses) {
-            for(IASTName name : ASTUtil.getNames(use)) {
-                if(name.resolveBinding().equals(def.resolveBinding())) {
-                    reachingDefNames.add(name);
-                }
-            }
-        }
-        return reachingDefNames;
+        return reachedUses;
         
     }
     

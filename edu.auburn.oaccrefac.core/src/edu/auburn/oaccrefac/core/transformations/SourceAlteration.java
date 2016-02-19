@@ -220,6 +220,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         return LPAREN + code + RPAREN;
     }
 
+    //FIXME when doing a series of alterations, offsets get set wrong; possibly due to ambiguity between file offset vs. stringbuilder offset 
     private void updateAlterationTrackingFields(int offset, int length) {
         if(src == null) {
             originalLength = length;

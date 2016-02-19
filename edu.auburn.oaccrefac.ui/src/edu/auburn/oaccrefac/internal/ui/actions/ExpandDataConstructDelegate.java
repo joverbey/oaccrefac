@@ -24,8 +24,8 @@ public class ExpandDataConstructDelegate extends RefactoringActionDelegate {
         if (!(refactoring instanceof ExpandDataConstructRefactoring))
             throw new ClassCastException("Refactoring not ExpandDataConstructRefactoring!");
         
-        ExpandDataConstructRefactoring refac = (ExpandDataConstructRefactoring) refactoring;
-        LoopRefactoringWizard wiz = new LoopRefactoringWizard(refac, "Expand Default None Refactoring");
+        //ExpandDataConstructRefactoring refac = (ExpandDataConstructRefactoring) refactoring;
+        LoopRefactoringWizard wiz = new LoopRefactoringWizard(refactoring, "Expand Default None Refactoring");
         return wiz;
     }
 

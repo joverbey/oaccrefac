@@ -508,20 +508,21 @@ public class ASTUtil {
                 else {
                     unary = defUnaryExpr;
                 }
-                if(unary.getOperand() instanceof IASTIdExpression && 
-                        (unary.getOperator() == IASTUnaryExpression.op_postFixIncr || 
+                if(unary.getOperator() == IASTUnaryExpression.op_postFixIncr || 
                         unary.getOperator() == IASTUnaryExpression.op_prefixIncr ||
                         unary.getOperator() == IASTUnaryExpression.op_postFixDecr ||
-                        unary.getOperator() == IASTUnaryExpression.op_prefixIncr)) {
-                    if(((IASTIdExpression) unary.getOperand()).getName().equals(name)) {
-                        return true;
-                    }
-                }
-                else if(unary.getOperand() instanceof IASTArraySubscriptExpression) {
-                    IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) unary.getOperand();
-                    if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
-                        if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+                        unary.getOperator() == IASTUnaryExpression.op_prefixIncr) {
+                    if(unary.getOperand() instanceof IASTIdExpression) {
+                        if(((IASTIdExpression) unary.getOperand()).getName().equals(name)) {
                             return true;
+                        }
+                    }
+                    else if(unary.getOperand() instanceof IASTArraySubscriptExpression) {
+                        IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) unary.getOperand();
+                        if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
+                            if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -536,8 +537,7 @@ public class ASTUtil {
                 else {
                     binary = defBinaryExpr;
                 }
-                if(binary.getOperand1() instanceof IASTIdExpression && 
-                        (binary.getOperator() == IASTBinaryExpression.op_assign ||
+                if(binary.getOperator() == IASTBinaryExpression.op_assign ||
                         binary.getOperator() == IASTBinaryExpression.op_binaryAndAssign ||
                         binary.getOperator() == IASTBinaryExpression.op_binaryOrAssign ||
                         binary.getOperator() == IASTBinaryExpression.op_binaryXorAssign ||
@@ -547,16 +547,18 @@ public class ASTUtil {
                         binary.getOperator() == IASTBinaryExpression.op_multiplyAssign ||
                         binary.getOperator() == IASTBinaryExpression.op_plusAssign ||
                         binary.getOperator() == IASTBinaryExpression.op_shiftLeftAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign)) {
-                    if(((IASTIdExpression) binary.getOperand1()).getName().equals(name)) {
-                        return true;
-                    }
-                }
-                else if(binary.getOperand1() instanceof IASTArraySubscriptExpression) {
-                    IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) binary.getOperand1();
-                    if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
-                        if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+                        binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign) {
+                    if(binary.getOperand1() instanceof IASTIdExpression) {
+                        if(((IASTIdExpression) binary.getOperand1()).getName().equals(name)) {
                             return true;
+                        }
+                    }
+                    else if(binary.getOperand1() instanceof IASTArraySubscriptExpression) {
+                        IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) binary.getOperand1();
+                        if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
+                            if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+                                return true;
+                            }
                         }
                     }
                 }

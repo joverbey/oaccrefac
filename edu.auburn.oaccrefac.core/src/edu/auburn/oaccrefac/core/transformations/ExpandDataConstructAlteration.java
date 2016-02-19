@@ -2,7 +2,6 @@ package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,6 +10,7 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
 import edu.auburn.oaccrefac.core.dataflow.ReachingDefinitions;
@@ -41,6 +41,9 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
     *   again, if either of these for changing a set occurs, stop the expansion
     */ 
     
+    //FIXME should handle create clauses
+    //FIXME should handle subarray copyins/outs
+    //TODO may be worth profiling this to get some speedup; takes a little time to run right now
     @Override
     protected void doChange() throws Exception {
         ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
@@ -77,8 +80,6 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         //using parent node
         int maxup = getMaxUp(getStatement());
         int maxdown = getMaxDown(getStatement());
-        int ocopyinsize = copyin.size();
-        int ocopyoutsize = copyout.size();
         int osize;
         if(getStatement() instanceof IASTCompoundStatement) {
             osize = ((IASTCompoundStatement) getStatement()).getStatements().length;
@@ -86,30 +87,36 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         else {
             osize = 1;
         }
+        Set<String> ocopyin = getCopyin(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
+        Set<String> ocopyout = getCopyout(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
         List<Expansion> expansions = new ArrayList<Expansion>();
-        Set<String> gpuvars = getGpuVars(getStatement());
-        for(int i = 0; i < maxup; i++) {
-            for(int j = 0; i < maxdown; j++) {
-                IASTStatement expstart = getExpansionStart(i, getStatement());
-                IASTStatement expend = getExpansionEnd(j, getStatement());
-                Set<String> expcopyin = getCopyin(expstart, expend, rd);
-                Set<String> expcopyout = getCopyout(expstart, expend, rd);
-                Expansion exp = new Expansion(expstart, expend, osize + i + j, expcopyin, expcopyout); //num items in copyset for this expansion
-                if(exp.getCopyin().size() <= ocopyinsize)
-                if(exp.getCopyout().size() <= ocopyoutsize)
-                //be sure set of defs reaching into the construct hasnt changed for variables in both the original and the expansion copyin sets
-                if(areCopyinDefsTheSame(gpuvars, exp, getStatement(), rd)) 
-                //be sure set of defs reaching out the construct hasnt changed for variables in both the original and the expansion copyout sets
-                if(areCopyoutDefsTheSame(gpuvars, exp, getStatement(), rd)) 
+        Set<String> gpuuses = getGpuVars(getStatement(), false);
+        Set<String> gpudefs = getGpuVars(getStatement(), true);
+        for(int i = 0; i <= maxup; i++) {
+            for(int j = 0; j <= maxdown; j++) {
+                IASTStatement[] expStmts = getExpansionStatements(i, j, getStatement());
+                Set<String> expcopyin = getCopyin(expStmts, rd);
+                Set<String> expcopyout = getCopyout(expStmts, rd);
+                
+                //FIXME there should be some sort of heuristic check to reduce the size of the sets, but not this one
+                //current sets could be incorrect or be more informed about than our analysis can be (ie, through const prop, etc)
+                //if(exp.getCopyin().size() <= ocopyinsize)
+                //if(exp.getCopyout().size() <= ocopyoutsize)
+                
+                //be sure that for variables actually used on the gpu, the copyin set hasn't changed 
+                if(areCopyDefsTheSame(gpuuses, ocopyin, expcopyin))
+                //be sure that for variables defined on the gpu, the copyout set hasn't changed
+                if(areCopyDefsTheSame(gpudefs, ocopyout, expcopyout)) 
+                //TODO also do a scope check to be sure we haven't enclosed any variable definitions that reach outside the construct
                 //if a var is used on the gpu inside the construct and was copied in, we cant remove it from the copyin set in the expansion
-                if(isAIntersectedWithBASubsetOfC(gpuvars, copyin, expcopyin))
+                //this is actually redundant
+                //if(isAIntersectedWithBASubsetOfC(gpuvars, copyin, expcopyin))
                 //if a var is used on the gpu inside the construct and was not copied in, we cannot add it to the copyset
                 //logically, this is equivalent to the contrapositive: 
                 //if a var is used on the gpu inside the construct and is in the expansion's copyin set, it must be in the original copyin set as well 
                 //i guess the real question is "is the intersection of A and B a subset of C?"
-                if(isAIntersectedWithBASubsetOfC(gpuvars, expcopyin, copyin))
-                    expansions.add(exp);
-                //copyin.containsAll(new HashSet<String>(gpuvars).retainAll(expcopyin))
+                //if(isAIntersectedWithBASubsetOfC(gpuvars, expcopyin, copyin))
+                    expansions.add(new Expansion(expStmts, osize + i + j, expcopyin, expcopyout));
             }
         }
         //just picks the largest; could pick the largest with some comparison to copysize, or the one with the smallest copysize, etc
@@ -120,72 +127,75 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
             }
         }
         
-        //TODO we now have the expansion to use, so use the info stored in it to make the alteration to the code
+        //we should at least end up with the current construct as the best one
+        assert largestexp == null;
         
-    }
-    
-    private Set<String> getGpuVars(IASTStatement statement) {
-        Set<String> gpuVars = new HashSet<String>();
-        if(statement instanceof IASTCompoundStatement) {
-            IASTCompoundStatement comp = (IASTCompoundStatement) statement;
-            for(IASTStatement stmt : comp.getStatements()) {
-                String[] prags = ASTUtil.getPragmas(stmt);
-                for(String prag : prags) {
-                    //TODO should we parse this instead?
-                    if(prag.startsWith("#pragma acc parallel") || prag.startsWith("#pragma acc kernels")) {
-                        List<IASTName> names = ASTUtil.getNames(stmt);
-                        for(IASTName name : names) {
-                            if(!ASTUtil.isDefinition(name)) {
-                                gpuVars.add(name.getRawSignature());
-                            }
-                        }
-                    }
-                }
+        String newConstruct = "";
+        for(IASTStatement statement : largestexp.getStatements()) {
+            for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+                if(!pragma.equals(getPragma()))
+                    newConstruct += pragma.getRawSignature() + System.lineSeparator();
+            }
+            if(statement.equals(getStatement())) {
+                newConstruct += decompound(statement.getRawSignature()) + System.lineSeparator();
+            }
+            else {
+                newConstruct += statement.getRawSignature() + System.lineSeparator();
             }
         }
-        else {
-            String[] prags = ASTUtil.getPragmas(statement);
+        String copyinstr = copyin(largestexp.getCopyin().toArray(new String[largestexp.getCopyin().size()]));
+        String copyoutstr = copyout(largestexp.getCopyout().toArray(new String[largestexp.getCopyout().size()]));
+        String pragma = pragma("acc data") + " " + copyinstr + " " + copyoutstr + System.lineSeparator();
+        newConstruct = pragma + compound(newConstruct);
+        //TODO make this more intuitive once issue #9 is resolved
+        int start = 
+                Math.min(
+                        getPragma().getFileLocation().getNodeOffset(), 
+                        largestexp.getStatements()[0].getFileLocation().getNodeOffset());
+        int end = getStatement().getFileLocation().getNodeOffset() + getStatement().getFileLocation().getNodeLength();
+        int len = end - start;
+        this.replace(start,  len, newConstruct);
+        //TODO WHY DOESNT THIS DO ANYTHING???
+        finalizeChanges();
+    }
+    
+    private Set<String> getGpuVars(IASTNode node, boolean shouldGetDefs) {
+        Set<String> gpuVars = new HashSet<String>();
+        getGpuVars(node, gpuVars, shouldGetDefs);
+        return gpuVars;
+    }
+    
+    private void getGpuVars(IASTNode node, Set<String> gpuVars, boolean shouldGetDefs) {
+        if(node instanceof IASTStatement) {
+            IASTStatement stmt = (IASTStatement) node;
+            String[] prags = ASTUtil.getPragmas(stmt);
             for(String prag : prags) {
                 //TODO should we parse this instead?
                 if(prag.startsWith("#pragma acc parallel") || prag.startsWith("#pragma acc kernels")) {
-                    List<IASTName> names = ASTUtil.getNames(statement);
+                    List<IASTName> names = ASTUtil.getNames(stmt);
                     for(IASTName name : names) {
-                        if(!ASTUtil.isDefinition(name)) {
+                        if(ASTUtil.isDefinition(name) && shouldGetDefs) {
+                            gpuVars.add(name.getRawSignature());
+                        }
+                        else if(!ASTUtil.isDefinition(name) && !shouldGetDefs) {
                             gpuVars.add(name.getRawSignature());
                         }
                     }
                 }
             }
         }
-        return gpuVars;
+        
+        for(IASTNode child : node.getChildren()) {
+            getGpuVars(child, gpuVars, shouldGetDefs);
+        }
+        
     }
 
     private int getMaxDown(IASTStatement statement) {
         int i = 0;
+        IASTNode next = statement;
         while(true) {
-            IASTNode prev = ASTUtil.getPreviousSibling(statement);
-            if(prev == null) {
-                break;
-            }
-            //also break if we hit another acc construct
-            if(prev instanceof IASTStatement) {
-                String[] pragmas = ASTUtil.getPragmas((IASTStatement) prev);
-                if(pragmas.length == 1) {
-                    //TODO should we parse it instead?
-                    if(pragmas[0].startsWith("#pragma acc")) {
-                        break;
-                    }
-                }
-            }
-            i++;
-        }
-        return i;
-    }
-
-    private int getMaxUp(IASTStatement statement) {
-        int i = 0;
-        while(true) {
-            IASTNode next = ASTUtil.getNextSibling(statement);
+            next = ASTUtil.getNextSibling(next);
             if(next == null) {
                 break;
             }
@@ -204,164 +214,133 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         return i;
     }
 
-    private Set<String> getCopyout(IASTStatement expstart, IASTStatement expend, ReachingDefinitions rd) {
-        Set<String> copyout = new HashSet<String>();
-        for(IASTStatement statement = expstart; !statement.equals(ASTUtil.getNextSibling(expend)); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
-            Set<IASTName> uses = rd.reachedUses(statement);
-            for(IASTName use : uses) {
-                boolean inConstruct = false;
-                for(IASTStatement stmt = expstart; !stmt.equals(ASTUtil.getNextSibling(expend)); stmt = (IASTStatement) ASTUtil.getNextSibling(stmt)) {
-                    if(ASTUtil.isAncestor(stmt, use)) {
-                        inConstruct = true;
-                    }
-                }
-                if(!inConstruct) {
-                    copyout.add(use.getRawSignature());
-                }
+    private int getMaxUp(IASTStatement statement) {
+        int i = 0;
+        IASTNode prev = statement;
+        while(true) {
+            prev = ASTUtil.getPreviousSibling(prev);
+            if(prev == null) {
+                break;
             }
-        }
-        // should return the variables defined in all definitions that A) are in expstart, expend, or anything lexically in between and B) reach any statements not in expstart, expend, or anything lexically in between
-        return null;
-    }
-
-    private Set<String> getCopyin(IASTStatement expstart, IASTStatement expend, ReachingDefinitions rd) {
-        Set<String> copyin = new HashSet<String>();
-        //TODO type checking? also finish this
-        for(IASTStatement statement = expstart; !statement.equals(ASTUtil.getNextSibling(expend)); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
-            Set<IASTName> defs = rd.reachingDefinitions(statement);
-            //for each name, if that name is not in the construct, add to copyin
-            for(IASTName def : defs) {
-                boolean inConstruct = false;
-                for(IASTStatement stmt = expstart; !stmt.equals(ASTUtil.getNextSibling(expend)); stmt = (IASTStatement) ASTUtil.getNextSibling(stmt)) {
-                    if(ASTUtil.isAncestor(stmt, def)) {
-                        inConstruct = true;
-                    }
-                }
-                if(inConstruct) {
-                    copyin.add(def.getRawSignature());
-                }
-            }
-        }
-        return copyin;
-    }
-
-    private IASTStatement getExpansionEnd(int stmtsDown, IASTStatement original) {
-        IASTStatement end = original;
-        for(int i = 0; i < stmtsDown; i++) {
-            //TODO potential typechecking issue
-            end = (IASTStatement) ASTUtil.getNextSibling(original);
-        }
-        return end;
-    }
-
-    private IASTStatement getExpansionStart(int stmtsUp, IASTStatement original) {
-        IASTStatement end = original;
-        for(int i = 0; i < stmtsUp; i++) {
-            //TODO potential typechecking issue
-            end = (IASTStatement) ASTUtil.getPreviousSibling(original);
-        }
-        return end;
-    }
-
-    private boolean areCopyoutDefsTheSame(Set<String> gpuvars, Expansion exp, IASTStatement construct,
-            ReachingDefinitions rd) {
-        Set<IASTName> rdc = new HashSet<IASTName>();
-        Set<IASTName> rde = new HashSet<IASTName>();
-        
-        //get definitions in the construct that reach outside of it
-        for(IASTName name : ASTUtil.find(construct, IASTName.class)) {
-            Set<IASTName> uses = rd.reachedUses(name);
-            if(uses != null && !uses.isEmpty()) {
-                for(IASTName use : uses) {
-                    if(!ASTUtil.isAncestor(construct, use)) {
-                        rdc.add(use);
+            //also break if we hit another acc construct
+            if(prev instanceof IASTStatement) {
+                String[] pragmas = ASTUtil.getPragmas((IASTStatement) prev);
+                if(pragmas.length == 1) {
+                    //TODO should we parse it instead?
+                    if(pragmas[0].startsWith("#pragma acc")) {
                         break;
                     }
                 }
             }
+            i++;
         }
-        
-      //get definitions in the expansion that reach outside of it
-        //TODO type checking?
-        for(IASTStatement statement = exp.getStartOffset(); !statement.equals(ASTUtil.getNextSibling(exp.getEndOffset())); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
-            for(IASTName name : ASTUtil.find(statement, IASTName.class)) {
-                Set<IASTName> uses = rd.reachedUses(name);
-                if(uses != null && !uses.isEmpty()) {
-                    for(IASTName use : uses) {
-                        if(!ASTUtil.isAncestor(statement, use)) {
-                            rde.add(use);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        
-        
-        return rdc.contains(rde) && rdc.size() == rde.size();
+        return i;
     }
 
-    private boolean areCopyinDefsTheSame(Set<String> gpuvars, Expansion exp, IASTStatement construct,
-            ReachingDefinitions rd) {
+    private Set<String> getCopyout(IASTStatement[] exp, ReachingDefinitions rd) {
+        Set<String> copyout = new HashSet<String>();
         
-        //definitions reaching into the construct from outside
-        Set<IASTName> rdc = new HashSet<IASTName>();
-        //definitions reaching into the expansion from outside
-        Set<IASTName> rde = new HashSet<IASTName>();
+        //all uses reached by definitions in the construct
+        Set<IASTName> uses = new HashSet<IASTName>();
+        for(IASTStatement statement : exp) {
+             uses.addAll(rd.reachedUses(statement));
+        }
         
-        //get all definitions reaching into the construct
-        rdc.addAll(rd.reachingDefinitions(construct));
-        //remove those definitions that are inside the construct
-        for(Iterator<IASTName> iter = rdc.iterator(); iter.hasNext();) {
-            if(ASTUtil.isAncestor(construct, iter.next())) {
-                iter.remove();
+        //retain only those uses that are not in the construct
+        for(IASTName use : uses) {
+            if(!inConstruct(use, exp)) {
+                copyout.add(use.getRawSignature());
             }
         }
         
-        //get all definitions reaching into the expansion
-        //TODO type checking?
-        for(IASTStatement statement = exp.getStartOffset(); !statement.equals(ASTUtil.getNextSibling(exp.getEndOffset())); statement = (IASTStatement) ASTUtil.getNextSibling(statement)) {
-            rde.addAll(rd.reachingDefinitions(statement));
-        }
-        //remove those definitions that are inside the construct
-        for(Iterator<IASTName> iter = rde.iterator(); iter.hasNext();) {
-            if(ASTUtil.isAncestor(construct, iter.next())) {
-                iter.remove();
-            }
-        }
-        return rdc.containsAll(rde) && rdc.size() == rde.size();
-    }
-
-    private boolean isAIntersectedWithBASubsetOfC(Set<String> a, Set<String> b, Set<String> c) {
-        Set<String> intersection = new HashSet<String>(a);
-        intersection.retainAll(b);
-        return c.containsAll(intersection);
+        return copyout;
     }
     
+    private Set<String> getCopyin(IASTStatement[] exp, ReachingDefinitions rd) {
+        Set<String> copyin = new HashSet<String>();
+        
+        //all definitions reaching statements in the construct
+        Set<IASTName> defs = new HashSet<IASTName>();
+        for(IASTStatement statement : exp) {
+            defs.addAll(rd.reachingDefinitions(statement));
+        }
+        
+        //if the definition is outside the construct, keep it
+        for(IASTName def : defs) {
+            if(!inConstruct(def, exp)) {
+                copyin.add(def.getRawSignature());
+            }
+        }
+        
+        return copyin;
+    }
+    
+    private boolean inConstruct(IASTNode node, IASTStatement[] construct) {
+        for(IASTStatement stmt : construct) {
+            if(ASTUtil.isAncestor(stmt, node)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private IASTStatement[] getExpansionStatements(int stmtsUp, int stmtsDown, IASTStatement original) {
+        List<IASTStatement> statements = new ArrayList<IASTStatement>();
+        statements.add(original);
+        
+        IASTStatement current = original;
+        for(int i = 0; i < stmtsUp; i++) {
+            //TODO type checking
+            current = (IASTStatement) ASTUtil.getPreviousSibling(current);
+            statements.add(0, current);
+        }
+        
+        current = original;
+        for(int j = 0; j < stmtsDown; j++) {
+            //TODO type checking
+            current = (IASTStatement) ASTUtil.getNextSibling(current);
+            statements.add(current);
+        }
+        return statements.toArray(new IASTStatement[statements.size()]);
+    }
+
+    private boolean areCopyDefsTheSame(Set<String> gpuvars, Set<String> ocopyin, Set<String> expcopyin) {
+        //if a variable is in gpuvars and not in ocopyin, it shouldn't be in expcopyin: 
+        //(G - (G ∩ O)) ∩ E = ∅
+        //if a variable is in gpuvars and in ocopyin, it should be in expcopyin:
+        //(G ∩ O) ⊆ E
+        Set<String> G = new HashSet<String>(gpuvars);
+        Set<String> O = new HashSet<String>(ocopyin);
+        Set<String> E = new HashSet<String>(expcopyin);
+        Set<String> GintO = new HashSet<String>(gpuvars);
+        GintO.retainAll(O);
+        Set<String> GminusGintO = new HashSet<String>(G);
+        GminusGintO.removeAll(GintO);
+        Set<String> GminusGintOintE = new HashSet<String>(GminusGintO);
+        GminusGintOintE.retainAll(E);
+        
+        return GminusGintOintE.isEmpty() 
+                && E.containsAll(GintO);
+    }
+
     private class Expansion {
         
-        private IASTStatement start;
-        private IASTStatement end;
+        private IASTStatement[] statements;
         private int size;
         private Set<String> copyin;
         private Set<String> copyout;
         
-        public Expansion(IASTStatement first, IASTStatement last, int size, Set<String> copyin, Set<String> copyout) {
-            this.start = first;
-            this.end = last;
+        public Expansion(IASTStatement[] statements, int size, Set<String> copyin, Set<String> copyout) {
             this.size = size;
+            this.statements = statements;
             this.copyin = copyin;
             this.copyout = copyout;
         }
 
-        public IASTStatement getStartOffset() {
-            return start;
+        public IASTStatement[] getStatements() {
+            return statements;
         }
-
-        public IASTStatement getEndOffset() {
-            return end;
-        }
-
+        
         public int getSize() {
             return size;
         }
