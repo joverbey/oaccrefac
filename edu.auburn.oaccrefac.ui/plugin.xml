@@ -67,8 +67,9 @@
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.DistributeLoopsDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.LoopFissionDelegate"
-               label="&amp;Fission"
+               label="&amp;Distribute"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccGroup"
+               pulldown="false"
                tooltip="Apply loop fission on a compound for body.">
          </action>
          <action

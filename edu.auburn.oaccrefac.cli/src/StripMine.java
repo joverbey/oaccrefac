@@ -38,12 +38,12 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
     
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 3) {
             printUsage();
             return false;
         }
         try {
-            stripFactor = Integer.parseInt(args[1]);
+            stripFactor = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;

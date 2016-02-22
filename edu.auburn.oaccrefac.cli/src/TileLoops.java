@@ -43,13 +43,13 @@ public class TileLoops extends LoopMain<TileLoopsParams, TileLoopsCheck, TileLoo
   
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 3) {
+        if (args.length != 4) {
             printUsage();
             return false;
         }
         try {
-            width = Integer.parseInt(args[1]);
-            height = Integer.parseInt(args[2]);
+            width = Integer.parseInt(args[2]);
+            height = Integer.parseInt(args[3]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;
