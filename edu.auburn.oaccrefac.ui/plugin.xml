@@ -19,8 +19,8 @@
             <separator name="typeGroup2"/>
             <separator name="codingGroup2"/>
             <separator name="typeGroup3"/>
-            <separator name="historyGroup"/>
             <separator name="oaccGroup"/>
+            <separator name="historyGroup"/>
          </menu>
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.AnalyzeLoopDelegate"
