@@ -124,12 +124,10 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
 
             @Override
             public int visit(IASTStatement stmt) {
-                // TODO: Fix breaking tests because nearestFollowingStatement might be null.
-                if (stmt.getFileLocation().getNodeOffset() >= after
-                        && nearestFollowingStatement == null
-                        || stmt.getFileLocation().getNodeOffset() < nearestFollowingStatement.getFileLocation()
-                                .getNodeOffset()) {
+                if (stmt.getFileLocation().getNodeOffset() >= after) {
+                    if(nearestFollowingStatement == null || stmt.getFileLocation().getNodeOffset() < nearestFollowingStatement.getFileLocation().getNodeOffset()) {
                         nearestFollowingStatement = stmt;
+                                }
                 }
                 return PROCESS_CONTINUE;
             }
