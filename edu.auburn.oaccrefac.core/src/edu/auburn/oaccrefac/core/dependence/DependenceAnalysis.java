@@ -58,7 +58,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
             progress.subTask(String.format("Analyzing line %d - %s",
                     v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
             for (VariableAccess v2 : getVariableAccesses()) {
-                if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)) {
+                if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2) && !v1.getVariableName().equals(v2.getVariableName())) {
                     DependenceType dependenceType = v1.getDependenceTypeTo(v2);
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
                         Direction[] directionVector = new Direction[v1.numEnclosingLoops()];
