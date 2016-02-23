@@ -452,7 +452,6 @@ public class ReachingDefinitionsTest extends TestCase {
                 //this enters on both the statement and the binary expression it contains
                 if (node instanceof IASTStatement) {
                     assertTrue(contains(rd, "b", 3, null));
-                    System.out.println(node.getParent().getParent().getRawSignature());
                     assertTrue(rd.size() == 1);
                     assertTrue(contains(ru, "a", 12, null));
                     assertTrue(ru.size() == 1);
