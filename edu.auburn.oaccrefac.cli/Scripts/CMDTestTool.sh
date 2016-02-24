@@ -6,23 +6,52 @@ then
 	exit
 fi
 
-if [ "$COMPILE" == "" ]; then
-	# COMPILE="make -C ./examples/testcode-epcc/"
-	COMPILE="gcc -o examples/testcode-epcc/oa -fopenmp examples/testcode-epcc/common.c examples/testcode-epcc/level1.c examples/testcode-epcc/main.c -lm"
+printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParrallelLoop\nLoopCutting\nStripMine\nTileLoops\nUnroll\n"
+
+read refactoring
+if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelloop" ] && [ "$refactoring" != "LoopCutting" ] && [ "$refactoring" != "StripMine" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ]; then
+	echo "That is not a recognized refactoring, please enter as shown above next time"
+	exit
 fi
-if [ "$RUN" == "" ]; then
-	RUN="./examples/testcode-epcc/oa --datasize 1024 --reps 1"
+
+declare -i numNestLoops
+fileToRefactor=""
+
+echo "please enter a test name or custom"
+read testName
+
+if [ $testName == "level1" ]; then
+	COMPILE="gcc -o examples/testcode-epcc/oa -fopenmp examples/testcode-epcc/common.c examples/testcode-epcc/level1-CMD.c examples/testcode-epcc/main.c -lm"
+	RUN="./examples/testcode-epcc/oa --datasize 1024 --reps 1" > ./Scripts/result.txt
+	fileToRefactor="examples/testcode-epcc/level1-CMD.c"
+	$numNestLoops=77
+fi
+if [ "$testName" == "custom" ]; then
+	echo "Please enter the compile command now"
+	read compileInput
+	COMPILE="$commandInput"
+	echo "Now enter the run command"
+	read runInput
+	RUN="$runInput + " > ./Scripts/result.txt
+	echo "Now enter the file to be refactored"
+	read fileToRefactor
+	echo "How man nests of loops are there?"
+	read numNestLoops
+
 fi
 
 outerinner[0]="outer"
 outerinner[1]="inner"
 outerinner[2]="inner2"
 
->./Scripts/errorlog.txt
->./examples/testcode-epcc-temp/outputtemp.c
 
-cp -a ./examples/testcode-epcc/. ./examples/testcode-epcc-temp
-cp ./examples/testcode-epcc/level1-CMD.c ./examples/testcode-epcc-temp/inputtemp.c
+>./Scripts/errorlog.txt
+outputtemp=$(mktemp)
+inputtemp=$(mktemp)
+echo $outputtemp
+echo $inputtemp
+
+cp $fileToRefactor $inputtemp
 
 echo "Compiling..."
 $COMPILE
@@ -34,7 +63,7 @@ fi
 echo "Running..."
 $RUN | tee ./Scripts/result.txt
 
-for i in $(seq 77)
+for i in $(seq $numNestLoops)
 do
 	loopname="loop"
 	loopname+=$i
@@ -43,32 +72,28 @@ do
 	for j in "${outerinner[@]}"
 	do
 		loopname+="$j"
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" DistributeLoops ./examples/testcode-epcc-temp/inputtemp.c "$loopname"  > ./examples/testcode-epcc/outputtemp.c 2>> ./Scripts/errorlog.txt	
-		if [[ -s ./examples/testcode-epcc-temp/outputtemp.c ]]; then
-			cp ./examples/testcode-epcc-temp/outputtemp.c ./examples/testcode-epcc-temp/inputtemp.c
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname"  > $outputtemp 2>> ./Scripts/errorlog.txt	
+		if [[ -s $outputtemp ]]; then
+			cp $outputtemp $inputtemp
 		fi
 		echo $loopname
 		loopname=$loopnameTemp
 	done
 done
 
-cp ./examples/testcode-epcc-temp/inputtemp.c ./examples/testcode-epcc-temp/level1-CMD.c
+#cat $inputtemp
 
-#How to insert refactored file(outputtemp.c) into make?
-make -C ./examples/testcode-epcc-temp/
-./examples/testcode-epcc-temp/oa > ./Scripts/result2.txt
+cp $fileToRefactor $outputtemp
+cp $inputtemp $fileToRefactor
 
-if cmp -s result.txt result2.txt
+$Compile
+$RUN | tee ./Scripts/result2.txt
+
+cp $outputtemp $fileToRefactor
+
+if cmp -s ./Scripts/result.txt ./Scripts/result2.txt
 then
-	echo "The results match"
+	echo "\nThe results match"
 else
-	echo "The results did not match"
+	echo "\nThe results did not match"
 fi
-
-rm ./examples/testcode-epcc-temp/outputtemp.c
-rm ./examples/testcode-epcc-temp/inputtemp.c
-rm ./examples/testcode-epcc-temp/oa
-rm ./examples/testcode-epcc/outputtemp.c
-rm ./examples/testcode-epcc/oa
-rm -r ./examples/testcode-epcc-temp
-rm ./examples/testcode-epcc/*.o

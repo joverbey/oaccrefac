@@ -44,8 +44,7 @@ double gettime() {
     return t.tv_sec + t.tv_usec*1.0e-6;
 }
 
-
-double twomm(){
+double* twomm(){
 
   extern unsigned int datasize;
   int i = 0;
@@ -73,12 +72,12 @@ double twomm(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
-
   for (i = 0; i < n; i++){ /* loop1outer */
     for (j = 0; j < n; j++){ /* loop1inner */
       A[i*n+j] = rand()/ (1.0 + RAND_MAX);
     }
   }
+  printf("%f /n", A[0]);
   for (i = 0; i < n; i++){ /* loop2outer */
     for (j = 0; j < n; j++){ /* loop2inner */
       B[i*n+j] = rand()/ (1.0 + RAND_MAX);
@@ -168,8 +167,7 @@ double twomm(){
   free(E);
   free(H);
 
-  if (flag == 0) return (t_end-t_start);
-  else return(-11000);
+return A;
 
 }
 
