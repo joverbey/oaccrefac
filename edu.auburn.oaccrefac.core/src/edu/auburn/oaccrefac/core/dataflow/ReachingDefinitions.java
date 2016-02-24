@@ -148,11 +148,10 @@ public class ReachingDefinitions {
         return uses;
     }
     
-    //See associated unit tests for examples of each of these
     /*FIXME 
-     *  sometimes identifies reaching definitions for both a statement and its contained expression
-     *  the expression's definitions are incorrect
-     *  the expression should never be used to find a reaching definition though, so this is low priority
+     *  sometimes identifies reaching definitions for both a statement and its contained expression.
+     *  the expression's definitions are incorrect.
+     *  the expression should never be used to find a reaching definition though, so this is low priority.
      */
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
         boolean changed;

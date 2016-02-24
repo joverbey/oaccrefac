@@ -3,7 +3,9 @@ package edu.auburn.oaccrefac.core.transformations;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -48,8 +50,10 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
     protected void doChange() throws Exception {
         ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
 
-        Set<String> copyin = new TreeSet<String>();
-        Set<String> copyout = new TreeSet<String>();
+        //the name of the variable (i.e., "A") mapped to what appears in the copy set (i.e., "A[0:n]")
+        Map<String, String> copyin = new TreeMap<String, String>();
+        Map<String, String> copyout = new TreeMap<String, String>();
+        List<ASTAccDataClauseListNode> otherStuff = new ArrayList<ASTAccDataClauseListNode>();
         
         IAccConstruct construct = new OpenACCParser().parse(getPragma().getRawSignature());
         //TODO do a check in the check class for the type of the node?
@@ -62,20 +66,19 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
             if(listNode.getAccDataClause() instanceof ASTAccCopyinClauseNode) {
                 ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) listNode.getAccDataClause();
                 for(ASTAccDataItemNode var : copyinClause.getAccDataList()) {
-                    copyin.add(var.getIdentifier().getIdentifier().getText());
+                    copyin.put(var.getIdentifier().getIdentifier().getText(), var.toString());
                 }
             }
             else if(listNode.getAccDataClause() instanceof ASTAccCopyoutClauseNode) {
                 ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) listNode.getAccDataClause();
                 for(ASTAccDataItemNode var : copyoutClause.getAccDataList()) {
-                    copyout.add(var.getIdentifier().getIdentifier().getText());
+                    copyout.put(var.getIdentifier().getIdentifier().getText(), var.toString());
                 }
             }
+            else {
+                otherStuff.add(listNode);
+            }
         }
-        
-        /*
-        picks the largest expansion such that the copysize hasnt increased and values copied in and out havet changed
-        */
 
         //using parent node
         int maxup = getMaxUp(getStatement());
@@ -128,7 +131,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         }
         
         //we should at least end up with the current construct as the best one
-        assert largestexp == null;
+        assert largestexp != null;
         
         String newConstruct = "";
         for(IASTStatement statement : largestexp.getStatements()) {
@@ -143,9 +146,40 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 newConstruct += statement.getRawSignature() + System.lineSeparator();
             }
         }
-        String copyinstr = copyin(largestexp.getCopyin().toArray(new String[largestexp.getCopyin().size()]));
-        String copyoutstr = copyout(largestexp.getCopyout().toArray(new String[largestexp.getCopyout().size()]));
-        String pragma = pragma("acc data") + " " + copyinstr + " " + copyoutstr + System.lineSeparator();
+        //String copyinstr = copyin(largestexp.getCopyin().toArray(new String[largestexp.getCopyin().size()]));
+        //String copyoutstr = copyout(largestexp.getCopyout().toArray(new String[largestexp.getCopyout().size()]));
+        String[] copyinarr = new String[largestexp.getCopyin().size()];
+        int i = 0;
+        for(String name : largestexp.getCopyin()) {
+            String actual = copyin.get(name);
+            if(actual != null) {
+                copyinarr[i] = actual;
+            }
+            else {
+                copyinarr[i] = name;
+            }
+            i++;
+        }
+        
+        String[] copyoutarr = new String[largestexp.getCopyout().size()];
+        i = 0;
+        for(String name : largestexp.getCopyout()) {
+            String actual = copyout.get(name);
+            if(actual != null) {
+                copyoutarr[i] = actual;
+            }
+            else {
+                copyoutarr[i] = name;
+            }
+            i++;
+        }
+        
+        String pragma = pragma("acc data") + " " + copyin(copyinarr) + " " + copyout(copyoutarr) + " ";
+        for(ASTAccDataClauseListNode listNode : otherStuff) {
+            pragma += listNode.toString().trim() + " ";
+        }
+        pragma += System.lineSeparator();
+        
         newConstruct = pragma + compound(newConstruct);
         //TODO make this more intuitive once issue #9 is resolved
         int start = 
@@ -155,7 +189,6 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         int end = getStatement().getFileLocation().getNodeOffset() + getStatement().getFileLocation().getNodeLength();
         int len = end - start;
         this.replace(start,  len, newConstruct);
-        //TODO WHY DOESNT THIS DO ANYTHING???
         finalizeChanges();
     }
     
