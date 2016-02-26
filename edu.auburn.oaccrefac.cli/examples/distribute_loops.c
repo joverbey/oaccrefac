@@ -9,5 +9,6 @@ int main() {
         d = 8;
     }
 
+    printf("%s", a)
     return a;
 }

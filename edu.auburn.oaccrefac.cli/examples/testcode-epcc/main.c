@@ -145,10 +145,9 @@ int main(int argc, char **argv) {
 
   /* Print results & free results storage */
   print_array_results();
-  //finalise();
+  finalise();
 
   return EXIT_SUCCESS;
-
 }
 
 /*
