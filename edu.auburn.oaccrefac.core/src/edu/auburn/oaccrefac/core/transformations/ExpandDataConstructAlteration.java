@@ -168,11 +168,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
             }
         }
         
-        String pragma = pragma("acc data") + " " + copyin(copyinarr.toArray(new String[copyinarr.size()])) + " " + copyout(copyoutarr.toArray(new String[copyoutarr.size()])) + " ";
-        for(ASTAccDataClauseListNode listNode : otherStuff) {
-            pragma += listNode.toString().trim() + " ";
-        }
-        pragma += System.lineSeparator();
+        String pragma = generatePragma(copyinarr, copyoutarr, otherStuff);
         
         newConstruct = pragma + compound(newConstruct);
         //TODO make this more intuitive once issue #9 is resolved
@@ -185,6 +181,26 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         int len = end - start;
         this.replace(start,  len, newConstruct);
         finalizeChanges();
+    }
+    
+    private String generatePragma(List<String> copyin, List<String> copyout, List<ASTAccDataClauseListNode> otherClauses) {
+        StringBuilder prag = new StringBuilder(pragma("acc data") + " ");
+        List<String> clauses = new ArrayList<String>();
+        if(!copyin.isEmpty())
+            clauses.add(copyin(copyin.toArray(new String[copyin.size()])));
+        if(!copyout.isEmpty())
+            clauses.add(copyout(copyout.toArray(new String[copyout.size()])));
+        for(ASTAccDataClauseListNode clause : otherClauses) {
+            clauses.add(clause.toString().trim());
+        }
+        for(int i = 0; i < clauses.size(); i++) {
+            prag.append(clauses.get(i).toString().trim());
+            if(i != clauses.size() - 1) {
+                prag.append(", ");
+            }
+        }
+        prag.append(System.lineSeparator());
+        return prag.toString();
     }
     
     //TODO this seems to work, but maybe using IScope would be more "correct"?
