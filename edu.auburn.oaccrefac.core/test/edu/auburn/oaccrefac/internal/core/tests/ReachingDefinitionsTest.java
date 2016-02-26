@@ -81,6 +81,70 @@ public class ReachingDefinitionsTest extends TestCase {
         assert cases.size() == 6;
     }
     
+    public void testDeclaration() throws Exception {
+        List<Integer> cases = new ArrayList<Integer>();
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "void main() {    \n" //1
+                + "    int a;       \n" //2
+                + "    int b;       \n" //3
+                + "    a = b;       \n" //4
+                + "    b = a;       \n" //5
+                + "    a = 12;      \n" //6
+                + "    a = 14;      \n" //7
+                + "    b = a + 1;   \n" //8
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "int a = 10;":
+                assertTrue(rd.isEmpty());
+                assertTrue(ru.isEmpty());
+                cases.add(1);
+                break;
+            case "int b = 20;":
+                assertTrue(rd.isEmpty());
+                assertTrue(contains(ru, "b", 4, null));
+                assertTrue(ru.size() == 1);
+                cases.add(2);
+                break;
+            case "a = b;":
+                assertTrue(contains(rd, "b", 3, null));
+                assertTrue(rd.size() == 1);
+                assertTrue(contains(ru, "a", 5, null));
+                assertTrue(ru.size() == 1);
+                cases.add(3);
+                break;
+            case "b = a;":
+                assertTrue(contains(rd, "a", 4, null));
+                assertTrue(rd.size() == 1);
+                assertTrue(ru.isEmpty());
+                cases.add(4);
+                break;
+            case "a = 12;":
+                assertTrue(rd.isEmpty());
+                assertTrue(ru.isEmpty());
+                cases.add(4);
+                break;
+            case "a = 14;":
+                assertTrue(rd.isEmpty());
+                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(ru.size() == 1);
+                cases.add(5);
+                break;
+            case "b = a + 1;":
+                assertTrue(contains(rd, "a", 7, null));
+                assertTrue(rd.size() == 1);
+                assertTrue(ru.isEmpty());
+                cases.add(6);
+                break;
+            }
+        }
+        assert cases.size() == 6;
+    }
+    
     public void testBasicArray() throws Exception {
         List<Integer> cases = new ArrayList<Integer>();
         IASTTranslationUnit tu = ASTUtil.translationUnitForString(""

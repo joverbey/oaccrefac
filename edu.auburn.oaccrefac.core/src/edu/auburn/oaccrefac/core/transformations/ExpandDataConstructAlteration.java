@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -18,6 +18,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import edu.auburn.oaccrefac.core.dataflow.ReachingDefinitions;
 import edu.auburn.oaccrefac.core.parser.ASTAccCopyinClauseNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccCopyoutClauseNode;
+import edu.auburn.oaccrefac.core.parser.ASTAccCreateClauseNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccDataClauseListNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccDataItemNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccDataNode;
@@ -43,8 +44,6 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
     *   again, if either of these for changing a set occurs, stop the expansion
     */ 
     
-    //FIXME should handle create clauses
-    //FIXME should handle subarray copyins/outs
     //TODO may be worth profiling this to get some speedup; takes a little time to run right now
     @Override
     protected void doChange() throws Exception {
@@ -53,6 +52,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         //the name of the variable (i.e., "A") mapped to what appears in the copy set (i.e., "A[0:n]")
         Map<String, String> copyin = new TreeMap<String, String>();
         Map<String, String> copyout = new TreeMap<String, String>();
+        Map<String, String> create = new TreeMap<String, String>();
         List<ASTAccDataClauseListNode> otherStuff = new ArrayList<ASTAccDataClauseListNode>();
         
         IAccConstruct construct = new OpenACCParser().parse(getPragma().getRawSignature());
@@ -74,6 +74,13 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 for(ASTAccDataItemNode var : copyoutClause.getAccDataList()) {
                     copyout.put(var.getIdentifier().getIdentifier().getText(), var.toString());
                 }
+            }
+            else if(listNode.getAccDataClause() instanceof ASTAccCreateClauseNode) {
+                ASTAccCreateClauseNode createClause = (ASTAccCreateClauseNode) listNode.getAccDataClause();
+                for(ASTAccDataItemNode var : createClause.getAccDataList()) {
+                    create.put(var.getIdentifier().getIdentifier().getText(), var.toString());
+                }
+                otherStuff.add(listNode);
             }
             else {
                 otherStuff.add(listNode);
@@ -101,37 +108,25 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 Set<String> expcopyin = getCopyin(expStmts, rd);
                 Set<String> expcopyout = getCopyout(expStmts, rd);
                 
-                //FIXME there should be some sort of heuristic check to reduce the size of the sets, but not this one
-                //current sets could be incorrect or be more informed about than our analysis can be (ie, through const prop, etc)
-                //if(exp.getCopyin().size() <= ocopyinsize)
-                //if(exp.getCopyout().size() <= ocopyoutsize)
-                
                 //be sure that for variables actually used on the gpu, the copyin set hasn't changed 
                 if(areCopyDefsTheSame(gpuuses, ocopyin, expcopyin))
                 //be sure that for variables defined on the gpu, the copyout set hasn't changed
                 if(areCopyDefsTheSame(gpudefs, ocopyout, expcopyout)) 
-                //TODO also do a scope check to be sure we haven't enclosed any variable definitions that reach outside the construct
-                //if a var is used on the gpu inside the construct and was copied in, we cant remove it from the copyin set in the expansion
-                //this is actually redundant
-                //if(isAIntersectedWithBASubsetOfC(gpuvars, copyin, expcopyin))
-                //if a var is used on the gpu inside the construct and was not copied in, we cannot add it to the copyset
-                //logically, this is equivalent to the contrapositive: 
-                //if a var is used on the gpu inside the construct and is in the expansion's copyin set, it must be in the original copyin set as well 
-                //i guess the real question is "is the intersection of A and B a subset of C?"
-                //if(isAIntersectedWithBASubsetOfC(gpuvars, expcopyin, copyin))
+                //be sure we don't add a declaration to this inner scope if it is used in the outer scope 
+                if(!expansionAddsDeclarationIllegally(expStmts, getStatement(), rd))
+                //be sure the copy sets haven't gotten larger (cp to our discovered copysets for the original, not the original code's)
+                if(expcopyin.size() + expcopyout.size() <= ocopyin.size() + ocopyout.size())
                     expansions.add(new Expansion(expStmts, osize + i + j, expcopyin, expcopyout));
             }
         }
-        //just picks the largest; could pick the largest with some comparison to copysize, or the one with the smallest copysize, etc
+
+        //just pick the largest; could pick the largest with some comparison to copysize, or the one with the smallest copysize, etc
         Expansion largestexp = null;
         for(Expansion exp : expansions) {
            if(largestexp == null || exp.getSize() >= largestexp.getSize()) {
                 largestexp = exp;
             }
         }
-        
-        //we should at least end up with the current construct as the best one
-        assert largestexp != null;
         
         String newConstruct = "";
         for(IASTStatement statement : largestexp.getStatements()) {
@@ -146,35 +141,34 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
                 newConstruct += statement.getRawSignature() + System.lineSeparator();
             }
         }
-        //String copyinstr = copyin(largestexp.getCopyin().toArray(new String[largestexp.getCopyin().size()]));
-        //String copyoutstr = copyout(largestexp.getCopyout().toArray(new String[largestexp.getCopyout().size()]));
-        String[] copyinarr = new String[largestexp.getCopyin().size()];
-        int i = 0;
+
+        List<String> copyinarr = new ArrayList<String>();
         for(String name : largestexp.getCopyin()) {
-            String actual = copyin.get(name);
-            if(actual != null) {
-                copyinarr[i] = actual;
+            //TODO later this "if" can be removed and create clauses can be actually generated like copyin/out are
+            if (!create.containsKey(name)) {
+                String actual = copyin.get(name);
+                if (actual != null) {
+                    copyinarr.add(actual);
+                } else {
+                    copyinarr.add(name);
+                }
             }
-            else {
-                copyinarr[i] = name;
-            }
-            i++;
         }
         
-        String[] copyoutarr = new String[largestexp.getCopyout().size()];
-        i = 0;
+        List<String> copyoutarr = new ArrayList<String>();
         for(String name : largestexp.getCopyout()) {
-            String actual = copyout.get(name);
-            if(actual != null) {
-                copyoutarr[i] = actual;
+          //TODO later this "if" can be removed and create clauses can be actually generated like copyin/out are
+            if (!create.containsKey(name)) {
+                String actual = copyout.get(name);
+                if (actual != null) {
+                    copyoutarr.add(actual);
+                } else {
+                    copyoutarr.add(name);
+                }
             }
-            else {
-                copyoutarr[i] = name;
-            }
-            i++;
         }
         
-        String pragma = pragma("acc data") + " " + copyin(copyinarr) + " " + copyout(copyoutarr) + " ";
+        String pragma = pragma("acc data") + " " + copyin(copyinarr.toArray(new String[copyinarr.size()])) + " " + copyout(copyoutarr.toArray(new String[copyoutarr.size()])) + " ";
         for(ASTAccDataClauseListNode listNode : otherStuff) {
             pragma += listNode.toString().trim() + " ";
         }
@@ -182,16 +176,49 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         
         newConstruct = pragma + compound(newConstruct);
         //TODO make this more intuitive once issue #9 is resolved
+        IASTStatement[] exparr = largestexp.getStatements();
         int start = 
                 Math.min(
                         getPragma().getFileLocation().getNodeOffset(), 
-                        largestexp.getStatements()[0].getFileLocation().getNodeOffset());
-        int end = getStatement().getFileLocation().getNodeOffset() + getStatement().getFileLocation().getNodeLength();
+                        exparr[0].getFileLocation().getNodeOffset());
+        int end = exparr[exparr.length - 1].getFileLocation().getNodeOffset() + exparr[exparr.length - 1].getFileLocation().getNodeLength(); 
         int len = end - start;
         this.replace(start,  len, newConstruct);
         finalizeChanges();
     }
     
+    //TODO this seems to work, but maybe using IScope would be more "correct"?
+    private boolean expansionAddsDeclarationIllegally(IASTStatement[] expStmts, IASTStatement origStmt,
+            ReachingDefinitions rd) {
+        //get all variable declarations in the expansion but not in the original construct
+        Set<IASTDeclarationStatement> decls = new HashSet<IASTDeclarationStatement>(); 
+        for(IASTStatement stmt : expStmts) {
+            if(!stmt.equals(origStmt)) {
+                decls.addAll(ASTUtil.find(stmt, IASTDeclarationStatement.class));
+            }
+        }
+        
+        //if a use reached by an added declaration is not in the expansion, return false
+        for(IASTDeclarationStatement decl : decls) {
+            Set<IASTName> uses = rd.reachedUses(decl);
+            for(IASTName use : uses) {
+                if(!expansionIncludesNode(expStmts, use)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean expansionIncludesNode(IASTStatement[] expStmts, IASTNode node) {
+        for(IASTStatement stmt : expStmts) {
+            if(ASTUtil.isAncestor(stmt, node)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Set<String> getGpuVars(IASTNode node, boolean shouldGetDefs) {
         Set<String> gpuVars = new HashSet<String>();
         getGpuVars(node, gpuVars, shouldGetDefs);
