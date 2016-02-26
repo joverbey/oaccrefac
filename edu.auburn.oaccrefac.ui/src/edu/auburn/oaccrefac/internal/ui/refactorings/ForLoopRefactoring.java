@@ -202,19 +202,19 @@ public abstract class ForLoopRefactoring extends CRefactoring {
      * @return CASTForStatement to perform refactoring on
      */
     private IASTForStatement findFirstLoop(IASTTranslationUnit ast) {
-        List<IASTForStatement> loops = ASTUtil.find(ast, IASTForStatement.class);
-        if (loops.size() == 0) {
-            return null;
-        }
-
+        List<IASTForStatement> fors = ASTUtil.find(ast, IASTForStatement.class);
         int begin = selectedRegion.getOffset();
         int end = selectedRegion.getLength() + begin;
-        IASTForStatement firstFor = loops.get(0); // Get the first for loop out of the list. 
-        for (IASTForStatement loop : loops) {
-            IASTFileLocation loc = loop.getFileLocation();
-            if (loc.getNodeOffset() >= begin && loc.getNodeOffset() < end) {
-                IASTFileLocation firstloc = firstFor.getFileLocation();
-                if (firstloc.getNodeOffset() > loc.getNodeOffset()) {
+
+        IASTForStatement firstFor = null;
+        for (IASTForStatement loop : fors) {
+            if (loop.getFileLocation().getNodeOffset() >= begin
+                    && loop.getFileLocation().getNodeOffset() < end) {
+                if (firstFor != null) {
+                    if (firstFor.getFileLocation().getNodeOffset() > loop.getFileLocation().getNodeOffset()) {
+                        firstFor = loop;
+                    }
+                } else {
                     firstFor = loop;
                 }
             }

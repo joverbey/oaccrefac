@@ -22,7 +22,7 @@ public class NumberInputComposite extends Composite {
 
     private final Label label;
 
-    public NumberInputComposite(Composite parent, int style, ValueChangedListener listener) {
+    public NumberInputComposite(Composite parent, int style, final ValueChangedListener listener) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
         label = new Label(this, SWT.NONE);
@@ -38,6 +38,9 @@ public class NumberInputComposite extends Composite {
                 String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
                 
                 e.doit = newS.matches("[0-9]*");
+                if (e.doit) {
+                    listener.valueChanged(Integer.parseInt(newS));
+                }
             }
         });
     }
