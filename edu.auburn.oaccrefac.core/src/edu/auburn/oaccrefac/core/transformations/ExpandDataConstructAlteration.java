@@ -24,6 +24,7 @@ import edu.auburn.oaccrefac.core.parser.ASTAccDataItemNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccDataNode;
 import edu.auburn.oaccrefac.core.parser.IAccConstruct;
 import edu.auburn.oaccrefac.core.parser.OpenACCParser;
+import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<ExpandDataConstructCheck> {
@@ -191,6 +192,8 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         if(!copyout.isEmpty())
             clauses.add(copyout(copyout.toArray(new String[copyout.size()])));
         for(ASTAccDataClauseListNode clause : otherClauses) {
+            Token tok = clause.findFirstToken();
+            tok.setText("");
             clauses.add(clause.toString().trim());
         }
         for(int i = 0; i < clauses.size(); i++) {
