@@ -27,7 +27,7 @@
 unsigned int datasize = -1;       /* Datasize for tests in bytes. */
 int reps = -1;                    /* Repetitions. */
 
-double testResults[13];
+double *testResults[13];
 double *times;           /* Array of doubles storing the benchmark times in microseconds. */
 double testtime;         /* The average test time in microseconds for reps runs. */
 double testsd;           /* The standard deviation in the test time in microseconds for reps runs. */
@@ -222,10 +222,10 @@ void print_array_results() {
 	int i;
 	for(i = 0; i < 13; i++) {
 		if(i <12){
-	        printf("%f ,", testResults[i]);
+	        printf("%f ,", testResults[i][0]);
 	    }
 	    if(i == 12){
-	    	printf("%f", testResults[i]);
+	    	printf("%f", testResults[i][0]);
 	    }
 	}
 }

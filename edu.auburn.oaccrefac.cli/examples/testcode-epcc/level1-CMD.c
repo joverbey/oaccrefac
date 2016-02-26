@@ -77,7 +77,6 @@ double* twomm(){
       A[i*n+j] = rand()/ (1.0 + RAND_MAX);
     }
   }
-  printf("%f /n", A[0]);
   for (i = 0; i < n; i++){ /* loop2outer */
     for (j = 0; j < n; j++){ /* loop2inner */
       B[i*n+j] = rand()/ (1.0 + RAND_MAX);
@@ -160,19 +159,19 @@ double* twomm(){
 //  }
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(B);
   free(C);
   free(D);
   free(E);
-  free(H);
+  free(H);*/
 
-return A;
+return E;
 
 }
 
 
-double threemm(){
+double* threemm(){
 
   extern unsigned int datasize;
   int i = 0;
@@ -300,22 +299,23 @@ double threemm(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(B);
   free(C);
   free(D);
   free(E);
   free(F);
   free(G);
-  free(H);
+  free(H);*/
 
-  if (flag == 0) return (t_end-t_start);
-  else return(-11000);
+/*  if (flag == 0) return (t_end-t_start);
+  else return(-11000);*/
+  return G;
 
 }
 
 
-double atax(){
+double* atax(){
 
   int i = 0;
   int j = 0;
@@ -407,20 +407,22 @@ double atax(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(x);
   free(y);
   free(ya);
-  free(tmp);
+  free(tmp);*/
 
-  if (flag == 0) return (t_end-t_start);
-  else return(-11000);
+/*  if (flag == 0) return (t_end-t_start);
+  else return(-11000);*/
+
+  return ya;
 
 }
 
 
 
-double bicg(){
+double* bicg(){
 
   int i = 0;
   int j = 0;
@@ -513,7 +515,7 @@ double bicg(){
   }
 
  /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(r);
   free(s);
   free(sh);
@@ -522,12 +524,14 @@ double bicg(){
   free(p);
 
   if (flag == 0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return sh;
 
 }
 
 
-double mvt(){
+double* mvt(){
 
   extern unsigned int datasize;
   int n = 4096;//sqrt(datasize/sizeof(double));
@@ -632,6 +636,7 @@ double mvt(){
   }
 
  /* Free malloc'd memory to prevent leaks */
+/*
   free(a);
   free(x1);
   free(x1_Gpu);
@@ -642,11 +647,14 @@ double mvt(){
 
   if (flag1==0 && flag2==0) return (t_end-t_start);
   else return(-11000);
+*/
+
+  return x2_Gpu;
 
 }
 
 
-double syrk(){
+double* syrk(){
   extern unsigned int datasize;
   int n = 1024;//sqrt((datasize/sizeof(double))/3);
 
@@ -733,17 +741,19 @@ double syrk(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(C);
   free(CG);
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return CG;
 
 }
 
 
-double covariance(){
+double* covariance(){
 
   extern unsigned int datasize;
 
@@ -869,7 +879,7 @@ double covariance(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(data);
+/*  free(data);
   free(hdata);
   free(symmat);
   free(hsymmat);
@@ -877,11 +887,13 @@ double covariance(){
   free(hmean);
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return symmat;
 }
 
 
-double correlation(){
+double* correlation(){
 
   int i = 0;
   int j = 0;
@@ -1039,7 +1051,7 @@ double correlation(){
   }
   
   /* Free malloc'd memory to prevent leaks */
-  free(data);
+/*  free(data);
   free(hdata);
   free(symmat);
   free(hsymmat);
@@ -1049,11 +1061,13 @@ double correlation(){
   free(hstddev);
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return symmat;
 }
 
 
-double syr2k(){
+double* syr2k(){
 
   double t_start = 0;
   double t_end = 0;
@@ -1149,17 +1163,19 @@ double syr2k(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(B);
   free(C);
   free(CG);
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return CG;
 }
 
 
-double gesummv(){
+double* gesummv(){
 
   int i = 0;
   int j = 0;
@@ -1235,7 +1251,7 @@ double gesummv(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(B);
   free(x);
   free(Ay);
@@ -1243,10 +1259,12 @@ double gesummv(){
   free(Htmp);
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return Ay;
 }
 
-double gemm(){
+double* gemm(){
 
   extern unsigned int datasize;
   int i = 0;
@@ -1327,18 +1345,20 @@ double gemm(){
   }
 
   /* Free malloc'd memory to prevent leaks */
-  free(C);
+/*  free(C);
   free(H);
   free(A);
   free(B);
 
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return C;
 }
 
 
-double twodconv(){
+double* twodconv(){
 
   int i = 0;
   int j = 0;
@@ -1404,18 +1424,20 @@ double twodconv(){
     }
   }
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(B);
   free(B_Gpu);
 
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return B_Gpu;
 
 }
 
 
-double threedconv(){
+double* threedconv(){
 
   int i, j, k;
   int n = 256;//cbrt((datasize/sizeof(double))/2);
@@ -1505,10 +1527,12 @@ double threedconv(){
 
 
   /* Free malloc'd memory to prevent leaks */
-  free(A);
+/*  free(A);
   free(B);
   free(B_Gpu);
 
   if (flag==0) return (t_end-t_start);
-  else return(-11000);
+  else return(-11000);*/
+
+  return B_Gpu;
 }

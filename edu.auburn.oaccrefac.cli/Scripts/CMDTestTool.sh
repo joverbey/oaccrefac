@@ -1,4 +1,5 @@
 #!/bin/bash
+#TODO Throw error if not C file
 curdir=`basename "$PWD"`
 if [ "$curdir" != "edu.auburn.oaccrefac.cli" ]
 then
@@ -114,7 +115,7 @@ else
 	echo "Refactoring successful"
 fi
 
-cat $inputtemp
+#cat $inputtemp
 
 cp $fileToRefactor $outputtemp
 cp $inputtemp $fileToRefactor
