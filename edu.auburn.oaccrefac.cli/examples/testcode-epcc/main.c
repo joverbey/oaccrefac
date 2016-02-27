@@ -22,7 +22,7 @@
 #include "common.h"
 #include "main.h"
 #include "level0.h"
-#include "level1.h"
+#include "level1-CMD.h"
 #include "27stencil.h"
 #include "le_core.h"
 #include "himeno.h"
@@ -34,7 +34,7 @@
 void wul();
 
 int main(int argc, char **argv) {
-
+  extern double testResults[13];
   char testName[32];
 
   /* Initialise storage for test results & parse input arguements. */
@@ -46,46 +46,47 @@ int main(int argc, char **argv) {
   /* Level 1 Tests - BLAS-esque kernels */
 
   sprintf(testName, "2MM");
-  benchmark(testName, &twomm);
+  testResults[0] = twomm();
+  //benchmark(testName, &twomm);
 
   sprintf(testName, "3MM");
-  benchmark(testName, &threemm);
+  //benchmark(testName, &threemm);
 
   sprintf(testName, "ATAX");
-  benchmark(testName, &atax);
+  //benchmark(testName, &atax);
 
   sprintf(testName, "BICG");
-  benchmark(testName, &bicg);
+  //benchmark(testName, &bicg);
 
   sprintf(testName, "MVT");
-  benchmark(testName, &mvt);
+  //benchmark(testName, &mvt);
 
   sprintf(testName, "SYRK");
-  benchmark(testName, &syrk);
+  //benchmark(testName, &syrk);
 
   sprintf(testName, "COV");
-  benchmark(testName, &covariance);
+  //benchmark(testName, &covariance);
 
   sprintf(testName, "COR");
-  benchmark(testName, &correlation);
+  //benchmark(testName, &correlation);
 
   sprintf(testName, "SYR2K");
-  benchmark(testName, &syr2k);
+  //benchmark(testName, &syr2k);
 
   sprintf(testName, "GESUMMV");
-  benchmark(testName, &gesummv);
+  //benchmark(testName, &gesummv);
 
   sprintf(testName, "GEMM");
-  benchmark(testName, &gemm);
+  //benchmark(testName, &gemm);
 
   sprintf(testName, "2DCONV");
-  benchmark(testName, &twodconv);
+  //benchmark(testName, &twodconv);
 
   sprintf(testName, "3DCONV");
-  benchmark(testName, &threedconv);
+  //benchmark(testName, &threedconv);
 
 
-  /* Level 0 Tests - Speeds and Feeds */
+/*   Level 0 Tests - Speeds and Feeds
   sprintf(testName, "ContigH2D");
   benchmark(testName, &contig_htod);
 
@@ -131,7 +132,7 @@ int main(int argc, char **argv) {
   sprintf(testName, "Kernels_Reduction");
   benchmark(testName, &kernels_reduction);
 
-  /* Level 2 Tests - small applications */
+   Level 2 Tests - small applications
 
   sprintf(testName, "27S");
   benchmark(testName, &stencil);
@@ -140,13 +141,13 @@ int main(int argc, char **argv) {
   benchmark(testName, &le_main);
 
   sprintf(testName, "HIMENO");
-  benchmark(testName, &himeno_main);
+  benchmark(testName, &himeno_main);*/
 
   /* Print results & free results storage */
+  print_array_results();
   finalise();
 
   return EXIT_SUCCESS;
-
 }
 
 /*

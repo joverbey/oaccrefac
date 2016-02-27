@@ -20,13 +20,14 @@
 #include <openacc.h>
 #endif
 #include "common.h"
+#include "main.h"
 
 
 
 unsigned int datasize = -1;       /* Datasize for tests in bytes. */
 int reps = -1;                    /* Repetitions. */
 
-
+double testResults[13];
 double *times;           /* Array of doubles storing the benchmark times in microseconds. */
 double testtime;         /* The average test time in microseconds for reps runs. */
 double testsd;           /* The standard deviation in the test time in microseconds for reps runs. */
@@ -215,4 +216,16 @@ void benchmark(char *name, double (*test)(void))
   stats(&testtime, &testsd);
   print_results(name, testtime, testsd);
 
+}
+
+void print_array_results() {
+	int i;
+	for(i = 0; i < 13; i++) {
+		if(i <12){
+	        printf("%f ,", testResults[i]);
+	    }
+	    if(i == 12){
+	    	printf("%f", testResults[i]);
+	    }
+	}
 }
