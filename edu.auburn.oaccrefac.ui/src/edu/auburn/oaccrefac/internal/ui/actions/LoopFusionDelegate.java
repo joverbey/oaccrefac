@@ -22,7 +22,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopFusionDelegate extends RefactoringActionDelegate {
-    
+
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
         return new LoopFusionRefactoring(wc, selection, project);
@@ -30,10 +30,9 @@ public class LoopFusionDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopFusionRefactoring))
+        if (!(refactoring instanceof LoopFusionRefactoring)) {
             throw new ClassCastException("Refactoring not LoopFusionRefactoring!");
-        LoopRefactoringWizard dumbledore = 
-                new LoopRefactoringWizard(refactoring, "LoopFusionRefactoring");
-        return dumbledore;
+        }
+        return new LoopRefactoringWizard(refactoring, "LoopFusionRefactoring");
     }
 }

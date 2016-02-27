@@ -17,7 +17,7 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
     private int cutFactor;
     private LoopCuttingCheck check;
     
-    //?
+    // TODO: put a good comment here
     public LoopCuttingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
@@ -26,11 +26,13 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
         this.cutFactor = factor;
     }
     
+    @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new LoopCuttingCheck(getLoop());
         check.performChecks(status, pm, new LoopCuttingParams(cutFactor));
     }
     
+    @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new LoopCuttingAlteration(rewriter, cutFactor, check).change();
     }

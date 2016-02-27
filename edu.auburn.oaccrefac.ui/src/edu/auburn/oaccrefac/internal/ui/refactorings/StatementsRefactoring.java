@@ -95,9 +95,9 @@ public abstract class StatementsRefactoring extends CRefactoring {
     }
 
     private void discoverStatementsFromRegion() {
-        List<IASTStatement> statements = new LinkedList<IASTStatement>();
-        List<IASTComment> comments = new LinkedList<IASTComment>();
-        List<IASTNode> statementsAndComments = new LinkedList<IASTNode>();
+        List<IASTStatement> statements = new LinkedList<>();
+        List<IASTComment> comments = new LinkedList<>();
+        List<IASTNode> statementsAndComments = new LinkedList<>();
 
         List<IASTStatement> all = ASTUtil.find(ast, IASTStatement.class);
         int regionBegin = selectedRegion.getOffset();
@@ -113,7 +113,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         }
 
         // filter out statements that are children of other statements in the region
-        Set<IASTStatement> children = new HashSet<IASTStatement>();
+        Set<IASTStatement> children = new HashSet<>();
         for (IASTStatement child : statements) {
             for (IASTStatement parent : statements) {
                 if (ASTUtil.isStrictAncestor(parent, child)) {
@@ -121,6 +121,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
                 }
             }
         }
+        
         for (Iterator<IASTStatement> iterator = statements.iterator(); iterator.hasNext();) {
             if (children.contains(iterator.next())) {
                 iterator.remove();
@@ -154,7 +155,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         statementsAndComments.addAll(comments);
         Collections.sort(statements, ASTUtil.FORWARD_COMPARATOR);
         Collections.sort(statementsAndComments, ASTUtil.FORWARD_COMPARATOR);
-        
+
         this.statements = statements.toArray(new IASTStatement[statements.size()]);
         this.statementsAndComments = statementsAndComments.toArray(new IASTNode[statementsAndComments.size()]);
 
@@ -167,5 +168,4 @@ public abstract class StatementsRefactoring extends CRefactoring {
     public IASTNode[] getStatementsAndComments() {
         return statementsAndComments;
     }
-
 }

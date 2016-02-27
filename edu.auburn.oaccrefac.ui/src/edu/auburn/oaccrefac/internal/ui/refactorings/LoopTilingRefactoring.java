@@ -23,25 +23,22 @@ import edu.auburn.oaccrefac.core.transformations.TileLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.TileLoopsParams;
 
 /**
- * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange.
- * Basically, it consists of strip-mining a given loop into two loops, one that
- * iterates within contiguous strips and an outer loop that iterates strip-by-strip,
- * then interchanging the by-strip loop to the outside of the outer containing loops."
- * -- 9.3.2 Legality of Blocking, p.480, Optimizing Compilers for Modern Architectures
+ * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange. Basically, it consists of
+ * strip-mining a given loop into two loops, one that iterates within contiguous strips and an outer loop that iterates
+ * strip-by-strip, then interchanging the by-strip loop to the outside of the outer containing loops." -- 9.3.2 Legality
+ * of Blocking, p.480, Optimizing Compilers for Modern Architectures
  * 
  */
 public class LoopTilingRefactoring extends ForLoopRefactoring {
 
-    private int width;
-    private int height;
+    private int width = 0;
+    private int height = 0;
     private TileLoopsCheck check;
-    
+
     public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        this.width = 0;
-        this.height = 0;
     }
-    
+
     public void setWidth(int width) {
         this.width = width;
     }

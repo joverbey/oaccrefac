@@ -22,28 +22,23 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.NullRefactoring;
 
 @SuppressWarnings("restriction")
 public class AnalyzeLoopDelegate extends RefactoringActionDelegate {
-	
-	public AnalyzeLoopDelegate() {
-		super();
-	}
 
-	@Override
-	public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-		return new NullRefactoring(wc, selection, project);
-	}
+    @Override
+    public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
+        return new NullRefactoring(wc, selection, project);
+    }
 
-	@Override
-	public RefactoringWizard createWizard(Refactoring refactoring) {
-		return new Wizard(refactoring);
-	}
-	
+    @Override
+    public RefactoringWizard createWizard(Refactoring refactoring) {
+        return new Wizard(refactoring);
+    }
+
     private static class Wizard extends RefactoringWizard {
-
-    	public Wizard(Refactoring refactoring) {
-    		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-    		setDefaultPageTitle("Analyze Loop");
-    		setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
-    	}
+        public Wizard(Refactoring refactoring) {
+            super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
+            setDefaultPageTitle("Analyze Loop");
+            setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
+        }
 
         @Override
         protected void addUserInputPages() {

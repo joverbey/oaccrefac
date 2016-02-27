@@ -23,7 +23,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopStripMiningRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopStripMiningDelegate extends RefactoringActionDelegate {
-    
+
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
         return new LoopStripMiningRefactoring(wc, selection, project);
@@ -31,19 +31,19 @@ public class LoopStripMiningDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopStripMiningRefactoring))
+        if (!(refactoring instanceof LoopStripMiningRefactoring)) {
             throw new ClassCastException("Refactoring not LoopStripMiningRefactoring!");
+        }
         final LoopStripMiningRefactoring refac = (LoopStripMiningRefactoring) refactoring;
-        LoopRefactoringWizard hermione = 
-                new LoopRefactoringWizard(refactoring, "LoopStripMiningRefactoring");
-        hermione.getInputPage().addNumberInputControl("Strip Factor", new ValueChangedListener() {
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "LoopStripMiningRefactoring");
+        wizard.getInputPage().addNumberInputControl("Strip Factor", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setStripFactor(value);
-                
+
             }
         });
-        return hermione;
+        return wizard;
     }
 
 }
