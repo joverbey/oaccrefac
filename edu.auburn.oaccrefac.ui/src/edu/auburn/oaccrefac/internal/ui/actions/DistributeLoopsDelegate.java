@@ -22,7 +22,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.DistributeLoopsRefactoring;
 
 @SuppressWarnings("restriction")
 public class DistributeLoopsDelegate extends RefactoringActionDelegate {
-    
+
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
         return new DistributeLoopsRefactoring(wc, selection, project);
@@ -30,10 +30,10 @@ public class DistributeLoopsDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof DistributeLoopsRefactoring))
+        if (!(refactoring instanceof DistributeLoopsRefactoring)) {
             throw new ClassCastException("Refactoring not LoopFissionRefactoring!");
-        LoopRefactoringWizard tomRiddle = 
-                new LoopRefactoringWizard(refactoring, "LoopFissionRefactoring");
-        return tomRiddle;
+        }
+
+        return new LoopRefactoringWizard(refactoring, "LoopFissionRefactoring");
     }
 }

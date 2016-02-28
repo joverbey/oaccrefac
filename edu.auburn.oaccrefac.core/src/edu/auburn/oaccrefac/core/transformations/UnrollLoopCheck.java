@@ -84,6 +84,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
         
         // If we are unrolling more than the number of times the loop will 
         // run (upper bound - lower bound), we can't do the refactoring.
+        // TODO: Figure out why this code is getting an NPE.
         long loopRunTimes = upperBound.longValue() - InquisitorFactory.getInquisitor(loop).getLowerBound().longValue();
         if (params.getUnrollFactor() > loopRunTimes) {
             status.addFatalError("Can't unroll loop more times than the loop runs!");

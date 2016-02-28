@@ -49,7 +49,8 @@ public class DistributeLoopsRefactoring extends ForLoopRefactoring {
     }
 
     @Override
-    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
+    protected void refactor(IASTRewrite rewriter, IProgressMonitor pm)
+            throws CoreException {
         new DistributeLoopsAlteration(rewriter, check).change();
     }
 }

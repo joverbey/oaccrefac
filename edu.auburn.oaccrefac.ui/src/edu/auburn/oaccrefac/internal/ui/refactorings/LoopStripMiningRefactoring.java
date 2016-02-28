@@ -24,19 +24,17 @@ import edu.auburn.oaccrefac.core.transformations.StripMineParams;
 
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
-    private int stripFactor;
+    private int stripFactor = -1;
     private StripMineCheck check;
-    
+
     public LoopStripMiningRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        this.stripFactor = -1;
     }
-    
-    public boolean setStripFactor(int factor) {
-        this.stripFactor = factor;
-        return true;
+
+    public void setStripFactor(int factor) {
+        stripFactor = factor;
     }
-    
+
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new StripMineCheck(getLoop());
@@ -47,5 +45,4 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
         new StripMineAlteration(rewriter, stripFactor, check).change();
     }
-    
 }

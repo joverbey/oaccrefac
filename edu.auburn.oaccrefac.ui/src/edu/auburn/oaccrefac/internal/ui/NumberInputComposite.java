@@ -11,8 +11,8 @@
 package edu.auburn.oaccrefac.internal.ui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -20,56 +20,40 @@ import org.eclipse.swt.widgets.Text;
 
 public class NumberInputComposite extends Composite {
 
-    public interface ValueChangedListener {
-        public void valueChanged(int value);
-    }
-    
-    private Label label;
-    private Text inputText;
-    private ValueChangedListener listener;
-    
-    public NumberInputComposite(Composite parent, int style) {
+    private final Label label;
+
+    public NumberInputComposite(Composite parent, int style, final ValueChangedListener listener) {
         super(parent, style);
         setLayout(new GridLayout(2, false));
         label = new Label(this, SWT.NONE);
-        inputText = new Text(this, SWT.LEFT | SWT.BORDER);
-        
-        //Add a listener to make sure that the only thing inserted
-        //into this text field are numbers.
-        inputText.addModifyListener(new ModifyListener() {
+        Text inputText = new Text(this, SWT.LEFT | SWT.BORDER);
+
+        inputText.addVerifyListener(new VerifyListener() {
             @Override
-            public void modifyText(ModifyEvent e) {
-                Text source = ((Text) e.getSource());
-                String newText = source.getText();
-                if (newText.length() > 0) {
-                    char last = newText.charAt(newText.length()-1);
-                    if (isNumber(last)) {
-                        listener.valueChanged(Integer.parseInt(newText));
-                    } else {
-                        source.setText("");
-                    }
+            public void verifyText(VerifyEvent e) {
+                Text source = (Text) e.getSource();
+
+                // get old text and create new text by using the VerifyEvent.text
+                final String oldS = source.getText();
+                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+                
+                e.doit = newS.matches("[0-9]*");
+                if (e.doit) {
+                    listener.valueChanged(Integer.parseInt(newS));
                 }
             }
         });
     }
-    
-    private boolean isNumber(char c) {
-        if (c >= '0' && c <= '9') {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    public void setListener(ValueChangedListener listenerIn) {
-        listener = listenerIn;
-    }
-    
+
     public void setLabelText(String text) {
         label.setText(text);
     }
+
     public Label getLabel() {
         return label;
     }
 
+    public interface ValueChangedListener {
+        void valueChanged(int value);
+    }
 }

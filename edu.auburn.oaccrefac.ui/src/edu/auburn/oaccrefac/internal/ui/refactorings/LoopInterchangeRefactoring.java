@@ -29,12 +29,11 @@ import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsCheck;
  */
 public class LoopInterchangeRefactoring extends ForLoopRefactoring {
 
-    private int depth;
+    private int depth = 1;
     private InterchangeLoopsCheck check;
 
     public LoopInterchangeRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        depth = 1;
     }
 
     public void setExchangeDepth(int depth) {

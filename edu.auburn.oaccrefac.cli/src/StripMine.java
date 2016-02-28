@@ -36,20 +36,14 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      */
     private int stripFactor = 0;
     
-    /**
-     * checkArgs checks the arguments to the refactoring.
-     * 
-     * @param args Arguments to the refactoring.
-     * @return Value representing the result of checking the arguments.
-     */
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 3) {
             printUsage();
             return false;
         }
         try {
-            stripFactor = Integer.parseInt(args[1]);
+            stripFactor = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             printUsage();
             return false;
@@ -64,36 +58,16 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
         System.err.println("Usage: StripMine <filename.c> <strip_factor>");
     }
 
-    /**
-     * createCheck creates a StripMineCheck.
-     * 
-     * @param loop Loop to create the check for.
-     * @return Check to be performed on the loop.
-     */
     @Override
     protected StripMineCheck createCheck(IASTForStatement loop) {
         return new StripMineCheck(loop);
     }
 
-    /**
-     * createParams creates StripMineParams.
-     * 
-     * @param forLoop Not used.
-     * @return StripMineParams made with the stripFactor.
-     */
     @Override
     protected StripMineParams createParams(IASTForStatement forLoop) {
         return new StripMineParams(stripFactor);
     }
 
-    /**
-     * createAlteration creates a StripMineAlteration.
-     * 
-     * @param reweriter Rewriter for the alteration.
-     * @param check Checker for the alteration.
-     * @return Alteration for the refactoring.
-     * @throws CoreException if creating the alteration fails.
-     */
     @Override
     protected StripMineAlteration createAlteration(IASTRewrite rewriter, StripMineCheck check) throws CoreException {
         return new StripMineAlteration(rewriter, stripFactor, check);

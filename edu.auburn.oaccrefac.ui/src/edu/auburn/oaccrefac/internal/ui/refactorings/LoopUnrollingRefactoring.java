@@ -60,8 +60,6 @@ public class LoopUnrollingRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        UnrollLoopAlteration unroll = new UnrollLoopAlteration(rewriter, unrollFactor, check);
-        unroll.change();
+        new UnrollLoopAlteration(rewriter, unrollFactor, check).change();
     }
-
 }

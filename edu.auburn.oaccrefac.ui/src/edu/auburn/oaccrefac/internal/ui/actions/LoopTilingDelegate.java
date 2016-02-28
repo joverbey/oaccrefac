@@ -24,7 +24,7 @@ import edu.auburn.oaccrefac.internal.ui.refactorings.LoopTilingRefactoring;
 
 @SuppressWarnings("restriction")
 public class LoopTilingDelegate extends RefactoringActionDelegate {
-    
+
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
         return new LoopTilingRefactoring(wc, selection, project);
@@ -32,13 +32,13 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopTilingRefactoring))
+        if (!(refactoring instanceof LoopTilingRefactoring)) {
             throw new ClassCastException("Refactoring not LoopTilingRefactoring!");
-        
+        }
+
         final LoopTilingRefactoring refac = (LoopTilingRefactoring) refactoring;
-        LoopRefactoringWizard malfoy = new LoopRefactoringWizard(refactoring, 
-                "Loop Tiling Refactoring");
-        LoopRefactoringWizardPage page = malfoy.getInputPage();
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Loop Tiling Refactoring");
+        LoopRefactoringWizardPage page = wizard.getInputPage();
         page.addNumberInputControl("Tile Width: ", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
@@ -51,8 +51,8 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
                 refac.setHeight(value);
             }
         });
-        
-        return malfoy;
+
+        return wizard;
     }
 
 }

@@ -20,12 +20,11 @@ public class IntroduceDataConstructDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof IntroduceDataConstructRefactoring))
+        if (!(refactoring instanceof IntroduceDataConstructRefactoring)) {
             throw new ClassCastException("Refactoring not IntroduceDataConstructRefactoring!");
-        
-        IntroduceDataConstructRefactoring refac = (IntroduceDataConstructRefactoring) refactoring;
-        LoopRefactoringWizard wiz = new LoopRefactoringWizard(refac, "Introduce Default None Refactoring");
-        return wiz;
+        }
+
+        return new LoopRefactoringWizard(refactoring, "Introduce Default None Refactoring");
     }
 
 }

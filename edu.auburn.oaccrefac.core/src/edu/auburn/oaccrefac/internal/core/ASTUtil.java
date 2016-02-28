@@ -25,6 +25,7 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -120,8 +121,8 @@ public class ASTUtil {
     }
 
     /**
-     * returns <code>true</code> if <code>ancestor</code> is an ancestor of or is the
-     * the same node as <code>descendant</code>
+     * returns <code>true</code> if <code>ancestor</code> is an ancestor of or is the the same node as
+     * <code>descendant</code>
      */
     public static boolean isAncestor(IASTNode ancestor, IASTNode descendant) {
         for (IASTNode node = descendant; node != null; node = node.getParent()) {
@@ -131,10 +132,10 @@ public class ASTUtil {
         }
         return false;
     }
-    
+
     /**
-     * returns <code>true</code> if <code>ancestor</code> is an ancestor of AND is the not
-     * the same node as <code>descendant</code>
+     * returns <code>true</code> if <code>ancestor</code> is an ancestor of AND is the not the same node as
+     * <code>descendant</code>
      */
     public static boolean isStrictAncestor(IASTNode ancestor, IASTNode descendant) {
         for (IASTNode node = descendant.getParent(); node != null; node = node.getParent()) {
@@ -146,13 +147,13 @@ public class ASTUtil {
     }
 
     public static boolean doesNodeLexicallyContain(IASTNode container, IASTNode containee) {
-        //return (start of container >= start of containee && end of container <= end of containee)
+        // return (start of container >= start of containee && end of container <= end of containee)
         return container.getFileLocation().getNodeOffset() <= containee.getFileLocation().getNodeOffset()
                 && container.getFileLocation().getNodeOffset()
                         + container.getFileLocation().getNodeLength() >= containee.getFileLocation().getNodeOffset()
                                 + containee.getFileLocation().getNodeLength();
     }
-    
+
     /**
      * This method (which baffles me as to why there isn't one of these in the IASTNode class, but whatever) returns the
      * next sibling after itself with respect to its parent.
@@ -172,7 +173,7 @@ public class ASTUtil {
         }
         return null;
     }
-    
+
     public static IASTNode getPreviousSibling(IASTNode n) {
         if (n.getParent() != null) {
             IASTNode[] chilluns = n.getParent().getChildren();
@@ -185,13 +186,13 @@ public class ASTUtil {
         return null;
     }
 
-    //FIXME if two variables have the same name, this always returns the same thing for both for any scope
-    //should check based on the name's binding somehow
+    // FIXME if two variables have the same name, this always returns the same thing for both for any scope
+    // should check based on the name's binding somehow
     public static boolean isNameInScope(IASTName varname, IScope scope) {
         return isNameInScope(new String(varname.getSimpleID()), scope);
     }
 
-    //return true if a variable by the given name exists in the scope 
+    // return true if a variable by the given name exists in the scope
     public static boolean isNameInScope(String varname, IScope scope) {
         IBinding[] bindings = scope.find(varname);
         if (bindings.length > 0) {
@@ -239,10 +240,13 @@ public class ASTUtil {
     public static IASTStatement parseStatement(String string) throws CoreException {
         String program = String.format("void f() { %s; }", string);
         IASTTranslationUnit tu = translationUnitForString(program);
-        if (tu == null) throw new CoreException(Status.CANCEL_STATUS);
+        if (tu == null)
+            throw new CoreException(Status.CANCEL_STATUS);
         IASTStatement stmt = ASTUtil.findOne(tu, IASTStatement.class);
-        if (stmt == null) throw new CoreException(Status.CANCEL_STATUS);
-        if (!(stmt instanceof IASTCompoundStatement)) throw new CoreException(Status.CANCEL_STATUS);
+        if (stmt == null)
+            throw new CoreException(Status.CANCEL_STATUS);
+        if (!(stmt instanceof IASTCompoundStatement))
+            throw new CoreException(Status.CANCEL_STATUS);
         return ((IASTCompoundStatement) stmt).getStatements()[0];
     }
 
@@ -256,8 +260,10 @@ public class ASTUtil {
 
     public static IASTExpression parseExpression(String string) throws CoreException {
         IASTStatement stmt = parseStatement(string + ";");
-        if (stmt == null) throw new CoreException(Status.CANCEL_STATUS);
-        if (!(stmt instanceof IASTExpressionStatement)) throw new CoreException(Status.CANCEL_STATUS);
+        if (stmt == null)
+            throw new CoreException(Status.CANCEL_STATUS);
+        if (!(stmt instanceof IASTExpressionStatement))
+            throw new CoreException(Status.CANCEL_STATUS);
         return ((IASTExpressionStatement) stmt).getExpression();
     }
 
@@ -471,92 +477,94 @@ public class ASTUtil {
             result = result.substring(0, MAX_LEN + 1) + "...";
         return result;
     }
-    
+
     public static boolean isAncestorOf(IASTNode potentialParent, IASTNode child) {
-        
-        for(IASTNode current = child; current != null; current = current.getParent()) {
-            if(potentialParent == current) {
+
+        for (IASTNode current = child; current != null; current = current.getParent()) {
+            if (potentialParent == current) {
                 return true;
             }
         }
         return false;
-        
+
     }
-    
+
     public static boolean isDefinition(IASTName name) {
         IASTStatement defStmt = ASTUtil.findNearestAncestor(name, IASTStatement.class);
         IASTUnaryExpression defUnaryExpr = ASTUtil.findNearestAncestor(name, IASTUnaryExpression.class);
         IASTBinaryExpression defBinaryExpr = ASTUtil.findNearestAncestor(name, IASTBinaryExpression.class);
-        if(defStmt instanceof IASTDeclarationStatement) {
-            if(((IASTDeclarationStatement) defStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
-                IASTSimpleDeclaration simpleDec = (IASTSimpleDeclaration) (((IASTDeclarationStatement) defStmt).getDeclaration());
-                //int x; int x, y; int x = 1;
-                for(IASTDeclarator decl : simpleDec.getDeclarators()) {
-                    if(decl.getName().equals(name)) {
+        if (defStmt instanceof IASTDeclarationStatement) {
+            if (((IASTDeclarationStatement) defStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
+                IASTSimpleDeclaration simpleDec = (IASTSimpleDeclaration) (((IASTDeclarationStatement) defStmt)
+                        .getDeclaration());
+                // int x; int x, y; int x = 1;
+                for (IASTDeclarator decl : simpleDec.getDeclarators()) {
+                    if (decl.getName().equals(name)) {
                         return true;
                     }
                 }
             }
-        }
-        else {
-            if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression) || defUnaryExpr != null) {
-                //x++; x--; ++x; --x;
+        } else {
+            if ((defStmt instanceof IASTExpressionStatement
+                    && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)
+                    || defUnaryExpr != null) {
+                // x++; x--; ++x; --x;
                 IASTUnaryExpression unary;
-                if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
+                if ((defStmt instanceof IASTExpressionStatement
+                        && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
                     unary = (IASTUnaryExpression) (((IASTExpressionStatement) defStmt).getExpression());
-                }
-                else {
+                } else {
                     unary = defUnaryExpr;
                 }
-                if(unary.getOperator() == IASTUnaryExpression.op_postFixIncr || 
-                        unary.getOperator() == IASTUnaryExpression.op_prefixIncr ||
-                        unary.getOperator() == IASTUnaryExpression.op_postFixDecr ||
-                        unary.getOperator() == IASTUnaryExpression.op_prefixIncr) {
-                    if(unary.getOperand() instanceof IASTIdExpression) {
-                        if(((IASTIdExpression) unary.getOperand()).getName().equals(name)) {
+                if (unary.getOperator() == IASTUnaryExpression.op_postFixIncr
+                        || unary.getOperator() == IASTUnaryExpression.op_prefixIncr
+                        || unary.getOperator() == IASTUnaryExpression.op_postFixDecr
+                        || unary.getOperator() == IASTUnaryExpression.op_prefixIncr) {
+                    if (unary.getOperand() instanceof IASTIdExpression) {
+                        if (((IASTIdExpression) unary.getOperand()).getName().equals(name)) {
                             return true;
                         }
-                    }
-                    else if(unary.getOperand() instanceof IASTArraySubscriptExpression) {
+                    } else if (unary.getOperand() instanceof IASTArraySubscriptExpression) {
                         IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) unary.getOperand();
-                        if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
-                            if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+                        if (arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
+                            if (((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
                                 return true;
                             }
                         }
                     }
                 }
             }
-            
-            if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTBinaryExpression) || defBinaryExpr != null) {
-                //x = 1; x += 1; ...
+
+            if ((defStmt instanceof IASTExpressionStatement
+                    && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTBinaryExpression)
+                    || defBinaryExpr != null) {
+                // x = 1; x += 1; ...
                 IASTBinaryExpression binary;
-                if((defStmt instanceof IASTExpressionStatement && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
+                if ((defStmt instanceof IASTExpressionStatement
+                        && ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
                     binary = (IASTBinaryExpression) (((IASTExpressionStatement) defStmt).getExpression());
-                }
-                else {
+                } else {
                     binary = defBinaryExpr;
                 }
-                if(binary.getOperator() == IASTBinaryExpression.op_assign ||
-                        binary.getOperator() == IASTBinaryExpression.op_binaryAndAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_binaryOrAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_binaryXorAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_divideAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_minusAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_moduloAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_multiplyAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_plusAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_shiftLeftAssign ||
-                        binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign) {
-                    if(binary.getOperand1() instanceof IASTIdExpression) {
-                        if(((IASTIdExpression) binary.getOperand1()).getName().equals(name)) {
+                if (binary.getOperator() == IASTBinaryExpression.op_assign
+                        || binary.getOperator() == IASTBinaryExpression.op_binaryAndAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_binaryOrAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_binaryXorAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_divideAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_minusAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_moduloAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_multiplyAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_plusAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_shiftLeftAssign
+                        || binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign) {
+                    if (binary.getOperand1() instanceof IASTIdExpression) {
+                        if (((IASTIdExpression) binary.getOperand1()).getName().equals(name)) {
                             return true;
                         }
-                    }
-                    else if(binary.getOperand1() instanceof IASTArraySubscriptExpression) {
+                    } else if (binary.getOperand1() instanceof IASTArraySubscriptExpression) {
                         IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) binary.getOperand1();
-                        if(arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
-                            if(((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+                        if (arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
+                            if (((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
                                 return true;
                             }
                         }
@@ -575,7 +583,7 @@ public class ASTUtil {
         }
         return pragCode;
     }
-    
+
     public static List<IASTPreprocessorPragmaStatement> getLeadingPragmas(IASTStatement statement) {
         int loopLoc = statement.getFileLocation().getNodeOffset();
         int precedingStmtOffset = getNearestPrecedingStatementOffset(statement);
@@ -591,7 +599,7 @@ public class ASTUtil {
         Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
         return pragmas;
     }
-    
+
     private static int getNearestPrecedingStatementOffset(IASTStatement stmt) {
 
         class OffsetFinder extends ASTVisitor {
@@ -631,31 +639,60 @@ public class ASTUtil {
         containingFunc.accept(finder);
         return finder.finalOffset;
     }
-    
-    //FIXME this is used often, but is redundant; should use ASTUtil.find(..., IASTName.class)
+
+    // FIXME this is used often, but is redundant; should use ASTUtil.find(..., IASTName.class)
     public static List<IASTName> getNames(IASTNode node) {
         class NameGetter extends ASTVisitor {
-            
+
             public List<IASTName> names;
-            
+
             public NameGetter() {
                 names = new ArrayList<IASTName>();
                 shouldVisitNames = true;
             }
-            
+
             @Override
             public int visit(IASTName name) {
                 names.add(name);
                 return PROCESS_CONTINUE;
             }
-            
+
         }
         NameGetter nameGetter = new NameGetter();
         node.accept(nameGetter);
         Collections.sort(nameGetter.names, ASTUtil.FORWARD_COMPARATOR);
         return nameGetter.names;
+
     }
-    
+
+    public static List<IASTComment> getLeadingComments(IASTStatement statement) {
+        int stmtOffset = statement.getFileLocation().getNodeOffset();
+        List<IASTComment> comments = new ArrayList<IASTComment>();
+        if (ASTUtil.getPreviousSibling(statement) != null) {
+            int precedingEnd = ASTUtil.getPreviousSibling(statement).getFileLocation().getNodeOffset()
+                    + ASTUtil.getPreviousSibling(statement).getFileLocation().getNodeLength();
+
+            for (IASTComment comment : statement.getTranslationUnit().getComments()) {
+                if (comment.getFileLocation().getNodeOffset() < stmtOffset
+                        && comment.getFileLocation().getNodeOffset() > precedingEnd) {
+                    comments.add(comment);
+                }
+            }
+
+        } else {
+            for (IASTComment comment : statement.getTranslationUnit().getComments()) {
+                int comStart = comment.getFileLocation().getNodeOffset();
+                if (comStart < stmtOffset && comStart > statement.getParent().getFileLocation().getNodeOffset()) {
+                    // comment.start
+                    comments.add(comment);
+                }
+            }
+        }
+
+        Collections.sort(comments, ASTUtil.FORWARD_COMPARATOR);
+        return comments;
+    }
+
     private ASTUtil() {
     }
 }

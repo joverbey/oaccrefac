@@ -25,12 +25,6 @@ import edu.auburn.oaccrefac.core.transformations.SourceAlteration;
  */
 public abstract class LoopMain<P extends RefactoringParams, C extends Check<P>, A extends SourceAlteration<C>> extends Main<IASTForStatement, P, C, A> {
 
-    /**
-     * convertStatement converts the statement to a for statement.
-     * 
-     * @param statement Statement to be converted.
-     * @return Converted statement.
-     */
     @Override
     protected IASTForStatement convertStatement(IASTStatement statement) {
         return (IASTForStatement) statement;
