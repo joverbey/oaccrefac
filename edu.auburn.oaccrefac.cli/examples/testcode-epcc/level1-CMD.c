@@ -70,7 +70,7 @@ double* twomm(){
 
   if (A==NULL||B==NULL||C==NULL||D==NULL||E==NULL||H==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
   for (i = 0; i < n; i++){ /* loop1outer */
     for (j = 0; j < n; j++){ /* loop1inner */
@@ -195,21 +195,35 @@ double* threemm(){
 
   if (A==NULL||B==NULL||C==NULL||D==NULL||E==NULL||F==NULL||G==NULL||H==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
 
   for (i = 0; i < n; i++){ /* loop6outer */
-    for (j = 0; j < n; j++){ /* loop6inner */
-      A[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      B[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      C[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      D[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      E[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      F[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      G[i*n+j] = rand()/ (1.0 + RAND_MAX);
-      H[i*n+j] = rand()/ (1.0 + RAND_MAX);
-    }
+		for (j = 0; j < n; j++) {/* loop6inner */
+			A[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			B[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			C[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			D[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			E[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			F[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			G[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			H[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
   }
 
   /* Host version for reference. */
@@ -227,22 +241,26 @@ double* threemm(){
 
   /* F := C*D */
   for (i = 0; i < n; i++) { /* loop8outer */
-    for (j = 0; j < n; j++) { /* loop8inner */
-      F[i*n+j] = 0;
-      for (k = 0; k < n; k++){ /* loop8inner2 */
-        F[i*n+j] += C[i*n+k] * D[k*n+j];
-      }
-    }
+		for (j = 0; j < n; j++) {/* loop8inner */
+			F[i * n + j] = 0;
+		}
+		for (j = 0; j < n; j++) {
+			for (k = 0; k < n; k++) { /* loop8inner2 */
+				F[i * n + j] += C[i * n + k] * D[k * n + j];
+			}
+		}
   }
 
   /* G := E*F */
   for (i = 0; i < n; i++) { /* loop9outer */
-    for (j = 0; j < n; j++) { /* loop9inner */
-      H[i*n+j] = 0;
-      for (k = 0; k < n; k++){ /* loop9inner2 */
-        H[i*n+j] += E[i*n+k] * F[k*n+j];
-      }
-    }
+		for (j = 0; j < n; j++) {/* loop9inner */
+			H[i * n + j] = 0;
+		}
+		for (j = 0; j < n; j++) {
+			for (k = 0; k < n; k++) { /* loop9inner2 */
+				H[i * n + j] += E[i * n + k] * F[k * n + j];
+			}
+		}
   }
 
 
@@ -340,7 +358,7 @@ double* atax(){
 
   if(A==NULL||x==NULL||y==NULL||ya==NULL||tmp==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
 
@@ -443,7 +461,7 @@ double* bicg(){
 
   if(A==NULL||r==NULL||s==NULL||sh==NULL||q==NULL||qh==NULL||p==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   for (i = 0; i < n; i++) { /* loop20outer */
@@ -553,7 +571,7 @@ double* mvt(){
 
   if(x1==NULL||x1_Gpu==NULL||x2==NULL||x2_Gpu==NULL||y1==NULL||y2==NULL||a==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   /* Init */
@@ -674,16 +692,20 @@ double* syrk(){
 
   if(A==NULL||C==NULL||CG==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    ////return(-10000);
   }
 
   /* Init */
   for (i = 0; i < n; i++){ /* loop34outer */
-    for (j = 0; j < n; j++){ /* loop34inner */
-      A[i*n+j] = (i*j) / n;
-      C[i*n+j] = (i*j + 2) / n;
-      CG[i*n+j] = (i*j + 2) / n;
-    }
+		for (j = 0; j < n; j++) {/* loop34inner */
+			A[i * n + j] = (i * j) / n;
+		}
+		for (j = 0; j < n; j++) {
+			C[i * n + j] = (i * j + 2) / n;
+		}
+		for (j = 0; j < n; j++) {
+			CG[i * n + j] = (i * j + 2) / n;
+		}
   }
 
   /* HOST */
@@ -777,16 +799,18 @@ double* covariance(){
 
   if (data==NULL||hdata==NULL||symmat==NULL||hsymmat==NULL||mean==NULL||hmean==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   /* Initialize data arrays */
 
   for (i = 0; i < n; i++){ /* loop40outer */
-    for (j = 0; j < n; j++){ /* loop40inner */
-      data[i*n+j] =  i % 12 + 2 * (j % 7);
-      hdata[i*n+j] = data[i*n+j];
-    }
+		for (j = 0; j < n; j++) {/* loop40inner */
+			data[i * n + j] = i % 12 + 2 * (j % 7);
+		}
+		for (j = 0; j < n; j++) {
+			hdata[i * n + j] = data[i * n + j];
+		}
   }
 
 
@@ -809,14 +833,20 @@ double* covariance(){
 
   /* Calculate the n * n covariance matrix. */
   for (j1 = 0; j1 < n; j1++){ /* loop43outer */
-    for (j2 = j1; j2 < n; j2++){ /* loop43inner */
-      hsymmat[j1*n+j2] = 0.0;
-      for (i = 0; i < n; i++){ /* loop43inner2 */
-        hsymmat[j1*n+j2] += hdata[i*n+j1] * hdata[i*n+j2];
-      }
-      hsymmat[j1*n+j2] /= n-1;
-      hsymmat[j2*n+j1] = hsymmat[j1*n+j2];
-    }
+		for (j2 = j1; j2 < n; j2++) {/* loop43inner */
+			hsymmat[j1 * n + j2] = 0.0;
+		}
+		for (j2 = j1; j2 < n; j2++) {
+			for (i = 0; i < n; i++) { /* loop43inner2 */
+				hsymmat[j1 * n + j2] += hdata[i * n + j1] * hdata[i * n + j2];
+			}
+		}
+		for (j2 = j1; j2 < n; j2++) {
+			hsymmat[j1 * n + j2] /= n - 1;
+		}
+		for (j2 = j1; j2 < n; j2++) {
+			hsymmat[j2 * n + j1] = hsymmat[j1 * n + j2];
+		}
   }
 
 
@@ -918,14 +948,16 @@ double* correlation(){
 
   if (data==NULL||hdata==NULL||symmat==NULL||hsymmat==NULL||mean==NULL||hmean==NULL||stddev==NULL||hstddev==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   for (i = 0; i < n; i++){ /* loop48outer */
-    for (j = 0; j < n; j++){ /* loop48inner */
-      data[i*n+j] =  i % 12 + 2 * (j % 7);
-      hdata[i*n+j] = data[i*n+j];
-    }
+		for (j = 0; j < n; j++) {/* loop48inner */
+			data[i * n + j] = i % 12 + 2 * (j % 7);
+		}
+		for (j = 0; j < n; j++) {
+			hdata[i * n + j] = data[i * n + j];
+		}
   }
 
   /* Determine mean of column vectors of input data matrix */
@@ -954,10 +986,12 @@ double* correlation(){
 
   /* Center and reduce the column vectors. */
   for (i = 0; i < n; i++){ /* loop51outer */
-    for (j = 0; j < n; j++){ /* loop51outer */
-      hdata[i*n+j] -= hmean[j];
-      hdata[i*n+j] = hdata[i*n+j] / hstddev[j];
-    }
+		for (j = 0; j < n; j++) {/* loop51outer */
+			hdata[i * n + j] -= hmean[j];
+		}
+		for (j = 0; j < n; j++) {
+			hdata[i * n + j] = hdata[i * n + j] / hstddev[j];
+		}
   }
 
 
@@ -965,14 +999,20 @@ double* correlation(){
 
   /* Calculate the n * n correlation matrix. */
   for (j1 = 0; j1 < n; j1++){ /* loop52outer */
-    for (j2 = j1; j2 < n; j2++){ /* loop52inner */
-      hsymmat[j1*n+j2] = 0.0;
-      for (i = 0; i < n; i++){ /* loop52inner2 */
-        hsymmat[j1*n+j2] += hdata[i*n+j1] * hdata[i*n+j2];
-      }
-      hsymmat[j1*n+j2] /= n-1;
-      hsymmat[j2*n+j1] = hsymmat[j1*n+j2];
-    }
+		for (j2 = j1; j2 < n; j2++) {/* loop52inner */
+			hsymmat[j1 * n + j2] = 0.0;
+		}
+		for (j2 = j1; j2 < n; j2++) {
+			for (i = 0; i < n; i++) { /* loop52inner2 */
+				hsymmat[j1 * n + j2] += hdata[i * n + j1] * hdata[i * n + j2];
+			}
+		}
+		for (j2 = j1; j2 < n; j2++) {
+			hsymmat[j1 * n + j2] /= n - 1;
+		}
+		for (j2 = j1; j2 < n; j2++) {
+			hsymmat[j2 * n + j1] = hsymmat[j1 * n + j2];
+		}
   }
 
 
@@ -1089,7 +1129,7 @@ double* syr2k(){
 
   if(A==NULL||B==NULL||C==NULL||CG==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
 
@@ -1098,12 +1138,18 @@ double* syr2k(){
 
   /* Init */
   for (i = 0; i < n; i++){ /* loop58outer */
-    for (j = 0; j < n; j++){ /* loop58inner */
-      C[i*n+j] = rand() / (1.0 + RAND_MAX);
-      CG[i*n+j] = C[i*n+j];
-      A[i*n+j] = rand() / (1.0 + RAND_MAX);
-      B[i*n+j] = rand() / (1.0 + RAND_MAX);
-    }
+		for (j = 0; j < n; j++) {/* loop58inner */
+			C[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			CG[i * n + j] = C[i * n + j];
+		}
+		for (j = 0; j < n; j++) {
+			A[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			B[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
   }
 
   /* HOST */
@@ -1114,13 +1160,18 @@ double* syr2k(){
   }
 
   for (i = 0; i < n; i++){ /* loop60outer */
-    for (j = 0; j < n; j++){ /* loop60inner */
-      tmp = C[i*n+j];
-      for (k = 0; k < n; k++){ /* loop60inner2 */
-        tmp += (alpha * A[i*n+k] * B[j*n+k]) + (alpha * B[i*n+k] * A[j*n+k]);
-      }
-      C[i*n+j] = tmp;
-    }
+		for (j = 0; j < n; j++) {/* loop60inner */
+			tmp = C[i * n + j];
+		}
+		for (j = 0; j < n; j++) {
+			for (k = 0; k < n; k++) { /* loop60inner2 */
+				tmp += (alpha * A[i * n + k] * B[j * n + k])
+						+ (alpha * B[i * n + k] * A[j * n + k]);
+			}
+		}
+		for (j = 0; j < n; j++) {
+			C[i * n + j] = tmp;
+		}
   }
 
   t_start = gettime();
@@ -1171,7 +1222,7 @@ double* syr2k(){
   if (flag==0) return (t_end-t_start);
   else return(-11000);*/
 
-  return CG;
+  return C;
 }
 
 
@@ -1196,7 +1247,7 @@ double* gesummv(){
 
   if (A==NULL||B==NULL||x==NULL||Hy==NULL||Ay==NULL||Htmp==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
 
@@ -1290,28 +1341,36 @@ double* gemm(){
 
   if (C==NULL||A==NULL||B==NULL||H==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   alpha = 32412;
   beta = 2123;
   for (i = 0; i < n; i++){ /* loop66outer */
-    for (j = 0; j < n; j++){ /* loop66inner */
-      A[i*n+j] = rand()/(1.0+RAND_MAX);
-      B[i*n+j] = rand()/(1.0+RAND_MAX);
-      C[i*n+j] = rand()/(1.0+RAND_MAX);
-      H[i*n+j] = C[i*n+j];
-    }
+		for (j = 0; j < n; j++) {/* loop66inner */
+			A[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			B[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			C[i * n + j] = rand() / (1.0 + RAND_MAX);
+		}
+		for (j = 0; j < n; j++) {
+			H[i * n + j] = C[i * n + j];
+		}
   }
 
 
   /* Host for reference */
   for (i = 0; i < n; i++){ /* loop67outer */
-    for (j = 0; j < n; j++){ /* loop67inner */
-        H[i*n+j] *= beta;
-        for (k = 0; k < n; k++) /* loop67inner2 */
-          H[i*n+j] += alpha * A[i*n+k] * B[k*n+j];
-    }
+		for (j = 0; j < n; j++) {/* loop67inner */
+			H[i * n + j] *= beta;
+		}
+		for (j = 0; j < n; j++) {
+			for (k = 0; k < n; k++) /* loop67inner2 */
+				H[i * n + j] += alpha * A[i * n + k] * B[k * n + j];
+		}
   }
 
 
@@ -1376,7 +1435,7 @@ double* twodconv(){
 
   if (A==NULL||B==NULL||B_Gpu==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   for (i = 0; i < n; i++){ /* loop70outer */
@@ -1432,7 +1491,7 @@ double* twodconv(){
   if (flag==0) return (t_end-t_start);
   else return(-11000);*/
 
-  return B_Gpu;
+  return B;
 
 }
 
@@ -1451,7 +1510,7 @@ double* threedconv(){
 
   if (A==NULL||B==NULL||B_Gpu==NULL){
     /* Something went wrong in the memory allocation here, fail gracefully */
-    return(-10000);
+    //return(-10000);
   }
 
   c11 = +2;  c21 = +5;  c31 = -8;
@@ -1534,5 +1593,5 @@ double* threedconv(){
   if (flag==0) return (t_end-t_start);
   else return(-11000);*/
 
-  return B_Gpu;
+  return B;
 }

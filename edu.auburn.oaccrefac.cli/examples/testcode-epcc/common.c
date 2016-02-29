@@ -220,12 +220,12 @@ void benchmark(char *name, double (*test)(void))
 
 void print_array_results() {
 	int i;
+	int k;
 	for(i = 0; i < 13; i++) {
-		if(i <12){
-	        printf("%f ,", testResults[i][0]);
-	    }
-	    if(i == 12){
-	    	printf("%f", testResults[i][0]);
-	    }
+			for(k = 0; k < sizeof(testResults[i]); k++){
+				printf("%f, ", testResults[i][k]);
+			}
+		printf("\n");
 	}
 }
+
