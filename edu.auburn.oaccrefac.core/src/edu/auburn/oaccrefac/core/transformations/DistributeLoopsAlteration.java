@@ -20,7 +20,7 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * Inheriting from {@link ForLoopAlteration}, this class defines a loop fission refactoring algorithm. Loop fission takes
+ * Inheriting from {@link ForLoopAlteration}, this class defines a refactoring to distribute loops. Loop distribution takes
  * the body of a for-loop and splits the statements into separate for-loops with the same header, if possible.
  * 
  * For example,

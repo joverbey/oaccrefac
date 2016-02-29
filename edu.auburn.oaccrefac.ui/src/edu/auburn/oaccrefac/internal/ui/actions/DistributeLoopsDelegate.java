@@ -31,9 +31,9 @@ public class DistributeLoopsDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         if (!(refactoring instanceof DistributeLoopsRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopFissionRefactoring!");
+            throw new ClassCastException("Refactoring not DistributeLoopsRefactoring!");
         }
 
-        return new LoopRefactoringWizard(refactoring, "LoopFissionRefactoring");
+        return new LoopRefactoringWizard(refactoring, "DistributeLoopsRefactoring");
     }
 }
