@@ -109,7 +109,7 @@ public class ExpressionEvaluator {
         if (exp == null)
             return null;
 
-        setAllNamesToNull(exp);
+        ensureAllNamesAreMapped(exp);
 
         if (exp instanceof IASTArraySubscriptExpression) {
             return null;
@@ -170,11 +170,13 @@ public class ExpressionEvaluator {
         return null;
     }
 
-    private void setAllNamesToNull(IASTExpression exp) {
+    private void ensureAllNamesAreMapped(IASTExpression exp) {
         exp.accept(new ASTVisitor(true) {
             @Override
             public int visit(IASTName name) {
-                constValuedNames.put(name, null);
+                if (!constValuedNames.containsKey(name)) {
+                    constValuedNames.put(name, null);
+                }
                 return PROCESS_CONTINUE;
             }
         });
@@ -326,6 +328,8 @@ public class ExpressionEvaluator {
                     } else if (ASTUtil.getMultidimArrayAccess(exp.getOperand1()) != null) {
                         return rhsValue;
                     }
+                } else if (ASTUtil.getMultidimArrayAccess(exp.getOperand2()) != null) {
+                    return null;
                 }
             }
             env = ConstEnv.EMPTY;

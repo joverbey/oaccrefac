@@ -123,7 +123,7 @@ public class ConstPropNodeEvaluator {
 
         IASTSimpleDeclaration simpleDecl = (IASTSimpleDeclaration) declaration;
         for (IASTDeclarator declarator : simpleDecl.getDeclarators()) {
-            if (declarator.getNestedDeclarator() != null || declarator.getPointerOperators().length > 0) {
+            if (declarator.getNestedDeclarator() != null) { // || declarator.getPointerOperators().length > 0) {
                 unhandled(declaration);
                 return;
             }
