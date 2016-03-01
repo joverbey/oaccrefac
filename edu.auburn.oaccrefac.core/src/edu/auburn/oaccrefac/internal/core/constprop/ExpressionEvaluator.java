@@ -39,6 +39,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 import edu.auburn.oaccrefac.core.dependence.AddressTakenAnalysis;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.Pair;
+import edu.auburn.oaccrefac.internal.core.dependence.FunctionWhitelist;
+import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 
 /**
  * Evaluates a C expression in a given environment.
@@ -161,7 +164,9 @@ public class ExpressionEvaluator {
             IASTFunctionDefinition function = ASTUtil.findNearestAncestor(exp, IASTFunctionDefinition.class);
             // Conservatively assume that a function call might change every variable
             // whose address is taken (via pointers)...
-            setAllAliasedVarsToNull(function);
+            if (!FunctionWhitelist.isWhitelisted((IASTFunctionCallExpression)exp)) {
+                setAllAliasedVarsToNull(function);
+            }
             // ...but otherwise it will not change any local variables
             return null;
         }
@@ -313,25 +318,26 @@ public class ExpressionEvaluator {
         if (isAssignmentOperator(op)) {
             if (op == IASTBinaryExpression.op_assign) {
                 IASTName lhsName = ASTUtil.getIdExpression(exp.getOperand1());
+                Pair<IASTName, LinearExpression[]> lhsArrayAccess = ASTUtil.getMultidimArrayAccess(exp.getOperand1());
                 Long rhsValue = evaluate(exp.getOperand2());
-                if (rhsValue != null) {
-                    if (lhsName != null) {
-                        IBinding binding = lhsName.resolveBinding();
-                        if (env == null)
-                            env = ConstEnv.EMPTY;
-                        if (ConstantPropagation.canTrackConstantValues(binding)
-                                && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
-                            env = env.set(binding, rhsValue);
-                            constValuedNames.put(lhsName, rhsValue);
-                        }
-                        return rhsValue;
-                    } else if (ASTUtil.getMultidimArrayAccess(exp.getOperand1()) != null) {
-                        return rhsValue;
+                if (lhsName != null && rhsValue != null) {
+                    // name = value
+                    IBinding binding = lhsName.resolveBinding();
+                    if (env == null)
+                        env = ConstEnv.EMPTY;
+                    if (ConstantPropagation.canTrackConstantValues(binding)
+                            && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
+                        env = env.set(binding, rhsValue);
+                        constValuedNames.put(lhsName, rhsValue);
                     }
-                } else if (ASTUtil.getMultidimArrayAccess(exp.getOperand2()) != null) {
-                    return null;
+                    return rhsValue;
+                } else if (lhsName != null || lhsArrayAccess != null) {
+                    // a = expression  (OR)  a[i] = value  (OR)  a[i] = expression
+                    evaluate(exp.getOperand1());
+                    return rhsValue;
                 }
             }
+
             env = ConstEnv.EMPTY;
             return evaluate(exp.getOperand2());
         }
