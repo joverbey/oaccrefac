@@ -62,15 +62,15 @@
                id="edu.auburn.oaccrefac.internal.ui.actions.LoopFusionDelegate"
                label="&amp;Fusion"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccGroup"
-               tooltip="Defuse two for-loop together when possible.">
+               tooltip="Defuse two for-loop together when possible">
          </action>
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.DistributeLoopsDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.LoopFissionDelegate"
-               label="&amp;Distribute"
+               id="edu.auburn.oaccrefac.internal.ui.actions.DistributeLoopsDelegate"
+               label="&amp;Distribute Loops"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccGroup"
                pulldown="false"
-               tooltip="Apply loop fission on a compound for body.">
+               tooltip="Distribute a for loop into multiple loops">
          </action>
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.LoopStripMiningDelegate"
@@ -86,7 +86,7 @@
                label="&amp;Tiling"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccGroup"
                pulldown="false"
-               tooltip="Tiles the iteration ordering of nested loop">
+               tooltip="Tiles the iteration ordering of nested loops">
          </action>
          <action
                class="edu.auburn.oaccrefac.internal.ui.actions.IntroduceDataConstructDelegate"

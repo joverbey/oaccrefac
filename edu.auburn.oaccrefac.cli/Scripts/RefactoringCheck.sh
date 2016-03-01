@@ -40,7 +40,6 @@ do
 		refacPossible[$listCount]="true"
 	fi
 	> "$tempholder"
-	echo $loopname
 	loopname=$loopnameTemp
 	listCount=$((listCount+1))
 done

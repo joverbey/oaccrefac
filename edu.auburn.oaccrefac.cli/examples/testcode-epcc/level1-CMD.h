@@ -15,18 +15,18 @@
 #ifndef LEVELONE
 #define LEVELONE
 
-double twomm();
-double threemm();
-double atax();
-double bicg();
-double mvt();
-double syrk();
-double covariance();
-double correlation();
-double syr2k();
-double gesummv();
-double gemm();
-double twodconv();
-double threedconv();
+double *twomm();
+double *threemm();
+double *atax();
+double *bicg();
+double *mvt();
+double *syrk();
+double *covariance();
+double *correlation();
+double *syr2k();
+double *gesummv();
+double *gemm();
+double *twodconv();
+double *threedconv();
 
 #endif
