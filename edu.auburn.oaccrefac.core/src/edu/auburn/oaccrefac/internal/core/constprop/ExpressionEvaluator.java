@@ -181,7 +181,7 @@ public class ExpressionEvaluator {
     }
 
     private void setAllAliasedVarsToNull(IASTFunctionDefinition function) {
-        AddressTakenAnalysis addressTakenAnalysis = new AddressTakenAnalysis(function, new NullProgressMonitor());
+        AddressTakenAnalysis addressTakenAnalysis = AddressTakenAnalysis.forFunction(function, new NullProgressMonitor());
         for (IVariable var : addressTakenAnalysis.getAddressTakenVariables()) {
             env = env.without(var);
         }

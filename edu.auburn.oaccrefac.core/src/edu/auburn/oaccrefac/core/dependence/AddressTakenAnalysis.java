@@ -7,11 +7,13 @@
  *
  * Contributors:
  *     John William O'Rourke (Auburn) - initial API and implementation
+ *     Jeff Overbey (Auburn) - initial API and implementation
  *******************************************************************************/
-
 package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
@@ -27,17 +29,23 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
- * AddressTakenAnalysis performs a simple address taken analysis on a given 
- * function.
- * 
+ * AddressTakenAnalysis performs a simple address-taken analysis on a given function.
  * 
  * The progress of analyzing the function is stored in the monitor.
  */
 public class AddressTakenAnalysis {
-    
+
+    private static Map<IASTFunctionDefinition, AddressTakenAnalysis> cache = new WeakHashMap<>();
+
+    public static AddressTakenAnalysis forFunction(IASTFunctionDefinition function, IProgressMonitor monitor) {
+        if (!cache.containsKey(function))
+            cache.put(function, new AddressTakenAnalysis(function, monitor));
+        return cache.get(function);
+    }
+
     /**
-     * addressTakenVariables holds all of the variables that are discovered to
-     * have had their addresses taken in the function.
+     * addressTakenVariables holds all of the variables that are discovered to have had their addresses taken in the
+     * function.
      */
     private final HashSet<IVariable> addressTakenVariables;
 
@@ -45,17 +53,19 @@ public class AddressTakenAnalysis {
      * variables holds all variables found in the function.
      */
     private final HashSet<IVariable> variables;
-    
+
     /**
-     * PointsToAnalysis performs the analysis on the given function and monitor.
+     * AddressTakenAnalysis performs the analysis on the given function and monitor.
      * 
-     * The results of the analysis are constant, so a new PointsToAnalysis object will
-     * have to be created for further analysis.
+     * The results of the analysis are constant, so a new PointsToAnalysis object will have to be created for further
+     * analysis.
      * 
-     * @param function IASTFunctionDefinition to perform analysis on.
-     * @param monitor IProgressMonitor for analysis project. May be null.
+     * @param function
+     *            IASTFunctionDefinition to perform analysis on.
+     * @param monitor
+     *            IProgressMonitor for analysis project. May be null.
      */
-    public AddressTakenAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
+    private AddressTakenAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
         if (function == null) {
             throw new IllegalArgumentException("function may not be null.");
         }
@@ -66,20 +76,21 @@ public class AddressTakenAnalysis {
         }
         monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
         try {
-        performAnalysis(function, monitor);
+            performAnalysis(function, monitor);
         } catch (IllegalArgumentException exception) {
             throw exception;
         } finally {
             monitor.done();
         }
     }
-    
+
     /**
      * isAddressTaken reports the results of the analysis for a given IVariable.
      * 
      * Throws an IllegalArgumentException if the given variable is null.
      * 
-     * @param variable IVariable to check if its address has been taken.
+     * @param variable
+     *            IVariable to check if its address has been taken.
      * @return true if variable had its address taken anywhere in the function body.
      */
     public boolean isAddressTaken(IVariable variable) {
@@ -87,20 +98,18 @@ public class AddressTakenAnalysis {
             throw new IllegalArgumentException("variable may not be null.");
         }
         if (!variables.contains(variable)) {
-            throw new IllegalArgumentException(
-                    "variable, called " + variable.getName() + ", is not a local variable."
-            );
+            throw new IllegalArgumentException("variable, called " + variable.getName() + ", is not a local variable.");
         }
         return addressTakenVariables.contains(variable);
     }
-    
+
     /**
-     * performAnalysis performs the address taken analysis recursively on the
-     * given function.
+     * performAnalysis performs the address taken analysis recursively on the given function.
      * 
-     * @param function IASTNode to check for variables with their
-     * addresses taken in.
-     * @param monitor IProgressMonitor which holds the analysis progress.
+     * @param function
+     *            IASTNode to check for variables with their addresses taken in.
+     * @param monitor
+     *            IProgressMonitor which holds the analysis progress.
      * @throws IllegalArgumentException
      */
     private void performAnalysis(IASTNode current, IProgressMonitor monitor) {
@@ -118,8 +127,7 @@ public class AddressTakenAnalysis {
                     findAddressBinding(unary.getOperand(), false);
                 } else {
                     throw new IllegalArgumentException(
-                            "Address of non LValue (" + unary.getRawSignature() + ") taken."
-                    );
+                            "Address of non LValue (" + unary.getRawSignature() + ") taken.");
                 }
             }
         }
@@ -127,14 +135,14 @@ public class AddressTakenAnalysis {
             performAnalysis(other, monitor);
         }
     }
-    
+
     /**
-     * findAddressBinding finds the binding which had its address taken in
-     * current and adds it to addressTakenVariables
+     * findAddressBinding finds the binding which had its address taken in current and adds it to addressTakenVariables
      * 
-     * @param current IASTExpression to search in.
-     * @param foundBinary Whether a unary or binary expression is being
-     * searched in.
+     * @param current
+     *            IASTExpression to search in.
+     * @param foundBinary
+     *            Whether a unary or binary expression is being searched in.
      */
     private void findAddressBinding(IASTExpression current, boolean foundBinary) {
         if (current instanceof IASTUnaryExpression) {
@@ -150,13 +158,13 @@ public class AddressTakenAnalysis {
             }
         } else {
             if (current instanceof IASTIdExpression) {
-               IBinding binding = ((IASTIdExpression) current).getName().resolveBinding();
-               if (binding instanceof IVariable) {
-                   IVariable variable = (IVariable) binding;
-                   if (foundBinary && variable.getType() instanceof IPointerType || !foundBinary) {
-                       addressTakenVariables.add(variable);
-                   }
-               }
+                IBinding binding = ((IASTIdExpression) current).getName().resolveBinding();
+                if (binding instanceof IVariable) {
+                    IVariable variable = (IVariable) binding;
+                    if (foundBinary && variable.getType() instanceof IPointerType || !foundBinary) {
+                        addressTakenVariables.add(variable);
+                    }
+                }
             }
         }
     }
