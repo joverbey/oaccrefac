@@ -25,14 +25,19 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCastExpression;
 import org.eclipse.cdt.core.dom.ast.IASTConditionalExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.cdt.core.parser.IProblem;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
+import edu.auburn.oaccrefac.core.dependence.AddressTakenAnalysis;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
 /**
@@ -148,8 +153,17 @@ public class ExpressionEvaluator {
             case IASTLiteralExpression.lk_integer_constant:
                 return getNumber(litEx.getValue());
             case IASTLiteralExpression.lk_char_constant:
+            case IASTLiteralExpression.lk_float_constant:
                 return null;
             }
+        }
+        if (exp instanceof IASTFunctionCallExpression) {
+            IASTFunctionDefinition function = ASTUtil.findNearestAncestor(exp, IASTFunctionDefinition.class);
+            // Conservatively assume that a function call might change every variable
+            // whose address is taken (via pointers)...
+            setAllAliasedVarsToNull(function);
+            // ...but otherwise it will not change any local variables
+            return null;
         }
 
         env = ConstEnv.EMPTY;
@@ -164,6 +178,13 @@ public class ExpressionEvaluator {
                 return PROCESS_CONTINUE;
             }
         });
+    }
+
+    private void setAllAliasedVarsToNull(IASTFunctionDefinition function) {
+        AddressTakenAnalysis addressTakenAnalysis = new AddressTakenAnalysis(function, new NullProgressMonitor());
+        for (IVariable var : addressTakenAnalysis.getAddressTakenVariables()) {
+            env = env.without(var);
+        }
     }
 
     protected Long evaluateName(IASTName name) {

@@ -20,10 +20,12 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
+import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -99,6 +101,15 @@ public class ConstPropNodeEvaluator {
             evaluate(((IASTExpressionStatement) node).getExpression());
         } else if (node instanceof IASTNullStatement) {
             // Nothing to do
+        } else if (node instanceof IASTReturnStatement) {
+            evaluate(((IASTReturnStatement) node).getReturnValue());
+        } else if (node instanceof IASTIfStatement) {
+            IASTIfStatement stmt = (IASTIfStatement) node;
+            evaluate(stmt.getConditionExpression());
+            evaluate(stmt.getThenClause());
+            if (stmt.getElseClause() != null) {
+                evaluate(stmt.getElseClause());
+            }
         } else {
             unhandled(node);
         }

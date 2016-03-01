@@ -40,7 +40,7 @@ public class AddressTakenAnalysis {
      * have had their addresses taken in the function.
      */
     private final HashSet<IVariable> addressTakenVariables;
-    
+
     /**
      * variables holds all variables found in the function.
      */
@@ -160,5 +160,11 @@ public class AddressTakenAnalysis {
             }
         }
     }
-    
+
+    /**
+     * Returns the set of all local variables whose address is taken.
+     */
+    public HashSet<IVariable> getAddressTakenVariables() {
+        return addressTakenVariables;
+    }
 }

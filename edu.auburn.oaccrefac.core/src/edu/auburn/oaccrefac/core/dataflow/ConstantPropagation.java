@@ -13,7 +13,6 @@ package edu.auburn.oaccrefac.core.dataflow;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.codan.core.cxx.internal.model.cfg.ControlFlowGraphBuilder;
 import org.eclipse.cdt.codan.core.model.cfg.IBasicBlock;
 import org.eclipse.cdt.codan.core.model.cfg.ICfgData;
 import org.eclipse.cdt.codan.core.model.cfg.IControlFlowGraph;
@@ -78,7 +77,6 @@ public final class ConstantPropagation {
         this.entrySets = new HashMap<IBasicBlock, ConstEnv>();
         this.exitSets = new HashMap<IBasicBlock, ConstEnv>();
         this.constValuedNames = new HashMap<IASTName, Long>();
-
         propagateConstants(cfg);
     }
 
@@ -91,10 +89,11 @@ public final class ConstantPropagation {
                 for (IBasicBlock pred : bb.getIncomingNodes()) {
                     if (pred != null) {
                         ConstEnv exitSet = this.exitSets.get(pred);
-                        if (env == null)
+                        if (env == null) {
                             env = exitSet;
-                        else
+                        } else {
                             env = env.intersect(exitSet);
+                        }
                     }
                 }
                 this.entrySets.put(bb, env);
