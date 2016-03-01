@@ -196,11 +196,35 @@ public class DependenceAnalysisTest extends TestCase {
         assertDependencesEqual(expected, stmt);
     }
 
-    public void testUnknownFunctionCall() throws Exception {
+    public void testUnknownFunctionCall1() throws Exception {
         IASTStatement stmt = ASTUtil.parseStatement("{\n" +
                 /* 2 */ "  double value;\n" +
                 /* 3 */ "  value = some_function(-2.0);\n" +
                 /* 4 */ "}");
+        String[] expected = new String[] { //
+                "OUTPUT 2 -> 3 []" };
+        assertDependencesEqual(expected, stmt);
+    }
+
+//    public void testUnknownFunctionCall2() throws Exception {
+//        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+//                /* 2 */ "  double value, a = 1, b = 2, c = 3;\n" +
+//                /* 3 */ "  double *p = &b;\n" +
+//                /* 4 */ "  value = some_function(-2.0);\n" +
+//                /* 5 */ "  value = a + b + c;\n" +
+//                /* 6 */ "}");
+//        String[] expected = new String[] { //
+//                "OUTPUT 2 -> 3 []" };
+//        assertDependencesEqual(expected, stmt);
+//    }
+
+    public void testUnknownFunctionCall2() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+              /* 2 */ "  double value, a = 1, b = 2, c = 3;\n" +
+              /* 3 */ "  double *p = &b;\n" +
+              /* 4 */ "  value = some_function(-2.0);\n" +
+              /* 5 */ "  value = a + b + c;\n" +
+              /* 6 */ "}");
         try {
             analyzeDependences(stmt);
             fail("Dependence testing should have failed due to function call");

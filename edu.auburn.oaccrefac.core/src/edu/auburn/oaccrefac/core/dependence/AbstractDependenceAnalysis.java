@@ -30,6 +30,7 @@ import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
@@ -40,7 +41,9 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
@@ -294,16 +297,25 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTFunctionCallExpression expr) throws DependenceTestFailure {
-        if (!FunctionWhitelist.isWhitelisted(expr)) {
-            throw unsupported(expr);
-        }
-
-        for (IASTInitializerClause arg : expr.getArguments()) {
-            if (arg instanceof IASTExpression) {
-                collectAccessesFromExpression((IASTExpression)arg);
-            } else {
-                throw unsupported(arg);
+        if (FunctionWhitelist.isWhitelisted(expr)) {
+            // Whitelisted functions are known not to affect any aliased variables
+            for (IASTInitializerClause arg : expr.getArguments()) {
+                if (arg instanceof IASTExpression) {
+                    collectAccessesFromExpression((IASTExpression)arg);
+                } else {
+                    throw unsupported(arg);
+                }
             }
+        } else {
+            IASTFunctionDefinition function = ASTUtil.findNearestAncestor(expr, IASTFunctionDefinition.class);
+            // Conservatively assume that a function call might change every variable
+            // whose address is taken (via pointers)...
+            AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, new NullProgressMonitor());
+            for (IVariable var : analysis.getAddressTakenVariables()) {
+                variableAccesses.add(new VariableAccess(false, expr, var)); // Read
+                variableAccesses.add(new VariableAccess(true, expr, var));  // Write
+            }
+            // ...but otherwise it will not change any local variables
         }
     }
 
