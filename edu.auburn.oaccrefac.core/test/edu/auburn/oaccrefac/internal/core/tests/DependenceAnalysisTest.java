@@ -12,6 +12,7 @@
 package edu.auburn.oaccrefac.internal.core.tests;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -177,7 +178,34 @@ public class DependenceAnalysisTest extends TestCase {
                 "        }\n" + 
                 "}");
         for (int i = 0; i < 30; i++) {
-            assertTrue(new DependenceAnalysis(new NullProgressMonitor(), stmt).getDependences().size() > 0);
+            assertTrue(analyzeDependences(stmt).size() > 0);
+        }
+    }
+
+    public void testFabsFunctionCall() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  double two, negtwo;\n" +
+                /* 3 */ "  two = fabs(-2.0);\n" +
+                /* 4 */ "  negtwo = -two;\n" +
+                /* 5 */ "}");
+        String[] expected = new String[] { //
+                "FLOW 2 -> 4 []", //
+                "FLOW 3 -> 4 []",
+                "OUTPUT 2 -> 3 []",
+                "OUTPUT 2 -> 4 []" };
+        assertDependencesEqual(expected, stmt);
+    }
+
+    public void testUnknownFunctionCall() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  double value;\n" +
+                /* 3 */ "  value = some_function(-2.0);\n" +
+                /* 4 */ "}");
+        try {
+            analyzeDependences(stmt);
+            fail("Dependence testing should have failed due to function call");
+        } catch (DependenceTestFailure x) {
+            // Good -- Should not be able to analyze dependences here
         }
     }
 
@@ -185,10 +213,14 @@ public class DependenceAnalysisTest extends TestCase {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 
         TreeSet<String> actual = new TreeSet<String>();
-        for (DataDependence dep : new DependenceAnalysis(new NullProgressMonitor(), stmt).getDependences())
+        for (DataDependence dep : analyzeDependences(stmt))
             actual.add(dep.toString());
 
         assertEquals(stringify(expected), stringify(actual));
+    }
+
+    private Set<DataDependence> analyzeDependences(IASTStatement stmt) throws DependenceTestFailure {
+        return new DependenceAnalysis(new NullProgressMonitor(), stmt).getDependences();
     }
 
     private String stringify(TreeSet<String> set) {
