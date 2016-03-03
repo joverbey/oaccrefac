@@ -8,9 +8,9 @@
  * Contributors:
  *     John William O'Rourke (Auburn) - initial API and implementation
  *******************************************************************************/
-
 package edu.auburn.oaccrefac.core.dependence;
 
+import java.util.Set;
 import java.util.HashSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
@@ -32,6 +32,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * assumes they may point to the same variable.
  * 
  * The analysis can be made more thorough later.
+ * 
+ * @author John William O'Rourke
  */
 public class PointsToAnalysis {
 
@@ -39,12 +41,12 @@ public class PointsToAnalysis {
      * notRestrictPointers holds all pointer variables without the restrict
      * qualifier in the IASTFunctionDefinition.
      */
-    private final HashSet<IVariable> notRestrictPointers;
+    private final Set<IVariable> notRestrictPointers;
     
     /**
      * variables holds all variables found in the IASTFunctionDefinition.
      */
-    private final HashSet<IVariable> variables;
+    private final Set<IVariable> variables;
        
     /**
      * PointsToAnalysis performs the analysis on the given function and monitor.

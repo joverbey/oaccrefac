@@ -55,6 +55,13 @@ import edu.auburn.oaccrefac.internal.core.dependence.FunctionWhitelist;
 import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 
+/**
+ * AbstractDependenceAnalysis serves as the base of any dependence
+ * analysis.
+ * 
+ * @author Jeff Overbey
+ * @author Adam Eichelkraut
+ */
 public abstract class AbstractDependenceAnalysis {
 
     private final List<VariableAccess> variableAccesses;
@@ -62,7 +69,7 @@ public abstract class AbstractDependenceAnalysis {
     private final Set<DataDependence> dependences;
 
     /**
-     * Constructor. Analyzes dependences in a sequence of C statements.
+     * Analyzes dependences in a sequence of C statements.
      * 
      * @throws DependenceTestFailure
      */
