@@ -1,11 +1,9 @@
 package edu.auburn.oaccrefac.core.parser;
 
-import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("all")

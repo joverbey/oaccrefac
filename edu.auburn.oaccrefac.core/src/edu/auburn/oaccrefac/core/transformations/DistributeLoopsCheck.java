@@ -19,8 +19,6 @@ import edu.auburn.oaccrefac.core.dependence.DataDependence;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.core.dependence.DependenceType;
 import edu.auburn.oaccrefac.core.dependence.Direction;
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 

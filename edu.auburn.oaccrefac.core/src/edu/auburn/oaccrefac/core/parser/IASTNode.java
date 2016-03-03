@@ -1,8 +1,6 @@
 package edu.auburn.oaccrefac.core.parser;
 
-import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("all")
