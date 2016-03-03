@@ -300,6 +300,32 @@ public class ConstantPropagationTest extends TestCase {
         check(program, expectedValues);
     }
 
+    public void testGemm() throws CoreException {
+        String program = "void gemm(){\n" + 
+                /* 02 */ "  int i = 0, j = 0, k = 0, n = 512;\n" + 
+                /* 03 */ "  double* C = NULL;\n" + 
+                /* 04 */ "  double* H = NULL;\n" + 
+                /* 05 */ "  H = (double*)malloc(n*n * sizeof(double));\n" + 
+                /* 06 */ "  for (i = 0; i < n; i++){\n" + 
+                /* 07 */ "    for (j = 0; j < n; j++){\n" + 
+                /* 08 */ "      H[i*n+j] = C[i*n+j];\n" + 
+                /* 09 */ "      C[i*n+j] = rand();" + 
+                /* 10 */ "    }\n" + 
+                /* 11 */ "  }\n" + 
+                /* 12 */ "}";
+        String[] expectedValues = { //
+                "Line 2: i = 0", //
+                "Line 2: j = 0", //
+                "Line 2: k = 0", //
+                "Line 2: n = 512", //
+                "Line 6: i = 0", //
+                "Line 6: n = 512", //
+                "Line 7: j = 0", //
+                "Line 7: n = 512", //
+        };
+        check(program, expectedValues);
+    }
+
     private void check(String program, String[] expectedValues) throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(program);
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
