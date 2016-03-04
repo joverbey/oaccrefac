@@ -1,35 +1,21 @@
 package edu.auburn.oaccrefac.core.parser;
 
-import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
-
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.zip.Inflater;
 
-import edu.auburn.oaccrefac.core.parser.OpenACCParser.*;
-import edu.auburn.oaccrefac.core.parser.ParsingTables.*;
+import edu.auburn.oaccrefac.core.parser.OpenACCParser.ErrorRecoveryInfo;
+import edu.auburn.oaccrefac.core.parser.OpenACCParser.Nonterminal;
+import edu.auburn.oaccrefac.core.parser.OpenACCParser.Production;
 
 /**
  * An LALR(1) parser for OpenACC 2.0

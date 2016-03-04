@@ -13,9 +13,8 @@ package edu.auburn.oaccrefac.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
+import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
 public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
 

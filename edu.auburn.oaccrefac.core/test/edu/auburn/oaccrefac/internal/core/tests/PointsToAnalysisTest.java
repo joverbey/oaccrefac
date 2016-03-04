@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
 import edu.auburn.oaccrefac.core.dependence.PointsToAnalysis;
-import edu.auburn.oaccrefac.internal.core.tests.TestUtilities;
 
 /**
  * Unit tests for {@link PointsToAnalysis}.

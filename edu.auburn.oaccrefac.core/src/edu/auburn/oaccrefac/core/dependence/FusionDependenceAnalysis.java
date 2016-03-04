@@ -31,8 +31,9 @@ import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 /**
  * Analyzes data dependences between statements.
  * 
- * @author Alexander Calvert
  * @author Jeff Overbey
+ * @author Adam Eichelkraut
+ * @author Alexander Calvert
  */
 public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
 
@@ -43,7 +44,7 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
     
 
     /**
-     * Constructor.  Analyzes dependences in a sequence of C statements.
+     * Analyzes dependences in a sequence of C statements.
      * 
      * @throws DependenceTestFailure
      */
@@ -63,8 +64,7 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
      * Does the same analysis as <code>DependenceAnalysis.computeDependences</code>, but 
      * does not use anything regarding the common enclosing loops
      * Also assumes there is no loop nesting and that there is no outer-scope variable that
-     * shares the same name as the index variable
-     * 
+     * shares the same name as the index variable.
      */
     @Override
     protected void computeDependences(IProgressMonitor pm) throws DependenceTestFailure {
