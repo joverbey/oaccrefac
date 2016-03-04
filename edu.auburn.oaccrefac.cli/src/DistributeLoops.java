@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -21,11 +22,12 @@ import edu.auburn.oaccrefac.core.transformations.DistributeLoopsAlteration;
  * DistributeLoops performs the distribute loops refactoring.
  */
 public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoopsCheck, DistributeLoopsAlteration> {
-    
+
     /**
      * main begins refactoring execution.
      * 
-     * @param args Arguments to the refactoring.
+     * @param args
+     *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
         new DistributeLoops().run(args);
@@ -33,8 +35,8 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
-            printUsage();
+        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
+                printUsage();
             return false;
         }
         return true;
@@ -45,13 +47,14 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
      */
     private void printUsage() {
         System.err.println("Usage: DistributeLoops <filename.c>");
+        System.err.println("Usage2: DistributeLoops <filename.c> -ln <loopname>");
     }
 
     @Override
     protected DistributeLoopsCheck createCheck(IASTForStatement loop) {
         return new DistributeLoopsCheck(loop);
     }
-    
+
     @Override
     protected RefactoringParams createParams(IASTForStatement forLoop) {
         // RefactoringParams is abstract
@@ -59,8 +62,9 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
     }
 
     @Override
-    protected DistributeLoopsAlteration createAlteration(IASTRewrite rewriter, DistributeLoopsCheck check) throws CoreException {
+    protected DistributeLoopsAlteration createAlteration(IASTRewrite rewriter, DistributeLoopsCheck check)
+            throws CoreException {
         return new DistributeLoopsAlteration(rewriter, check);
     }
-    
+
 }

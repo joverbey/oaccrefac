@@ -35,7 +35,7 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
             printUsage();
             return false;
         }
@@ -47,6 +47,7 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
      */
     private void printUsage() {
         System.err.println("Usage: IntroduceDefaultNone <filename.c>");
+        System.err.println("Usage2: IntroduceDefaultNone <filename.c> -ln <loopname>");
     }
     
     @Override

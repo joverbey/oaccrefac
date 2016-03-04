@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -21,11 +22,12 @@ import edu.auburn.oaccrefac.core.transformations.FuseLoopsAlteration;
  * FuseLoops performs the fuse loops refactoring.
  */
 public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseLoopsAlteration> {
-    
+
     /**
      * main begins refactoring execution.
      * 
-     * @param args Arguments to the refactoring.
+     * @param args
+     *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
         new FuseLoops().run(args);
@@ -33,9 +35,9 @@ public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseL
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
-            printUsage();
-            return false;
+        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
+                printUsage();
+                return false;
         }
         return true;
     }
@@ -45,6 +47,7 @@ public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseL
      */
     private void printUsage() {
         System.err.println("Usage: FuseLoops <filename.c>");
+        System.err.println("Usage2: FuseLoops <filename.c> -ln <loopname>");
     }
 
     @Override
@@ -62,5 +65,5 @@ public class FuseLoops extends LoopMain<RefactoringParams, FuseLoopsCheck, FuseL
     protected FuseLoopsAlteration createAlteration(IASTRewrite rewriter, FuseLoopsCheck check) throws CoreException {
         return new FuseLoopsAlteration(rewriter, check);
     }
-    
+
 }

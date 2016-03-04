@@ -33,7 +33,7 @@ public class IntroduceKernelsLoop extends LoopMain<RefactoringParams, IntroduceK
     
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
             printUsage();
             return false;
         }
@@ -45,6 +45,7 @@ public class IntroduceKernelsLoop extends LoopMain<RefactoringParams, IntroduceK
      */
     private void printUsage() {
         System.err.println("Usage: IntroduceKernelsLoop <filename.c>");
+        System.err.println("Usage2: IntroduceKernelsLoop <filename.c> -ln <loopname>");
     }
 
     
