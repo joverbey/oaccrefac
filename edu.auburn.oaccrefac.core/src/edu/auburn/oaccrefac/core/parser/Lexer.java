@@ -3588,9 +3588,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.zip.Inflater;
 
-import edu.auburn.oaccrefac.core.parser.OpenACCParser.Terminal;
 import edu.auburn.oaccrefac.core.parser.OpenACCParser.ILexer;
-import edu.auburn.oaccrefac.core.parser.Token;
+import edu.auburn.oaccrefac.core.parser.OpenACCParser.Terminal;
 
 @SuppressWarnings("all")
 public final class Lexer implements ILexer

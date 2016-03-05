@@ -6,9 +6,10 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    UIUC - Initial API and implementation
+ *     UIUC - Initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
  *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.dependence;
 
@@ -23,8 +24,8 @@ package edu.auburn.oaccrefac.core.dependence;
  * Architectures.</i>  Direction vectors are defined on p. 46
  * (Definition 2.10); the Banerjee Inequality is described on pp. 97-111.
  * <p>
- * THIS IS PRELIMINARY AND EXPERIMENTAL.  IT IS NOT APPROPRIATE FOR PRODUCTION USE.
  * 
+ * @author Adam Eichelkraut
  * @author Alexander Calvert
  * @author Jeff Overbey
  * @see IDependenceTester

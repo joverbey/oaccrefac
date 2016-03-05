@@ -11,6 +11,7 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.dependence;
 
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -32,6 +33,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * AddressTakenAnalysis performs a simple address-taken analysis on a given function.
  * 
  * The progress of analyzing the function is stored in the monitor.
+ * 
+ * @author John William O'Rourke
+ * @author Jeff Overbey
  */
 public class AddressTakenAnalysis {
 
@@ -47,12 +51,12 @@ public class AddressTakenAnalysis {
      * addressTakenVariables holds all of the variables that are discovered to have had their addresses taken in the
      * function.
      */
-    private final HashSet<IVariable> addressTakenVariables;
+    private final Set<IVariable> addressTakenVariables;
 
     /**
      * variables holds all variables found in the function.
      */
-    private final HashSet<IVariable> variables;
+    private final Set<IVariable> variables;
 
     /**
      * AddressTakenAnalysis performs the analysis on the given function and monitor.
@@ -172,7 +176,7 @@ public class AddressTakenAnalysis {
     /**
      * Returns the set of all local variables whose address is taken.
      */
-    public HashSet<IVariable> getAddressTakenVariables() {
+    public Set<IVariable> getAddressTakenVariables() {
         return addressTakenVariables;
     }
 }

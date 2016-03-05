@@ -21,11 +21,12 @@ import edu.auburn.oaccrefac.core.transformations.StripMineAlteration;
  * StripMine performs the strip mine refactoring.
  */
 public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMineAlteration> {
-    
+
     /**
      * main begins refactoring execution.
      * 
-     * @param args Arguments to the refactoring.
+     * @param args
+     *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
         new StripMine().run(args);
@@ -35,18 +36,27 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      * stripFactor is the factor to use in strip mining the loop
      */
     private int stripFactor = 0;
-    
+
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 3) {
+        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
             printUsage();
             return false;
         }
-        try {
-            stripFactor = Integer.parseInt(args[2]);
-        } catch (NumberFormatException e) {
-            printUsage();
-            return false;
+        if (args[1].equals("-ln")) {
+            try {
+                stripFactor = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                printUsage();
+                return false;
+            }
+        } else {
+            try {
+                stripFactor = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                printUsage();
+                return false;
+            }
         }
         return true;
     }
@@ -56,6 +66,7 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      */
     private void printUsage() {
         System.err.println("Usage: StripMine <filename.c> <strip_factor>");
+        System.err.println("Usage: StripMine <filename.c> -ln <loopname> <strip_factor>");
     }
 
     @Override
@@ -72,5 +83,5 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
     protected StripMineAlteration createAlteration(IASTRewrite rewriter, StripMineCheck check) throws CoreException {
         return new StripMineAlteration(rewriter, stripFactor, check);
     }
-    
+
 }

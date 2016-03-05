@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -20,17 +21,19 @@ import edu.auburn.oaccrefac.core.transformations.InterchangeLoopsAlteration;
 /**
  * InterchangeLoops performs the interchange loops alteration.
  */
-public class InterchangeLoops extends LoopMain<InterchangeLoopParams, InterchangeLoopsCheck, InterchangeLoopsAlteration> {
-    
+public class InterchangeLoops
+        extends LoopMain<InterchangeLoopParams, InterchangeLoopsCheck, InterchangeLoopsAlteration> {
+
     /**
      * main begins refactoring execution.
      * 
-     * @param args Arguments to the refactoring.
+     * @param args
+     *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
         new InterchangeLoops().run(args);
     }
-    
+
     /**
      * depth is the depth to interchange to.
      */
@@ -38,18 +41,28 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 3) {
-            printUsage();
-            return false;
+        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
+                printUsage();
+                return false;
         }
-        
-        try {
-            depth = Integer.parseInt(args[2]);
-        } catch (NumberFormatException e) {
-            printUsage();
-            return false;
+        if (args[1].equals("-ln")) {
+            try {
+                depth = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                printUsage();
+                return false;
+            }
+        } 
+        else {
+            try {
+                depth = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                printUsage();
+                System.err.println("test");
+                return false;
+            }
         }
-        
+
         return true;
     }
 
@@ -58,6 +71,7 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
      */
     private void printUsage() {
         System.err.println("Usage: InterchangeLoops <filename.c> <depth>");
+        System.err.println("Usage2: InterchangeLoops <filename.c> -ln <loopname> <depth>");
     }
 
     @Override
@@ -71,8 +85,9 @@ public class InterchangeLoops extends LoopMain<InterchangeLoopParams, Interchang
     }
 
     @Override
-    protected InterchangeLoopsAlteration createAlteration(IASTRewrite rewriter, InterchangeLoopsCheck check) throws CoreException {
+    protected InterchangeLoopsAlteration createAlteration(IASTRewrite rewriter, InterchangeLoopsCheck check)
+            throws CoreException {
         return new InterchangeLoopsAlteration(rewriter, check);
     }
-    
+
 }

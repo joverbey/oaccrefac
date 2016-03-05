@@ -7,10 +7,10 @@ then
 	exit
 fi
 
-printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParrallelLoop\nLoopCutting\nStripMine\nTileLoops\nUnroll\n"
+printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParallelLoop\nLoopCutting\nStripMine\nTileLoops\nUnroll\n"
 
 read refactoring
-if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelloop" ] && [ "$refactoring" != "LoopCutting" ] && [ "$refactoring" != "StripMine" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ]; then
+if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "LoopCutting" ] && [ "$refactoring" != "StripMine" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ]; then
 	echo "That is not a recognized refactoring, please enter as shown above next time"
 	exit
 fi
@@ -94,11 +94,11 @@ do
 	do
 		loopname+="$j"
 		if [ "$refactoring" == "InterchangeLoops" ] || [ "$refactoring" == "LoopCutting" ]  || [ "$refactoring" == "StripMine" ] || [ "$refactoring" == "Unroll" ]; then
-			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
+			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$loopname" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
 		elif [ "$refactoring" == "TileLoops" ]; then
-			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
+			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$loopname"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
 		else
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$loopname"  > $outputtemp 2>> ./Scripts/errorlog.txt
 		fi
 		if [[ -s $outputtemp ]]; then
 			cp $outputtemp $inputtemp

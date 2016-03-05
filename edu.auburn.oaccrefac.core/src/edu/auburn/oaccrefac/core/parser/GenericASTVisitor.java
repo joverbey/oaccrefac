@@ -1,7 +1,5 @@
 package edu.auburn.oaccrefac.core.parser;
 
-import edu.auburn.oaccrefac.core.parser.SyntaxException;                   import java.io.IOException;
-
 @SuppressWarnings("all")
 public class GenericASTVisitor implements IASTVisitor
 {
