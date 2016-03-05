@@ -43,18 +43,19 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
         List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
         if (params.getDepth() < 0 || params.getDepth() >= headers.size()) {
-            status.addFatalError("There is no for-loop at exchange depth:" + params.getDepth());
+            status.addFatalError("There is no for-loop at perfect loop nest depth " + params.getDepth() + ".");
             return;
         }
         
         this.inner = ASTUtil.findDepth(outer, IASTForStatement.class, params.getDepth());
-        
     }
     
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(outer);
-        if (!inq.isPerfectLoopNest()) {
+        System.out.println(inq.getPerfectLoopNestHeaders());
+
+        if (!(inq.getPerfectLoopNestHeaders().contains(inner))) {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
             return;
         }
