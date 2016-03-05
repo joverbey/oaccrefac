@@ -1,20 +1,15 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.core.runtime.NullProgressMonitor;
 
-import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
+import edu.auburn.oaccrefac.core.dataflow.ReachingDefinitions;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
+import edu.auburn.oaccrefac.internal.core.OpenACCUtil;
 
 public class IntroduceDataConstructAlteration extends SourceStatementsAlteration<IntroduceDataConstructCheck> {
 
@@ -25,18 +20,9 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
     @Override
     protected void doChange() throws Exception {
         IASTStatement[] stmts = getStatements();
-        IASTStatement[] funcStatements = ((IASTCompoundStatement) ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class).getBody()).getStatements();
-        DependenceAnalysis dep = new DependenceAnalysis(new NullProgressMonitor(), funcStatements);
-        List<VariableAccess> copyin = new ArrayList<VariableAccess>(inferCopyins(dep));
-        List<VariableAccess> copyout = new ArrayList<VariableAccess>(inferCopyouts(dep));
-        String[] copyinStr = new String[copyin.size()];
-        String[] copyoutStr = new String[copyout.size()];
-        for(int i = 0; i < copyinStr.length; i++) {
-            copyinStr[i] = copyin.get(i).getVariableName().toString();
-        }
-        for(int i = 0; i < copyoutStr.length; i++) {
-            copyoutStr[i] = copyout.get(i).getVariableName().toString();
-        }
+        ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
+        Set<String> copyin = OpenACCUtil.inferCopyin(getStatements(), rd);
+        Set<String> copyout = OpenACCUtil.inferCopyout(getStatements(), rd);
         
         String origRegion = "";
         for (IASTNode node : getStatementsAndComments()) {
@@ -46,69 +32,16 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
         replacement.append(pragma("acc data"));
         if(!copyin.isEmpty()) {
             replacement.append(" ");
-            replacement.append(copyin(copyinStr));
+            replacement.append(copyin(copyin.toArray(new String[copyin.size()])));
         }
         if(!copyout.isEmpty()) {
             replacement.append(" ");
-            replacement.append(copyout(copyoutStr));
+            replacement.append(copyout(copyout.toArray(new String[copyout.size()])));
         }
         replacement.append(System.lineSeparator());
         replacement.append(compound(decompound(origRegion)));
         this.replace(getOffset(), getLength(), replacement.toString());
         finalizeChanges();
-    }
-
-    //TODO move to superclass
-    private boolean inRegion(IASTStatement statement) {
-        for (IASTStatement stmtInRegion : getStatements()) {
-            if (ASTUtil.isAncestor(stmtInRegion, statement)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isVariableInSet(VariableAccess access, Set<VariableAccess> accesses) {
-        for(VariableAccess var : accesses) {
-            try {
-                if(var.refersToSameVariableAs(access)) {
-                    return true;
-                }
-            } catch (DependenceTestFailure e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    private Set<VariableAccess> inferCopyins(DependenceAnalysis dep) {
-        Set<VariableAccess> copyin = new TreeSet<VariableAccess>();
-        for (VariableAccess write : dep.getVariableAccesses()) {
-            for (VariableAccess read : dep.getVariableAccesses()) {
-                if (dep.reaches(write, read)) {
-                    if (inRegion(read.getEnclosingStatement()) && !inRegion(write.getEnclosingStatement())
-                            && !isVariableInSet(write, copyin)) {
-                        copyin.add(write);
-                    }
-                }
-            }
-        }
-        return copyin;
-    }
-
-    private Set<VariableAccess> inferCopyouts(DependenceAnalysis dep) {
-        Set<VariableAccess> copyout = new TreeSet<VariableAccess>();
-        for (VariableAccess write : dep.getVariableAccesses()) {
-            for (VariableAccess read : dep.getVariableAccesses()) {
-                if (dep.reaches(write, read)) {
-                    if (inRegion(write.getEnclosingStatement()) && !inRegion(read.getEnclosingStatement())
-                            && !isVariableInSet(read, copyout)) {
-                        copyout.add(read);
-                    }
-                }
-            }
-        }
-        return copyout;
     }
 
 }

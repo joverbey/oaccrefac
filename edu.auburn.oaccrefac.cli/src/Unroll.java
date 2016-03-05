@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -21,11 +22,12 @@ import edu.auburn.oaccrefac.core.transformations.UnrollLoopParams;
  * Unroll performs the unroll loops refactoring.
  */
 public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
-    
+
     /**
      * main begins refactoring execution.
      * 
-     * @param args Arguments to the refactoring.
+     * @param args
+     *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
         new Unroll().run(args);
@@ -38,16 +40,24 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 3) {
+        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
             printUsage();
             return false;
         }
-
-        try {
-            unrollFactor = Integer.parseInt(args[2]);
-        } catch (NumberFormatException e) {
-            printUsage();
-            return false;
+        if (args[1].equals("-ln")) {
+            try {
+                unrollFactor = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                printUsage();
+                return false;
+            }
+        } else {
+            try {
+                unrollFactor = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                printUsage();
+                return false;
+            }
         }
 
         return true;
@@ -58,12 +68,14 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
      */
     private void printUsage() {
         System.err.println("Usage: Unroll <filename.c> <factor>");
+        System.err.println("Usage: Unroll <filename.c> -ln <loopname> <factor>");
     }
 
     /**
      * createCheck creates an UnrollLoopCheck.
      * 
-     * @param loop Loop to create the check for.
+     * @param loop
+     *            Loop to create the check for.
      * @return Check to be performed on the loop.
      */
     @Override
@@ -80,5 +92,5 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
     protected UnrollLoopAlteration createAlteration(IASTRewrite rewriter, UnrollLoopCheck check) throws CoreException {
         return new UnrollLoopAlteration(rewriter, unrollFactor, check);
     }
-    
+
 }

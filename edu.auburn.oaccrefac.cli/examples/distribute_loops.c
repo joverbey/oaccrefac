@@ -1,7 +1,7 @@
 int main() {
     int a, b, c, d;
     int i;
-    /* loop1outer*/
+    /* autotune */
     for (i = 0; i < 100; i++) {
         a = 5;
         b = 6;

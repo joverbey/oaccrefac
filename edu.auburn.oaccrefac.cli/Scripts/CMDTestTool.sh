@@ -1,4 +1,5 @@
 #!/bin/bash
+#TODO Throw error if not C file
 curdir=`basename "$PWD"`
 if [ "$curdir" != "edu.auburn.oaccrefac.cli" ]
 then
@@ -93,11 +94,11 @@ do
 	do
 		loopname+="$j"
 		if [ "$refactoring" == "InterchangeLoops" ] || [ "$refactoring" == "LoopCutting" ]  || [ "$refactoring" == "StripMine" ] || [ "$refactoring" == "Unroll" ]; then
-			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
+			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$loopname" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
 		elif [ "$refactoring" == "TileLoops" ]; then
-			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
+			java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$loopname"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
 		else
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "$loopname"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$loopname"  > $outputtemp 2>> ./Scripts/errorlog.txt
 		fi
 		if [[ -s $outputtemp ]]; then
 			cp $outputtemp $inputtemp
@@ -114,7 +115,7 @@ else
 	echo "Refactoring successful"
 fi
 
-cat $inputtemp
+#cat $inputtemp
 
 cp $fileToRefactor $outputtemp
 cp $inputtemp $fileToRefactor

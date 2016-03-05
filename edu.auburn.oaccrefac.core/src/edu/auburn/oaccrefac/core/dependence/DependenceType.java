@@ -11,6 +11,12 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.dependence;
 
+/**
+ * DependneceType represents the available types of dependences.
+ * 
+ * @author Alexander Calvert
+ * @author Jeff Overbey
+ */
 public enum DependenceType {
     FLOW, ANTI, OUTPUT, INPUT;
 }

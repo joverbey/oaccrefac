@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 
 import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
 
@@ -45,6 +46,16 @@ public class ConstEnv {
             Long thatValue = that.env.get(b);
             if (this.env.get(b).equals(thatValue)) {
                 result.put(b, thatValue);
+            }
+        }
+        return new ConstEnv(result);
+    }
+
+    public ConstEnv without(IVariable var) {
+        Map<IBinding, Long> result = new HashMap<IBinding, Long>();
+        for (IBinding b : this.env.keySet()) {
+            if (!b.equals(var)) {
+                result.put(b, this.env.get(b));
             }
         }
         return new ConstEnv(result);

@@ -34,7 +34,7 @@
 void wul();
 
 int main(int argc, char **argv) {
-  extern double testResults[13];
+  extern double* testResults[13];
   char testName[32];
 
   /* Initialise storage for test results & parse input arguements. */
@@ -48,40 +48,40 @@ int main(int argc, char **argv) {
   sprintf(testName, "2MM");
   testResults[0] = twomm();
   //benchmark(testName, &twomm);
-
+  testResults[1] = threemm();
   sprintf(testName, "3MM");
   //benchmark(testName, &threemm);
-
+  testResults[2] = atax();
   sprintf(testName, "ATAX");
   //benchmark(testName, &atax);
-
+  testResults[3] = bicg();
   sprintf(testName, "BICG");
   //benchmark(testName, &bicg);
-
+  testResults[4] = mvt();
   sprintf(testName, "MVT");
   //benchmark(testName, &mvt);
-
+  testResults[5] = syrk();
   sprintf(testName, "SYRK");
   //benchmark(testName, &syrk);
-
+  testResults[6] = covariance();
   sprintf(testName, "COV");
   //benchmark(testName, &covariance);
-
+  testResults[7] = correlation();
   sprintf(testName, "COR");
   //benchmark(testName, &correlation);
-
+  testResults[8] = syr2k();
   sprintf(testName, "SYR2K");
   //benchmark(testName, &syr2k);
-
-  sprintf(testName, "GESUMMV");
+  testResults[9] = twomm();
+  sprintf(testName, "gesummv");
   //benchmark(testName, &gesummv);
-
+  testResults[10] = gemm();
   sprintf(testName, "GEMM");
   //benchmark(testName, &gemm);
-
+  testResults[11] = twodconv();
   sprintf(testName, "2DCONV");
   //benchmark(testName, &twodconv);
-
+  testResults[12] = threedconv();
   sprintf(testName, "3DCONV");
   //benchmark(testName, &threedconv);
 

@@ -17,6 +17,9 @@ import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 
 /**
  * Container for information about a single data dependence
+ * 
+ * @author Alexander Calvert
+ * @author Jeff Overbey
  */
 public class DataDependence {
 

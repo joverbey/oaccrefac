@@ -51,21 +51,16 @@ public class NullCheck extends ForLoopCheck<NullParams> {
         Long ub = inquisitor.getInclusiveUpperBound();
         if (ub != null) {
             status.addInfo(String.format("Loop upper bound is %d.", ub));
-        } else {
-            status.addInfo("Loop upper bound is not constant-valued.");
         }
-        
+
         if (inquisitor.isPerfectLoopNest()) {
             status.addInfo("Loop is a perfect loop nest.");
-        } else {
-            status.addInfo("Loop is NOT a perfect loop nest.");
         }
-        
+
         // If the loop contains unsupported statements, fail
         IASTNode unsupported = inquisitor.getFirstUnsupportedStmt();
         if (unsupported != null) {
             status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
-            return;
         }
     }
 

@@ -57,9 +57,8 @@ public class ConstantPropagationTest extends TestCase {
                 "Line 7: i = 1", //
                 "Line 10: n = 4", //
                 "Line 12: m = 2", //
-                // Due to a bug in CDT, the for loop does not connect to the statements following it
-                // "Line 13: m = 1", //
-                // "Line 13: two = 2", //
+                "Line 13: m = 1", //
+                "Line 13: two = 2", //
         };
         check(program, expectedValues);
     }
@@ -119,7 +118,89 @@ public class ConstantPropagationTest extends TestCase {
                 /* 5 */ "  foo();\n" +
                 /* 6 */ "  global;\n" +
                 /* 7 */ "}";
-        String[] expectedValues = { "Line 4: global = 1" };
+        String[] expectedValues = { "Line 4: global = 1\nLine 6: global = 1" };
+        check(program, expectedValues);
+    }
+
+    public void testFnCall() throws CoreException {
+        String program = "void foo();\n" +
+                /* 2 */ "void main() {\n" +
+                /* 3 */ "  int var = 1;\n" +
+                /* 4 */ "  foo();\n" +
+                /* 5 */ "  var;\n" +
+                /* 6 */ "}";
+        String[] expectedValues = { "Line 3: var = 1\nLine 5: var = 1" };
+        check(program, expectedValues);
+    }
+
+    public void testFnCallAlias() throws CoreException {
+        String program = "void foo();\n" +
+                /* 2 */ "void main() {\n" +
+                /* 3 */ "  int var = 1, ptr = &var;\n" +
+                /* 4 */ "  foo(*ptr = 2);\n" +
+                /* 5 */ "  var;\n" +
+                /* 6 */ "}";
+        String[] expectedValues = { "Line 3: var = 1" };
+        check(program, expectedValues);
+    }
+
+    public void testReturnVal() throws CoreException {
+        String program = "int main() {\n" +
+                /* 2 */ "  int var = 1;\n" +
+                /* 3 */ "  return (var = 2);\n" +
+                /* 4 */ "}";
+        String[] expectedValues = { "Line 2: var = 1\nLine 3: var = 2" };
+        check(program, expectedValues);
+    }
+
+    public void testReturn() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  int var = 1;\n" +
+                /* 3 */ "  return;\n" +
+                /* 4 */ "  var;\n" +
+                /* 5 */ "}";
+        String[] expectedValues = { "Line 2: var = 1" };
+        check(program, expectedValues);
+    }
+
+    public void testIfElseDifferent() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  int var = 1;\n" +
+                /* 3 */ "  if (2 < 3) var = 2; else var = 3;\n" +
+                /* 4 */ "  var;\n" +
+                /* 5 */ "}";
+        String[] expectedValues = { "Line 2: var = 1\nLine 3: var = 2\nLine 3: var = 3" };
+        check(program, expectedValues);
+    }
+
+    public void testIfElseSame() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  int var = 1;\n" +
+                /* 3 */ "  if (2 < 3) var = 2; else var = 2;\n" +
+                /* 4 */ "  var;\n" +
+                /* 5 */ "}";
+        String[] expectedValues = { "Line 2: var = 1\nLine 3: var = 2\nLine 4: var = 2" };
+        check(program, expectedValues);
+    }
+
+    public void testIfOnly() throws CoreException {
+        String program = "void main() {\n" +
+                /* 2 */ "  int var = 1;\n" +
+                /* 3 */ "  if (2 < 3) var = 2;\n" +
+                /* 4 */ "  var;\n" +
+                /* 5 */ "}";
+        String[] expectedValues = { "Line 2: var = 1\nLine 3: var = 2" };
+        check(program, expectedValues);
+    }
+
+    public void testFnCallAlias2() throws CoreException {
+        String program = "void foo();\n" +
+                /* 2 */ "void main() {\n" +
+                /* 3 */ "  int var = 1, ptr = &var;\n" +
+                /* 4 */ "  foo();\n" +
+                /* 5 */ "  var;\n" +
+                /* 6 */ "}";
+        String[] expectedValues = { "Line 3: var = 1" };
         check(program, expectedValues);
     }
 
@@ -215,6 +296,32 @@ public class ConstantPropagationTest extends TestCase {
                 "Line 4: n = 10", //
                 "Line 5: j = 0", //
                 "Line 5: m = 20", //
+        };
+        check(program, expectedValues);
+    }
+
+    public void testGemm() throws CoreException {
+        String program = "void gemm(){\n" + 
+                /* 02 */ "  int i = 0, j = 0, k = 0, n = 512;\n" + 
+                /* 03 */ "  double* C = NULL;\n" + 
+                /* 04 */ "  double* H = NULL;\n" + 
+                /* 05 */ "  H = (double*)malloc(n*n * sizeof(double));\n" + 
+                /* 06 */ "  for (i = 0; i < n; i++){\n" + 
+                /* 07 */ "    for (j = 0; j < n; j++){\n" + 
+                /* 08 */ "      H[i*n+j] = C[i*n+j];\n" + 
+                /* 09 */ "      C[i*n+j] = rand();" + 
+                /* 10 */ "    }\n" + 
+                /* 11 */ "  }\n" + 
+                /* 12 */ "}";
+        String[] expectedValues = { //
+                "Line 2: i = 0", //
+                "Line 2: j = 0", //
+                "Line 2: k = 0", //
+                "Line 2: n = 512", //
+                "Line 6: i = 0", //
+                "Line 6: n = 512", //
+                "Line 7: j = 0", //
+                "Line 7: n = 512", //
         };
         check(program, expectedValues);
     }

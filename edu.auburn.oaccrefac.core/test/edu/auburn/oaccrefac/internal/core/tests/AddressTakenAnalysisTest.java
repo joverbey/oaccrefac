@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
 import edu.auburn.oaccrefac.core.dependence.AddressTakenAnalysis;
-import edu.auburn.oaccrefac.internal.core.tests.TestUtilities;
 
 /**
  * Unit tests for {@link AddressTakenAnalysis}.
@@ -49,7 +48,7 @@ public class AddressTakenAnalysisTest {
         assertNotNull(a);
         IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         assertTrue(analysis.isAddressTaken(a));
         assertFalse(analysis.isAddressTaken(b));
     }
@@ -72,7 +71,7 @@ public class AddressTakenAnalysisTest {
         assertNotNull(a);
         IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         assertTrue(analysis.isAddressTaken(a));
         assertFalse(analysis.isAddressTaken(b));
     }
@@ -96,7 +95,7 @@ public class AddressTakenAnalysisTest {
         assertNotNull(a);
         IVariable b = TestUtilities.findVariable(function, "b");
         assertNotNull(b);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         assertTrue(analysis.isAddressTaken(a));
         assertFalse(analysis.isAddressTaken(b));
     }
@@ -129,7 +128,7 @@ public class AddressTakenAnalysisTest {
         assertNotNull(d);
         IVariable e = TestUtilities.findVariable(function, "e");
         assertNotNull(e);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         assertTrue(analysis.isAddressTaken(a));
         assertFalse(analysis.isAddressTaken(b));
         assertFalse(analysis.isAddressTaken(c));
@@ -162,7 +161,7 @@ public class AddressTakenAnalysisTest {
         assertNotNull(c);
         IVariable d = TestUtilities.findVariable(function, "d");
         assertNotNull(d);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         assertTrue(analysis.isAddressTaken(a));
         assertTrue(analysis.isAddressTaken(b));
         assertFalse(analysis.isAddressTaken(c));
@@ -175,7 +174,7 @@ public class AddressTakenAnalysisTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void checkNullFunctionInConstructor() {
-        new AddressTakenAnalysis(null, null);
+        AddressTakenAnalysis.forFunction(null, null);
     }
     
     /**
@@ -190,7 +189,7 @@ public class AddressTakenAnalysisTest {
                 "void foo() { }"
         );
         assertNotNull(function);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         analysis.isAddressTaken(null);
     }
     
@@ -210,7 +209,7 @@ public class AddressTakenAnalysisTest {
                 "void foo() { }"
         );
         assertNotNull(function);
-        AddressTakenAnalysis analysis = new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis analysis = AddressTakenAnalysis.forFunction(function, null);
         IVariable a = TestUtilities.findVariable(dummyFunction, "a");
         assertNotNull(a);
         analysis.isAddressTaken(a);
@@ -232,7 +231,7 @@ public class AddressTakenAnalysisTest {
                 "}"
         );
         assertNotNull(function);
-        new AddressTakenAnalysis(function, null);
+        AddressTakenAnalysis.forFunction(function, null);
     }
 
 }

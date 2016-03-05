@@ -14,7 +14,6 @@ package edu.auburn.oaccrefac.core.dependence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,14 +33,15 @@ import edu.auburn.oaccrefac.internal.core.dependence.VariableAccess;
 
 /**
  * Analyzes data dependences between statements.
- * 
- * @author Alexander Calvert
+
  * @author Jeff Overbey
+ * @author Adam Eichelkraut
+ * @author Alexander Calvert
  */
 public class DependenceAnalysis extends AbstractDependenceAnalysis {
 
     /**
-     * Constructor. Analyzes dependences in a sequence of C statements.
+     * Analyzes dependences in a sequence of C statements.
      * 
      * @throws DependenceTestFailure
      */
@@ -115,11 +115,11 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
     }
     
     /**
-     * Returns whether the a statement reaches another one. Returns false if the statements 
-     * are not a read and a write, respectively.  
-     * @param write
-     * @param read
-     * @return
+     * Checks if a statement reaches another.
+     * 
+     * @param write Write statement.
+     * @param read Read statement.
+     * @return false if the statements are not a read and a write, respectively.
      */
     public boolean reaches(VariableAccess write, VariableAccess read) {
         for(DataDependence dep : getDependences()) {
@@ -130,33 +130,4 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         return false;
     }
     
-//    /**
-//     * Gets all the statements reached by this definition
-//     * @param write
-//     * @return
-//     */
-//    public Set<IASTStatement> getReachedStatements(IASTStatement write) {
-//        Set<IASTStatement> reached = new HashSet<IASTStatement>();
-//        for(DataDependence dep : getDependences()) {
-//            if(dep.getStatement1().equals(write) && dep.getType() == DependenceType.FLOW) {
-//                reached.add(dep.getStatement2());
-//            }
-//        }
-//        return reached;
-//    }
-//    
-//    /**
-//     * Gets all the definitions that reach the given statement
-//     * @param read
-//     * @return
-//     */
-//    public Set<IASTStatement> getReachingDefinitions(IASTStatement read) {
-//        Set<IASTStatement> reachingDefs = new HashSet<IASTStatement>();
-//        for(DataDependence dep : getDependences()) {
-//            if(dep.getStatement2().equals(read) && dep.getType() == DependenceType.FLOW) {
-//                reachingDefs.add(dep.getStatement1());
-//            }
-//        }
-//        return reachingDefs;
-//    }
 }

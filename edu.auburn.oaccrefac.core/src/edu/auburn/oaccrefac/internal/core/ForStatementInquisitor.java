@@ -261,6 +261,10 @@ public class ForStatementInquisitor {
     private boolean isLoopBodyStmtSupported(IASTNode body) {
         if (body instanceof IASTNullStatement) {
             return true;
+        } else if (body instanceof IASTDeclarationStatement) {
+            return true;
+        } else if (body instanceof IASTForStatement) {
+            return true;
         } else if (body instanceof IASTExpressionStatement) {
             if (body.getChildren()[0] instanceof IASTBinaryExpression) {
                 IASTBinaryExpression expr = (IASTBinaryExpression) body.getChildren()[0];

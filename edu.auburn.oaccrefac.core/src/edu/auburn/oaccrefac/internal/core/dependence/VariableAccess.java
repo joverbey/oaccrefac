@@ -20,23 +20,31 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 
 import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
 import edu.auburn.oaccrefac.core.dependence.DependenceType;
 
 public class VariableAccess implements Comparable<VariableAccess> {
-    private final IASTName variable;
+    private final IASTNode variable;
     private final IBinding binding;
     private final LinearExpression[] arraySubscripts;
     private final boolean isWrite;
 
     public VariableAccess(boolean isWrite, IASTName variable, LinearExpression... arraySubscripts) {
         this.variable = variable;
-        this.binding = this.variable.resolveBinding();
+        this.binding = variable.resolveBinding();
         if (arraySubscripts == null || arraySubscripts.length == 0)
             this.arraySubscripts = null;
         else
             this.arraySubscripts = arraySubscripts;
+        this.isWrite = isWrite;
+    }
+
+    public VariableAccess(boolean isWrite, IASTNode node, IVariable binding) {
+        this.variable = node;
+        this.binding = binding;
+        this.arraySubscripts = null;
         this.isWrite = isWrite;
     }
 
@@ -46,7 +54,7 @@ public class VariableAccess implements Comparable<VariableAccess> {
         return this.binding.equals(that.binding);
     }
 
-    public IASTName getVariableName() {
+    public IASTNode getVariableName() {
         return variable;
     }
 
