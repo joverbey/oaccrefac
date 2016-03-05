@@ -26,6 +26,7 @@ import edu.auburn.oaccrefac.core.parser.IAccConstruct;
 import edu.auburn.oaccrefac.core.parser.OpenACCParser;
 import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import edu.auburn.oaccrefac.internal.core.OpenACCUtil;
 
 public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<ExpandDataConstructCheck> {
 
@@ -98,16 +99,16 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         else {
             osize = 1;
         }
-        Set<String> ocopyin = getCopyin(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
-        Set<String> ocopyout = getCopyout(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
+        Set<String> ocopyin = OpenACCUtil.inferCopyin(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
+        Set<String> ocopyout = OpenACCUtil.inferCopyout(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
         List<Expansion> expansions = new ArrayList<Expansion>();
         Set<String> gpuuses = getGpuVars(getStatement(), false);
         Set<String> gpudefs = getGpuVars(getStatement(), true);
         for(int i = 0; i <= maxup; i++) {
             for(int j = 0; j <= maxdown; j++) {
                 IASTStatement[] expStmts = getExpansionStatements(i, j, getStatement());
-                Set<String> expcopyin = getCopyin(expStmts, rd);
-                Set<String> expcopyout = getCopyout(expStmts, rd);
+                Set<String> expcopyin = OpenACCUtil.inferCopyin(expStmts, rd);
+                Set<String> expcopyout = OpenACCUtil.inferCopyout(expStmts, rd);
                 
                 //be sure that for variables actually used on the gpu, the copyin set hasn't changed 
                 if(areCopyDefsTheSame(gpuuses, ocopyin, expcopyin))
@@ -314,53 +315,6 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
             i++;
         }
         return i;
-    }
-
-    private Set<String> getCopyout(IASTStatement[] exp, ReachingDefinitions rd) {
-        Set<String> copyout = new HashSet<String>();
-        
-        //all uses reached by definitions in the construct
-        Set<IASTName> uses = new HashSet<IASTName>();
-        for(IASTStatement statement : exp) {
-             uses.addAll(rd.reachedUses(statement));
-        }
-        
-        //retain only those uses that are not in the construct
-        for(IASTName use : uses) {
-            if(!inConstruct(use, exp)) {
-                copyout.add(use.getRawSignature());
-            }
-        }
-        
-        return copyout;
-    }
-    
-    private Set<String> getCopyin(IASTStatement[] exp, ReachingDefinitions rd) {
-        Set<String> copyin = new HashSet<String>();
-        
-        //all definitions reaching statements in the construct
-        Set<IASTName> defs = new HashSet<IASTName>();
-        for(IASTStatement statement : exp) {
-            defs.addAll(rd.reachingDefinitions(statement));
-        }
-        
-        //if the definition is outside the construct, keep it
-        for(IASTName def : defs) {
-            if(!inConstruct(def, exp)) {
-                copyin.add(def.getRawSignature());
-            }
-        }
-        
-        return copyin;
-    }
-    
-    private boolean inConstruct(IASTNode node, IASTStatement[] construct) {
-        for(IASTStatement stmt : construct) {
-            if(ASTUtil.isAncestor(stmt, node)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private IASTStatement[] getExpansionStatements(int stmtsUp, int stmtsDown, IASTStatement original) {
