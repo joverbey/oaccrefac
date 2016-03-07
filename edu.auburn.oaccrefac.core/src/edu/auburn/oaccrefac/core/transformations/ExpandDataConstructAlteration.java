@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -18,12 +17,9 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import edu.auburn.oaccrefac.core.dataflow.ReachingDefinitions;
 import edu.auburn.oaccrefac.core.parser.ASTAccCopyinClauseNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccCopyoutClauseNode;
-import edu.auburn.oaccrefac.core.parser.ASTAccCreateClauseNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccDataClauseListNode;
-import edu.auburn.oaccrefac.core.parser.ASTAccDataItemNode;
 import edu.auburn.oaccrefac.core.parser.ASTAccDataNode;
-import edu.auburn.oaccrefac.core.parser.IAccConstruct;
-import edu.auburn.oaccrefac.core.parser.OpenACCParser;
+import edu.auburn.oaccrefac.core.parser.IAccDataClause;
 import edu.auburn.oaccrefac.core.parser.Token;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.OpenACCUtil;
@@ -34,60 +30,40 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         super(rewriter, check);
     }
 
-    /* 
-    *   expanding upward can change the copyin set AND the copyout set
-    *     copyin if pulling in a use reached by an outer definition that did not previously reach into the construct
-    *     copyout if pulling in a new definition that reaches outside the construct
-    *   if either of these conditions for changing a set occurs, stop the expansion
-    * 
-    *   expanding downward can similarly change both
-    *     copyin if pulling in a use reached by an outer definition that did not previously reach into the construct
-    *     copyout if pulling in a new definition that reaches outside the construct
-    *   again, if either of these for changing a set occurs, stop the expansion
-    */ 
-    
     //TODO may be worth profiling this to get some speedup; takes a little time to run right now
     @Override
     protected void doChange() throws Exception {
         ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
 
-        //the name of the variable (i.e., "A") mapped to what appears in the copy set (i.e., "A[0:n]")
-        Map<String, String> copyin = new TreeMap<String, String>();
-        Map<String, String> copyout = new TreeMap<String, String>();
-        Map<String, String> create = new TreeMap<String, String>();
-        List<ASTAccDataClauseListNode> otherStuff = new ArrayList<ASTAccDataClauseListNode>();
+        Map<String, String> copyin = OpenACCUtil.getCopyin(check.getConstruct());
+        Map<String, String> copyout = OpenACCUtil.getCopyout(check.getConstruct());
+        Map<String, String> create = OpenACCUtil.getCreate(check.getConstruct());
+        List<ASTAccDataClauseListNode> otherClauses = getOtherClauses(check.getConstruct());
         
-        IAccConstruct construct = new OpenACCParser().parse(getPragma().getRawSignature());
-        //TODO do a check in the check class for the type of the node?
-        if(!(construct instanceof ASTAccDataNode)) {
-            throw new IllegalStateException("The pragma must be an acc data construct");
-        }
-        ASTAccDataNode data = (ASTAccDataNode) construct;
-        
-        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
-            if(listNode.getAccDataClause() instanceof ASTAccCopyinClauseNode) {
-                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) listNode.getAccDataClause();
-                for(ASTAccDataItemNode var : copyinClause.getAccDataList()) {
-                    copyin.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-                }
-            }
-            else if(listNode.getAccDataClause() instanceof ASTAccCopyoutClauseNode) {
-                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) listNode.getAccDataClause();
-                for(ASTAccDataItemNode var : copyoutClause.getAccDataList()) {
-                    copyout.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-                }
-            }
-            else if(listNode.getAccDataClause() instanceof ASTAccCreateClauseNode) {
-                ASTAccCreateClauseNode createClause = (ASTAccCreateClauseNode) listNode.getAccDataClause();
-                for(ASTAccDataItemNode var : createClause.getAccDataList()) {
-                    create.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-                }
-                otherStuff.add(listNode);
-            }
-            else {
-                otherStuff.add(listNode);
-            }
-        }
+//        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
+//            if(listNode.getAccDataClause() instanceof ASTAccCopyinClauseNode) {
+//                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) listNode.getAccDataClause();
+//                for(ASTAccDataItemNode var : copyinClause.getAccDataList()) {
+//                    copyin.put(var.getIdentifier().getIdentifier().getText(), var.toString());
+//                }
+//            }
+//            else if(listNode.getAccDataClause() instanceof ASTAccCopyoutClauseNode) {
+//                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) listNode.getAccDataClause();
+//                for(ASTAccDataItemNode var : copyoutClause.getAccDataList()) {
+//                    copyout.put(var.getIdentifier().getIdentifier().getText(), var.toString());
+//                }
+//            }
+//            else if(listNode.getAccDataClause() instanceof ASTAccCreateClauseNode) {
+//                ASTAccCreateClauseNode createClause = (ASTAccCreateClauseNode) listNode.getAccDataClause();
+//                for(ASTAccDataItemNode var : createClause.getAccDataList()) {
+//                    create.put(var.getIdentifier().getIdentifier().getText(), var.toString());
+//                }
+//                otherStuff.add(listNode);
+//            }
+//            else {
+//                otherStuff.add(listNode);
+//            }
+//        }
 
         //using parent node
         int maxup = getMaxUp(getStatement());
@@ -99,8 +75,8 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         else {
             osize = 1;
         }
-        Set<String> ocopyin = OpenACCUtil.inferCopyin(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
-        Set<String> ocopyout = OpenACCUtil.inferCopyout(construct instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
+        Set<String> ocopyin = OpenACCUtil.inferCopyin(getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
+        Set<String> ocopyout = OpenACCUtil.inferCopyout(getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
         List<Expansion> expansions = new ArrayList<Expansion>();
         Set<String> gpuuses = getGpuVars(getStatement(), false);
         Set<String> gpudefs = getGpuVars(getStatement(), true);
@@ -170,7 +146,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
             }
         }
         
-        String pragma = generatePragma(copyinarr, copyoutarr, otherStuff);
+        String pragma = generatePragma(copyinarr, copyoutarr, otherClauses);
         
         newConstruct = pragma + compound(newConstruct);
         //TODO make this more intuitive once issue #9 is resolved
@@ -185,6 +161,20 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         finalizeChanges();
     }
     
+    private List<ASTAccDataClauseListNode> getOtherClauses(ASTAccDataNode data) {
+        List<ASTAccDataClauseListNode> clauses = new ArrayList<ASTAccDataClauseListNode>();
+        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
+            IAccDataClause clause = listNode.getAccDataClause();
+            if(!(clause instanceof ASTAccCopyinClauseNode)
+                    && !(clause instanceof ASTAccCopyoutClauseNode)
+                    //TODO enable create clause inference in the future
+                    /* && !(clause instanceof ASTAccCreateClauseNode) */) {
+                clauses.add(listNode);
+            }
+        }
+        return clauses;
+    }
+
     private String generatePragma(List<String> copyin, List<String> copyout, List<ASTAccDataClauseListNode> otherClauses) {
         StringBuilder prag = new StringBuilder(pragma("acc data") + " ");
         List<String> clauses = new ArrayList<String>();
