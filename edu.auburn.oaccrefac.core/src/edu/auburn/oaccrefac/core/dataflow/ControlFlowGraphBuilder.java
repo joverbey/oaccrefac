@@ -526,11 +526,13 @@ public class ControlFlowGraphBuilder {
         // then branch
         IBranchNode thenNode = factory.createBranchNode(IBranchNode.THEN);
         addOutgoing(decision, thenNode);
-        IJumpNode jumpToStart = factory.createJumpNode();
-        addOutgoing(thenNode, jumpToStart);
-        ((JumpNode) jumpToStart).setBackward(true);
+        //commented out 2/22/2016 by Alexander Calvert - should use addJump to create a jump node
+        //IJumpNode jumpToStart = factory.createJumpNode();
+        //addOutgoing(thenNode, jumpToStart);
+        //((JumpNode) jumpToStart).setBackward(true);
         // Connect with backward link
-        addOutgoing(jumpToStart, loopStart);
+        //addOutgoing(jumpToStart, loopStart);
+        addJump(thenNode, loopStart, true);
         // Connect with else branch
         IBranchNode loopEnd = factory.createBranchNode(IBranchNode.ELSE);
         addOutgoing(decision, loopEnd);

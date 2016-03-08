@@ -1,6 +1,6 @@
 int main() {
     int a, b, c, d;
-    /* refactor */
+    /* autotune */
     for (int i = 0; i < 100; i++) {
         a = 5;
         b = 6;

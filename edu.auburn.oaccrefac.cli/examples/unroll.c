@@ -1,6 +1,6 @@
 int main() {
 	char a[10];
-	/* refactor */
+	/* autotune */
     for (int i = 0; i < 10; i++)
         a[i] = '\0';
 }

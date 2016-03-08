@@ -28,13 +28,13 @@ listCount=0
 for k in "${refacList[@]}"
 do
 	if [ $k == "InterchangeLoops" ]; then
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "$loopCheck" 1 > "$tempholder" 2> /dev/null
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "-ln" "$loopCheck" 1 > "$tempholder" 2> /dev/null
 	elif [ $k == "LoopCutting" ] || [ $k == "StripMine" ] || [ $k == "Unroll" ]; then
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "$loopCheck" 2 > "$tempholder" 2> /dev/null
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "-ln" "$loopCheck" 2 > "$tempholder" 2> /dev/null
 	elif [ $k == "TileLoops" ]; then
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "$loopCheck" 4 3 > "$tempholder" 2> /dev/null
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "-ln" "$loopCheck" 4 3 > "$tempholder" 2> /dev/null
 	else
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "$loopCheck" > "$tempholder" 2> /dev/null
+		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$k" $fileCheck "-ln" "$loopCheck" > "$tempholder" 2> /dev/null
 	fi
 	if [[ -s $tempholder ]]; then
 		refacPossible[$listCount]="true"

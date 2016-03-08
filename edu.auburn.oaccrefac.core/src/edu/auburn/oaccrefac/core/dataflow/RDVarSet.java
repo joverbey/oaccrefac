@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Alexander Calvert (Auburn) - initial API and implementation
- *******************************************************************************/
 package edu.auburn.oaccrefac.core.dataflow;
 
 import java.util.Collections;
@@ -16,16 +6,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
+
 /**
- * Reaching definitions entry/exit set for a block.
- * <p>
- * Essentially a mapping of variables to sets of statements that generated a
- * definition that may reach that block's entry/exit. 
+ * Reaching definitions entry/exit set for a block. Essentially a mapping of variables to sets of statements
+ * that generated a definition that may reach that block's entry/exit. 
  * 
- * @author Alexander Calvert
+ * @author alexander
  *
  */
 public class RDVarSet {
@@ -82,6 +73,19 @@ public class RDVarSet {
     
     public Set<IASTNode> get(IBinding var) {
         return set.get(var);
+    }
+    
+    public boolean contains(IASTName definition) {
+        for(IBinding binding : set.keySet()) {
+            if(binding.equals(definition.resolveBinding())) {
+                for(IASTNode node : set.get(binding)) {
+                    if(ASTUtil.isAncestor(node, definition)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     public Map<IBinding, Set<IASTNode>> getMap() {

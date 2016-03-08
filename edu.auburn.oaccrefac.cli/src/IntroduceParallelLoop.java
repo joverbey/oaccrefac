@@ -33,7 +33,7 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (args.length != 2) {
+        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
             printUsage();
             return false;
         }
@@ -53,6 +53,7 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
      */
     private void printUsage() {
         System.err.println("Usage: IntroduceParallelLoop <filename.c>");
+        System.err.println("Usage2: IntroduceParallelLoop <filename.c> -ln <loopname>");
     }
 
     @Override
@@ -70,5 +71,5 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
     protected IntroParallelAlteration createAlteration(IASTRewrite rewriter, IntroParallelCheck check) throws CoreException {
         return new IntroParallelAlteration(rewriter, check);
     }
-    
+
 }

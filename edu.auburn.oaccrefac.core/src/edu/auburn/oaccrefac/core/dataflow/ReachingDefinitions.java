@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Alexander Calvert (Auburn) - initial API and implementation
- *******************************************************************************/
 package edu.auburn.oaccrefac.core.dataflow;
 
 import java.util.ArrayList;
@@ -36,13 +26,6 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 
-/**
- * ReachingDefinitions performs a reaching definitions dataflow analysis on 
- * a function and returns the set of definitions that reach a particular use
- * of a local variable.
- * 
- * @author Alexander Calvert
- */
 @SuppressWarnings("restriction")
 public class ReachingDefinitions { 
 
@@ -61,7 +44,19 @@ public class ReachingDefinitions {
         
     }
 
-    public Set<IASTNode> reachingDefinitions(IASTName varUse) {
+    /**
+     * Returns a set of all definitions of a variable that reach this occurrence of the variable. If the variable is being
+     * defined at this occurrence, it is treated as if no definitions reach it. 
+     * @param varUse a use a variable
+     * @return a set of <code>IASTNode</code> definitions reaching the variable use
+     */
+    public Set<IASTName> reachingDefinitions(IASTName varUse) {
+        
+        //if this occurrence of the var is a definition of var, treat it as if nothing reaches it
+        if(ASTUtil.isDefinition(varUse)) {
+            return new HashSet<IASTName>();
+        }
+        
         //use should be a block, since that is what can be "reached" by a definition
         //returns a list of definitions of variable that reach the given use
         IBinding variable = varUse.resolveBinding();
@@ -75,12 +70,89 @@ public class ReachingDefinitions {
         }
         if(entrySet == null) {
             //the use node had no entry set, either because there are no reaching defs or because it wasn't a valid block node
-            return new HashSet<IASTNode>();
+            return new HashSet<IASTName>();
         }
         
-        return entrySet.get(variable) == null ? new HashSet<IASTNode>() : entrySet.get(variable);
+        Set<IASTNode> reachingDefs = entrySet.get(variable);
+        if(reachingDefs == null) {
+            return new HashSet<IASTName>();
+        }
+        
+        /* get the names from the given nodes that represent the definitions of varUse
+         * such as the "x" in "int x = y;" or the "y" in "y++"
+         */
+        Set<IASTName> reachingDefNames = new HashSet<IASTName>();
+        for(IASTNode def : reachingDefs) {
+            for(IASTName name : ASTUtil.getNames(def)) {
+                //if a name found under the definition node is a definition and refers to the right variable
+                if(ASTUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
+                    reachingDefNames.add(name);
+                }
+            }
+        }
+        return reachingDefNames;
+        
     }
     
+    /**
+     * Given a name which is used as a definition, returns a set of every use of the same variable
+     * that the definition reaches. 
+     * 
+     * @param def the definition (i.e., the <code>x</code> in <code>int x = y;</code> or <code>x++</code>)
+     * @return the set of uses reached by <code>def</code>
+     */
+    public Set<IASTName> reachedUses(IASTName def) {
+        
+        if(!ASTUtil.isDefinition(def)) {
+            return new HashSet<IASTName>();
+        }
+        
+        Set<IASTName> reachedUses = new HashSet<IASTName>();
+        
+        for(IBasicBlock bb : entrySets.keySet()) {
+            Object data = ((ICfgData) bb).getData();
+            if(data != null && data instanceof IASTNode) {
+                for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
+                    if(!ASTUtil.isDefinition(use)) {
+                        if(reachingDefinitions(use).contains(def)) {
+                            reachedUses.add(use);
+                        }
+                    }
+                }
+            }
+        }
+        return reachedUses;
+        
+    }
+    
+    /**
+     * Returns a set of all definitions that reach occurrences of variables used in the given node. If a variable 
+     * is being defined at an occurrence, it is treated as if no definitions reach that occurrence. 
+     * @param node a tree node that may or may not contain variable uses
+     * @return a set of IASTNode definitions reaching the variable uses in the node
+     */
+
+    public Set<IASTName> reachingDefinitions(IASTNode node) {
+        Set<IASTName> defs = new HashSet<IASTName>();
+        for(IASTName name : ASTUtil.find(node, IASTName.class)) {
+            defs.addAll(reachingDefinitions(name));
+        }
+        return defs;
+    }
+    
+    public Set<IASTName> reachedUses(IASTNode node) {
+        Set<IASTName> uses = new HashSet<IASTName>();
+        for(IASTName name : ASTUtil.find(node, IASTName.class)) {
+            uses.addAll(reachedUses(name));
+        }
+        return uses;
+    }
+    
+    /*FIXME 
+     *  sometimes identifies reaching definitions for both a statement and its contained expression.
+     *  the expression's definitions are incorrect.
+     *  the expression should never be used to find a reaching definition though, so this is low priority.
+     */
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
         boolean changed;
         do {
@@ -241,6 +313,10 @@ public class ReachingDefinitions {
             if (data != null && data instanceof IASTNode) {
                 sb.append(((IASTNode) data).getRawSignature() + " at "
                         + ((IASTNode) data).getFileLocation().getStartingLineNumber() + ":");
+                // }
+                // else {
+                // sb.append(bb + ":");
+                // }
                 sb.append(System.lineSeparator());
 
                 sb.append("\tEntries: ");
