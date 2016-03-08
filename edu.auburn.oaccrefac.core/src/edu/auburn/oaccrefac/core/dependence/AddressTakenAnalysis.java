@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
  * AddressTakenAnalysis performs a simple address-taken analysis on a given function.
- * 
+ * <p>
  * The progress of analyzing the function is stored in the monitor.
  * 
  * @author John William O'Rourke

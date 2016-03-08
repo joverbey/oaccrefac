@@ -31,10 +31,13 @@ import edu.auburn.oaccrefac.internal.core.Activator;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * This class describes the base class for change objects that use the ASTRewrite in their algorithms.
+ * SourceAlteration describes the base class for change objects that use the
+ * ASTRewrite in their algorithms.
  * <p>
- * All that the inherited classes need to implement are the two abstract methods {@link #doChange()} and
- * {@link #doCheckConditions(RefactoringStatus)}.
+ * All that the inheriting classes need to implement are two abstract methods 
+ * {@link #doChange()} and {@link #doCheckConditions(RefactoringStatus)}.
+ * 
+ * @author Adam Eichelkraut
  */
 public abstract class SourceAlteration<T extends Check<?>> {
     public static final String PRAGMA = "#pragma";

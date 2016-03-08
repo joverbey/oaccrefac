@@ -10,6 +10,27 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
+/**
+ * IntroduceKernelsLoopAlteration adds an "acc kernels loop" pragma above a
+ * for loop.
+ * <p>
+ * Before:
+ * <pre>
+ * for (int i = 0; i < 10; i++) {
+ *     a[i] = i;
+ * }
+ * </pre>
+ * After:
+ * <pre>
+ * #pragma acc kernels loop
+ * for (int i = 0; i < 10; i++) {
+ *     a[i] = i;
+ * }
+ * </pre>
+ * 
+ * @author John William O'Rourke
+ *
+ */
 public class IntroduceKernelsLoopAlteration extends ForLoopAlteration<IntroduceKernelsLoopCheck> {
 
     public IntroduceKernelsLoopAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check) {

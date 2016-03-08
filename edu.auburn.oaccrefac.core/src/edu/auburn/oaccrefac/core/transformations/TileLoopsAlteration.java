@@ -34,16 +34,17 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * Inheriting from {@link ForLoopAlteration}, this class defines a loop tiling refactoring algorithm. Loop tiling takes
- * a perfectly nested loop and 'tiles' the loop nest by performing loop strip mining on a specified loop and afterwards
- * interchanging the by-strip loop header as many times as possible.
- * 
+ * TileLoopsAlteration defines a loop tiling refactoring algorithm. Loop tiling takes
+ * a perfectly nested loop and 'tiles' the loop nest by performing loop strip mining on
+ * a specified loop and afterwards interchanging the by-strip loop header as many times
+ * as possible.
+ * <p>
  * For example,
  * 
  * <pre>
  * for (int j = 0; j < 20; j++) {
  *     for (int i = 0; i < 10; i++) {
- *         // do something
+ *         // ...
  *     }
  * }
  * </pre>
@@ -54,14 +55,14 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * for (int i_0 = 0; i_0 < 10; i_0 += 2) {
  *     for (int j = 0; j < 20; j++) {
  *         for (int i = i_0; (i < i_0 + 2 && i < 10); i++) {
- *             // do something...
+ *             // ...
  *         }
  *     }
  * }
  * </pre>
  * 
+ * @author Jeff Overbey
  * @author Adam Eichelkraut
- *
  */
 public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
 

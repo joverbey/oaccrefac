@@ -52,10 +52,10 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * 
  * <pre>
  * for (int i = 0; i < 10; i++) {
- *     a[i] = b[i] + c[i];
+ *     a[i] = i;
  * }
  * for (int i = 0; i < 10; i++) {
- *     b[i - 1] = a[i];
+ *     b[i] = 10 - i;
  * }
  * </pre>
  * 
@@ -63,12 +63,13 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * 
  * <pre>
  * for (int i = 0; i < 10; i++) {
- *     a[i] = b[i] + c[i];
- *     b[i - 1] = a[i];
+ *     a[i] = i;
+ *     b[i] = 10 - i;
  * }
  * </pre>
  * </p>
  *
+ * @author Jeff Overbey
  * @author Adam Eichelkraut
  *
  */
@@ -123,14 +124,6 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         }
         
         this.replace(first, forLoop(first.getInitializerStatement(), first.getConditionExpression(), first.getIterationExpression(), body));
-
-//        for (int i = getBodyObjects(first).length - 1; i >= 0; i--) {
-//            IASTNode bodyObject = getBodyObjects(first)[i];
-//            if (!(first.getBody() instanceof IASTCompoundStatement) && bodyObject instanceof IASTComment) {
-//                this.remove(bodyObject.getFileLocation().getNodeOffset(),
-//                        bodyObject.getFileLocation().getNodeLength() + System.lineSeparator().length());
-//            }
-//        }
 
         finalizeChanges();
 
@@ -276,12 +269,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
     }
     private void removePragma(IASTForStatement loopIn){
         ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loopIn);
-        List<IASTPreprocessorPragmaStatement> list = loop.getLeadingPragmas();
-        int lineNumber = loop.getStatement().getFileLocation().getStartingLineNumber();
         remove(loop.getStatement().getFileLocation().getNodeOffset() - 1, loop.getStatement().getFileLocation().getNodeLength());
-        /*        for (int i = 0; i < list.size(); i++){
-            remove(list.get(i));
-        }*/
     }
 
 }

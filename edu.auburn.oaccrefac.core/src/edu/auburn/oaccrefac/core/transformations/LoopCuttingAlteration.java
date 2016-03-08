@@ -32,24 +32,30 @@ import org.eclipse.cdt.core.dom.ast.IScope;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
+
 /**
+ * The LoopCuttingAlteration refactoring cuts a for loop into multiple
+ * loops.
+ * <p>
  * 
- * @author Jacob Neeley
- *
- *For example,
+ * For example,
  * 
  * <pre>
- * for (int i = 0; i < 12; i++)
- *     // do something
+ * for (int i = 0; i < 15; i++)
+ *     // ...
  * </pre>
  * 
- * Refactors to: The outer is the by-strip, inner is the in-strip...
+ * Refactors to: The outer loop is the by-strip and the inner loop is the
+ * in-strip loop...
  * 
  * <pre>
- * 
  * for (int set = 0; set < 3, set++)
- *     for(int i = set; i < 12, i+=3)
- *          //do stuff
+ *     for (int i = set; i < 15, i+=3)
+ *          // ...
+ * </pre>
+ *          
+ * @author Jeff Overbey
+ * @author Jacob Neeley
  */
 public class LoopCuttingAlteration extends ForLoopAlteration<LoopCuttingCheck> {
 
@@ -91,7 +97,6 @@ public class LoopCuttingAlteration extends ForLoopAlteration<LoopCuttingCheck> {
         inner = forLoop(innerInit, innerCond, innerIter, compound(innerBody));
         
         String initRhs;
-        //TODO we're making a lot of typecast assumptions - be sure they won't break anything
         if(loop.getInitializerStatement() instanceof IASTExpressionStatement) {
             IASTExpressionStatement es = (IASTExpressionStatement) loop.getInitializerStatement();
             IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();

@@ -16,6 +16,16 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
 import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 
+/**
+ * IntroduceKernelsLoopCheck checks a for loop for the ability to add an
+ * "acc kernels loop" pragma.
+ * <p>
+ * For the pragma to be added, the loop can't already have an ACC pragma.
+ * <p>
+ * If the loop has a dependence, a warning is issued.
+ * 
+ * @author jwowillo
+ */
 public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
 
     public IntroduceKernelsLoopCheck(final IASTForStatement loop) {
@@ -25,7 +35,6 @@ public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
         if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
-            // Should specific types of pragmas be checked for?
             status.addError("This loop contains an ACC pragma.");
         }
     }

@@ -34,28 +34,30 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * Inheriting from {@link ForLoopAlteration}, this class defines a loop strip mine refactoring algorithm. Loop strip
- * mining takes a sequential loop and essentially creates 'strips' through perfectly nesting a by-strip loop and an
- * in-strip loop.
- * 
+ * StripMineAlteration defines a loop strip mine refactoring algorithm. Loop strip
+ * mining takes a sequential loop and essentially creates 'strips' through perfectly
+ * nesting a by-strip loop and an in-strip loop.
+ * <p>
  * For example,
  * 
  * <pre>
  * for (int i = 0; i < 10; i++) {
- *     // do something
+ *     // ...
  * }
  * </pre>
  * 
- * Refactors to: The outer is the by-strip, inner is the in-strip...
+ * Refactors to: Refactors to: The outer loop is the by-strip and the inner loop is the
+ * in-strip loop...
  * 
  * <pre>
  * for (int i_0 = 0; i_0 < 10; i_0 += 2) {
  *     for (int i = i_0; (i < i_0 + 2 && i < 10); i++) {
- *         // do something...
+ *         // ...
  *     }
  * }
  * </pre>
  * 
+ * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
 public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
