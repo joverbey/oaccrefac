@@ -21,6 +21,7 @@ import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
@@ -144,6 +145,22 @@ public class ReachingDefinitions {
         Set<IASTName> uses = new HashSet<IASTName>();
         for(IASTName name : ASTUtil.find(node, IASTName.class)) {
             uses.addAll(reachedUses(name));
+        }
+        return uses;
+    }
+    
+    public Set<IASTName> reachingDefinitions(IASTStatement[] statements) {
+        Set<IASTName> defs = new HashSet<IASTName>();
+        for(IASTStatement statement : statements) {
+            defs.addAll(reachingDefinitions(statement));
+        }
+        return defs;
+    }
+    
+    public Set<IASTName> reachedUses(IASTStatement[] statements) {
+        Set<IASTName> uses = new HashSet<IASTName>();
+        for(IASTStatement statement : statements) {
+            uses.addAll(reachedUses(statement));
         }
         return uses;
     }

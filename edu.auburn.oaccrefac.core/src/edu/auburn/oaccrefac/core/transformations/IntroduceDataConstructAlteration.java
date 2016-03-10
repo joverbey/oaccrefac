@@ -1,13 +1,13 @@
 package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 
 import edu.auburn.oaccrefac.core.dataflow.ReachingDefinitions;
+import edu.auburn.oaccrefac.core.parser.IAccConstruct;
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.OpenACCUtil;
 
@@ -21,8 +21,11 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
     protected void doChange() throws Exception {
         IASTStatement[] stmts = getStatements();
         ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
-        Set<String> copyin = OpenACCUtil.inferCopyin(getStatements(), rd);
-        Set<String> copyout = OpenACCUtil.inferCopyout(getStatements(), rd);
+        Set<String> copyin = OpenACCUtil.inferCopyin(rd, getStatements());
+        Set<String> copyout = OpenACCUtil.inferCopyout(rd, getStatements());
+
+        //TODO remove vars in copyin/copyout from the existing copyin/out sets
+        //also modify existing create set as necessary
         
         String origRegion = "";
         for (IASTNode node : getStatementsAndComments()) {
