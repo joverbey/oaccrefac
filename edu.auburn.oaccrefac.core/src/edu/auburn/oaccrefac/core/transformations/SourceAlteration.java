@@ -44,6 +44,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     public static final String RPAREN = ")";
     public static final String SEMICOLON = ";";
     public static final String COMMA = ",";
+    public static final String NL = System.lineSeparator();
     public static final String COPYIN = "copyin";
     public static final String COPYOUT = "copyout";
 
