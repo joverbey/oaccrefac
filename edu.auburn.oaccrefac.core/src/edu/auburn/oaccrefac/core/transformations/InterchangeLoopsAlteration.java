@@ -17,6 +17,8 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 
+import edu.auburn.oaccrefac.internal.core.ASTUtil;
+
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop interchange refactoring algorithm. Loop interchange
  * swaps the headers of two perfectly nested loops, given that it causes no dependency issues from
@@ -66,8 +68,8 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoo
     @Override
     protected void doChange() {
         IASTForStatement first = getLoopToChange();
-        List<IASTPreprocessorPragmaStatement> firstPrags = getPragmas(first);
-        List<IASTPreprocessorPragmaStatement> secondPrags = getPragmas(inner);
+        List<IASTPreprocessorPragmaStatement> firstPrags = ASTUtil.getLeadingPragmas(first);
+        List<IASTPreprocessorPragmaStatement> secondPrags = ASTUtil.getLeadingPragmas(inner);
         Collections.reverse(firstPrags);
         Collections.reverse(secondPrags);
 
