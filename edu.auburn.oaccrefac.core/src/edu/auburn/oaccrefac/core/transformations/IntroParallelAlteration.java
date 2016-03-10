@@ -20,7 +20,7 @@ public class IntroParallelAlteration extends ForLoopAlteration<IntroParallelChec
     @Override
     protected void doChange() {
         int offset = getLoopToChange().getFileLocation().getNodeOffset();
-        this.insert(offset, pragma("acc parallel loop"));
+        this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
         finalizeChanges();
     }
 
