@@ -147,14 +147,12 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         }
         
         String pragma = generatePragma(copyinarr, copyoutarr, otherClauses);
-        
         newConstruct = pragma + compound(newConstruct);
-        //TODO make this more intuitive once issue #9 is resolved
+
+        this.remove(getPragma());
+        
         IASTStatement[] exparr = largestexp.getStatements();
-        int start = 
-                Math.min(
-                        getPragma().getFileLocation().getNodeOffset(), 
-                        exparr[0].getFileLocation().getNodeOffset());
+        int start = exparr[0].getFileLocation().getNodeOffset();
         int end = exparr[exparr.length - 1].getFileLocation().getNodeOffset() + exparr[exparr.length - 1].getFileLocation().getNodeLength(); 
         int len = end - start;
         this.replace(start,  len, newConstruct);

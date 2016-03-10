@@ -10,12 +10,11 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
-import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Comparator;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.CoreException;
@@ -28,7 +27,6 @@ import org.eclipse.text.edits.TextEditGroup;
 
 import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import edu.auburn.oaccrefac.internal.core.Activator;
-import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
  * This class describes the base class for change objects that use the ASTRewrite in their algorithms.
@@ -50,29 +48,39 @@ public abstract class SourceAlteration<T extends Check<?>> {
 
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
-    private StringBuilder src;
-    private int originalLength;
-
-    /**
-     * Offset into the file that the StringBuilder starts at.
-     */
-    private int srcOffset;
     protected T check;
+    
+    //string to insert in the final replacement
+    private StringBuilder src;
+    //length of the section to replace 
+    private int endOffset;
+    //offset into the file to perform the final replacement
+    private int startOffset;
+    
+    private PriorityQueue<Repl> repls;
+    
 
     // FIXME should somehow get an IASTRewrite from the tu and only take one argument
     public SourceAlteration(IASTRewrite rewriter, T check) {
         this.tu = check.getTranslationUnit();
         this.rewriter = rewriter;
         this.src = null;
-        this.srcOffset = 0;
+        this.startOffset = -1;
+        this.endOffset = -1;
         this.check = check;
+        this.repls = new PriorityQueue<Repl>(10, new Comparator<Repl>() {
+
+            @Override
+            public int compare(SourceAlteration<T>.Repl o1, SourceAlteration<T>.Repl o2) {
+                return o2.startOffset - o1.startOffset;
+            }
+            
+        });
 
         if (this.rewriter == null) {
             throw new IllegalArgumentException("Rewriter cannot be null!");
         }
     }
-
-    // FIXME: Review/fix comments
 
     /**
      * Abstract method pattern for the inherited class to implement. This method is where the actual rewriting should
@@ -80,8 +88,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
      * constructor.
      */
     protected abstract void doChange() throws Exception;
-
-    // -----------------------------------------------------------------------------------
 
     /**
      * Base change method for all inherited classes. This method does some initialization before calling the inherited
@@ -103,8 +109,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final void insert(int offset, String text) {
-        updateAlterationTrackingFields(offset, 0);
-        src.insert(offset - srcOffset, text);
+        replace(offset, 0, text);
     }
 
     protected final void insertAfter(IASTNode node, String text) {
@@ -112,54 +117,24 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final void remove(int offset, int length) {
-        updateAlterationTrackingFields(offset, length);
-        src.delete(offset - srcOffset, offset - srcOffset + length);
+        replace(offset, length, "");
     }
 
     protected final void remove(IASTNode node) {
         remove(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength());
     }
 
-    protected final void replace(int offset, int length, String text) {
-        updateAlterationTrackingFields(offset, length);
-        src.replace(offset - srcOffset, offset - srcOffset + length, text);
+    protected final boolean replace(int offset, int length, String text) {
+        if(overlapsExistingRepl(offset, offset + length)) {
+            return false;
+        }
+        updateAlterationTrackingFields(offset, offset + length);
+        repls.add(new Repl(offset, offset + length, text));
+        return true;
     }
 
     protected final void replace(IASTNode node, String text) {
         replace(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength(), text);
-    }
-
-    // FIXME -- Unused
-    protected final String getCurrentTextAt(int offset, int length) {
-        return src.substring(offset - srcOffset, offset - srcOffset + length);
-    }
-
-    protected final String getCurrentText() {
-        return src.toString();
-    }
-
-    /**
-     * Allows inherited classes to get any pragmas associated with a node. As of now, only {@link IASTForStatement}
-     * nodes are supported
-     * 
-     * @param node
-     *            -- node to retrieve pragmas from
-     * @return -- array of {@link String} representing literal pragma text
-     * @throws UnsupportedOperationException
-     *             if node is not {@link IASTForStatement}
-     */
-    // FIXME - Unused; delete or move to Inquisitor?
-    protected final String[] getPragmaStrings(IASTForStatement node) {
-        List<IASTPreprocessorPragmaStatement> p = InquisitorFactory.getInquisitor(node).getLeadingPragmas();
-        String[] pragCode = new String[p.size()];
-        for (int i = 0; i < pragCode.length; i++) {
-            pragCode[i] = p.get(i).getRawSignature();
-        }
-        return pragCode;
-    }
-
-    protected final List<IASTPreprocessorPragmaStatement> getPragmas(IASTForStatement node) {
-        return InquisitorFactory.getInquisitor(node).getLeadingPragmas();
     }
 
     protected final String pragma(String code) {
@@ -221,56 +196,45 @@ public abstract class SourceAlteration<T extends Check<?>> {
         return LPAREN + code + RPAREN;
     }
 
-    //FIXME when doing a series of alterations, offsets get set wrong; possibly due to ambiguity between file offset vs. stringbuilder offset 
-    private void updateAlterationTrackingFields(int offset, int length) {
-        if(src == null) {
-            originalLength = length;
-        }
-        else {
-            //edit area overlaps start of src
-            if(offset < srcOffset && srcOffset < offset + length) {
-                originalLength = originalLength + length - (offset + length - srcOffset); 
+    private boolean overlapsExistingRepl(int startOffset, int endOffset) {
+        for(Repl repl : repls) {
+            if(startOffset > repl.startOffset && startOffset < repl.endOffset) {
+                return true;
             }
-            //edit area overlaps end of src
-            if(offset < srcOffset + originalLength && srcOffset + originalLength < offset + length) {
-                originalLength = originalLength + length - (srcOffset + originalLength - offset);
-            }
-            //edit area is entirely before src
-            if(offset + length <= srcOffset) {
-                originalLength = originalLength + length + (srcOffset - (offset + length));
-            }
-            //edit area is entirely after src
-            if(srcOffset + originalLength <= offset) {
-                originalLength = originalLength + length + (offset - (srcOffset + originalLength));
-            }
-            //otherwise, edit area is contained in src, so no update to originalLength are needed
-        }
-        
-        if (src == null) {
-            src = new StringBuilder(tu.getRawSignature().substring(offset, offset + length));
-            srcOffset = offset;
-        }
-        else {
-            if(offset < srcOffset) {
-                src.insert(0, tu.getRawSignature().substring(offset, srcOffset));
-                srcOffset = offset;
-            }
-            if(offset + length > srcOffset + src.length()) {
-                //added " + length" 12/23/2015
-                src.append(tu.getRawSignature().substring(srcOffset + src.length(), offset + length));
+            if(endOffset > repl.startOffset && endOffset < repl.endOffset) {
+                return true;
             }
         }
-        
+        return false;
     }
     
-    /**
-     * Passes all "cached" changes to the rewriter. Must be called after all changes are made to cause changes to
-     * actually occur
-     */
+    private void updateAlterationTrackingFields(int startOffset, int endOffset) {
+        if(src != null) {
+            //if the new change extends before what is being tracked, add the text up until the beginning of the new change
+            if(startOffset < this.startOffset) {
+                src.insert(0, tu.getRawSignature().substring(startOffset, this.startOffset));
+                this.startOffset = startOffset;
+            }
+            //if the new change extends after what is being tracked, add the text up until the end of the new change
+            if(endOffset > this.endOffset) {
+                src.append(tu.getRawSignature().substring(this.endOffset, endOffset));
+                this.endOffset = endOffset;
+            }
+        }
+        else {
+            this.startOffset = startOffset;
+            this.endOffset = endOffset;
+            src = new StringBuilder(tu.getRawSignature().substring(startOffset, endOffset));
+        }
+    }
+    
     public final void finalizeChanges() {
-        if (getCurrentText() != null) {
+        if (src != null) {
+            for(Repl repl = repls.poll(); repl != null; repl = repls.poll()) {
+                src.replace(repl.startOffset - this.startOffset, repl.endOffset - this.startOffset, repl.text);
+            }
             TextEditGroup teg = new TextEditGroup("teg");
-            teg.addTextEdit(new ReplaceEdit(srcOffset, originalLength, ASTUtil.format(getCurrentText())));
+            teg.addTextEdit(new ReplaceEdit(this.startOffset, this.endOffset - this.startOffset, ASTUtil.format(src.toString())));
             rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
         }
     }
@@ -286,6 +250,23 @@ public abstract class SourceAlteration<T extends Check<?>> {
      */
     public Change rewriteAST() {
         return rewriter.rewriteAST();
+    }
+ 
+    private class Repl {
+        int startOffset;
+        int endOffset;
+        String text;
+        
+        Repl(int startOffset, int endOffset, String text) {
+            this.startOffset = startOffset;
+            this.endOffset = endOffset;
+            this.text = text;
+        }
+        
+        @Override
+        public String toString() {
+            return "[" + startOffset + ", " + endOffset + ") --> \"" + text + "\"";
+        }
     }
     
 }
