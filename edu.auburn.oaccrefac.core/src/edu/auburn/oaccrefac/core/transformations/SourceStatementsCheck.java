@@ -1,12 +1,11 @@
 package edu.auburn.oaccrefac.core.transformations;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,12 +19,15 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
 public abstract class SourceStatementsCheck<T extends RefactoringParams> extends Check<T> {
 
     private final IASTStatement[] statements;
-    private final IASTNode[] statementsAndComments;
-    Map<IASTStatement, List<IAccConstruct>> accRegions = new HashMap<IASTStatement, List<IAccConstruct>>();
+    private final IASTNode[] allEnclosedNodes;
     
-    protected SourceStatementsCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
+    //map of each statement with OpenAcc directives to those directives, both as CDT AST nodes and parsed constructs
+    Map<IASTStatement, Map<IASTPreprocessorPragmaStatement, IAccConstruct>> accRegions;
+    
+    protected SourceStatementsCheck(IASTStatement[] statements, IASTNode[] allEnclosedNodes) {
         this.statements = statements;
-        this.statementsAndComments = statementsAndComments;
+        this.allEnclosedNodes = allEnclosedNodes;
+        this.accRegions = new HashMap<IASTStatement, Map<IASTPreprocessorPragmaStatement, IAccConstruct>>();
     }
     
     public RefactoringStatus reachingDefinitionsCheck(RefactoringStatus status, IProgressMonitor pm) {
@@ -48,16 +50,17 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
     protected final void populateAccMap() {
         OpenACCParser parser = new OpenACCParser();
         for(IASTStatement statement : getStatements()) {
-            List<IAccConstruct> cons = new ArrayList<IAccConstruct>();
-            for(String pragma : ASTUtil.getPragmas(statement)) {
+            Map<IASTPreprocessorPragmaStatement, IAccConstruct> prags = new HashMap<IASTPreprocessorPragmaStatement, IAccConstruct>();
+            for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
                 try {
-                    cons.add(parser.parse(pragma));
+                    IAccConstruct con = parser.parse(pragma.getRawSignature());
+                    prags.put(pragma, con);
                 }
                 catch(Exception e) {
                     
                 }
             }
-            accRegions.put(statement, cons);
+            accRegions.put(statement, prags);
         }
     }
     
@@ -70,12 +73,12 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
         return statements;
     }
 
-    public IASTNode[] getStatementsAndComments() {
-        return statementsAndComments;
+    public IASTNode[] getAllEnclosedNodes() {
+        return allEnclosedNodes;
     }
     
-    public Map<IASTStatement, List<IAccConstruct>> getOpenAccRegions() {
+    public Map<IASTStatement, Map<IASTPreprocessorPragmaStatement, IAccConstruct>> getAccRegions() {
         return accRegions;
     }
-
+    
 }

@@ -10,8 +10,11 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
-import java.util.PriorityQueue;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -58,9 +61,9 @@ public abstract class SourceAlteration<T extends Check<?>> {
     //offset into the file to perform the final replacement
     private int startOffset;
     
-    private PriorityQueue<Repl> repls;
+    private List<Repl> repls;
+    private int numRepls;
     
-
     // FIXME should somehow get an IASTRewrite from the tu and only take one argument
     public SourceAlteration(IASTRewrite rewriter, T check) {
         this.tu = check.getTranslationUnit();
@@ -69,14 +72,8 @@ public abstract class SourceAlteration<T extends Check<?>> {
         this.startOffset = -1;
         this.endOffset = -1;
         this.check = check;
-        this.repls = new PriorityQueue<Repl>(10, new Comparator<Repl>() {
-
-            @Override
-            public int compare(SourceAlteration<T>.Repl o1, SourceAlteration<T>.Repl o2) {
-                return o2.startOffset - o1.startOffset;
-            }
-            
-        });
+        this.repls = new ArrayList<Repl>();
+        this.numRepls = 0;
 
         if (this.rewriter == null) {
             throw new IllegalArgumentException("Rewriter cannot be null!");
@@ -109,33 +106,83 @@ public abstract class SourceAlteration<T extends Check<?>> {
         }
     }
 
-    protected final void insert(int offset, String text) {
-        replace(offset, 0, text);
+    /**
+     * perform a text insertion
+     * 
+     * @param offset the offset in the file to insert the text at
+     * @param text the text to insert
+     * @return false if the change overlaps a previous one; true otherwise
+     */
+    protected final boolean insert(int offset, String text) {
+        return replace(offset, 0, text);
     }
 
-    protected final void insertAfter(IASTNode node, String text) {
-        insert(node.getFileLocation().getNodeOffset() + node.getFileLocation().getNodeLength(), text);
+    /**
+     * perform a text insertion after the given node
+     * 
+     * @param node the node after which to place the text
+     * @param text the text to insert
+     * @return false if the change overlaps a previous one; true otherwise
+     */
+    protected final boolean insertAfter(IASTNode node, String text) {
+        return insert(node.getFileLocation().getNodeOffset() + node.getFileLocation().getNodeLength(), text);
+    }
+    
+    /**
+     * perform a text insertion before a given node
+     * 
+     * @param node the node before which to insert the text
+     * @param text the text to insert
+     * @return false if the change overlaps a previous one; true otherwise
+     */
+    protected final boolean insertBefore(IASTNode node, String text) {
+        return insert(node.getFileLocation().getNodeOffset(), text);
     }
 
-    protected final void remove(int offset, int length) {
-        replace(offset, length, "");
+    /**
+     * perform a text removal
+     * 
+     * @param offset the starting offset of the text to remove
+     * @param length the length of the text to remove
+     * @return false if the change overlaps a previous one; true otherwise
+     */
+    protected final boolean remove(int offset, int length) {
+       return replace(offset, length, "");
     }
 
-    protected final void remove(IASTNode node) {
-        remove(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength());
+    /**
+     * perform a text removal
+     * 
+     * @param node the node to remove
+     * @return false if the change overlaps a previous one; true otherwise
+     */
+    protected final boolean remove(IASTNode node) {
+        return remove(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength());
     }
 
+    /**
+     * perform a text replacement
+     * 
+     * @param offset the starting offset of the text to replace
+     * @param length the length of the text to replace
+     * @param text the text to replace the given range with
+     * @return false if the change overlaps a previous one; true otherwise
+     */
     protected final boolean replace(int offset, int length, String text) {
-        if(overlapsExistingRepl(offset, offset + length)) {
-            return false;
-        }
         updateAlterationTrackingFields(offset, offset + length);
-        repls.add(new Repl(offset, offset + length, text));
-        return true;
+        repls.add(new Repl(offset, offset + length, text, numRepls++));
+        return combineOverlappingRepls();
     }
 
-    protected final void replace(IASTNode node, String text) {
-        replace(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength(), text);
+    /**
+     * perform a text removal
+     * 
+     * @param node the node to replace
+     * @param length the text to replace the node with
+     * @return false if the change overlaps a previous one; true otherwise
+     */
+    protected final boolean replace(IASTNode node, String text) {
+        return replace(node.getFileLocation().getNodeOffset(), node.getFileLocation().getNodeLength(), text);
     }
 
     protected final String pragma(String code) {
@@ -197,16 +244,70 @@ public abstract class SourceAlteration<T extends Check<?>> {
         return LPAREN + code + RPAREN;
     }
 
-    private boolean overlapsExistingRepl(int startOffset, int endOffset) {
-        for(Repl repl : repls) {
-            if(startOffset > repl.startOffset && startOffset < repl.endOffset) {
-                return true;
+    private boolean combineOverlappingRepls() {
+        boolean ret = true;
+        repls.sort(new Comparator<Repl>() {
+
+            @Override
+            public int compare(SourceAlteration<T>.Repl o1, SourceAlteration<T>.Repl o2) {
+                return o1.which - o2.which;
             }
-            if(endOffset > repl.startOffset && endOffset < repl.endOffset) {
-                return true;
+            
+        });
+        for(int i = 0; i < repls.size(); i++) {
+            int j = i + 1;
+            while(j < repls.size()) {
+                Repl a = repls.get(i);
+                Repl b = repls.get(j);
+                String text = null;
+                //if the replacements overlap
+                if(!(a.endOffset <= b.startOffset) && !(b.endOffset <= a.startOffset)) {
+                    //a contains b
+                    if(a.startOffset < b.startOffset && a.endOffset > b.endOffset) {
+                        text = b.text + a.text;
+                    }
+                    //b contains a
+                    else if(b.startOffset < a.startOffset && b.endOffset > a.endOffset) {
+                        text = a.text + b.text;
+                    }
+                    //a moves into b
+                    else if(a.startOffset < b.startOffset && a.endOffset > b.startOffset && a.endOffset < b.endOffset) {
+                        text = a.text + b.text;
+                    }
+                    //b moves into a
+                    else if(b.startOffset < a.startOffset && b.endOffset > a.startOffset && b.endOffset < a.endOffset) {
+                        text = b.text + a.text;
+                    }
+                    //same start
+                    else if(a.startOffset == b.startOffset) {
+                        if(a.which < b.which) {
+                            text = b.text + a.text;
+                        }
+                        else {
+                            text = a.text + b.text;
+                        }
+                    }
+                    //same end
+                    else if(a.endOffset == b.endOffset) {
+                        if(a.which < b.which) {
+                            text = a.text + b.text;
+                        }
+                        else {
+                            text = b.text + a.text;
+                        }
+                    }
+                    repls.remove(a);
+                    repls.remove(b);
+                    repls.add(new Repl(Math.min(a.startOffset, b.startOffset), Math.max(a.endOffset, b.endOffset), text, numRepls++));
+                    ret = false;
+                }
+                //non-overlapping
+                else {
+                    j++;
+                }
             }
         }
-        return false;
+        return ret;
     }
     
     private void updateAlterationTrackingFields(int startOffset, int endOffset) {
@@ -231,9 +332,16 @@ public abstract class SourceAlteration<T extends Check<?>> {
     
     public final void finalizeChanges() {
         if (src != null) {
-            for(Repl repl = repls.poll(); repl != null; repl = repls.poll()) {
-                src.replace(repl.startOffset - this.startOffset, repl.endOffset - this.startOffset, repl.text);
+            int adjust = 0;
+            for(Repl repl : repls) {
+                src.replace(repl.startOffset - this.startOffset + adjust, repl.endOffset - this.startOffset + adjust, repl.text);
+                adjust += repl.text.length() - (repl.endOffset - repl.startOffset);
+                if(adjust < 0) {
+                    src.insert(0, tu.getRawSignature().substring(this.startOffset + adjust, this.startOffset));
+                    this.startOffset += adjust;
+                }
             }
+            
             TextEditGroup teg = new TextEditGroup("teg");
             teg.addTextEdit(new ReplaceEdit(this.startOffset, this.endOffset - this.startOffset, ASTUtil.format(src.toString())));
             rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
@@ -242,6 +350,11 @@ public abstract class SourceAlteration<T extends Check<?>> {
     
     public IASTTranslationUnit getTranslationUnit() {
         return tu;
+    }
+    
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + ": " + repls.toString();
     }
 
     /**
@@ -257,11 +370,13 @@ public abstract class SourceAlteration<T extends Check<?>> {
         int startOffset;
         int endOffset;
         String text;
+        int which;
         
-        Repl(int startOffset, int endOffset, String text) {
+        Repl(int startOffset, int endOffset, String text, int which) {
             this.startOffset = startOffset;
             this.endOffset = endOffset;
             this.text = text;
+            this.which = which;
         }
         
         @Override

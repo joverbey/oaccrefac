@@ -32,7 +32,7 @@ public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
     
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroduceDataConstructCheck(getStatements(), getStatementsAndComments());
+        check = new IntroduceDataConstructCheck(getStatements(), getAllEnclosedNodes());
         check.performChecks(initStatus, pm, null);
     }
 
