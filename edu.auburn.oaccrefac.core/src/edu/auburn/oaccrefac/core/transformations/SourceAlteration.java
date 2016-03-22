@@ -7,14 +7,14 @@
  *
  * Contributors:
  *     Adam Eichelkraut - initial API and implementation
+ *     Alexander Calvert - initial API and implementation
  *******************************************************************************/
+
 package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -245,7 +245,8 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     private boolean combineOverlappingRepls() {
-        boolean ret = true;
+        boolean foundOverlapping = true;
+        
         repls.sort(new Comparator<Repl>() {
 
             @Override
@@ -261,7 +262,9 @@ public abstract class SourceAlteration<T extends Check<?>> {
                 Repl b = repls.get(j);
                 String text = null;
                 //if the replacements overlap
-                if(!(a.endOffset <= b.startOffset) && !(b.endOffset <= a.startOffset)) {
+                if((a.startOffset == b.startOffset) 
+                        || (b.startOffset <= a.startOffset && a.startOffset < b.endOffset) 
+                        || (a.startOffset <= b.startOffset && b.startOffset < a.endOffset)) {
                     //a contains b
                     if(a.startOffset < b.startOffset && a.endOffset > b.endOffset) {
                         text = b.text + a.text;
@@ -271,11 +274,11 @@ public abstract class SourceAlteration<T extends Check<?>> {
                         text = a.text + b.text;
                     }
                     //a moves into b
-                    else if(a.startOffset < b.startOffset && a.endOffset > b.startOffset && a.endOffset < b.endOffset) {
+                    else if(a.startOffset < b.startOffset && b.startOffset < a.endOffset && a.endOffset < b.endOffset) {
                         text = a.text + b.text;
                     }
                     //b moves into a
-                    else if(b.startOffset < a.startOffset && b.endOffset > a.startOffset && b.endOffset < a.endOffset) {
+                    else if(b.startOffset < a.startOffset && a.startOffset < b.endOffset && b.endOffset < a.endOffset) {
                         text = b.text + a.text;
                     }
                     //same start
@@ -299,7 +302,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
                     repls.remove(a);
                     repls.remove(b);
                     repls.add(new Repl(Math.min(a.startOffset, b.startOffset), Math.max(a.endOffset, b.endOffset), text, numRepls++));
-                    ret = false;
+                    foundOverlapping = false;
                 }
                 //non-overlapping
                 else {
@@ -307,11 +310,12 @@ public abstract class SourceAlteration<T extends Check<?>> {
                 }
             }
         }
-        return ret;
+        return foundOverlapping;
     }
     
     private void updateAlterationTrackingFields(int startOffset, int endOffset) {
         if(src != null) {
+            
             //if the new change extends before what is being tracked, add the text up until the beginning of the new change
             if(startOffset < this.startOffset) {
                 src.insert(0, tu.getRawSignature().substring(startOffset, this.startOffset));
@@ -333,13 +337,17 @@ public abstract class SourceAlteration<T extends Check<?>> {
     public final void finalizeChanges() {
         if (src != null) {
             int adjust = 0;
+            repls.sort(new Comparator<Repl>() {
+
+                @Override
+                public int compare(SourceAlteration<T>.Repl o1, SourceAlteration<T>.Repl o2) {
+                    return o1.startOffset - o2.startOffset;
+                }
+                
+            });
             for(Repl repl : repls) {
                 src.replace(repl.startOffset - this.startOffset + adjust, repl.endOffset - this.startOffset + adjust, repl.text);
                 adjust += repl.text.length() - (repl.endOffset - repl.startOffset);
-                if(adjust < 0) {
-                    src.insert(0, tu.getRawSignature().substring(this.startOffset + adjust, this.startOffset));
-                    this.startOffset += adjust;
-                }
             }
             
             TextEditGroup teg = new TextEditGroup("teg");
