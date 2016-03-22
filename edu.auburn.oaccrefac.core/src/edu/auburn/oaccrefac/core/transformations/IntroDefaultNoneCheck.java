@@ -43,17 +43,25 @@ public class IntroDefaultNoneCheck extends PragmaDirectiveCheck<RefactoringParam
         try {
             pragmaAST = new OpenACCParser().parse(getPragma().getRawSignature());
         } catch (Exception e) {
-            status.addFatalError("Could not parse selected pragma directive.");
+            status.addFatalError("Selected pragma statement is not a valid OpenACC directive.");
             return;
         }
         
-        if(doesACCConstructHaveDefaultNoneClause(pragmaAST)) {
-            status.addFatalError("Pragma directive already has default(none) a clause.");
+        if (!(pragmaAST instanceof ASTAccParallelLoopNode) && 
+                !(pragmaAST instanceof ASTAccParallelNode) &&
+                !(pragmaAST instanceof ASTAccKernelsLoopNode) &&
+                !(pragmaAST instanceof ASTAccKernelsNode)) {
+            status.addFatalError("Cannot add default(none) clause to this type of construct.");
+            return;
+        }
+        
+        if(doesACCConstructHaveDefaultNoneClause(pragmaAST, status)) {
+            status.addFatalError("Pragma directive already has a default(none) clause.");
             return;
         }
     }
     
-    private boolean doesACCConstructHaveDefaultNoneClause(IAccConstruct pragmaAST) {
+    private boolean doesACCConstructHaveDefaultNoneClause(IAccConstruct pragmaAST, RefactoringStatus status) {
         if (pragmaAST instanceof ASTAccParallelLoopNode) {
             return doesParallelLoopNodeHaveDefaultNoneClause((ASTAccParallelLoopNode) pragmaAST);
         }
