@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Alexander Calvert - initial API and implementation
+ *******************************************************************************/
+
 package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.ArrayList;
@@ -40,31 +51,6 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         Map<String, String> create = OpenACCUtil.getCreate(check.getConstruct());
         List<ASTAccDataClauseListNode> otherClauses = getOtherClauses(check.getConstruct());
         
-//        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
-//            if(listNode.getAccDataClause() instanceof ASTAccCopyinClauseNode) {
-//                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) listNode.getAccDataClause();
-//                for(ASTAccDataItemNode var : copyinClause.getAccDataList()) {
-//                    copyin.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-//                }
-//            }
-//            else if(listNode.getAccDataClause() instanceof ASTAccCopyoutClauseNode) {
-//                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) listNode.getAccDataClause();
-//                for(ASTAccDataItemNode var : copyoutClause.getAccDataList()) {
-//                    copyout.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-//                }
-//            }
-//            else if(listNode.getAccDataClause() instanceof ASTAccCreateClauseNode) {
-//                ASTAccCreateClauseNode createClause = (ASTAccCreateClauseNode) listNode.getAccDataClause();
-//                for(ASTAccDataItemNode var : createClause.getAccDataList()) {
-//                    create.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-//                }
-//                otherStuff.add(listNode);
-//            }
-//            else {
-//                otherStuff.add(listNode);
-//            }
-//        }
-
         //using parent node
         int maxup = getMaxUp(getStatement());
         int maxdown = getMaxDown(getStatement());
