@@ -20,40 +20,41 @@ import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * Inheriting from {@link ForLoopAlteration}, this class defines a refactoring to distribute loops. Loop distribution takes
+ * Inheriting from {@link ForLoopAlteration}, DistributeLoopsAlteration defines a refactoring to distribute loops. Loop distribution takes
  * the body of a for-loop and splits the statements into separate for-loops with the same header, if possible.
- * 
+ * <p>
  * For example,
  * 
  * <pre>
  * for (int i = 0; i < 10; i++) {
- *     a[i] = b[i] + c[i];
- *     b[i - 1] = a[i];
+ *     a[i] = i;
+ *     b[i] = 10 - i;
  * }
  * </pre>
  * 
- * Refactors to:
+ * Refactors to
  * 
  * <pre>
  * for (int i = 0; i < 10; i++) {
- *     a[i] = b[i] + c[i];
+ *     a[i] = i;
  * }
  * for (int i = 0; i < 10; i++) {
- *     b[i - 1] = a[i];
+ *     b[i] = 10 - i;
  * }
  * </pre>
  * 
+ * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
 public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoopsCheck> {
 
     /**
-     * Constructor that takes a for-loop to perform fission on
+     * Constructor that takes a for-loop to distribute.
      * 
      * @param rewriter
      *            -- base rewriter for loop
      * @param loop
-     *            -- loop to be fizzed
+     *            -- loop to be distributed
      */
     public DistributeLoopsAlteration(IASTRewrite rewriter, DistributeLoopsCheck check) {
         super(rewriter, check);

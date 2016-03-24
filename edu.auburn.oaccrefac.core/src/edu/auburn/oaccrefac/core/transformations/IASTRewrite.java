@@ -25,6 +25,7 @@ import org.eclipse.text.edits.TextEditGroup;
  * Eclipse as well as in the command-line tool.
  * 
  * @author Jeff Overbey
+ * @author Adam Eichelkraut
  */
 public interface IASTRewrite {
 

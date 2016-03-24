@@ -26,11 +26,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * Performs a very crude points-to analysis on the IASTFunctionDefinition
  * passed to the constructor to determine if two variables, a and b, could
  * possibly point to the same thing.
- * 
+ * <p>
  * The analysis works by finding any pointers that aren't restrict and adding
  * them to a set. If two queried IVariables are in this set, then the analysis
  * assumes they may point to the same variable.
- * 
+ * <p>
  * The analysis can be made more thorough later.
  * 
  * @author John William O'Rourke

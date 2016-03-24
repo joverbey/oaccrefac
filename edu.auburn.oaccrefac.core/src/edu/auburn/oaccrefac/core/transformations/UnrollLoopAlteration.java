@@ -43,10 +43,11 @@ import edu.auburn.oaccrefac.internal.core.Activator;
 import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 /**
- * Inheriting from {@link ForLoopAlteration}, this class defines a loop unrolling refactoring algorithm. Loop unrolling
- * takes a sequential loop and 'unrolls' the loop by copying the body of the loop multiple times in order to skip
- * testing the conditional expression more times than it has to.
- * 
+ * UnrollLoopAlteration defines a loop unrolling refactoring algorithm. Loop unrolling
+ * takes a sequential loop and 'unrolls' the loop by copying the body of the loop
+ * multiple times in order to skip testing the conditional expression more times than
+ * it has to.
+ * <p>
  * For example,
  * 
  * <pre>
@@ -67,8 +68,8 @@ import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
  * i++;
  * </pre>
  * 
- * The part at the end is called the 'trailer' and it holds the leftover iterations that could not be satisfied by the
- * unrolled loop body.
+ * The part at the end is called the 'trailer' and it holds the leftover iterations that could not
+ * be satisfied by the unrolled loop body.
  * 
  * @author Adam Eichelkraut
  * @author Alexander Calvert

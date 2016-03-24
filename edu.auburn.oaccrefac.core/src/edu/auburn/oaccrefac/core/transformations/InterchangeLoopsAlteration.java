@@ -23,13 +23,13 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop interchange refactoring algorithm. Loop interchange
  * swaps the headers of two perfectly nested loops, given that it causes no dependency issues from
  * {@link InterchangeLoopsCheck}.
- * 
+ * <p>
  * For example,
  * 
  * <pre>
- * for (int i = 0; i < 10; i++) {
- *     for (int j = 1; j < 20; j++) {
- *         // do something...
+ * for (int i = 0; i < 5; i++) {
+ *     for (int j = 1; j < 10; j++) {
+ *         // ...
  *     }
  * }
  * </pre>
@@ -37,18 +37,18 @@ import edu.auburn.oaccrefac.internal.core.ASTUtil;
  * Refactors to:
  * 
  * <pre>
- * for (int j = 1; j < 20; j++) {
- *     for (int i = 0; i < 10; i++) {
- *         // do something...
+ * for (int j = 1; j < 10; j++) {
+ *     for (int i = 0; i < 5; i++) {
+ *         // ...
  *     }
  * }
  * </pre>
  * 
+ * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
 public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoopsCheck> {
 
-    private IASTForStatement outer;
     private IASTForStatement inner;
 
     /**
@@ -61,7 +61,6 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoo
      */
     public InterchangeLoopsAlteration(IASTRewrite rewriter, InterchangeLoopsCheck check) {
         super(rewriter, check);
-        this.outer = check.getOuterLoop();
         this.inner = check.getInnerLoop();
     }
 

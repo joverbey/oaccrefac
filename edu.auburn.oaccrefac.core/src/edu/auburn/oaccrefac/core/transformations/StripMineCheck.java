@@ -8,7 +8,7 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
- *     John William O'Rourke (Auburn) - openacc Awareness
+ *     John William O'Rourke (Auburn) - initial API and implementation
  *******************************************************************************/
 package edu.auburn.oaccrefac.core.transformations;
 
@@ -40,12 +40,6 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
             status.addFatalError("Invalid strip factor (<= 0).");
             return;
         }
-
-        // Check depth validity...
-//        if (params.getDepth() < 0 || params.getDepth() >= inq.getPerfectLoopNestHeaders().size()) {
-//            status.addFatalError("There is no for-loop at depth " + params.getDepth());
-//            return;
-//        }
 
         // If the strip factor is not divisible by the original linear
         // iteration factor, (i.e. loop counts by 4), then we cannot
