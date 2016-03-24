@@ -1,0 +1,6 @@
+#pragma acc parallel loop
+		for (k = 0; k < n; k++) /*<<<<< 1825, 1, 1830, 1, Kernel22 */
+        {
+            y[k] = u[k] / v[k];
+            w[k] = x[k] / ( exp( y[k] ) -1.0 );
+        }
