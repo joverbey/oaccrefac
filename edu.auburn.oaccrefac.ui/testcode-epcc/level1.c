@@ -136,7 +136,7 @@ double twomm(){
 #pragma acc parallel loop private(tmp)
     for (i = 0; i < n; i++){ /*<<<<< 137, 1, 147, 6, loop5outer*/
 #pragma acc loop private(tmp)
-      for (j = 0; j < n; j++){ /*<<<<< 139, 1, 80, 10, loop5inner*/
+      for (j = 0; j < n; j++){ /*<<<<< 139, 1, 146, 8, loop5inner*/
 	tmp = 0;
 #pragma acc loop reduction(+:tmp)
         for (k = 0; k < n; k++){ /*<<<<< 142, 1, 144, 10, loop5inner2*/
@@ -1289,7 +1289,7 @@ double gemm(){
 
   /* Host for reference */
   for (i = 0; i < n; i++){ /*<<<<< 1291, 1, 1297, 4, loop67outer*/
-    for (j = 0; j < n; j++){ /*<<<<< 1292, 1, 1196, 6, loop67inner*/
+    for (j = 0; j < n; j++){ /*<<<<< 1292, 1, 1296, 6, loop67inner*/
         H[i*n+j] *= beta;
         for (k = 0; k < n; k++) /*<<<<< 1294, 1, 1295, 51, loop67inner2*/
           H[i*n+j] += alpha * A[i*n+k] * B[k*n+j];
