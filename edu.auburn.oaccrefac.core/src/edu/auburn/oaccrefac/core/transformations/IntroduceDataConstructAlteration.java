@@ -11,7 +11,6 @@
 package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
