@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2015 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,7 +8,6 @@
  * Contributors:
  *     John William O'Rourke (Auburn) - initial API and implementation
  *******************************************************************************/
-
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 
@@ -17,6 +15,7 @@ import edu.auburn.oaccrefac.core.transformations.IASTRewrite;
 import edu.auburn.oaccrefac.core.transformations.RefactoringParams;
 import edu.auburn.oaccrefac.core.transformations.DistributeLoopsCheck;
 import edu.auburn.oaccrefac.core.transformations.DistributeLoopsAlteration;
+import edu.auburn.oaccrefac.core.transformations.NullParams;
 
 /**
  * DistributeLoops performs the distribute loops refactoring.
@@ -58,7 +57,7 @@ public class DistributeLoops extends LoopMain<RefactoringParams, DistributeLoops
     @Override
     protected RefactoringParams createParams(IASTForStatement forLoop) {
         // RefactoringParams is abstract
-        return null;
+        return new NullParams();
     }
 
     @Override
