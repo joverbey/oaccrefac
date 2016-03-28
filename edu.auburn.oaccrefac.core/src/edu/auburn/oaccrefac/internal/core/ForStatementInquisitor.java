@@ -63,26 +63,16 @@ public class ForStatementInquisitor {
 
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
-            // Constant upper bound, constant lower bound
+            // Constant upper bound
             "for (i = 0; i < 1; i++) ;", "for (int i = 0; i < 1; i++) ;", "for (i = 0; i <= 1; i++) ;",
             "for (int i = 0; i <= 1; i++) ;", "for (i = 0; i < 1; i+=1) ;", "for (int i = 0; i < 1; i+=1) ;",
             "for (i = 0; i <= 1; i+=1) ;", "for (int i = 0; i <= 1; i+=1) ;", "for (i = 0; i < 1; i=i+1) ;",
             "for (int i = 0; i < 1; i=i+1) ;", "for (i = 0; i <= 1; i=i+1) ;", "for (int i = 0; i <= 1; i=i+1) ;",
-            // Variable upper bound, constant lower bound
+            // Variable upper bound
             "for (i = 0; i < j; i++) ;", "for (int i = 0; i < j; i++) ;", "for (i = 0; i <= j; i++) ;",
             "for (int i = 0; i <= j; i++) ;", "for (i = 0; i < j; i+=1) ;", "for (int i = 0; i < j; i+=1) ;",
             "for (i = 0; i <= j; i+=1) ;", "for (int i = 0; i <= j; i+=1) ;", "for (i = 0; i < j; i=i+1) ;",
             "for (int i = 0; i < j; i=i+1) ;", "for (i = 0; i <= j; i=i+1) ;", "for (int i = 0; i <= j; i=i+1) ;",
-            // Constant upper bound, variable lower bound
-            "for (i = k; i < 1; i++) ;", "for (int i = k; i < 1; i++) ;", "for (i = k; i <= 1; i++) ;",
-            "for (int i = k; i <= 1; i++) ;", "for (i = k; i < 1; i+=1) ;", "for (int i = k; i < 1; i+=1) ;",
-            "for (i = k; i <= 1; i+=1) ;", "for (int i = k; i <= 1; i+=1) ;", "for (i = k; i < 1; i=i+1) ;",
-            "for (int i = k; i < 1; i=i+1) ;", "for (i = k; i <= 1; i=i+1) ;", "for (int i = k; i <= 1; i=i+1) ;",
-            // Variable upper bound, variable lower bound
-            "for (i = k; i < j; i++) ;", "for (int i = k; i < j; i++) ;", "for (i = k; i <= j; i++) ;",
-            "for (int i = k; i <= j; i++) ;", "for (i = k; i < j; i+=1) ;", "for (int i = k; i < j; i+=1) ;",
-            "for (i = k; i <= j; i+=1) ;", "for (int i = k; i <= j; i+=1) ;", "for (i = k; i < j; i=i+1) ;",
-            "for (int i = k; i < j; i=i+1) ;", "for (i = k; i <= j; i=i+1) ;", "for (int i = k; i <= j; i=i+1) ;",
             // Simple field reference upper bound (used in Livermore Loops)
             "for (i = 0; i < j.k; i++) ;", "for (int i = 0; i < j.k; i++) ;", "for (i = 0; i <= j.k; i++) ;",
             "for (int i = 0; i <= j.k; i++) ;", "for (i = 0; i < j.k; i+=1) ;", "for (int i = 0; i < j.k; i+=1) ;",
