@@ -74,7 +74,7 @@ public class NullTestsEPCC extends RefactoringTestEPCC<NullRefactoring> {
             // Conditional (ternary) expression
             "loop54outer", //
             "loop50outer", //
-            // FIXME: These loops report "Unsupported construct: CASTForStatement"
+            // Contain a non-0-based loop
             "loop43outer", //
             "loop46outer", //
             "loop52outer", //
