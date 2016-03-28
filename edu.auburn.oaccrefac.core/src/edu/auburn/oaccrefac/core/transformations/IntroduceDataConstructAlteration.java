@@ -6,8 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Alexander Calvert (Auburn) - initial API and implementation
+ *     Alexander Calvert - initial API and implementation
  *******************************************************************************/
+
 package edu.auburn.oaccrefac.core.transformations;
 
 import java.util.Set;

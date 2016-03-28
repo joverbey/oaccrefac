@@ -60,7 +60,7 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
             status.addError("This loop contains an ACC pragma.");
         }
 
-        if (!inq.isPerfectLoopNest()) {
+        if (!inq.isPerfectLoopNest(1)) {
             status.addFatalError("Only perfectly nested loops can be tiled.");
             return;
         }

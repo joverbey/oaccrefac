@@ -306,24 +306,42 @@ public class ForStatementInquisitor {
         return result;
     }
 
+    /**
+     * Returns whether or not the loop and all of its subloops are perfectly nested 
+     * 
+     * @return
+     */
     public boolean isPerfectLoopNest() {
-        return isPerfectLoopNest(statement);
+        return isPerfectLoopNest(Integer.MAX_VALUE, statement);
+    }
+    
+    /**
+     * Returns whether or not the loop and its subloops are perfectly nested up to the given depth
+     * 
+     * @param depth A single loop with no nesting is considered to have depth 0
+     * @return
+     */
+    public boolean isPerfectLoopNest(int depth) {
+        return isPerfectLoopNest(depth, statement);
     }
 
-    private boolean isPerfectLoopNest(IASTForStatement outerLoop) {
+    private boolean isPerfectLoopNest(int depth, IASTForStatement outerLoop) {
         if (!doesForLoopContainForLoopChild(outerLoop)) {
+            return true;
+        }
+        if(depth == 0) {
             return true;
         }
 
         if (outerLoop.getBody() instanceof IASTCompoundStatement) {
             IASTNode[] children = outerLoop.getBody().getChildren();
             if (children.length == 1 && children[0] instanceof IASTForStatement) {
-                return isPerfectLoopNest((IASTForStatement) children[0]);
+                return isPerfectLoopNest(depth - 1, (IASTForStatement) children[0]);
             } else {
                 return false;
             }
         } else {
-            return isPerfectLoopNest((IASTForStatement) outerLoop.getBody());
+            return isPerfectLoopNest(depth - 1, (IASTForStatement) outerLoop.getBody());
         }
     }
 

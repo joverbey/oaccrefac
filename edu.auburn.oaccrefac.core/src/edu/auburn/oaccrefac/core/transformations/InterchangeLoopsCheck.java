@@ -53,7 +53,6 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(outer);
-        System.out.println(inq.getPerfectLoopNestHeaders());
 
         if (!(inq.getPerfectLoopNestHeaders().contains(inner))) {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
