@@ -316,26 +316,36 @@ public class ExpressionEvaluator {
         final int op = exp.getOperator();
 
         if (isAssignmentOperator(op)) {
-            if (op == IASTBinaryExpression.op_assign) {
-                IASTName lhsName = ASTUtil.getIdExpression(exp.getOperand1());
-                Pair<IASTName, LinearExpression[]> lhsArrayAccess = ASTUtil.getMultidimArrayAccess(exp.getOperand1());
-                Long rhsValue = evaluate(exp.getOperand2());
-                if (lhsName != null && rhsValue != null) {
-                    // name = value
-                    IBinding binding = lhsName.resolveBinding();
-                    if (env == null)
-                        env = ConstEnv.EMPTY;
-                    if (ConstantPropagation.canTrackConstantValues(binding)
-                            && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
+            IASTName lhsName = ASTUtil.getIdExpression(exp.getOperand1());
+            Pair<IASTName, LinearExpression[]> lhsArrayAccess = ASTUtil.getMultidimArrayAccess(exp.getOperand1());
+            Long rhsValue = evaluate(exp.getOperand2());
+            if (lhsName != null && rhsValue != null) {
+                // name = value
+                IBinding binding = lhsName.resolveBinding();
+                if (env == null)
+                    env = ConstEnv.EMPTY;
+                if (ConstantPropagation.canTrackConstantValues(binding)
+                        && ConstantPropagation.isInTrackedRange(binding, rhsValue)) {
+                    if (op == IASTBinaryExpression.op_assign) {
                         env = env.set(binding, rhsValue);
                         constValuedNames.put(lhsName, rhsValue);
+                    } else if (env.getValue(binding) != null) {
+                        Long newLhsValue = applyBinaryOperator(op, env.getValue(binding), rhsValue);
+                        if (ConstantPropagation.isInTrackedRange(binding, newLhsValue)) {
+                            env = env.set(binding, newLhsValue);
+                            constValuedNames.put(lhsName, newLhsValue);
+                        } else {
+                            env = env.without((IVariable)binding);
+                            constValuedNames.remove(lhsName);
+                            return null;
+                        }
                     }
-                    return rhsValue;
-                } else if (lhsName != null || lhsArrayAccess != null) {
-                    // a = expression  (OR)  a[i] = value  (OR)  a[i] = expression
-                    evaluate(exp.getOperand1());
-                    return rhsValue;
                 }
+                return rhsValue;
+            } else if (lhsName != null || lhsArrayAccess != null) {
+                // a = expression  (OR)  a[i] = value  (OR)  a[i] = expression
+                evaluate(exp.getOperand1());
+                return rhsValue;
             }
 
             env = ConstEnv.EMPTY;
@@ -383,31 +393,38 @@ public class ExpressionEvaluator {
     private Long applyBinaryOperator(final int op, final long v1, final long v2) {
         switch (op) {
         case IASTBinaryExpression.op_multiply:
+        case IASTBinaryExpression.op_multiplyAssign:
             if (multiplyWillOverflow(v1, v2))
                 return null;
             else
                 return v1 * v2;
         case IASTBinaryExpression.op_divide:
+        case IASTBinaryExpression.op_divideAssign:
             if (v2 == 0)
                 return null;
             return v1 / v2;
         case IASTBinaryExpression.op_modulo:
+        case IASTBinaryExpression.op_moduloAssign:
             if (v2 == 0)
                 return null;
             return v1 % v2;
         case IASTBinaryExpression.op_plus:
+        case IASTBinaryExpression.op_plusAssign:
             if (addWillOverflow(v1, v2))
                 return null;
             else
                 return v1 + v2;
         case IASTBinaryExpression.op_minus:
+        case IASTBinaryExpression.op_minusAssign:
             if (subtractWillOverflow(v1, v2))
                 return null;
             else
                 return v1 - v2;
         case IASTBinaryExpression.op_shiftLeft:
+        case IASTBinaryExpression.op_shiftLeftAssign:
             return v1 << v2;
         case IASTBinaryExpression.op_shiftRight:
+        case IASTBinaryExpression.op_shiftRightAssign:
             return null; // Whether signed or unsigned is implementation-dependent
         case IASTBinaryExpression.op_lessThan:
             return v1 < v2 ? Long.valueOf(1) : Long.valueOf(0);
@@ -418,10 +435,13 @@ public class ExpressionEvaluator {
         case IASTBinaryExpression.op_greaterEqual:
             return v1 >= v2 ? Long.valueOf(1) : Long.valueOf(0);
         case IASTBinaryExpression.op_binaryAnd:
+        case IASTBinaryExpression.op_binaryAndAssign:
             return v1 & v2;
         case IASTBinaryExpression.op_binaryXor:
+        case IASTBinaryExpression.op_binaryXorAssign:
             return v1 ^ v2;
         case IASTBinaryExpression.op_binaryOr:
+        case IASTBinaryExpression.op_binaryOrAssign:
             return v1 | v2;
         case IASTBinaryExpression.op_logicalAnd:
             return v1 != 0 && v2 != 0 ? Long.valueOf(1) : Long.valueOf(0);

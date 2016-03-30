@@ -326,6 +326,47 @@ public class ConstantPropagationTest extends TestCase {
         check(program, expectedValues);
     }
 
+    public void testAssignments() throws CoreException {
+        String program = "int main() {\n" + 
+                "    int n = 1;\n" + 
+                "    n += 2;\n" + 
+                "    n *= 3;\n" + 
+                "    n -= (n-7);\n" + 
+                "    return n;\n" + 
+                "}";
+        String[] expectedValues = { //
+                "Line 2: n = 1", //
+                "Line 3: n = 3", //
+                "Line 4: n = 9", //
+                "Line 5: n = 7", //
+                "Line 5: n = 9", //
+                "Line 6: n = 7", //
+        };
+        check(program, expectedValues);
+    }
+
+    public void testMultAssignInLoop35() throws CoreException {
+        String program = "int main() {\n" + 
+                "    int i, j, n = 1024;\n" + 
+                "    double C[1024], beta = 0.1;\n" + 
+                "\n" + 
+                "    for (i = 0; i < n; i++) {\n" + 
+                "        for (j = 0; j < n; j++) {\n" + 
+                "            C[i * n + j] *= beta;\n" + 
+                "        }\n" + 
+                "    }\n" + 
+                "    return 0;\n" + 
+                "}";
+        String[] expectedValues = { //
+                "Line 2: n = 1024", //
+                "Line 5: i = 0", //
+                "Line 6: j = 0", //
+                "Line 5: n = 1024", //
+                "Line 6: n = 1024", //
+        };
+        check(program, expectedValues);
+    }
+
     private void check(String program, String[] expectedValues) throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(program);
         IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
