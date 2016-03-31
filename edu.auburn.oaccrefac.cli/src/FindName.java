@@ -18,7 +18,7 @@ public class FindName {
         String fileName = args[0];
         String[] results = getNames(fileName);
         for(String result : results){
-            System.out.println(result + " ");
+            System.out.print(result + " ");
         }
     }
 

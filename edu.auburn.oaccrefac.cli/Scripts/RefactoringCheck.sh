@@ -20,8 +20,8 @@ fi
 
 
 
-declare -a refacList=(DistributeLoops FuseLoops InterchangeLoops IntroduceKernelsLoop IntroduceParallelLoop LoopCutting StripMine TileLoops Unroll);
-declare -a refacPossible=("false" "false" "false" "false" "false" "false" "false" "false" "false" "false");
+declare -a refacList=(DistributeLoops FuseLoops InterchangeLoops IntroduceKernelsLoop IntroduceParallelLoop LoopCutting StripMine TileLoops Unroll ExpandDataConstruct);
+declare -a refacPossible=("false" "false" "false" "false" "false" "false" "false" "false" "false" "false" "false");
 tempholder=$(mktemp)
 
 listCount=0

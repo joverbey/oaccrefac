@@ -121,7 +121,7 @@ double twomm(){
   {
 
 #pragma acc parallel loop private(tmp)
-    for (i = 0; i < n; i++){ /* loop14outer */
+    for (i = 0; i < n; i++){ /* loop4outer */
 #pragma acc loop private(tmp)
       for (j = 0; j < n; j++){ /* loop4inner */
 	tmp = 0;

@@ -1,0 +1,5 @@
+#!/bin/bash
+declare -a testarray
+string="$(java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" FindName examples/testcode-epcc/level1-CMD.c)"
+read -a testarray <<<$string
+echo ${testarray[@]}

@@ -44,7 +44,8 @@ double gettime() {
     return t.tv_sec + t.tv_usec*1.0e-6;
 }
 
-double* twomm(){
+
+double twomm(){
 
   extern unsigned int datasize;
   int i = 0;
@@ -72,12 +73,12 @@ double* twomm(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
+
   for (i = 0; i < n; i++){ /* loop1outer */
     for (j = 0; j < n; j++){ /* loop1inner */
       A[i*n+j] = rand()/ (1.0 + RAND_MAX);
     }
   }
-  printf("%f /n", A[0]);
   for (i = 0; i < n; i++){ /* loop2outer */
     for (j = 0; j < n; j++){ /* loop2inner */
       B[i*n+j] = rand()/ (1.0 + RAND_MAX);
@@ -115,6 +116,7 @@ double* twomm(){
 
   /* E := A*B*C */
   t_start = gettime();
+  /* datacon1 */
 #pragma acc data copyin(A[0:n*n],B[0:n*n],D[0:n*n], n), copyout(E[0:n*n]), create(C[0:n*n], tmp,i,j,k)
   {
 
@@ -167,7 +169,8 @@ double* twomm(){
   free(E);
   free(H);
 
-return A;
+  if (flag == 0) return (t_end-t_start);
+  else return(-11000);
 
 }
 
@@ -249,6 +252,7 @@ double threemm(){
 
 
   t_start = gettime();
+  /* datacon2*/
 #pragma acc data copyin(A[0:n*n],B[0:n*n],C[0:n*n],D[0:n*n]), create(E[0:n*n],F[0:n*n]), copyout(G[0:n*n])
   {
 #pragma acc parallel loop
@@ -373,6 +377,7 @@ double atax(){
   tmpscalar = 0;
 
   t_start = gettime();
+  /* datacon3 */
 #pragma acc data copyin(A[0:n*n], x[0:n]), create(tmp[0:n]), copyout(ya[0:n])
   {
 
@@ -454,6 +459,7 @@ double bicg(){
 
 
   t_start = gettime();
+  /* datacon4 */
 #pragma acc data copyin(A[0:n*n],r[0:n],p[0:n]), copyout(q[0:n],s[0:n])
   {
 
@@ -590,6 +596,7 @@ double mvt(){
   tmp2 = 0;
 
   t_start = gettime();
+  /* datacon5 */
 #pragma acc data copyin(a[0:n*n], y2[0:n], y1[0:n]), copy(x1_Gpu[0:n], x2_Gpu[0:n])
   {
 
@@ -698,6 +705,7 @@ double syrk(){
   /* ACCEL */
 
   t_start = gettime();
+  /* datacon6 */
 #pragma acc data copyin(A[0:n*n]), copy(CG[0:n*n])
   {
 #pragma acc parallel loop
@@ -813,6 +821,7 @@ double covariance(){
 
 
   t_start = gettime();
+  /* datacon7 */
 #pragma acc data copyin(data[0:n*n]),  copyout(symmat[0:n*n]), create(mean[0:n])
   {
     /* Determine mean of column vectors of input data matrix */
@@ -970,6 +979,7 @@ double correlation(){
 
   t_start = gettime();
   /* Determine mean of column vectors of input data matrix */
+  /* datacon8 */
 #pragma acc data copyin(data[0:n*n]), create(mean[0:n], stddev[0:n]), copyout(symmat[0:n*n])
   {
 
@@ -1112,6 +1122,7 @@ double syr2k(){
   t_start = gettime();
 
   /* ACCELERATOR */
+  /* datacon9 */
 #pragma acc data copy(CG[0:n*n]), copyin(A[0:n*n], B[0:n*n])
   {
 #pragma acc parallel loop
@@ -1210,6 +1221,7 @@ double gesummv(){
 
   /* Accelerator */
   t_start = gettime();
+  /* datacon10 */
 #pragma acc data copyin(A[0:n*n], B[0:n*n], x[0:n], beta, alpha), copyout(Ay[0:n]), create(i,j,t1,t2)
   {
 #pragma acc parallel loop private(t1,t2)
@@ -1300,6 +1312,7 @@ double gemm(){
 
   /* Accelerator */
   t_start = gettime();
+  /* datacon11 */
 #pragma acc data copyin(A[0:n*n],B[0:n*n]), copy(C[0:n*n])
   {
 #pragma acc kernels
@@ -1382,6 +1395,7 @@ double twodconv(){
 
 
   t_start = gettime();
+  /* datacon12 */
 #pragma acc data copyin(A[0:n*n]), copyout(B_Gpu[0:n*n])
   {
 #pragma acc kernels
@@ -1468,6 +1482,7 @@ double threedconv(){
 
   /* ACCELERATOR */
   t_start = gettime();
+  /* datacon13 */
 #pragma acc data copyin(A[0:n*n*n]), copyout(B_Gpu[0:n*n*n])
   {
 #pragma acc kernels
