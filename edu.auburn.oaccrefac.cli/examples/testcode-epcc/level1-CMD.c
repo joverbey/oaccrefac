@@ -252,7 +252,7 @@ double threemm(){
 
 
   t_start = gettime();
-  /* datacon2*/
+  /* datacon2 */
 #pragma acc data copyin(A[0:n*n],B[0:n*n],C[0:n*n],D[0:n*n]), create(E[0:n*n],F[0:n*n]), copyout(G[0:n*n])
   {
 #pragma acc parallel loop
