@@ -1,0 +1,3512 @@
+[33mcommit 70361636d0caa2603e0def3917a74858dae4b09b[m
+Merge: 00af758 9da02b4
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Apr 4 14:20:35 2016 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 00af7584daac667b3dfc9cfb0d20b9fcf8880d18[m
+Merge: d29efa6 4997637
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Apr 4 14:20:12 2016 -0500
+
+    merged in Intro Data Construct
+
+[33mcommit 9da02b4212b9e7311576332ed2210d9deee57511[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Apr 4 14:19:17 2016 -0500
+
+    Fix Java 8 classpath/build path settings
+
+[33mcommit d29efa6dc1bfd7a6764bfa388a3f2610803ef1bc[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Apr 1 11:28:00 2016 -0500
+
+    Update build settings to Java 8
+
+[33mcommit 48f252588e1044960fd0287a446f997d4a7a773e[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Thu Mar 31 20:12:33 2016 -0500
+
+    Fixed level1-CMD.c typo
+
+[33mcommit 64dfaae4ca298445619d499bd08960564205395c[m
+Merge: 865a115 edf5a20
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Thu Mar 31 20:11:40 2016 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 865a1157cfd9e0b932acff660eb6f85bbe1ff6c7[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Thu Mar 31 01:46:04 2016 -0500
+
+    added expanddata support for CMDTest and CMDCheck
+
+[33mcommit edf5a20fb9f39b78c6954b68e70285dacc9c7cca[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Mar 30 16:48:28 2016 -0500
+
+    Added += *= etc. to CP
+
+[33mcommit 9e202fd62e5411602a40287cd386b7a6272c105e[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 28 12:44:22 2016 -0500
+
+    removed FIXME comment from NullTestsEPCC
+
+[33mcommit 59c5a9aac8f6238e6b0f09d32ec67e039b91e7fe[m
+Merge: 9802a9a 53bf58f
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 28 11:50:56 2016 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 9802a9a6f7434fcc321efa4fd740de3a2018f8e9[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 28 11:47:55 2016 -0500
+
+    Revert "added patterns to support variable lower bounds"
+    
+    This reverts commit 8df162f0983e0efe4d73bebe399088f57ab18fe1.
+
+[33mcommit 48ba1c8bc5934a60282b9246145a6f0a24edcc18[m
+Merge: e7e32ab 595ee47
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Mon Mar 28 11:25:41 2016 -0500
+
+    Merge branch 'expand-better-rules' of https://github.com/joverbey/oaccrefac into expand-better-rules
+
+[33mcommit e7e32ab09a4a8682890fdc699719d210c4265360[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Mon Mar 28 11:23:32 2016 -0500
+
+    FindName in progress
+
+[33mcommit 53bf58fd87776e48435b112a3a2248a66f173007[m
+Merge: 758eb2b 8df162f
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Mar 25 14:55:29 2016 -0400
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 758eb2b38649115b5209616e6d213b0b96003194[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Mar 25 14:55:14 2016 -0400
+
+    Commit small changes before working on tests.
+
+[33mcommit 8df162f0983e0efe4d73bebe399088f57ab18fe1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 24 21:08:06 2016 -0500
+
+    added patterns to support variable lower bounds
+
+[33mcommit 595ee4777f80305dd0eb3575b9efb724c2272bbf[m
+Merge: 97b997c 84b1966
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 24 12:51:18 2016 -0500
+
+    merged in master to stay up-to-date
+
+[33mcommit 84b196634cf446e8eb6392d8ee32b58b0e684b0b[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Mar 24 10:57:12 2016 -0500
+
+    Fixed Intro Parallel test
+
+[33mcommit bd1fb1fff4d260e54da1e86eb23ca8dbdb0c256a[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Mar 24 10:34:42 2016 -0500
+
+    Added java.hprof.txt to .gitignore
+
+[33mcommit 138ca160d942b03a4ed13425a9bcc1ccf1aaa55a[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Mar 24 10:33:55 2016 -0500
+
+    Added Livermore Null Refac/dep analysis tests
+
+[33mcommit 49f201c904bc48c55db8cae07d330ff8cb0cf989[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Mar 24 10:22:53 2016 -0500
+
+    Added EPCC Null Refactoring/dep analysis tests
+
+[33mcommit 54151efb36752425dbbb9220ff6c2e8d72693c32[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Mar 24 10:22:20 2016 -0500
+
+    Fixed incorrect row/col on two loops
+
+[33mcommit 11c9bda995f194a598e24aca40c25c87bdcf2bd2[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Mar 23 12:50:31 2016 -0500
+
+    added tags to data constructs in level1
+
+[33mcommit ab1ae8535bcedaf7e53143074b660fd65f4447f5[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Mar 22 17:48:49 2016 -0500
+
+    IntroDefNone no longer breaks when running on invalid directive (iss14)
+
+[33mcommit 97b997ce8b961d8ad469ac62ac0dd3ddc544b5c5[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Mar 22 14:48:23 2016 -0500
+
+    added more copyright headers
+
+[33mcommit 49976379b5f1dce9d8d63e8abf9109da5134c64a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Mar 22 14:46:31 2016 -0500
+
+    added copyright headers
+
+[33mcommit 3de15d5451a0a4979d980fd6191f3db9fe955213[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Mar 22 14:43:00 2016 -0500
+
+    added copyright headers
+
+[33mcommit fb748617a9f90b91e30e77977409cd1e8435af3b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 21 21:42:11 2016 -0500
+
+    added data construct tags to level1 for testing ExpandData
+
+[33mcommit a48a3c6d8a525de802eed489446814194463675a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 21 21:26:28 2016 -0500
+
+    added new SrcAlt backend to ExpandData
+
+[33mcommit c360f7895db08c5d29dc41bc020e63e65229f430[m
+Merge: fdb7967 335420d
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 21 21:11:50 2016 -0500
+
+    added new SrcAlt backend
+
+[33mcommit 335420df9aef73fe0615a457b4b1f191d5ff93ab[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 21 19:13:14 2016 -0500
+
+    finished/cleaned up SrcAlt revamp
+
+[33mcommit fdb7967fbc965c2e8d3a5649cabd31f0c729736d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sun Mar 13 15:19:02 2016 -0500
+
+    made untested changes to IntroData and underlying SourceAlt
+
+[33mcommit b05fda27fa1aff3a050bf1dc9febc943eb10b492[m
+Merge: edd648f a693d8a
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 10 15:54:46 2016 -0600
+
+    Merge branch 'alteration-change' into intro-data-mod
+
+[33mcommit 853f6dcecd1400abe0d5d5946c841615404e12da[m
+Merge: 1199c8b a693d8a
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 10 15:50:41 2016 -0600
+
+    changed ExpandData to use new SrcAlt backend better
+
+[33mcommit a693d8a86ce857c1a3e7bcf480cb2a7f5d44c917[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 10 15:29:03 2016 -0600
+
+    revamped SourceAlteration backend to fix multi-removal bug
+
+[33mcommit 1199c8bc32ef343f2f69ae20f3378e2da390c57d[m
+Merge: a387895 efbea2c
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 10 14:31:59 2016 -0600
+
+    Merge branch 'alteration-change' into expand-better-rules
+
+[33mcommit edd648f594d5e0d059518ad2bb27997fe77cd34f[m
+Merge: b62fdb7 efbea2c
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 10 14:25:47 2016 -0600
+
+    Merge branch 'alteration-change' into intro-data-mod
+
+[33mcommit efbea2c2e3ccd94fbbc0ad86584de6ad3cf21fde[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Mar 10 14:25:01 2016 -0600
+
+    revamped SourceAlteration backend to fix multi-removal bug
+
+[33mcommit b62fdb7cd627de0de98e2a88ccd03eea454a3f7b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Mar 9 23:35:27 2016 -0600
+
+    added precondition check to intro data
+
+[33mcommit a0d5cd003f0ffc2739286f2fc8cf3cd9f3a1d607[m
+Merge: 2d800e4 5fb5290
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Mar 8 14:40:14 2016 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 2d800e4a057ca243d90cc400673056acf84a9777[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Mar 8 14:40:00 2016 -0500
+
+    Add license boiler plates to classes in transformations.
+
+[33mcommit 00553b07535e92feeb3c131bc12881ba079cbb1a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 7 14:49:54 2016 -0600
+
+    "merged" OpenAccUtil from expand-data branch for functionality
+
+[33mcommit a38789534601175bbefb147d357be1e2a584960b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Mar 7 14:47:15 2016 -0600
+
+    cleaned up ExpandData, moved stuff to OpenAccUtil
+
+[33mcommit 3256cfbff541c427fa048e73007c31c4a500db9f[m
+Merge: 5bb8629 5fb5290
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Mar 5 17:45:08 2016 -0600
+
+    merge master into expand-data-construct to stay up-to-date
+
+[33mcommit 5fb5290889e01649931d5f121af0c8ac332c9305[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Mar 5 17:36:04 2016 -0600
+
+    changed IntroData to use reaching defs instead of dep analysis
+
+[33mcommit 5bb862922122d8014643313df8398f9363ecc165[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Mar 5 17:24:50 2016 -0600
+
+    moved copy set inference to util class
+
+[33mcommit 2a1382a5e369cc6ee55925b2cc9ca2c88c6c66db[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Mar 5 16:54:48 2016 -0600
+
+    "merged" complete ReachingDefinitions into master
+
+[33mcommit e65efd3193c0d31acfaac3458a6b9311651cebe7[m
+Merge: 25897d5 6cce70b
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Mar 5 16:27:51 2016 -0600
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 25897d59d3d32ad562fde2931a64816327587ac4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Mar 5 16:27:32 2016 -0600
+
+    fixed interchange on partally perfect loop nests - iss12
+
+[33mcommit 6cce70bd3abb2b081a2d898abd1b430bc9fa5873[m
+Merge: fa83d98 e8c91c9
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Fri Mar 4 16:46:06 2016 -0600
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit fa83d98ba9b0eface71b83cb97c760449d35f6e9[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Fri Mar 4 15:54:48 2016 -0600
+
+    Added back default autotune capability, add a param to add loop name(-ln)loop
+
+[33mcommit e8c91c923b9dbe0fe52d0c6d18368d4f1b649d39[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Mar 3 15:40:31 2016 -0500
+
+    Add boilerplate and authors in edu.auburn.oaccrefac.core.dependence.
+
+[33mcommit d9a65e6196a6524325cd1864b38a9290eca22c42[m
+Merge: 0707bde a4785cc
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Mar 3 14:53:00 2016 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 0707bde576a7fbe6871b86fca7dd2902c3ce82ea[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Mar 3 14:48:04 2016 -0500
+
+    Eliminate warnings in edu.auburn.oaccrefac.core.dataflow and reorganize imports in entire project.
+
+[33mcommit a4785cccb26ca880d6c6e7cd5c3bc29b563805da[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Mar 2 16:34:59 2016 -0600
+
+    changed inquisitor method to claim decl and for stmt support
+
+[33mcommit e171e2b03dc9df5648d25a055ae78c36e4aa8419[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Mar 1 16:28:54 2016 -0600
+
+    Fix CP handling of fn calls and asgts in GEMM
+
+[33mcommit 8e65ee57b3e2a1d5d1126d4a81a0a7472c29dd5a[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Mar 1 15:59:55 2016 -0600
+
+    Handled pointers and array accesses in CP
+
+[33mcommit ce5cab6313ccc2c83b1d5db4c8c8b3feb02da1ff[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Mar 1 14:38:28 2016 -0600
+
+    Handled function calls
+
+[33mcommit 844e8324911b3b9ad3e9c6782f97dff798349f08[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Mar 1 13:56:16 2016 -0600
+
+    Added caching, factory method to AddressTakenAnalysis
+
+[33mcommit d33ec6e3b2b90760612bee286a280c1f54da80ab[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Mar 1 12:32:37 2016 -0600
+
+    Whitelisted some func calls in dependence analysis
+
+[33mcommit 30c18c40a269ac41588610173c4c3ff622decade[m
+Merge: 87ba606 6b7fd46
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Mar 1 10:56:23 2016 -0600
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 6b7fd46f0a007eddfaac65d07177bb55099ee92d[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Mar 1 10:53:24 2016 -0600
+
+    Handled if statements and function calls in CP
+
+[33mcommit 8a6dc9af699413db78aecb4a5f9dbcc8019dc1e7[m
+Merge: 3094824 2dff23d
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 29 14:06:57 2016 -0600
+
+    Completed level1 testing
+
+[33mcommit 2dff23dbd5c63a429fd7c515f069ccb869194de9[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 29 14:05:41 2016 -0600
+
+    Fixed epcc level1 test
+
+[33mcommit 30948247dcc64f8a46dc8b86098431b577af37fa[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Feb 29 12:07:06 2016 -0600
+
+    Distribute Loops code review
+
+[33mcommit f5efc93fd397e91d79a2843179eefc83948af7fe[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Feb 29 11:17:36 2016 -0600
+
+    added start of support for EDCRefac for cmd unit testing
+
+[33mcommit ecc693ae2e21ed8ac75931d5909487e7fb994260[m
+Merge: e1fffb1 87ba606
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Feb 27 18:40:14 2016 -0600
+
+    fixed conflicts merging master into expand
+
+[33mcommit 16072367ec390c71d4be4e560f8362a19021cbc0[m
+Merge: d9de771 3db4238
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Sat Feb 27 17:21:03 2016 -0600
+
+    CMDTestTool and RefactTestTool added
+
+[33mcommit 87ba6060e25ffe64a087119c4a8fdc28948c339b[m
+Merge: 344e051 8061600
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Sat Feb 27 16:31:05 2016 -0600
+
+    Merge branch 'CompleteTestDevelopment'
+
+[33mcommit 344e0513851ac2226ff5bcb2a07b66e02950bf4f[m
+Merge: 23bbb2b d9de771
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Sat Feb 27 16:29:56 2016 -0600
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 3db4238e56702cc6b53931d0833cad13a2267446[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Fri Feb 26 14:47:47 2016 -0600
+
+    finished CMDTest and RefacTest-still testing level1
+
+[33mcommit d9de7714afc5aa6cfd0db8423ca859035d2abd22[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Fri Feb 26 13:28:37 2016 -0600
+
+    Fix refactoring errors
+
+[33mcommit e1fffb16824deb442af89176f61892fb7b7d7f48[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Feb 26 12:33:23 2016 -0600
+
+    fix EDCRefac issue with comma-separated clause lists
+
+[33mcommit b5593084daed396e3706c48cf492c256b688b5b1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Feb 26 11:46:19 2016 -0600
+
+    fixed issue 4 (false positive on decl stmts in dep analysis)
+
+[33mcommit 65774da54cf3675df48f62d61e088cc61d0ff40c[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Feb 26 11:18:18 2016 -0600
+
+    fixed pragma string generation for ExpandData
+
+[33mcommit c4615b0a380da4ca18f3a787c84c993900f13b1f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Feb 26 10:38:39 2016 -0600
+
+    added better support to ExpandDataCon for existing create clauses
+
+[33mcommit 8061600c44c9de8ba837a2e7b72b509f5f591ae5[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Thu Feb 25 22:07:42 2016 -0600
+
+    RefacTool added, update to CMDTestTool
+
+[33mcommit 90dc14264754cba8cfa1a573f337e4b4ef273680[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Feb 24 12:34:23 2016 -0600
+
+    added support for other data clauses and copy range syntax
+
+[33mcommit c6c12eb36fbe1b8f847cb5f354623dacc3e93721[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Tue Feb 23 22:34:42 2016 -0600
+
+    fixed a git.ignore error
+
+[33mcommit 8dd6fef0d5cbadbeb47c044ee27965106b659d85[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Tue Feb 23 22:28:30 2016 -0600
+
+    CMDTool 1.0 completed
+
+[33mcommit d6e87b493cc710d155a8668e585a0413a6323ccf[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Feb 23 00:00:06 2016 -0600
+
+    added check to DepAnalysis to fix false positives
+
+[33mcommit f4963831b203babb0197ac0e89c9ac3ad3c33276[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Feb 22 19:51:45 2016 -0600
+
+    fixed cfg builder where do-whiles were incorrect
+
+[33mcommit 8f2885733d5fd5644cc28745ba5c684865c0f235[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Feb 22 14:33:22 2016 -0600
+
+    added RD unit tests
+
+[33mcommit 968d35f760afba06825de9b682662e02ac49dfe6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Feb 22 13:10:53 2016 -0600
+
+    fixed bug in PragmaDirectiveRefac where local variable in findStatement() was null
+
+[33mcommit caca50af9dbf8d156d948caed0a2c8969b1716c4[m
+Merge: fe5e3ac 17d480d
+Author: William Hester <williamehester@gmail.com>
+Date:   Mon Feb 22 11:46:40 2016 -0600
+
+    Merge branch 'master' into code-cleanup
+
+[33mcommit fe5e3ac5dba718601a5baedaac52bd368961a314[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Mon Feb 22 11:37:46 2016 -0600
+
+    Update plugin.xml
+
+[33mcommit 2e27fe69884dfcb91c3c99d6f3ac261a0e11312a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Feb 19 02:18:03 2016 -0600
+
+    fnished working version of expand data construct refactoring
+
+[33mcommit f0b3024f01101d4c777ce426959288c662ebe9c9[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Tue Feb 16 16:31:03 2016 -0600
+
+    Move refactoring menu into JDT Refactor menu, remove toolbar buttons
+
+[33mcommit c33667ca427e51b4e150297ed7e48c5b617e704f[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Tue Feb 16 15:39:49 2016 -0600
+
+    Fix number input
+
+[33mcommit 46d05c823d4b4621b075e4ea9342925702657fac[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 15 11:51:04 2016 -0600
+
+    begining to generalise test and levle1 compare results
+
+[33mcommit cbd6ca81fa5200a4ae89d10c9782d3b397fce19b[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Wed Feb 10 20:52:31 2016 -0600
+
+    Remove unused code
+
+[33mcommit bf3e1f217fbae4fae592f94feb97be8a0d6712c7[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Wed Feb 10 17:32:56 2016 -0600
+
+    More cleanup, add todos for errors
+
+[33mcommit 23bbb2bc4e3ddb1fe3f56ceb1aae7056686ea2c4[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Wed Feb 10 10:58:51 2016 -0600
+
+    To Shelby 2/10/16
+
+[33mcommit d6ad1be04ba59176bf49815569a33df97c9c2e30[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Tue Feb 9 17:59:20 2016 -0600
+
+    Removed metaData
+
+[33mcommit 615e342bde87a3a80252112b470e9b196df82d0c[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Tue Feb 9 16:42:29 2016 -0600
+
+    More refactoring
+
+[33mcommit 17d480d673b2142c546f05c0ff2d5285f36aacfe[m
+Merge: 93de7b1 ee1e44d
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Feb 9 15:24:49 2016 -0500
+
+    Merge branch 'address-taken-analysis'
+
+[33mcommit 93de7b11cdbec050350d15c48451df1c0df2baf6[m
+Merge: 0821f80 8e8819e
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Feb 9 15:23:14 2016 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 8e8819e83ef45514d47f2b937f5f07b02b18f58b[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Feb 9 14:18:58 2016 -0600
+
+    Removed .metadata
+
+[33mcommit ee1e44d2412113fbd98e11e6d24d12f1b8a4ffa3[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Feb 9 15:09:37 2016 -0500
+
+    Complete analyses.
+
+[33mcommit 2889eb5ec662f4b3d2e95c9cbb96f9ae9dfd9d41[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Feb 8 22:39:07 2016 -0500
+
+    Complete address taken analysis.
+
+[33mcommit 12663d25920c9d09d5a7477538904dc5453e64b5[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Mon Feb 8 20:31:05 2016 -0600
+
+    2/8/16
+
+[33mcommit 92d67972be546cf4f243104c4cd3722346d5f9a3[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Feb 8 17:34:25 2016 -0500
+
+    Stub out AddressTakenAnalysis and begin writing tests for it.
+
+[33mcommit 0821f80ba6758f02022a7441c748b1766164332b[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Feb 8 16:47:06 2016 -0500
+
+    Restrict variable access.
+
+[33mcommit bd52a01c860ea3c53807446d9c0592b616ca59e9[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Feb 8 14:43:44 2016 -0600
+
+    added final expand data construct helper methods
+
+[33mcommit b746b523e3adc60929fed6fc3291be4fa57d1e23[m
+Merge: ea07b60 178b495
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 8 11:57:18 2016 -0600
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 178b49589c21f914be9e3cfda9eab408ac6f9f85[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Feb 8 12:52:02 2016 -0500
+
+    Add unit test for when one variable is restrict and the other isn't.
+
+[33mcommit ea07b60808a7db8d04af83ac5d3dec5f54e430f9[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 8 11:44:22 2016 -0600
+
+    CMD Base Tool finished
+
+[33mcommit 2bed83e7044e890e9e9ad4ef908924e3bd143c23[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Mon Feb 8 11:08:30 2016 -0600
+
+    More UI code refactoring
+
+[33mcommit 45cec99c875604725b4db6fd6168abdcf7c33b4a[m
+Author: William Hester <williamehester@gmail.com>
+Date:   Fri Feb 5 16:15:25 2016 -0600
+
+    Clean up coding style in UI files
+
+[33mcommit 971be94de99071387fe5672e8337d1d2b30a95b2[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Feb 5 16:10:46 2016 -0600
+
+    fixed issue so that tiling/intchg can work on imperfect loop nests
+
+[33mcommit df663f3e9546aec6d6ef04f88dd52d9d9605b772[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Feb 4 23:19:11 2016 -0600
+
+    changed return type of RD anls; added new anls query; added some helper methods to expand data refac
+
+[33mcommit 2dcae6f37d422540843f762ca51bf36eeaab4559[m
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Thu Feb 4 17:53:31 2016 -0600
+
+    moved project location on local maching
+
+[33mcommit a8e685e9cf7c73b7c38452a51aeb8b88a31cb52b[m
+Merge: 895af9a b3e183c
+Author: Jacob Neeley <blitzchamp13@gmail.com>
+Date:   Thu Feb 4 16:47:28 2016 -0600
+
+    Merge branch 'CompleteTestDevelopment' of https://github.com/joverbey/oaccrefac into CompleteTestDevelopment
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/DistributeLoopsTestslevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/IntroOpenACCParallelTestsLevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/IntroduceKernelsLoopTestslevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/LoopCuttingTestslevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/LoopInterchangeTestslevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/LoopStripMiningTestslevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/LoopTilingTestslevel1.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/RefactoringTestComplete.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/RefactoringTestNamedLoops.java
+    	edu.auburn.oaccrefac.ui/test/edu/auburn/oaccrefac/internal/tests/refactorings/RefactoringTestlevel1.java
+
+[33mcommit b3e183c1747b08401dcee7bbc04441d219890237[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Tue Feb 2 16:56:11 2016 -0600
+
+    CMD tool to file
+
+[33mcommit 895af9aa1f577ddca4ab3345ea7ba1ee9895778c[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Feb 2 14:28:10 2016 -0600
+
+    Added Null refactoring and Analyze Loops action
+
+[33mcommit 4e0a4441927bcacc182995ff947aa71e6f105647[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Feb 2 12:41:41 2016 -0600
+
+    Ignore .DS_Store and ._*
+
+[33mcommit 3d1bdf8c30be6ead7b621e93e007cad324f5e877[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Feb 2 10:23:57 2016 -0600
+
+    Removed "Unhandled return stmt" msg from CP
+
+[33mcommit 8efadbc08b38fcd3ff6d2c3746ed72e54a44dd11[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 1 14:51:38 2016 -0600
+
+    added shell script for refactorings
+
+[33mcommit e6a5cef2412c47816ff3c613636cd2eaf41dd7d9[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Mon Feb 1 10:24:54 2016 -0600
+
+    Feb 2 push to Shelby
+
+[33mcommit 7e6e8eaa11a7c8c1e09fec8e76cb16c00558100f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jan 29 18:20:59 2016 -0600
+
+    added more utility methods to expand data contruct; moved some methods to ASTUtil
+
+[33mcommit ecbb3309e74bc38a7ef99868acfba70700aafcea[m
+Merge: 47b76d2 e7d5056
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Jan 29 18:26:06 2016 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 47b76d25577f7832e75bb1be6825375a91f9e0a1[m
+Merge: 1f5f4d3 e2746e5
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Jan 29 18:22:26 2016 -0500
+
+    Merge remote-tracking branch 'origin/alias_analysis'
+
+[33mcommit e2746e506b548a1a857123b0bf997b162c8239c0[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Jan 29 18:14:33 2016 -0500
+
+    Finish testing analysis.
+
+[33mcommit 1f5f4d3561ff55d4b8e5408918a1f3f452c61afb[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Jan 29 13:12:46 2016 -0500
+
+    Add tests for non-error cases. Still need to do tests for error cases.
+
+[33mcommit 5fd1e5aeed0399fffcc13c98ef914e985c91939b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jan 28 20:49:03 2016 -0600
+
+    added top-level and some private methods for expand data const
+
+[33mcommit 8b5c1623222c5cc09a5d8b4f076d34160064e5f4[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Jan 28 18:43:17 2016 -0500
+
+    Finish initial implementation of PointsToAnalysis. Still need to test.
+
+[33mcommit c660cc49035f795151b05543e839df1bbe9948c8[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Jan 27 01:46:52 2016 -0600
+
+    CMD toolName completed:
+
+[33mcommit 957404c80945b59e9bc708f498bf99afdabe4fc0[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Jan 26 16:22:16 2016 -0500
+
+    Finish writing tests. Find names from function definition. Begin writing
+    algorithm.
+
+[33mcommit fecf6a96e427c0228350158adbe75b94a4c698d3[m
+Merge: b9fc0b4 0e1a94e
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Tue Jan 26 11:42:17 2016 -0600
+
+    Merge branch 'CompleteTestDevelopment' of https://github.com/joverbey/oaccrefac into CompleteTestDevelopment
+
+[33mcommit b9fc0b4a275c352aaef8fcc8d4749a74b57d6801[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Tue Jan 26 11:23:00 2016 -0600
+
+    Almost done with loopname CMD
+
+[33mcommit e7d505642a269fc319de3d5d658f0e022da57686[m
+Merge: 8d73d13 a9d3ef1
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jan 25 12:34:12 2016 -0600
+
+    merging rd analysis from gpu-rd into master
+
+[33mcommit 0e1a94eceae766aab9b0314662066239f69e1706[m
+Merge: 1a0b366 428f107
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Sat Jan 23 18:05:18 2016 -0600
+
+    Merge branch 'CompleteTestDevelopment' of https://github.com/joverbey/oaccrefac into CompleteTestDevelopment
+    work from home
+
+[33mcommit 1a0b366d63eabb46ad9ca035931c09c41cbb4b81[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Sat Jan 23 18:01:45 2016 -0600
+
+    Commit before
+
+[33mcommit 8d73d13a0199cbbb48a48c9af0546d4a942c11ee[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jan 22 13:05:24 2016 -0600
+
+    fixed comment preservation issue with distribute loops
+
+[33mcommit 428f107d3df765f7ff751577fd86f7528939f228[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Thu Jan 21 12:20:09 2016 -0600
+
+    Working on CMD test
+
+[33mcommit 797f461904cbffc6f1153b746e3bf50bbd515902[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Jan 21 13:08:08 2016 -0500
+
+    Figure out algorithm for alias analysis. Stub methods. Stub tests.
+    Document.
+
+[33mcommit 6c14e661b3d76d67c5060f813b13d6a6cc9af183[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Jan 20 12:04:38 2016 -0600
+
+    began work with cmd tool, fixed fuison to distribute in plugin xml
+
+[33mcommit 3a347f7aca6d0dfad9bb19df7f598bddeb37eb9f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jan 14 15:16:58 2016 -0600
+
+    added start of new data construct expansion based on more thorough rules
+
+[33mcommit 22eb83fac81c25ba1a36f2567f6aa35845f5f166[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Dec 30 17:54:40 2015 -0600
+
+    completed enlarge data construct with basic overly-conservative rules
+
+[33mcommit 95da58296c937bf08292913158943d289086af73[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Dec 18 16:41:47 2015 -0500
+
+    Create skeleton for points to analysis.
+
+[33mcommit 444084fd8dc8f344f2264b06d56874971950c5a5[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Dec 18 15:17:17 2015 -0500
+
+    Remove unneccessary comments.
+
+[33mcommit ec4c1d9df8e20f6c5572d1d245d716a9ab7c7972[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Dec 18 02:02:52 2015 -0600
+
+    added expand data construct skeleton
+
+[33mcommit a9d3ef133509c8d0be4a1a93c605db7800cf5f8d[m
+Merge: 10cecc9 d6433dd
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Dec 17 17:09:41 2015 -0600
+
+    Merge branch 'gpu-rd'
+
+[33mcommit d6433ddd6479a0933bad886e7cb7361788c57486[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Dec 17 17:07:30 2015 -0600
+
+    changed RD signature and added passing unit tests
+
+[33mcommit 3dd5150f03784fb2aaba9143bba0dcc477dc9c18[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Fri Dec 4 15:49:07 2015 -0600
+
+    Complete Test Development
+
+[33mcommit 10cecc9d91933a32a4c6bc56cb47652411e17ea0[m
+Merge: d92a74b e2f7059
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Nov 26 19:11:40 2015 -0500
+
+    Merge in command line interface.
+
+[33mcommit d92a74b8e7ba7b0edf861400e8b326a15e1476e1[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Nov 26 19:10:27 2015 -0500
+
+    Document refactorings.
+
+[33mcommit a431f207a4db7f9946b2e82530d4b78d8fdbaa62[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Thu Nov 26 11:07:15 2015 -0500
+
+    Complete command line interface for refactorings.
+
+[33mcommit 8e57c5b29600b62904e39d99fb59797cc7d37175[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sun Nov 22 16:38:25 2015 -0600
+
+    fixed issue where unaries were said to not reach anything
+
+[33mcommit e05935ceaf9b0b3c2e4c4203c9b28225b2a735a4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Nov 17 23:57:14 2015 -0600
+
+    added corrected version of CFG generation, implemented RD analysis
+
+[33mcommit 63333e39b787d708233da19d13319f37bc2dccfa[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Nov 17 17:08:28 2015 -0600
+
+    Complete other refactorings and fix unroll issue.
+
+[33mcommit a2fc5f18db30dfaab39fce56b92afc6e9ab037be[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Nov 17 15:43:30 2015 -0600
+
+    Finish remaining non-statement refactoring runners.
+
+[33mcommit 654e8d34af889fe888be7fbd7c35662b183a62d1[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Fri Nov 13 17:08:03 2015 -0600
+
+    Implement several more refactorings.
+
+[33mcommit 05c3ea7c6ba7a29c791cdc2454ad579dd35e1041[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Nov 13 01:03:23 2015 -0600
+
+    added reaching definitions (buggy, lots of unsupported stuff)
+
+[33mcommit e2f7059f72b8a0373858ac5ebd036a21411e0304[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Nov 11 15:16:02 2015 -0600
+
+    setup level1 testing
+
+[33mcommit cf820fb8d732465d998a879b20eaf53a5d817018[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Nov 11 14:24:37 2015 -0600
+
+    setup testing for epcc level1
+
+[33mcommit 59fdd4ee5fc0b2f8fc83eae7457be8c80fcf7d8c[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Nov 10 17:10:55 2015 -0600
+
+    Add command line refactoring classes for IntroduceKernelsLoop, IntroduceParallelLoop, and FuseLoops.
+    
+    Add examples for all of the above classes.
+    
+    Create main runner from which other refactorings can be run from.
+
+[33mcommit c65c5fb5331f40b3b1353317bab08155a88549db[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Nov 7 13:54:34 2015 -0600
+
+    added reaching definitions skeleton
+
+[33mcommit dc2859512a217dd46b68ec181748c41de028e9cf[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Tue Nov 3 15:22:49 2015 -0600
+
+    Tested, implemented, and explained decisions for making refactorings openacc aware
+
+[33mcommit f778bb90ef140ceb815d673e19030ae732931d9e[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Nov 2 23:57:15 2015 -0600
+
+    Add comments explaining why openacc awareness isn't necessary for strip-mining, loop-cutting, and loop-tiling
+
+[33mcommit bfe157637f92b9d66c2c2ff275857c1dd3871265[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Sat Oct 31 18:59:00 2015 -0500
+
+    Reworded error status's for distributeloop
+
+[33mcommit 12b50d88e8f3ba30ffdf8e95d65b030ef19f68b2[m
+Merge: 33b263c cb2c562
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Oct 28 14:22:51 2015 -0500
+
+    Merge branch 'parallel_refactoring'
+
+[33mcommit cb2c562690706c3d81059e36de976ccbc23c94f4[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Oct 28 14:14:38 2015 -0500
+
+    Adding paralel checks
+
+[33mcommit 33b263c91a69c8f1fb56b6ce8b5e2f8e78d3d551[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Wed Oct 21 17:08:54 2015 -0400
+
+    Add comment explaining why OpenACC awareness isn't necessary for loop interchange.
+
+[33mcommit fc68df16c7e3ffc18865c8be1bbff3cefc9289da[m
+Merge: 7f1837f cc7536e
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Oct 20 14:47:01 2015 -0500
+
+    Merge branch 'temp'
+
+[33mcommit cc7536e4181b5b121b38e79aeb71bb53e5b90055[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Oct 20 14:44:38 2015 -0500
+
+    fixed issue with space after pragmas, fixed corresponding tests
+
+[33mcommit 7f1837f7e7c2649a1d44a4af8536702b5630eaf5[m
+Merge: 417f72c 01ed068
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Tue Oct 20 12:33:30 2015 -0500
+
+    commit loopcutting
+
+[33mcommit 01ed068dc46ae38c8af835fc5e49bbcbb89bffb8[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Tue Oct 20 12:15:52 2015 -0500
+
+    comitting loopcutting to master
+
+[33mcommit 417f72c90576c8084ff5e7abe4fb7efa9959c57f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Oct 20 12:09:55 2015 -0500
+
+    added loop fission dependence analysis
+
+[33mcommit 4bfc877b3ce55f7c597bf678a271577ac7389357[m
+Merge: ad07564 a976c49
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Oct 19 18:47:21 2015 -0400
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit ad0756441894202eb3ea9279f106de8fbbfcd96f[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Oct 19 17:10:15 2015 -0400
+
+    Add test for kernels loop loop form check
+
+[33mcommit f83edebba499fe1b2a447afe0413a6241b3defca[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Oct 19 16:55:42 2015 -0400
+
+    Add loop form check body so an error is added if a kernels pragma is added to a loop that already has a pragma.
+
+[33mcommit a976c49c116343a73bdecdb639dbe1d8f51b5fb2[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Oct 14 16:13:54 2015 -0500
+
+    fixed unit tests to expect a newline where intro default none outputs one
+
+[33mcommit a5434b5dec840a965e7321c30da8bcf16687e0ec[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Oct 14 16:08:56 2015 -0500
+
+    added intro default none tests; fixed bug on empty pragma selection
+
+[33mcommit 964cf75e26ba0e1ca56f7156759f0c6214ef4cb6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Oct 14 15:08:34 2015 -0500
+
+    implemented intro default none refactoring; added form check method
+
+[33mcommit 5eef288c1109eefd17da76a603a4c69e3bc4d5fe[m
+Merge: 0ba1bf5 ed02f13
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Oct 14 13:38:12 2015 -0500
+
+    Merge branch 'master' into intro-default-none
+
+[33mcommit 0dabc3c0e4a5d180d16b2fed94f92b665bdf0f7d[m
+Author: galanite <blitzchamp13@gmail.com>
+Date:   Wed Oct 14 11:18:09 2015 -0500
+
+    added LoopCutting
+
+[33mcommit ed02f13f07c9f4e8eb4d1f16443de69886474036[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Oct 14 09:07:51 2015 -0500
+
+    Updated OpenACC parser to OpenACC 2.0a
+
+[33mcommit 01de8f32b9a53a489b70e2198cec359c69fbef07[m
+Merge: 9e4d2e2 41a24c6
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Oct 12 17:38:19 2015 -0400
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 9e4d2e224c3791643b0f17b4398dbc6889443b53[m
+Author: jwowillo <will.orourke10@gmail.com>
+Date:   Mon Oct 12 17:36:38 2015 -0400
+
+    Implement kernels loop refactoring and tests
+
+[33mcommit 0ba1bf574e66f145d3a264884bb4cc2aabd0f05e[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Oct 12 16:18:15 2015 -0500
+
+    added statement field to pragma refac/alt/check; fixed bug where finalizeChanges threw exception on empty refac
+
+[33mcommit 41a24c6cea2c9c79c9d27c698e44d8773d9dc376[m
+Merge: 7118784 dd82f02
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Oct 12 14:31:11 2015 -0500
+
+    Merge branch 'intro-data-construct'
+
+[33mcommit dd82f0254aed03eb171414bc62a5cfd9e41ca8e6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Oct 12 14:30:47 2015 -0500
+
+    made copyin/copyout set ordering consistent
+
+[33mcommit 98edeb0c2bb6198ba87ab6045f3901724d4cf7ab[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Oct 9 17:21:09 2015 -0500
+
+    added copy clause inference to IntroDataConstruct
+
+[33mcommit 266fe996906901707173cc3ca509f8941761ef55[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Oct 2 21:35:12 2015 -0500
+
+    implemented framework for pragma alterations and set up ui and boilerplate for intro default none
+
+[33mcommit 4f48673ca6de850a2f88cac72b9bc23712d24521[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Oct 2 19:56:42 2015 -0500
+
+    moved code up to superclass from IntroDataConstRefac
+
+[33mcommit fcfe276e75d1a1ad343a9e6f49ae65a10a0cc0ac[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Oct 1 15:22:19 2015 -0500
+
+    Added PragmaDirectiveRefactoring
+
+[33mcommit d2200847872508f9cf76484494656c16f8eae9a4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Sep 30 16:15:44 2015 -0500
+
+    added StatementsAlteration, etc; implemented simple IntroDataConstruct
+
+[33mcommit 71187848983839c8980d90f4caf65e37375ad278[m
+Author: Alexander <blockhead54@users.noreply.github.com>
+Date:   Tue Sep 29 16:13:40 2015 -0500
+
+    Delete bugs-ac
+
+[33mcommit 788822300eee982666f84b94a212fe5553de6600[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Sep 29 15:21:08 2015 -0500
+
+    Added EPCC benchmark suite
+
+[33mcommit 179eff24aece57ca9043dcd4fb112a460c863428[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Sep 26 22:45:58 2015 -0500
+
+    set up UI for IntroDataConstruct refactoring
+
+[33mcommit c86f2bcb7fee3addb61917dcbeec7ec93ecee828[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Sep 26 15:28:35 2015 -0500
+
+    added strip mine unit test to cover a weird comment issue
+
+[33mcommit 8d2496ee2b05b1d032807135f5248b7eb3080d14[m
+Merge: d7857bd 07c498a
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Sep 26 15:15:44 2015 -0500
+
+    Merge branch 'tiling'
+
+[33mcommit 07c498a3c6e18faf7648c262683407c3734ff100[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Sep 26 15:14:58 2015 -0500
+
+    updated and added to tiling unit tests; all pass
+
+[33mcommit 0118165568d125ba3c52f16e0ef4da40663e14d9[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Sep 25 18:46:53 2015 -0500
+
+    updated tiling test files, but not result files yet
+
+[33mcommit 289cdd79f57143ec94ee0dd52622fbb52d4a22b6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Sep 25 18:09:57 2015 -0500
+
+    improved tiling comment handling
+
+[33mcommit cc67010bac1865cead2688f143925377794e8d37[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Sep 25 16:27:42 2015 -0500
+
+    implemented tiling
+
+[33mcommit d7857bd023c04aa26ffeeb5b69777be2d532a271[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Sep 22 13:59:42 2015 -0500
+
+    Inquisitor, Unroll Check describe unsupported stmts
+
+[33mcommit bea355b9df83d030bbacdd1f6a18d4e66bc6f6c7[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Thu Sep 17 13:35:38 2015 -0500
+
+    Removed commented out code in UI delegates.
+
+[33mcommit 05d4b33008a6c0d1444c1667c8f41a34ea4cf572[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Sep 15 10:13:25 2015 -0500
+
+    Added CLI generated loops and Unroll tests
+
+[33mcommit b26033e28fe1274f16b47b7673629377f0263416[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Sep 14 18:47:36 2015 -0500
+
+    fixed one more call of getLowerBound from unrolling alter.
+
+[33mcommit 380328fb5b374c2f41d4e6a268883b1f1d0c95bd[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Sep 14 17:27:12 2015 -0500
+
+    changed Inquisitor.getLowerBound() to return Long rather than int
+
+[33mcommit f8dd3d919b89e3e7c727f7fcea33c574e496d90f[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Sep 10 20:38:10 2015 -0500
+
+    Updated LoopNestGenerator for fixed depth, # stmts
+
+[33mcommit 64258926f9aed620f5b649e0ed8ff2bf452c35da[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Sep 10 17:19:20 2015 -0500
+
+    Fixed Strip Mining tests
+
+[33mcommit 944fdf863768c5d01bc0fd21bda8b673d13688dc[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Sep 10 17:08:43 2015 -0500
+
+    Fixed Fusion tests
+
+[33mcommit 69d62294b827e52b4d41e0b87299fb9aacbce228[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Sep 10 16:41:00 2015 -0500
+
+    Fixed Fisson and Interchange tests
+
+[33mcommit b097d39a49759a399491025607006eb1159f2ad8[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Sep 10 16:29:46 2015 -0500
+
+    Removed Livermore Loops tests for Strip Mining
+
+[33mcommit 4c379a72f4af6ee48c45497ac62fa62cfd8c8492[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 10 16:16:13 2015 -0500
+
+    replaced java 8 code in FusionDep. with java 7 code
+
+[33mcommit cba4b017b47655bfc311054da38da4dba985e3a2[m
+Merge: 02d67cf 79ab448
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 10 15:59:23 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac.git
+
+[33mcommit 79ab448c63edab59701c2700b75b61061c4a5d31[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Sep 10 15:56:03 2015 -0500
+
+    AbstractDependenceAnalysis handles += and ++
+
+[33mcommit 02d67cfdbc434b349baf9216074138577ab30fde[m
+Merge: 92a251c 1d29cf0
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 10 15:54:30 2015 -0500
+
+    Merge branch 'stripmine'
+
+[33mcommit 1d29cf0ef244415a326a8a35118af757bd845ab3[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 10 15:07:36 2015 -0500
+
+    implemented strip mining
+
+[33mcommit 92a251cebfd247ba50ab9d151762b4321c411047[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Thu Sep 10 15:03:13 2015 -0500
+
+    Removed redundant code in refactorings.
+
+[33mcommit 4510573bc69b022426d277191341e6d46b1c33f4[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Thu Sep 10 00:03:54 2015 -0500
+
+    Fixed redundancy of seclectionChanged function in RefactoringActionDelegate and subclasses.
+
+[33mcommit 58329db2856b0f45345464590323abf079f4f174[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Wed Sep 9 23:54:38 2015 -0500
+
+    Added copyright notice to last classes
+
+[33mcommit 0248d5b9b88ca5805340af81215296b40e6b7f8b[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Wed Sep 9 23:39:37 2015 -0500
+
+    Copyright notice added
+
+[33mcommit 19d4169c832c2c32bee940cb42d4a287f57d6b0b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Sep 8 16:49:57 2015 -0500
+
+    added methods to StripMineAlteration
+
+[33mcommit e926d17c7da0b5e18196a1a3347e9febd60002e2[m
+Merge: 0badd14 845317e
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Sep 8 11:42:35 2015 -0500
+
+    Merge branch 'new-fusion-dep'
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/core/dependence/DependenceAnalysis.java
+    
+    	resolved conflicts
+
+[33mcommit 845317e56f31449a6de09dca24fb9abd691a429a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Sep 8 11:35:49 2015 -0500
+
+    fixed fusion unit tests
+
+[33mcommit 0badd14b3784324669d2dab996603834fdc1e2dc[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Sun Sep 6 11:35:52 2015 -0500
+
+    Corrected a few minor errors that removing m_ variables created.
+
+[33mcommit 476c78c142b8f0ca67ccb86a2e823cbbd1f79b4a[m
+Author: zok0001 <zok0001@auburn.edu>
+Date:   Sat Sep 5 11:10:55 2015 -0500
+
+    Added copyright header and fixed m_ variables in ui classes
+
+[33mcommit 07c508469d901ab35b16a2341df0f4a6cff0cfaf[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Sat Sep 5 00:19:52 2015 -0500
+
+    More Unroll bugfixes; integrated into CLI
+
+[33mcommit 836daeed06c6571364abc9b78ee9cfef34293f43[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Sep 4 20:53:50 2015 -0500
+
+    added fusion dep analysis stuff
+
+[33mcommit 65521fe7d48cec3a6c6166047fabd2b98e6ab27b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Sep 4 20:32:12 2015 -0500
+
+    added fusion dep analysis and tests
+
+[33mcommit 305f22fbc5dea4089079b80015d30d63897fb70f[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Sep 4 19:21:28 2015 -0500
+
+    Fixed broken Intro Parallel tests
+
+[33mcommit 4694410ce3a6e21bba3898049aa5ce4a56b46eff[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Sep 4 19:05:03 2015 -0500
+
+    Unroll Loop fixes; dep analysis handles ++ and +=; allow Exceptions in
+    Refactorings
+
+[33mcommit c4e604a75afbd8fc7819a80e3f26cf22aa5ec3cb[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 16:59:34 2015 -0500
+
+    fixed undersized direction vectors in FM tests
+
+[33mcommit dd42385248d5ef39ca2f50e8a0078a6e04f74d33[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 16:38:54 2015 -0500
+
+    fixed Fourier-Motzkin unit tests, updated some incorrect FM comment docs
+
+[33mcommit 76f51a3cb47a8b30f54ac5d1b21361f7bd105f60[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:36:26 2015 -0500
+
+    removed useless imports, fixed Check signature change compile issue
+
+[33mcommit f0c616f0ba07aaacbffdcdb547694056abe4465b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:33:39 2015 -0500
+
+    move RefactoringParams class to their own files
+
+[33mcommit 005e317f1c836bf948c0bb53b2f0de95b3e049e5[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:31:13 2015 -0500
+
+    change RefactoringParameters class names to be more consistent
+
+[33mcommit 860ae43ac2c03b5b0aa4ff1776646959607422e0[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:23:48 2015 -0500
+
+    fixed compile error caused by Check signature change
+
+[33mcommit 3054d53d5aa52996d610990614aeddc6b8158f0d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:23:01 2015 -0500
+
+    reduced Check method signature like I was supposed to do before I merged
+
+[33mcommit ed691c68bab93d632b2ab9b7099872780cce89dd[m
+Merge: 43f94b4 baf554e
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:10:23 2015 -0500
+
+    Merge branch 'check-change-info-passing'
+
+[33mcommit baf554eb8d81aa2e3867fe555ca0122d81f7f00f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 14:09:40 2015 -0500
+
+    added ForLoopCheck for future differentiating between forms of check
+
+[33mcommit 1966e039d2cf22f99b1df0d835a63ce7c3a75e80[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Sep 3 11:55:08 2015 -0500
+
+    fixed unrolling NullPointerException when init expr is not a declaration
+
+[33mcommit 43f94b4a0e31b1f92f7d4a59128f2c7581ec69a6[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Sep 2 19:51:35 2015 -0500
+
+    Fixed Unroll Loop tests
+
+[33mcommit c95edbed1dd0d80cfbf4568239c6ed40fb6ef460[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Sep 2 17:46:30 2015 -0500
+
+    implemented check api
+
+[33mcommit 334c21d97923f4065a5bd71109b2227899025bed[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Sep 2 14:31:21 2015 -0500
+
+    Fixed Intro OpenACC Parallel tests
+
+[33mcommit 6ad3d3c1804eabcbbf7dcaea24624bdf769b083c[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Sep 1 17:43:51 2015 -0500
+
+    changed check API to apply more smoothly to all refactoring
+
+[33mcommit b09c71bc10f15e2f690bf53643d0b1c593a1c6f7[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Sep 1 15:25:53 2015 -0500
+
+    committing for access from other computer - errors exist
+
+[33mcommit 572c6f009949314a3a33eab18b6fd547993245f4[m
+Merge: 8d73914 1a6923b
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Sep 1 12:01:35 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 8d73914ddd863e06f3a5e02fe8c2622cb5575bf5[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 31 21:51:48 2015 -0500
+
+    fixed IntroParallel bug from pragma() call
+
+[33mcommit 2297885e24dbe0fd208e827b422088878bf56fb7[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 31 21:23:58 2015 -0500
+
+    removed new-changes file, added TODO file
+
+[33mcommit 1a6923b08541c2711d597011dab4afaeaa7029ea[m
+Author: Zachary King <zok0001@auburn.edu>
+Date:   Sun Aug 30 23:30:43 2015 -0500
+
+    Checking capability to push code. Added sample copyright headers to other UI core classes.
+
+[33mcommit ebf869ff60e4d66c5600cc6c0bb9b8eefe3eeb8f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Aug 29 16:57:47 2015 -0500
+
+    parameterized ASTUtil Comparators to remove warnings
+
+[33mcommit 32e0fedef2926009934a3a81ee97da03127e49c4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Aug 29 16:55:21 2015 -0500
+
+    replaced several anonymous comparators with named constant in ASTUtil
+
+[33mcommit 6b9ecc25b6388b86e060d3a3ddecca220f938025[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Aug 29 16:41:41 2015 -0500
+
+    unrolling no longer puts declaration in between loop and pragmas
+
+[33mcommit 5202443949397db433705043923dbbf9a7e3bc77[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Aug 29 16:18:15 2015 -0500
+
+    finished unrolling; fixed corner-case bug in alteration class
+
+[33mcommit 2c9d58b6cd8bdd17a85ce95b572f8d0f891d0275[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Aug 29 14:53:14 2015 -0500
+
+    added unrolling for basic cases (incomplete); fixed fusion formatting
+
+[33mcommit 9c72a8aa58e867a8e6efea49dda6bf21d9d52d9c[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Aug 28 15:26:03 2015 -0500
+
+    Added sample copyright headers to UI
+
+[33mcommit 12ee3bf92d9e9aece6f50e024f6cd251658dc42c[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Aug 27 17:03:48 2015 -0500
+
+    reduced stringbuilder from function def to local snippet
+
+[33mcommit 89b7692f98ed92d8fa1b4031234058fee570c315[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Aug 27 13:55:12 2015 -0500
+
+    Added Eclipse setup instructions to readme
+
+[33mcommit 12b11895cdf6b79f18167979b940fef92052a0d1[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Aug 26 22:58:47 2015 -0500
+
+    Added Loop Interchange test for bug Adam found
+
+[33mcommit 68d5e3d5944a83301473af0652ab14580805a95e[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Aug 26 22:57:37 2015 -0500
+
+    Fixed copyright headers
+
+[33mcommit 77c45fc0e7a15c2672c0ce51a5b365ab00689d64[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Aug 26 16:53:19 2015 -0500
+
+    Code review - check/change objects
+
+[33mcommit 546ad2a8952eed67f40a0ed8f9ea8e12f5399c2d[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Aug 26 15:06:25 2015 -0500
+
+    Reviewed ASTChange -- will come back later
+
+[33mcommit d91036b0fc46115f1c2ef580be79119531c2a8ad[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Aug 26 14:47:04 2015 -0500
+
+    Removed old Change objects from UI
+
+[33mcommit 08a2d529d992c01c4fa9aa380961fe499dd42111[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Aug 26 14:29:11 2015 -0500
+
+    Added copyright headers
+
+[33mcommit 9f5691e12dfdaad4e2928c2a5b2829efb539a8c0[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Aug 26 12:35:45 2015 -0500
+
+    replaced tedious offset interchange code with node shortcut method calls
+
+[33mcommit 1affda7a7a59b658aacf6e48595ca58496d6bce6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Aug 26 12:34:52 2015 -0500
+
+    added fusion unit tests
+
+[33mcommit ab1fa2cac7b9a29fd6e489609b23daafc16da820[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 25 23:31:55 2015 -0500
+
+    adjusted comment preservation for fusion with non-compound loop bodies
+
+[33mcommit b926b9a0b94e9f30b47a5c3e1aee0ca9eff0cde8[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 25 15:22:01 2015 -0500
+
+    added unit test for fusion
+
+[33mcommit 3dc06a28cf8ef208dc4d5733b80aad1e35607aaa[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 25 15:12:43 2015 -0500
+
+    removed unit test for fusion
+
+[33mcommit b204bea6993e4e83e5cd222fddba69bc1c9ba0b7[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 25 12:27:17 2015 -0500
+
+    added duplicate variable modification to fusion
+
+[33mcommit 7ffdaedd062365c9102b5d9d5ae57d501623019d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Aug 19 17:36:43 2015 -0500
+
+    changed new name map to be more convenient
+
+[33mcommit 55fbdd49eb3c0c268491463c441245c66eafaef1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Aug 19 17:12:22 2015 -0500
+
+    added fusion method, finds dup declrtns and their uses, maps to new name
+
+[33mcommit 14fd583a3b3e6294782e57de46a065369fbd56c4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 18 16:55:19 2015 -0500
+
+    added name-finding method to FuseLoops
+
+[33mcommit e0248a2ffe0875dcf135f4a7662d5ebbf81dbfd1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 18 11:29:25 2015 -0500
+
+    fixed comment preservation issue in fusion, added abstract class Check
+
+[33mcommit 0805c737570a3e5bf5d390a51391db253d102105[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Aug 17 19:03:31 2015 -0500
+
+    CLI works again
+
+[33mcommit 83c147b5a12caeec6ef4653fbc601fd0390b3ded[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Aug 17 17:17:17 2015 -0500
+
+    Updated Loop Fission to use StringBuilder
+
+[33mcommit 1f21bcbc3ba6d336065554736c0fa0788b4d45ef[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 17 17:38:16 2015 -0500
+
+    added temporary pragma support to fusion
+
+[33mcommit e7b24c6140158ccfd02088d5aefd9eba24b479b0[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 17 17:18:19 2015 -0500
+
+    fusion seems to work, no dep analysis or pragmas yet
+
+[33mcommit e7847f94f80fd5da40d29dade9c474fcc95fc3ab[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 17 16:07:40 2015 -0500
+
+    added pragma support to interchange
+
+[33mcommit 5075e8db40dce5bedc646ea05598ef1cdbf28fd4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 17 15:06:01 2015 -0500
+
+    added missing dep analysis check to interchange
+
+[33mcommit d5c2179a9fc3ec653c74cb0184978d029b82a2bf[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 17 14:35:42 2015 -0500
+
+    interchange works w/o pragmas, fixed interchange and intropar tests
+
+[33mcommit 8a13dce08c58f69141b18f8434b789f9ac90d707[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Aug 17 13:34:44 2015 -0500
+
+    introduce parallel now works with stringbuilder api
+
+[33mcommit b013b21b35f798867eebbb80e08aae199729d037[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Aug 14 17:32:52 2015 -0500
+
+    working on introopenaccrefac with new api
+
+[33mcommit 7e894605bdcebaf60c3942dbee078aaed8ab78bf[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Aug 13 21:56:21 2015 -0500
+
+    strbuilder changes to checks/changes, removed errors in ui/core
+
+[33mcommit e949cb8cd4b3ad13826e26ed8926b65174626a36[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Aug 12 16:07:57 2015 -0500
+
+    design changes to ASTChange
+
+[33mcommit 60f76bb65a63cca84a8213a23dd24f962a8039c1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Aug 12 13:23:02 2015 -0500
+
+    more stringbuilder stuff
+
+[33mcommit 5b784d08f773fcc0c5f0076843b5dc7ad8c11fb6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Aug 11 16:03:30 2015 -0500
+
+    changed astchange to use stringbuilder, changed astchange constructor
+
+[33mcommit 234ba460baf8ce44f983a59309812185d6b62e70[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Aug 6 16:48:36 2015 -0500
+
+    fixed issue when getting dep matrix rows from direction vectors
+
+[33mcommit 74ac232505488ed9d0576f34a1f68b61828ddc1f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Aug 6 15:51:03 2015 -0500
+
+    reduced number of redundant dependences in some interchange cases
+
+[33mcommit 2e7b11a469aa0293a33fdb371d187b5f7017b2ac[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Aug 6 15:37:18 2015 -0500
+
+    fixed issue with incorrect loop bound matrix rows
+
+[33mcommit bda706e03ea6f108daf9604efc55af8510606be3[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Aug 6 01:53:17 2015 -0500
+
+    broke up line for easier debugging
+
+[33mcommit 199c7c35dc114cdc0fe906f5ffee4cdf7090cd79[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Aug 3 14:13:15 2015 -0500
+
+    Fixed check for (in)valid direction vectors
+
+[33mcommit 8590fe73011cffa52a3355d194759acbf29291a1[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 14:53:21 2015 -0500
+
+    Beginning memoir of a CDT programmer
+
+[33mcommit 0af95ba6b720084aee65ce87af909d7d0d96228b[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 14:25:16 2015 -0500
+
+    Comments for tiling, strip mining, unrolling
+
+[33mcommit 57d57c30c48106326f15753b0d1757bab2613889[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 13:54:49 2015 -0500
+
+    Comments for strip mining, interchange; extracted a few functions
+
+[33mcommit f4421ac6e4f7a22123cc1b1ee130e0c21bf90433[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 13:11:26 2015 -0500
+
+    Fixed variable declaration bug in loop fusion
+
+[33mcommit d1333e0ae2071b51746b1082af2f1ef651e23719[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 12:27:38 2015 -0500
+
+    Added new test cases for fusion, extracted a few functions
+
+[33mcommit 740de9838dcaad03053b7eadf43226873dce1e53[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 11:44:32 2015 -0500
+
+    Comments for fizz/forloopchange
+
+[33mcommit 7bbe30099499cda1d19cb9dd0d602f9fdb2b417c[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 09:23:45 2015 -0500
+
+    Comments for loop fission
+
+[33mcommit 5aa73fbceaf5bb0347b81bd382e07962676957db[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 29 09:13:24 2015 -0500
+
+    Comments for ASTChange
+
+[33mcommit d9d28879a2916a5fa4720520ac975a19f971ea03[m
+Merge: ea42c22 f37619a
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 20 13:15:42 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit ea42c22b39a98d79d0dd648071eb54cfec4b52cb[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 20 13:14:45 2015 -0500
+
+    Formatted test cases for strip mining LL
+
+[33mcommit 91356b56845f8967b4769f929d10e79bf02b5be9[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 20 13:04:59 2015 -0500
+
+    Further strip mining fixes related to binary expression initializers
+
+[33mcommit 6b8ae72fbe385c02abc586879eb56a6f76251e60[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 20 12:42:42 2015 -0500
+
+    Fixed strip mining to initialize correctly
+
+[33mcommit d5bb214a036ac54fa8634cb20bb704ff7178988a[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 20 12:23:05 2015 -0500
+
+    Added strip mining test cases
+
+[33mcommit f37619ac449f4da3bcfe1458ced62c8ef1e37133[m
+Merge: 08a8528 042af59
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jul 17 15:58:57 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 08a8528b9bb3db6699b070ca3681b5cbb1dd039b[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jul 17 15:58:20 2015 -0500
+
+    Hier tester should break out of outer for loop
+
+[33mcommit 042af595948f52a3c5e0f2aa11ae18bab9a2ed6c[m
+Merge: 0c0e06b 0b67e90
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 17 15:48:03 2015 -0500
+
+    Merge branch 'fission_change'
+
+[33mcommit 0b67e907b260d8a3111664fa719d2d5baabfb84b[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 17 15:46:37 2015 -0500
+
+    Fusion refinement, added test cases
+
+[33mcommit 0c0e06ba8f8c4e20abb1c035b2ccbe1d50582a22[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 17 13:30:22 2015 -0500
+
+    added safeCopy method
+
+[33mcommit c67a4282c537c2307fa28de2ecc5bffd6fa404a2[m
+Merge: 12ce25a 78e7fb0
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 17 13:27:25 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 12ce25a355bba0720eb8c5218b4455e108b45208[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 17 13:26:30 2015 -0500
+
+    no longer returns dir vectors w/ first non-equals being '>'
+
+[33mcommit 78e7fb07754c5500e97d71149f732f9dbb22e73f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 17 13:06:48 2015 -0500
+
+    Fission fix for loops without a body
+
+[33mcommit 5e0000326ae0f374d4f99dd9dd4de8e262ae099c[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 17 11:38:01 2015 -0500
+
+    Merge issue resolved
+
+[33mcommit 3e5aeb3dca3b545926d3781df8b25df2e19addc1[m
+Merge: 9888474 7d0406f
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 17 11:32:27 2015 -0500
+
+    Merge branch 'new_change_api'
+
+[33mcommit 7d0406f9dabb74375e32f0fd89f714ce8c0c644f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 17 11:29:40 2015 -0500
+
+    Changed unroll algorithm, added LL tests for unroll
+
+[33mcommit 988847433a1302a33324a990a79691b1b21e4dc1[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jul 17 08:58:17 2015 -0500
+
+    Uncommented unoptimized version
+
+[33mcommit b841d6f35627fa861cbb6c14fe97bf411830884c[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jul 17 08:55:34 2015 -0500
+
+    Added matrix multiplication example
+
+[33mcommit 571fd8e983978aa1ad52ae099a93608e5861ce0d[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 16 22:10:21 2015 -0500
+
+    Changed CLI Main to run Unroll refactoring
+
+[33mcommit e674d39ca9f502c8aa6296b70e7169baaf3fd11e[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 16 18:02:12 2015 -0500
+
+    Added OpenACC 1.0 Quick Reference card
+
+[33mcommit f3a39bc5fb8b3f0f7e7683a61e628f2cb19b6de1[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 16 17:56:59 2015 -0500
+
+    Added OpenACC 1.0 spec
+
+[33mcommit 9e299e4d15a1da5e9dd7235ee2d4ce639a4b0d80[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 16 17:56:20 2015 -0500
+
+    Added OpenACC 1.0 parser
+
+[33mcommit 51be7962421caf124b16beb08bd7216cb1e948b7[m
+Merge: 925a69d 8abf433
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 16 16:13:09 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 925a69d4950ffaa2095cc89d78aea1ecda88e489[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 16 16:07:57 2015 -0500
+
+    ASTRewrite -> IASTRewrite
+
+[33mcommit 8abf433deddabdf2f6bf4b4b51e65183015da1cb[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jul 16 15:23:29 2015 -0500
+
+    added missing pragma remove calls
+
+[33mcommit 8d365f15c3f056787543e9bb20733cb4af797308[m
+Merge: c4b7f6d aba5f8c
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jul 16 15:15:37 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/core/change/ASTChange.java
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/core/change/ForLoopChange.java
+
+[33mcommit aba5f8c2198b52eb6f42a0f4e0f404b72133aa94[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jul 16 15:04:29 2015 -0500
+
+    Livermore test cases for unrolling
+
+[33mcommit c4b7f6d2538ec8ccb4daaabe5fa6799cffb2e1e3[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 15 17:36:31 2015 -0500
+
+    pragma support completed in change objects
+
+[33mcommit 69325eeb5668602396df925587db49141f89fbd9[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 15 17:23:53 2015 -0500
+
+    safe methods now use rewriter rather than TextEdits
+
+[33mcommit a1c5c4af57c5f168817f6c33fd4cf0ca48007daf[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 15 12:56:58 2015 -0500
+
+    Adjusted selection locations for kernels
+
+[33mcommit cb24b3608430c0245ebe0ab91de378eb1d95d14a[m
+Merge: 1344d11 a406423
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 15 12:19:46 2015 -0500
+
+    Merge branch 'new_change_api' of https://github.com/joverbey/oaccrefac into new_change_api
+
+[33mcommit 1344d110ad0c5dd4d74044f17b98093216e17012[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 15 12:18:55 2015 -0500
+
+    Livermore test cases now not bloating code base
+
+[33mcommit a4064239968b9185ad1b7acb64d13c53978eeffd[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jul 14 16:47:25 2015 -0500
+
+    removed pp context map
+
+[33mcommit 15cd16a7ff5d1f165ccc8ffd23835f901e9e5973[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jul 14 16:35:38 2015 -0500
+
+    Revert "safe methods now work; need to change other changes to work with them"
+    
+    This reverts commit 424f3b8c9196ad3e012cbdb92c643801382d4bfc.
+
+[33mcommit 41b59644efeed156f0e8727b0b44613660681c6d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jul 14 16:34:17 2015 -0500
+
+    Revert "cleaned up comments"
+    
+    This reverts commit 12cef9e9f2458e95c233ef961071cb0974ab7c83.
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/core/change/ASTChange.java
+
+[33mcommit 8836a157946d36d976c717275fa8bd9288a36cfe[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jul 14 16:33:13 2015 -0500
+
+    Revert "cleaned up comments"
+    
+    This reverts commit 12cef9e9f2458e95c233ef961071cb0974ab7c83.
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/core/change/ASTChange.java
+
+[33mcommit 4d87bf0d47cbebb9afba3e863dbdc27d3e1e8603[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jul 14 16:01:24 2015 -0500
+
+    no real changes this commit
+
+[33mcommit ae21788b88975450a21276adf65b81a252777722[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jul 14 13:49:38 2015 -0500
+
+    small comment changes
+
+[33mcommit 12cef9e9f2458e95c233ef961071cb0974ab7c83[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jul 13 17:54:30 2015 -0500
+
+    cleaned up comments
+
+[33mcommit 424f3b8c9196ad3e012cbdb92c643801382d4bfc[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jul 13 17:30:55 2015 -0500
+
+    safe methods now work; need to change other changes to work with them
+
+[33mcommit b3aa7cff7abdfd30468230e49d2a414259a1483d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jul 13 16:42:15 2015 -0500
+
+    adding/removing pragmas now works, safe* methods do not
+
+[33mcommit ed7e30117058b7e270c491bda7867152e165a5c2[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 13 13:00:25 2015 -0500
+
+    Refined unrolling test cases
+
+[33mcommit 6c800948afe4b914d3decf19b94a61da6a9b573b[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 13 12:24:20 2015 -0500
+
+    Added classes for dependence checking reusability
+
+[33mcommit e80899f1b8512d18d3e46f239ded9bdc6576c2bb[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 10 17:30:50 2015 -0500
+
+    fixed problem where multiple pragma additions overwrote eachother
+
+[33mcommit a2a589c936e621ea90029bf2267473fbb62c8b78[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 10 17:18:18 2015 -0500
+
+    added (dysfunctional) method to remove pragmas
+
+[33mcommit 4af2704460b552f9ac691f988a916972dedd5bde[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 10 16:27:24 2015 -0500
+
+    reassociation and writing of pragmas now supported
+
+[33mcommit c199b2ea853fa36785ff66c8e5a69abab536be40[m
+Merge: 7850d05 ad957b9
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 10 14:16:13 2015 -0500
+
+    Merge branch 'new_change_api' of git@github.com:joverbey/oaccrefac.git into new_change_api
+
+[33mcommit 7850d0590d1163a14344636b97e9a82e60f43802[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jul 10 14:16:06 2015 -0500
+
+    let's try this
+
+[33mcommit ad957b9dc5e0246b7d099afbb71f23dd6a723506[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 10 13:23:39 2015 -0500
+
+    Converted Tiling to API, fixed formatting in test cases
+
+[33mcommit e89f6c219b1519cdc58e2bccde810dc8b1bf65ef[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 10 12:53:48 2015 -0500
+
+    Converted fission to new API, fixed formatting in test cases
+
+[33mcommit 60d0f4dc8c469a24e9d72dba74d56ed9fc221f80[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 10 12:44:27 2015 -0500
+
+    Converted fuse loops and fixed formatting in test cases
+
+[33mcommit 4afd5fae954758f2ecaa70416217582fdcbf0989[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jul 10 12:08:07 2015 -0500
+
+    Prototype conversion of stripmine to new API
+
+[33mcommit 4306916d8897863d7dfbb98ec627fc9a549493cf[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jul 9 22:33:46 2015 -0500
+
+    Fixed bugs with unrolling and test cases
+
+[33mcommit 81d1cf0a54205d236657f9a307a75f48f912e084[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jul 9 21:06:53 2015 -0500
+
+    Converted UnrollLoop to new API
+
+[33mcommit efd290eb16cf0910d0ada57315fe666b22190c28[m
+Merge: 7c4c825 64f90c0
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jul 9 19:49:29 2015 -0500
+
+    Merge branch 'master' into new_change_api
+
+[33mcommit 64f90c0077a5928e453566cb15d6320d0d97f978[m
+Merge: 728ce01 95e2f55
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jul 9 19:49:10 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 95e2f55fa9d0bc7d8c0c992127cfa32e6ae5c0f5[m
+Merge: 86975b2 10e886c
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 8 15:54:46 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 86975b2fc85b52107b5bbb0532566ea83d96491f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 8 15:51:57 2015 -0500
+
+    pp map now only contains for statements with at least one pragma
+
+[33mcommit 7c4c825d5989a357ee1b1eace715769932a961dc[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 8 15:45:18 2015 -0500
+
+    extracted method class to internal class, implemented safeRemove
+
+[33mcommit 10e886c56c2de4cf4b22e84403e902d500af725b[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jul 8 14:42:50 2015 -0600
+
+    Added array write handling in CP
+
+[33mcommit faeb11ebebc41214c0d125ccb7e3cfac8ce1697a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 8 15:27:09 2015 -0500
+
+    implemented safeReplace
+
+[33mcommit b7ec0c92218a919dcca2bb3cda39708ed9d94351[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 8 14:45:36 2015 -0500
+
+    fixed interchange test cases for new api
+
+[33mcommit 728ce01c7fe4ba79a7e02d0a95bfa814b40478d3[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 8 13:46:49 2015 -0500
+
+    Added beginning changes to API
+
+[33mcommit 804d550b03fe782d313db452321767399e2264b9[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 8 12:03:24 2015 -0500
+
+    Changes to constant propagation test cases
+
+[33mcommit a7fc764d7868c4c144b5862e750b094982333c4f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 6 13:20:44 2015 -0500
+
+    Added constant prop test case for array access bug
+
+[33mcommit f99272eed5570ee2eb1c4b310a6fc1d82d91a22e[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 6 12:59:24 2015 -0500
+
+    Refined loop fission code
+
+[33mcommit f74e95f38f60ca23fc000df371341073d0d5179b[m
+Merge: 4ccf603 0c320a2
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 6 12:25:53 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 4ccf6038b9ada28c219532f14fd617631d2a3fb9[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jul 6 12:25:13 2015 -0500
+
+    Constant propagation in loop unrolling -- not complete
+
+[33mcommit 0c320a2efdd4b801f47908fdb9e243f8b7841da0[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sun Jul 5 16:20:54 2015 -0500
+
+    added FIXME, made small but ineffective changes to Change base class
+
+[33mcommit cc584f362709713ef2b1716de1ede8d3709eebb5[m
+Merge: 1e05436 fdc6a34
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sun Jul 5 15:20:03 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 1e0543646d0fa33814ee68b031491a8b15fccde1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sun Jul 5 15:19:39 2015 -0500
+
+    added sorting to getLeadingPragmas
+
+[33mcommit fe2418bbd1288eefa1fecbd523e7f9e8f11b3de7[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sun Jul 5 15:16:14 2015 -0500
+
+    change no longer fails at runtime due to pragmas; still doesn't work
+
+[33mcommit dcea77c6badbe5ebf3c5a4cbb32a9846adf3b719[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jul 2 16:51:54 2015 -0500
+
+    pragma work
+
+[33mcommit fdc6a34c6dac5f9a99dd9e06136b424976036cfb[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jul 2 14:35:50 2015 -0500
+
+    Made getInclusiveUpperBound return Long, not int
+
+[33mcommit e487b6a77fc8126ea43179b24cca47c8bb7d4620[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 1 16:47:57 2015 -0500
+
+    added pragma-maintaining functionality to change objects
+
+[33mcommit 4625f6a3ae041804157285fa7aeab5d669dde6a2[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jul 1 14:04:16 2015 -0500
+
+    added pragma stuff back to Inq
+
+[33mcommit 31950acdd5525326836cdf41f85ba60a67f51f4d[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 1 12:56:55 2015 -0500
+
+    Converted tiling to API
+
+[33mcommit 38b14029990403ff54beb4a8b83ea86aa614602f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jul 1 11:51:27 2015 -0500
+
+    Started initial stubs and implementation for preprocessor design
+
+[33mcommit ba340e7979d31a4746a7e76dac0996e7da5fa501[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 29 11:21:31 2015 -0500
+
+    Added constant propagation test cases for unrolling
+
+[33mcommit b6069ffe09bc5b27c0aa3e97e3152a019214cf74[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jun 26 12:23:26 2015 -0500
+
+    Completed converting change API of compound statements
+
+[33mcommit 4e26488126cd958d24c69daf2764cfd693224b10[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jun 26 11:27:58 2015 -0500
+
+    Added remodelled compound change objects
+
+[33mcommit b895d2414a79b64fb50439b99dd5464d038cd793[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 25 21:10:32 2015 -0500
+
+    Started extended change API
+
+[33mcommit 3ff2ec9b8435c595588b55553057b9f76752dcce[m
+Merge: f3cd7a0 4ed6380
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 25 18:59:58 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.ui/src/edu/auburn/oaccrefac/internal/ui/refactorings/changes/InterchangeLoops.java
+
+[33mcommit f3cd7a00bdf68782aab39d3c93bfa5161ac81616[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 25 18:53:41 2015 -0500
+
+    Added check conditions to for loop change objects
+
+[33mcommit 4ed6380d382f12e9ba60a2a6b92d3f7c6325fcfa[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 25 16:46:53 2015 -0500
+
+    added methods to get pragmas associated with a given loop
+
+[33mcommit b24d75a32794f4237065514f5fbc5d28a43a52bf[m
+Merge: 24899d1 6928e2b
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 24 16:58:07 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 24899d18079aa6a903396013c45366aff5588764[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 24 16:57:59 2015 -0500
+
+    yet more unit tests
+
+[33mcommit 6928e2b85955f37c97a1752ada7239685a0a218c[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 24 16:29:44 2015 -0500
+
+    Fixed up test cases for tiling
+
+[33mcommit 6468fa6eeaf2e57973dfad68afe7e8b7bd3161e1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 24 16:11:22 2015 -0500
+
+    added more test cases
+
+[33mcommit 190606d1b2ed4a4b191bc6cb1f909acfb9f61563[m
+Merge: 7c48609 894eed9
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 24 16:10:38 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 7c48609b50c86e0096b514f6f224870bbd6085a9[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 24 16:09:55 2015 -0500
+
+    Fixed bugs with new UI API. Now wizards are created programatically through delegate
+
+[33mcommit 894eed9cfa0afdd2af0cec54d511de6c8b9164a0[m
+Merge: 9b9f460 56e0438
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 24 15:51:38 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 9b9f460cd9f5315bf7ae9f9f64987b7d49526d29[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 24 15:51:00 2015 -0500
+
+    added Inq unit tests; small doc edits
+
+[33mcommit 56e0438405c175d17e28b746cf995b6927f6ecb4[m
+Merge: 50db315 5b2bd2f
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 24 14:21:52 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 50db315a1cce70e7d0024a030bc5dc501c0ae38d[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 24 14:21:23 2015 -0500
+
+    First prototype milestone for loop tiling
+
+[33mcommit 85ec8c3800d91ee4d1ff369bb3a38ed59e053dea[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 24 13:52:26 2015 -0500
+
+    Extended stripmining to work with depths
+
+[33mcommit 5b2bd2f9cf8cf5df8b56372ad6f4dc0d496ebf39[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 24 13:08:22 2015 -0500
+
+    removed matrix caching (moved it to new branch)
+
+[33mcommit 2e12c4f1f5bf797cf2df3a67baf17df97a17f794[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 23 17:00:02 2015 -0500
+
+    removed useless import
+
+[33mcommit c59d55654033697ba81b628e296c63ec31efb828[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 23 16:24:25 2015 -0500
+
+    changed manual Inquisitor creations to use the factory
+
+[33mcommit d1c6487a3d94ed33a17c8f436c68e534ded666a0[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 23 16:19:23 2015 -0500
+
+    Further fixed bugs on UI
+
+[33mcommit 8961c85e1b160ab0b620496df17418d1ecf0cff1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 23 16:04:31 2015 -0500
+
+    added caching mechanism to Inquisitor
+
+[33mcommit 442376ac9460272fb00eb036e69e29ac88fbcd3c[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 23 16:01:05 2015 -0500
+
+    Added files to make refactoring wizard more generic
+
+[33mcommit ee8ded6a15294afb0e6f0dccdfdefdac4255c7e5[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 23 15:11:46 2015 -0500
+
+    Fixed layout issues in composites
+
+[33mcommit 97eb016a605d50cf0b0f6e577a71a9f7d3ffd056[m
+Merge: a73723d edfccfc
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 23 14:51:40 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.ui/src/edu/auburn/oaccrefac/internal/ui/refactorings/LoopTilingRefactoring.java
+
+[33mcommit a73723d9ff447b169e5a757783bb78776114cf85[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 23 14:49:28 2015 -0500
+
+    Made UI more encapsulated
+
+[33mcommit edfccfcd42fd9591ce8f0316739c693e868c387b[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 23 14:45:30 2015 -0500
+
+    Loop Tiling uses Inquisitor
+
+[33mcommit 9a94ad6f935b0c130d337aeaa2db3486febbc791[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 23 14:41:07 2015 -0500
+
+    Revert "Revert "Finished migration ForLoopUtil -> ForStatementInquisitor""
+    
+    This reverts commit 8103fcc1c04b81af0bd2063cdda300bbe26c0527.
+
+[33mcommit 7206f6bae8fa3b0f2bc3ac6527d16be5c45f9298[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 23 14:12:00 2015 -0500
+
+    Added tiling action, formatting string, continued tiling algorithm
+
+[33mcommit 5e4f7b05565989b36cee168950f19a2580382966[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 22 18:04:11 2015 -0500
+
+    minor adjustments
+
+[33mcommit f47f2fc1d46e773d1c9f7ed42ce0c78c73d01534[m
+Merge: d6d2cce bc2ab46
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 22 17:28:54 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/internal/core/ForLoopUtil.java
+
+[33mcommit d6d2cceadcc9f79645b74aed5058588888ac3cc4[m
+Merge: 68f50da b95875d
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 22 17:22:42 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/internal/core/ForLoopUtil.java
+
+[33mcommit bc2ab46149c3a7e4a77660f4f0044221216b1079[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 22 17:16:15 2015 -0500
+
+    Revised API for forloop changes.
+
+[33mcommit 32220acbe1c48454b96dd68c33c61ad28b4341b1[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 22 16:12:53 2015 -0500
+
+    Revised test cases, added a few more
+
+[33mcommit cafb02c3d69c3a3786e50e718e274f5bacbc028f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 22 15:59:46 2015 -0500
+
+    Removed accidental files, added new dependence tests for tiling
+
+[33mcommit 74239d75d94da32ca32ad89e3ad0c417fa1811bb[m
+Merge: eea4f9b b95875d
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 22 15:46:37 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/internal/core/ForStatementInquisitor.java
+    	edu.auburn.oaccrefac.ui/src/edu/auburn/oaccrefac/internal/ui/refactorings/LoopInterchangeRefactoring.java
+
+[33mcommit eea4f9bbc8e8619a66c92fd2bbbc8011f60f742d[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 22 15:42:26 2015 -0500
+
+    Added InquisitorFactor and Loop tiling test cases
+
+[33mcommit 68f50da38d1340a6c9fbe9ead55ca1fa73ce79db[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 22 14:53:37 2015 -0500
+
+    added matrix caching to dependence tester
+
+[33mcommit 8103fcc1c04b81af0bd2063cdda300bbe26c0527[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 22 13:37:34 2015 -0500
+
+    Revert "Finished migration ForLoopUtil -> ForStatementInquisitor"
+    
+    This reverts commit 064924707e79cdffa173f9cb60b014d7199a5120.
+
+[33mcommit b95875df81df0cc94541c6fec65510442b0b50b1[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 19:01:09 2015 -0500
+
+    Added dependence testing to Interchange
+
+[33mcommit 064924707e79cdffa173f9cb60b014d7199a5120[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 16:10:06 2015 -0500
+
+    Finished migration ForLoopUtil -> ForStatementInquisitor
+
+[33mcommit 42a74ec66d9c8f93120789fcb3e335f824b40086[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 15:31:43 2015 -0500
+
+    Started Interchange analysis; chg Inquis factory
+
+[33mcommit eec3e543d88e09635bd6c5c8fa03d433e1fed28e[m
+Merge: 4f80721 82ccb28
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 19 15:14:43 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 4f8072157a5aa95b0217ae9b106dea73ba63c5e8[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 19 15:14:32 2015 -0500
+
+    changed class name to ForStatementInquisitor, migrated methods from util
+
+[33mcommit 81ec4884764317ed566cab06db92821e66c01acf[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 19 13:18:08 2015 -0500
+
+    copied (without removing) several methods from ForLoopUtil to the
+    decorator class
+
+[33mcommit 82ccb284b1da186d28b83eb1a2b432bd78dbbdbf[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 11:00:22 2015 -0500
+
+    Added process name+args to Spawner error message
+
+[33mcommit 5248e2bee61b0ceb8bb44b5729b04d1498fb5377[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 10:52:37 2015 -0500
+
+    Hello world was broken :-(
+
+[33mcommit d82b31b3e5670fdabb90319e7330132229271dec[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 10:40:29 2015 -0500
+
+    Added Livermore tests for Intro OpenACC Parallel
+
+[33mcommit b50d72cac7e191ac073875a62b0b47ff1f082b8a[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 19 10:38:50 2015 -0500
+
+    Started command line interface
+
+[33mcommit 0aaaef341ae523a9168ae544be8bca0f5e3c4c8b[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jun 18 19:26:34 2015 -0500
+
+    Added LL tests+Intro Parallel; fixed ASTUtil tests
+
+[33mcommit d7071fbf46b5c29b456e718ee1e44ea307532b0a[m
+Merge: 8c0babe 61f82d1
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 18 17:36:09 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 8c0babe3b023a2ca08b7f1145e4e97348c1e2460[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 18 17:35:51 2015 -0500
+
+    Refactored Loop Unrolling to new API design
+
+[33mcommit 61f82d1d1b8b91c5a4ec133a64d3e91994204117[m
+Merge: b3bae8a fde0386
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 18 16:52:17 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit b3bae8af40c8f63b0990cc75356752ac090c571e[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 18 16:49:32 2015 -0500
+
+    added class to describe for loops and eventually replace ForLoopUtil
+
+[33mcommit fde0386d54b1035a090b67bd9f444729abe19e01[m
+Merge: 00bad70 c625dbf
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 18 16:14:06 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 00bad708ee94895c6d0d710f1899a7edb9afbbb7[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 18 16:13:42 2015 -0500
+
+    Refactored LoopFusion to new API design
+
+[33mcommit 351a9f823f70327951057fe9f5e4e2ae986c5893[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 18 16:05:31 2015 -0500
+
+    romived pointless try-catch; fixed error on kernel 8
+
+[33mcommit c625dbf6d71a49e5184bac93d4da6fb925f45262[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 18 15:46:02 2015 -0500
+
+    fixed/passed unit tests for direction hierarchy
+
+[33mcommit bb47a0f1cb570ae4122f61143a0dff30abd1fb59[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 18 14:49:32 2015 -0500
+
+    Added change classes to modify compound statements
+
+[33mcommit cad53042d51676acfda587320ed7e8d3bcd21676[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 18 14:25:18 2015 -0500
+
+    Created initial interface for compound changes
+
+[33mcommit 85bc2fa86b4d348fbf102ccc0ea060cf4f20cdf1[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jun 18 12:02:35 2015 -0500
+
+    Added Livermore Loops to testcode
+
+[33mcommit 48aacbb19c3eead4c379dec3412ef67066987aab[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jun 18 12:02:14 2015 -0500
+
+    Migrated refactoring tests to JUnit 4
+
+[33mcommit 0d548bc2d885419258553cd993f06791d979baeb[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jun 18 11:25:06 2015 -0500
+
+    Merged RefactoringTestSuite, GeneralTestSuiteFromMarkers
+
+[33mcommit d196ca5dec7533e68d75d53ffee3b0cefd5e2a59[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jun 18 10:59:41 2015 -0500
+
+    Report progress in UI; add missing @Overrides
+
+[33mcommit c988d425177dd99799c41a75fc8c5a6f0d11fcd9[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 17 22:58:01 2015 -0500
+
+    Fixed selection code & Intro Parallel unit tests
+
+[33mcommit 89e675b9edecac0a5fb4194002c0eaad2c3781e0[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 17 22:51:21 2015 -0500
+
+    Support field references; can ||ize some Livermore loops
+
+[33mcommit e5a31499cb0f8c7629864e659dc0ff14888016df[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 17 20:14:35 2015 -0500
+
+    Support IASTNullStatement in constant propagation
+
+[33mcommit 2a8eb7d7fed48b8cb55fc492e91573cff00b4165[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 17 17:35:55 2015 -0500
+
+    Added loop bounds, scalar count to dep analysis
+
+[33mcommit 7a47faa45423217fb3fa1a10f44d939c2e91bd25[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 17 16:27:39 2015 -0500
+
+    More CP bug fixes and tests; handled overflow
+
+[33mcommit 338603ee591e4f2fd63c0774f6ab2c8e5a797c60[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 17 16:53:56 2015 -0500
+
+    added dependence tests for hierarchy (incomplete)
+
+[33mcommit 2e192d265ee0523d34b0eda642e1f81a494ba4de[m
+Merge: 228730a f9569cb
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 17 15:43:36 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit 228730a595e56dd9aaf7af66d32e4ba46553e0e6[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 17 15:43:22 2015 -0500
+
+    added tests for FMDependenceTester to cover scalars and GE/LE vectors
+
+[33mcommit f9569cb214692049678b472a1c52ac4e4e0dd045[m
+Merge: b5b5c18 dc4bcf2
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 17 15:41:40 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/internal/core/ForLoopUtil.java
+
+[33mcommit b5b5c18cd8f0736b05279d2296f8ac9e7e5663bb[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 17 15:39:46 2015 -0500
+
+    Refactored loop interchange code to new API
+
+[33mcommit dc4bcf27cc0225a577c76d8d66898be04374be51[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 17 10:50:57 2015 -0500
+
+    More tests, bug fixes, docs for constant prop
+
+[33mcommit 1e6382c69bc2731550f2d5851d2a217f1d1aff02[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 21:05:32 2015 -0500
+
+    Changed CPPASTForStatement -> IASTForStatement
+
+[33mcommit 4ee097681b350a70bd1f278ad79cd198e624feff[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 21:03:31 2015 -0500
+
+    Fixed compilation errors in FourierMotzkinDependenceTestTest.java
+
+[33mcommit a092127ddc818bc4c75c5350a6a2e9028090fe58[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 21:01:00 2015 -0500
+
+    Enabled metrics in UI project
+
+[33mcommit 83abf48e65b744fe8978960d4680cee81b28d393[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 21:00:32 2015 -0500
+
+    Added constant propagation
+
+[33mcommit b1a215768385780a13828c618c2d39667e262a00[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 16 17:59:26 2015 -0500
+
+    added numScalars as arg to dependence test (broke FM unit tests)
+
+[33mcommit d1da3b8107b2c61daa23780550a371dc21ce6a1e[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 16 17:55:41 2015 -0500
+
+    Merge
+
+[33mcommit 006b02d01e98da3a765351586890e897dff7fbaf[m
+Merge: 31d7c2c 6053693
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 16 17:55:13 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.core/src/edu/auburn/oaccrefac/internal/core/ForLoopUtil.java
+
+[33mcommit 31d7c2c13063f2d5fffa104f65fde8aca49a94fc[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 16 17:54:07 2015 -0500
+
+    Begun API revisions and first prototype
+
+[33mcommit 60536931baa8b0b88d1cec2dd3c3ea6db2b5e16f[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 16:47:22 2015 -0500
+
+    Reorganized data dependence code into internal vs. API
+
+[33mcommit 29dd8f670a36463b124cb4bd7335ca58ee1a4985[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 15:53:04 2015 -0500
+
+    Started dependence analysis API changes
+
+[33mcommit 11770603b5ca13c43fa38eb7d2e69947758c37fa[m
+Merge: 7813653 eaef37a
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 15:31:29 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 781365311ec29224be756cca79a156638c935596[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Tue Jun 16 07:05:50 2015 -0500
+
+    2nd dependence test passes (maybe it shouldn't...)
+
+[33mcommit eaef37a5f5fe6d629dbfcbc6861b7aa01ba2cdbf[m
+Merge: e92088b 9667711
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 16 15:28:31 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 96677118377996707b3b6a472a45e82197c35535[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 16 14:58:02 2015 -0500
+
+    moved stuff to ForLoopUtil
+
+[33mcommit 6fb5ec5081c904c669bb2692e2c92d8cd2a70fb1[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 16 13:24:46 2015 -0500
+
+    moved method from ForLoopDepSystem to ForLoopUtil
+
+[33mcommit 57af2062d76429fbdb648f68d409410a9386ad4c[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 16 12:48:33 2015 -0500
+
+    added DependenceAnalysis usage to ForLoopDepSystem constructor
+
+[33mcommit 89054abba13a88d08e776ddd8eaec772d09d18d3[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 16 11:32:55 2015 -0500
+
+    added GE and LE cases to dependence tester
+
+[33mcommit 3087c1d8299c207351a0f3032612e37d0235d084[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 16 11:21:53 2015 -0500
+
+    slightly changed class name
+
+[33mcommit 11532bb57433f29fa0f47a58ceeb61aaa560d19e[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 15 17:09:39 2015 -0500
+
+    fixed error giving a dependence whenever array subscripts were constant
+
+[33mcommit 41b7150fb3aac5d29441994c91457a491c6b34b3[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 15 17:01:58 2015 -0500
+
+    Fixed 2D dep test #1
+
+[33mcommit b4d10f427140bceeb6f7fc88bdcaa79bead49b08[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 15 16:56:11 2015 -0500
+
+    added check to prevent FM from being called when array subscripts are
+    constants
+
+[33mcommit 0ad25c1a74448cb23be45af63eedef0b0119eb44[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 15 16:42:00 2015 -0500
+
+    Fixed VariableAccess#toString for multidim arrays
+
+[33mcommit e92088bb663e23f1c7748c2def0cf3385203dc0d[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 15 16:34:15 2015 -0500
+
+    Check bounds final condition bug fix
+
+[33mcommit fbe68dc6c0db2f7af76a691e8d0395a1b2c7e368[m
+Merge: dcc51fc 83562b5
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 15 16:27:16 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+
+[33mcommit 83562b52f879860ba4e1ef95fcbee2b90c33f753[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 15 16:27:10 2015 -0500
+
+    Fixed constant array element accesses
+
+[33mcommit dcc51fc51cbd2a937176615410c7ce46b00065d7[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 15 16:20:58 2015 -0500
+
+    AST match, dependence test multidimensional arrays
+
+[33mcommit 8ae5db7aafbaf1a76b7b744a686e53f9463dd295[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 15 16:04:19 2015 -0500
+
+    Merge fixing, further strip mining bug fixes
+
+[33mcommit 40d6fcc7c347f12c018ce15629a93c77186f9ef2[m
+Merge: 0a14956 f0626de
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 15 15:43:15 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.ui/src/edu/auburn/oaccrefac/internal/ui/refactorings/ForLoopRefactoring.java
+
+[33mcommit 0a14956b209f24a1a0b05ffc535c3c74a645a11f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 15 15:39:08 2015 -0500
+
+    Fixed test cases, fixed bugs in strip mining
+
+[33mcommit f0626de45971c7df35065403cac9dfa1794e42f9[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 15 14:49:23 2015 -0500
+
+    Fixed testArrayAssignmentsInLoop dep analysis test
+
+[33mcommit 7f5a1544b12291e6d5afd324ada2f1c56e153871[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 15 14:40:20 2015 -0500
+
+    Added println to dependence analysis
+
+[33mcommit f0037f834a50c8c4cf02efcab34bc99554970e6d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Sat Jun 13 17:09:42 2015 -0500
+
+    added class for unit tests, added method to get direction vectors via
+    the DV hierarchy, added useful constructo to DirectionVector
+
+[33mcommit b559f760255de5e0542776e3c16c2f0e2dc461c5[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Sat Jun 13 00:29:06 2015 -0500
+
+    Started test for array accesses in loops
+
+[33mcommit 3cea153cdb3ef2dda2ceef51c8580fd55989cca9[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Sat Jun 13 00:00:54 2015 -0500
+
+    Deleted (unused) dependence/index code from Calvin
+
+[33mcommit e27d48df8d4d0b091abd23f37e2e735d78775b09[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri Jun 12 23:19:23 2015 -0500
+
+    Rudimentary connection between syntax and dependence tester
+
+[33mcommit 25504d5fd822374b3858d6d24f1060a7720c87f5[m
+Merge: bf40163 9579d5e
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jun 12 17:12:53 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.ui/src/edu/auburn/oaccrefac/internal/ui/refactorings/ForLoopRefactoring.java
+
+[33mcommit bf401637179a07a1eec77fc52972ca607eaa966b[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jun 12 17:03:42 2015 -0500
+
+    Additions to loop strip mining
+
+[33mcommit 9579d5e245398cc0854896dac5b60d9134006533[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 12 16:52:33 2015 -0500
+
+    added comments
+
+[33mcommit 6d5138d7dd871e8f17088a3afcd2063bb43d0345[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 12 15:55:46 2015 -0500
+
+    fixed comment
+
+[33mcommit e105e756c5d0314433d2f5bba12b082a04e91b23[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 12 15:55:12 2015 -0500
+
+    wrote test cases for FM dep tester, made adjustments to FM dep tester
+
+[33mcommit e30fe8f085e3d4bde759ec137ba96f6a677cfd7b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 11 16:50:44 2015 -0500
+
+    added base class for unit testing FM dep tester
+
+[33mcommit 80a8f51134c41acdb2c9b28d4846afd02f49ec90[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Thu Jun 11 16:35:08 2015 -0500
+
+    Added Susan's FM tests; replaced FM code with Photran's version
+
+[33mcommit 33f25c7abfdc4a34576c1d137f6deca0317b86df[m
+Merge: f16faaf 60aad69
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 11 15:33:26 2015 -0500
+
+    Merge branch 'master' of git@github.com:joverbey/oaccrefac.git
+
+[33mcommit f16faaf3150a5ee26f3fd87f500edf2b012e871e[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 11 15:32:59 2015 -0500
+
+    added to dependence test class
+
+[33mcommit 60aad694c2670a29fd1584a32b07bb322a9ba78d[m
+Author: wilkhu90 <sumeet.wilkhu@gmail.com>
+Date:   Thu Jun 11 11:42:28 2015 -0500
+
+    Adding Loop Fission Test Cases
+
+[33mcommit dd5f9cc36b373619168b0fe7d89f75df16086609[m
+Author: wilkhu90 <sumeet.wilkhu@gmail.com>
+Date:   Wed Jun 10 17:15:28 2015 -0500
+
+    Adding Loop Fission & changes to ForLoopRefactoring.
+
+[33mcommit a0d1ef3f3ee14bd04f25b7c87529ec5684ef0153[m
+Merge: 6d26493 a74f34b
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 10 14:40:57 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 6d26493c9efe3c4282aa3e4f162530a0b79a8c05[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 10 14:39:58 2015 -0500
+
+    Added starting test cases for loop strip mining
+
+[33mcommit 71a42bc1fab43d2d0f04611b6f140fb109ebecde[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 10 14:24:58 2015 -0500
+
+    extracted dependence types; finished method in loop system; added dep
+    tester class
+
+[33mcommit a74f34bf6adac89b537c136d4fd35ee19794aaa7[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Wed Jun 10 13:35:53 2015 -0500
+
+    Added dependence testing classes from Photran
+
+[33mcommit 17937a56d54b69940b0212bd4c8ed37e35b680aa[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 10 13:22:25 2015 -0500
+
+    Added loop interchange tests
+
+[33mcommit d9a2bba4b01594187e70bf125d82c9ba21c5fb6a[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 9 15:31:46 2015 -0500
+
+    Finished test cases and code for loop unrolling
+
+[33mcommit a30f71c349bfb631435fada8eda6c761776f973a[m
+Merge: 049007c 75df960
+Author: wilkhu90 <sumeet.wilkhu@gmail.com>
+Date:   Tue Jun 9 13:28:24 2015 -0500
+
+    Merge branch 'master' of github.com:joverbey/oaccrefac
+    
+    Conflicts:
+    	edu.auburn.oaccrefac.ui/plugin.xml
+
+[33mcommit 049007c820fbf93887f4510314d3ae014837b80d[m
+Author: wilkhu90 <sumeet.wilkhu@gmail.com>
+Date:   Mon Jun 8 18:10:15 2015 -0500
+
+    Commiting the Loop Fusion files & respective changes.
+
+[33mcommit 75df960d6349df9a85a2ea971e9c433c6a1e3918[m
+Merge: 6f6fac7 c09e138
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 8 17:40:08 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 6f6fac7b10bbbcec2db15efbcfce226b383e955f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 8 17:39:31 2015 -0500
+
+    Implemented changes for loop unrolling v2
+
+[33mcommit f2c389a11601d424d59ecf2ba7b471183a708e6f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 8 17:22:51 2015 -0500
+
+    Begun work on loop unrolling changes
+
+[33mcommit 34bb005e13d885ecadbf34cfca34b4d69f9518aa[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 8 16:13:27 2015 -0500
+
+    Fixed bug with loop unrolling and test case to correspond
+
+[33mcommit c09e13876b10f4717dbffaab417ab282179a1ac8[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon Jun 8 16:03:43 2015 -0500
+
+    Removed compiler warnings
+
+[33mcommit 3469d8622a2e3cb0110084cf664f1c323b964d69[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 8 15:55:29 2015 -0500
+
+    Fixed up test cases for loop unrolling, started strip mining
+
+[33mcommit 915471de6f85d117828d9bca963078b9a90b40f8[m
+Merge: 5c473ad 2396bcd
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Mon Jun 8 14:53:19 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit 2396bcdac9868945ef31e0728bd5c28b5bdacf98[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Sat Jun 6 12:12:58 2015 -0500
+
+    Fixed refactoring test suite errors
+
+[33mcommit 9bb86b89c9ff8cbe550073e20a66fcfb55298180[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 5 16:29:50 2015 -0500
+
+    added to ForLoopDependenceSystem
+
+[33mcommit bdd794043713631eb1f404e1e449945559343a2c[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 5 16:16:52 2015 -0500
+
+    added Direction enum
+
+[33mcommit b09887409bf74edd209e9213f8e59643685ea434[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Fri Jun 5 16:16:06 2015 -0500
+
+    added to DataDependence
+
+[33mcommit 5c473ad3e93dd0ef93eb90eb34ca5ef66ad007c6[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri Jun 5 15:58:55 2015 -0500
+
+    Added new setup files for strip mining
+
+[33mcommit ed1ac9b645453b166300d6e5abe761cec61d891b[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 4 15:54:23 2015 -0500
+
+    fixed compilation error on final fields
+
+[33mcommit 20754dde760718902c43b88262ba9695fa5ee502[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 4 15:51:42 2015 -0500
+
+    added DataDependence class
+
+[33mcommit e19b967ae067529916e7c3253c4257f44409d52a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 4 12:57:59 2015 -0500
+
+    added to DataDependence
+
+[33mcommit febc799299c22d03d98a41f273c873299c2430e0[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu Jun 4 11:43:02 2015 -0500
+
+    added check to constructor
+
+[33mcommit 90621e47452a79336fe8dfa71eb4c680c958783e[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 3 16:57:50 2015 -0500
+
+    added tuple class and classes to encapsulate dependence properties
+
+[33mcommit c1dabd2e481ad9b55fe329a3843307bc0aaae22f[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 3 13:24:46 2015 -0500
+
+    finshed and renamed method to check if innermost statements are valid
+
+[33mcommit 4b8b457157fbb907002b5c2ce70fbfa8d3f1443c[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed Jun 3 12:43:27 2015 -0500
+
+    added incomplete function to ensure only assignment stmts are present
+
+[33mcommit cc38f25c476077a4f4aedb439c31d5a9e8284941[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Tue Jun 2 16:20:25 2015 -0500
+
+    added check for perfectly nested loops
+
+[33mcommit 9fb9245106ae0493d781585a8678fd3f4d4e351a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon Jun 1 16:59:40 2015 -0500
+
+    added new base class for for loop dependence analysis
+
+[33mcommit 599181bd261b67f8aa3b9c1efbffb0462960e191[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed May 27 15:32:12 2015 -0500
+
+    rewrote gcd(double[]) function
+
+[33mcommit 3888c191588e09af10e7e4213a59bf61c9c06ef4[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed May 27 14:58:24 2015 -0500
+
+    fixed delete zero rows method
+
+[33mcommit 704c60ac2eb75d4ad02cb759a2b987c48c9dd06a[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed May 27 14:25:47 2015 -0500
+
+    added test file
+
+[33mcommit e9c603a7fd494062dfaff77d3fcb465e68869559[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Thu May 21 15:30:22 2015 -0500
+
+    added some comments
+
+[33mcommit c7b5830c932170ed4fd2a2bb67e894bddb718e7d[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed May 20 13:28:35 2015 -0500
+
+    added comment
+
+[33mcommit 2cfbed9e21f9f8e6fa121d707e218340b77f40e0[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 4 03:30:06 2015 -0500
+
+    Added functionality to interchange different loop depths
+
+[33mcommit 77ed6cc29ab0621db98e27bf1fef20940ded045d[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu Jun 4 02:34:51 2015 -0500
+
+    Added L.I. plugin action, basic blank wizard, and fixed refactoring bugs
+
+[33mcommit e98e3528df380b027163310817923f25e7ea7685[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 3 16:00:56 2015 -0500
+
+    Added simple refactoring implementation for loop interchange
+
+[33mcommit dd4502ffe9d57b031fb317cd716e3488b149256f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed Jun 3 15:32:44 2015 -0500
+
+    Changed API to have more indirection, added comments for clarification
+
+[33mcommit ba00068b05404c8b6eb468e706a54404e9e8dcc2[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 2 16:48:24 2015 -0500
+
+    Cleaned up deprecations and ambiguous comments
+
+[33mcommit f382bf1716928cfe9e80ad7afc33baf22b045b45[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue Jun 2 16:38:20 2015 -0500
+
+    Fixed pattern matching, fixed single statment forloop bug
+
+[33mcommit 5fc9ff7b46119fd18cccaec03a06f4e202b00d1f[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri May 29 15:50:47 2015 -0500
+
+    Completed prototype for loop unrolling
+
+[33mcommit 319773cd2adb0788a597bb3cc874575c7fbfd6b4[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Fri May 29 13:09:09 2015 -0500
+
+    Added supported patterns checking and divisible loop unrolling
+
+[33mcommit 5632f0296c05e10dc85a0bfb59cbefd4aba26df6[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed May 27 14:57:52 2015 -0500
+
+    Revamped collectModifications for generality/pattern matching checks
+
+[33mcommit 9ac62201e501c7429f11cc652876b54fc68e62ba[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue May 26 18:02:21 2015 -0500
+
+    Added starting UI elements for loop unrolling
+
+[33mcommit bff8e8dda372a25fb85c5161a2401db4151ad958[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Tue May 26 16:47:34 2015 -0500
+
+    Added unit test cases for known bounds and starting cases
+
+[33mcommit 484b2f29b6b8ee8e070bf5d6d12ddc332f85654e[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon May 25 09:28:06 2015 -0500
+
+    Applied formatter (Eclipse 3.8)
+
+[33mcommit 5dbe35ddd299488194820046741d2f7b7a0c6f4e[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri May 22 22:38:39 2015 -0500
+
+    Started ASTMatcher
+
+[33mcommit 7b505603ce52e10ba06b53e10275e93e94ea6547[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri May 22 21:03:08 2015 -0500
+
+    Cleaned up test code; added formatter
+
+[33mcommit fec03b1cbc7c8897e03cb3efd76f75584745849c[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri May 22 21:02:44 2015 -0500
+
+    Rename tst->test; fixed build.properties; added formatter
+
+[33mcommit b6d46a4211b0fb88d61c6c82bb4dc21bf5bd70cc[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Fri May 22 16:46:00 2015 -0500
+
+    Added refactoring testing infrastructure
+
+[33mcommit 5c47b8cc93a5c265589be81a654a2802247d00a7[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu May 21 16:37:13 2015 -0500
+
+    Further improved design by creating base class for delegates
+
+[33mcommit 6ead311f42333f0f37a68d164c0ae483f11a651b[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu May 21 16:04:02 2015 -0500
+
+    Created initial files and setup for unrolling refactoring
+
+[33mcommit 1402ef0b1deedb335c3f9a648aff2a9377893e0e[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu May 21 15:44:55 2015 -0500
+
+    Designed ForLoopRefactoring abstract class, added comments to others
+
+[33mcommit 5954b3882e23f65849030045fb51265806b4e89c[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu May 21 15:09:23 2015 -0500
+
+    Changed findLoop to find the correct loop within selection
+
+[33mcommit b874ad49fac3c5e1a93bea3dfd4d72a2fc1278cc[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Thu May 21 14:00:14 2015 -0500
+
+    Removed deprecated class, added extra protection for delegate
+
+[33mcommit 18819ffa72884da954d927b838001a58ec8cbd78[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed May 20 17:53:23 2015 -0500
+
+    Reworked delegate to bypass use of an extended RefactoringAction class
+
+[33mcommit 7f607df438330c8d26c00b0984289840552ebec0[m
+Merge: f731bd1 78c7b3f
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed May 20 13:50:03 2015 -0500
+
+    Merge branch 'master' of https://github.com/joverbey/oaccrefac
+
+[33mcommit f731bd131488a646bd4ae924ead594f1f686ccae[m
+Author: Adam Eichelkraut <ake0005@tigermail.auburn.edu>
+Date:   Wed May 20 13:48:02 2015 -0500
+
+    Changed name of SampleAction, revamped names of UI menus
+
+[33mcommit 78c7b3fb44dac78b3540920a926969e0b95988b5[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Wed May 20 13:26:46 2015 -0500
+
+    committing
+
+[33mcommit e2731882a59c26b8961b0ee519a5d95635b9fdc2[m
+Author: Alexander Calvert <afc0005@auburn.edu>
+Date:   Mon May 18 17:20:51 2015 -0500
+
+    added Calvin's dependence test
+
+[33mcommit 28fc5e3694a502246d62f18d1e7d9c1050aa4798[m
+Author: Jeffrey Overbey <com-github@jeff.over.bz>
+Date:   Mon May 18 16:45:42 2015 -0500
+
+    Initial import
+
+[33mcommit c644efd0c5293ae1ab13d5adfce2617f538ad071[m
+Author: Jeff Overbey <joverbey@users.noreply.github.com>
+Date:   Mon May 18 16:41:33 2015 -0500
+
+    Initial commit

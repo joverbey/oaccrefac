@@ -253,60 +253,6 @@ public class OpenACCUtil {
         return create;
     }
     
-    /**
-     * Get the existing copyin set from a parsed data construct 
-     * @param data the construct
-     * @return a mapping from strings representing the variables being copied in to the actual strings found in the set (i.e., may include a range, etc)
-     */
-    public static Map<String, String> getCopyin(ASTAccDataNode data) {
-        Map<String, String> copyin = new TreeMap<String, String>();
-        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
-            if(listNode.getAccDataClause() instanceof ASTAccCopyinClauseNode) {
-                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) listNode.getAccDataClause();
-                for(ASTAccDataItemNode var : copyinClause.getAccDataList()) {
-                    copyin.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-                }
-            }
-        }
-        return copyin;
-    }
-    
-    /**
-     * Get the existing copyout set from a parsed data construct 
-     * @param data the construct
-     * @return a mapping from strings representing the variables being copied out to the actual strings found in the set (i.e., may include a range, etc)
-     */
-    public static Map<String, String> getCopyout(ASTAccDataNode data) {
-        Map<String, String> copyout = new TreeMap<String, String>();
-        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
-            if(listNode.getAccDataClause() instanceof ASTAccCopyoutClauseNode) {
-                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) listNode.getAccDataClause();
-                for(ASTAccDataItemNode var : copyoutClause.getAccDataList()) {
-                    copyout.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-                }
-            }
-        }
-        return copyout;
-    }
-    
-    /**
-     * Get the existing created set from a parsed data construct 
-     * @param data the construct
-     * @return a mapping from strings representing the variables being created to the actual strings found in the set (i.e., may include a range, etc)
-     */
-    public static Map<String, String> getCreate(ASTAccDataNode data) {
-        Map<String, String> create = new TreeMap<String, String>();
-        for(ASTAccDataClauseListNode listNode : data.getAccDataClauseList()) {
-            if(listNode.getAccDataClause() instanceof ASTAccCreateClauseNode) {
-                ASTAccCreateClauseNode createClause = (ASTAccCreateClauseNode) listNode.getAccDataClause();
-                for(ASTAccDataItemNode var : createClause.getAccDataList()) {
-                    create.put(var.getIdentifier().getIdentifier().getText(), var.toString());
-                }
-            }
-        }
-        return create;
-    }
-    
     private OpenACCUtil() {
     }
     

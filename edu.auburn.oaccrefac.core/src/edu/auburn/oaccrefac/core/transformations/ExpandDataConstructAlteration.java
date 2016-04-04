@@ -61,16 +61,16 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         else {
             osize = 1;
         }
-        Set<String> ocopyin = OpenACCUtil.inferCopyin(rd, getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : getStatement());
-        Set<String> ocopyout = OpenACCUtil.inferCopyout(rd, getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : getStatement());
+        Set<String> ocopyin = OpenACCUtil.inferCopyin(rd, getStatementsInBody());
+        Set<String> ocopyout = OpenACCUtil.inferCopyout(rd, getStatementsInBody());
         List<Expansion> expansions = new ArrayList<Expansion>();
         Set<String> gpuuses = getGpuVars(getStatement(), false);
         Set<String> gpudefs = getGpuVars(getStatement(), true);
         for(int i = 0; i <= maxup; i++) {
             for(int j = 0; j <= maxdown; j++) {
                 IASTStatement[] expStmts = getExpansionStatements(i, j, getStatement());
-                Set<String> expcopyin = OpenACCUtil.inferCopyin(expStmts, rd);
-                Set<String> expcopyout = OpenACCUtil.inferCopyout(expStmts, rd);
+                Set<String> expcopyin = OpenACCUtil.inferCopyin(rd, expStmts);
+                Set<String> expcopyout = OpenACCUtil.inferCopyout(rd, expStmts);
                 
                 //be sure that for variables actually used on the gpu, the copyin set hasn't changed 
                 if(areCopyDefsTheSame(gpuuses, ocopyin, expcopyin))
@@ -143,6 +143,14 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         int len = end - start;
         this.replace(start,  len, newConstruct);
         finalizeChanges();
+    }
+
+    private IASTStatement[] getStatementsInBody() {
+        if (getStatement() instanceof IASTCompoundStatement) {
+            return ((IASTCompoundStatement) getStatement()).getStatements();
+        } else {
+            return new IASTStatement[] { getStatement() };
+        }
     }
     
     private List<ASTAccDataClauseListNode> getOtherClauses(ASTAccDataNode data) {
