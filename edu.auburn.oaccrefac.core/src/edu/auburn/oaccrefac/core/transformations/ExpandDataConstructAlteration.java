@@ -61,8 +61,8 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
         else {
             osize = 1;
         }
-        Set<String> ocopyin = OpenACCUtil.inferCopyin(getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
-        Set<String> ocopyout = OpenACCUtil.inferCopyout(getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : new IASTStatement[] {getStatement()}, rd);
+        Set<String> ocopyin = OpenACCUtil.inferCopyin(rd, getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : getStatement());
+        Set<String> ocopyout = OpenACCUtil.inferCopyout(rd, getStatement() instanceof IASTCompoundStatement? ((IASTCompoundStatement) getStatement()).getStatements() : getStatement());
         List<Expansion> expansions = new ArrayList<Expansion>();
         Set<String> gpuuses = getGpuVars(getStatement(), false);
         Set<String> gpudefs = getGpuVars(getStatement(), true);

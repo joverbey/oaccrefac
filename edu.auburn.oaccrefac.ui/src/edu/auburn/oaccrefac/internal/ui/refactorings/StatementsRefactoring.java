@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
@@ -32,7 +33,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
 
     private IASTTranslationUnit ast;
     private IASTStatement[] statements;
-    private IASTNode[] statementsAndComments;
+    private IASTNode[] allEnclosedNodes;
 
     public StatementsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -95,15 +96,30 @@ public abstract class StatementsRefactoring extends CRefactoring {
     }
 
     private void discoverStatementsFromRegion() {
-        List<IASTStatement> statements = new LinkedList<>();
-        List<IASTComment> comments = new LinkedList<>();
-        List<IASTNode> statementsAndComments = new LinkedList<>();
-
-        List<IASTStatement> all = ASTUtil.find(ast, IASTStatement.class);
         int regionBegin = selectedRegion.getOffset();
         int regionEnd = selectedRegion.getLength() + regionBegin;
 
-        // filter out statements not within the region bounds
+        List<IASTStatement> statements = collectStatements(regionBegin, regionEnd);
+        List<IASTComment> comments = collectComments(regionBegin, regionEnd, statements);
+        List<IASTPreprocessorStatement> preprocs = collectPreprocessorStatements(regionBegin, regionEnd, statements);
+        List<IASTNode> allEnclosedNodes = new LinkedList<IASTNode>();
+        
+        allEnclosedNodes.addAll(statements);
+        allEnclosedNodes.addAll(comments);
+        allEnclosedNodes.addAll(preprocs);
+        
+        Collections.sort(statements, ASTUtil.FORWARD_COMPARATOR);
+        Collections.sort(allEnclosedNodes, ASTUtil.FORWARD_COMPARATOR);
+
+        this.statements = statements.toArray(new IASTStatement[statements.size()]);
+        this.allEnclosedNodes = allEnclosedNodes.toArray(new IASTNode[allEnclosedNodes.size()]);
+
+    }
+    
+    private List<IASTStatement> collectStatements(int regionBegin, int regionEnd) {
+        List<IASTStatement> all = ASTUtil.find(ast, IASTStatement.class);
+        List<IASTStatement> statements = new LinkedList<>();
+        //filter out statements not within the region bounds
         for (IASTStatement stmt : all) {
             int stmtBegin = stmt.getFileLocation().getNodeOffset();
             int stmtEnd = stmtBegin + stmt.getFileLocation().getNodeLength();
@@ -112,8 +128,8 @@ public abstract class StatementsRefactoring extends CRefactoring {
             }
         }
 
-        // filter out statements that are children of other statements in the region
-        Set<IASTStatement> children = new HashSet<>();
+        //filter out statements that are children of other statements in the region
+        Set<IASTStatement> children = new HashSet<IASTStatement>();
         for (IASTStatement child : statements) {
             for (IASTStatement parent : statements) {
                 if (ASTUtil.isStrictAncestor(parent, child)) {
@@ -121,14 +137,19 @@ public abstract class StatementsRefactoring extends CRefactoring {
                 }
             }
         }
-        
         for (Iterator<IASTStatement> iterator = statements.iterator(); iterator.hasNext();) {
             if (children.contains(iterator.next())) {
                 iterator.remove();
             }
         }
-
-        // filter out comments that are not within region bounds
+        
+        return statements;
+    }
+    
+    private List<IASTComment> collectComments(int regionBegin, int regionEnd, List<IASTStatement> statements) {
+        List<IASTComment> comments = new LinkedList<IASTComment>();
+        
+        //filter out comments that are not within region bounds
         for (IASTComment comment : ast.getComments()) {
             int commentBegin = comment.getFileLocation().getNodeOffset();
             int commentEnd = commentBegin + comment.getFileLocation().getNodeLength();
@@ -137,7 +158,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
             }
         }
 
-        // filter out comments that are inside of statements in the region
+        //filter out comments that are inside of statements in the region
         Set<IASTComment> containedComments = new HashSet<IASTComment>();
         for (IASTComment com : comments) {
             for (IASTStatement stmt : statements) {
@@ -151,21 +172,45 @@ public abstract class StatementsRefactoring extends CRefactoring {
                 iterator.remove();
             }
         }
-        statementsAndComments.addAll(statements);
-        statementsAndComments.addAll(comments);
-        Collections.sort(statements, ASTUtil.FORWARD_COMPARATOR);
-        Collections.sort(statementsAndComments, ASTUtil.FORWARD_COMPARATOR);
-
-        this.statements = statements.toArray(new IASTStatement[statements.size()]);
-        this.statementsAndComments = statementsAndComments.toArray(new IASTNode[statementsAndComments.size()]);
-
+        
+        return comments;
     }
 
+    private List<IASTPreprocessorStatement> collectPreprocessorStatements(int regionBegin, int regionEnd, List<IASTStatement> statements) {
+        List<IASTPreprocessorStatement> preprocs = new LinkedList<IASTPreprocessorStatement>();
+        
+        //filter out comments that are not within region bounds
+        for (IASTPreprocessorStatement preproc : ast.getAllPreprocessorStatements()) {
+            int preprocBegin = preproc.getFileLocation().getNodeOffset();
+            int preprocEnd = preprocBegin + preproc.getFileLocation().getNodeLength();
+            if (preprocBegin >= regionBegin && preprocEnd <= regionEnd) {
+                preprocs.add(preproc);
+            }
+        }
+
+        //filter out comments that are inside of statements in the region
+        Set<IASTPreprocessorStatement> containedPreprocs = new HashSet<IASTPreprocessorStatement>();
+        for (IASTPreprocessorStatement com : preprocs) {
+            for (IASTStatement stmt : statements) {
+                if (ASTUtil.doesNodeLexicallyContain(stmt, com)) {
+                    containedPreprocs.add(com);
+                }
+            }
+        }
+        for (Iterator<IASTPreprocessorStatement> iterator = preprocs.iterator(); iterator.hasNext();) {
+            if (containedPreprocs.contains(iterator.next())) {
+                iterator.remove();
+            }
+        }
+        
+        return preprocs;
+    }
+    
     public IASTStatement[] getStatements() {
         return statements;
     }
 
-    public IASTNode[] getStatementsAndComments() {
-        return statementsAndComments;
+    public IASTNode[] getAllEnclosedNodes() {
+        return allEnclosedNodes;
     }
 }

@@ -16,14 +16,14 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 public abstract class SourceStatementsAlteration<T extends SourceStatementsCheck<?>> extends SourceAlteration<T> {
 
     private IASTStatement[] statements;
-    private IASTNode[] statementsAndComments;
+    private IASTNode[] allEnclosedNodes;
     private int offset;
     private int length;
     
     public SourceStatementsAlteration(IASTRewrite rewriter, T check) {
         super(rewriter, check);
         this.statements = check.getStatements();
-        this.statementsAndComments = check.getStatementsAndComments();
+        this.allEnclosedNodes = check.getAllEnclosedNodes();
         offset = statements[0].getFileLocation().getNodeOffset();
         length = statements[statements.length - 1].getFileLocation().getNodeOffset()
                 + statements[statements.length - 1].getFileLocation().getNodeLength()
@@ -35,8 +35,8 @@ public abstract class SourceStatementsAlteration<T extends SourceStatementsCheck
         return statements;
     }
     
-    public IASTNode[] getStatementsAndComments() {
-        return statementsAndComments;
+    public IASTNode[] getAllEnclosedNodes() {
+        return allEnclosedNodes;
     }
 
     public int getOffset() {

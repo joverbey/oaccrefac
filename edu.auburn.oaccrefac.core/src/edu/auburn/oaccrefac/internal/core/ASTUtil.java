@@ -692,6 +692,15 @@ public class ASTUtil {
         Collections.sort(comments, ASTUtil.FORWARD_COMPARATOR);
         return comments;
     }
+    
+    public static boolean inStatements(IASTNode node, IASTStatement[] construct) {
+        for(IASTStatement stmt : construct) {
+            if(ASTUtil.isAncestor(stmt, node)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private ASTUtil() {
     }

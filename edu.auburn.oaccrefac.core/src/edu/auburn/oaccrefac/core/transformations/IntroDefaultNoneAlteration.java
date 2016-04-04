@@ -8,6 +8,7 @@
  * Contributors:
  *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
+
 package edu.auburn.oaccrefac.core.transformations;
 
 public class IntroDefaultNoneAlteration extends PragmaDirectiveAlteration<IntroDefaultNoneCheck> {

@@ -8,6 +8,7 @@
  * Contributors:
  *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
+
 package edu.auburn.oaccrefac.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
