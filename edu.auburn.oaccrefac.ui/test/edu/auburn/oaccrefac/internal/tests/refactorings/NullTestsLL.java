@@ -18,10 +18,9 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.NullRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import edu.auburn.oaccrefac.internal.ui.refactorings.NullRefactoring;
 
 /**
  * Runs the Null refactoring on all Livermore loops, failing if the loop cannot be analyzed.

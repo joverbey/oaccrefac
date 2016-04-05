@@ -5,9 +5,8 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopCuttingRefactoring;
 import org.junit.runners.Parameterized.Parameters;
-
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopCuttingRefactoring;
 
 public class LoopCuttingTests extends RefactoringTest<LoopCuttingRefactoring> {
 

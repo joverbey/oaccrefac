@@ -14,10 +14,10 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.LinearExpression;
 
-import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.dependence.LinearExpression;
 import junit.framework.TestCase;
 
 public class LinearExpressionMatcherTest extends TestCase {

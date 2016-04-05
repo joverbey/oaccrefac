@@ -10,10 +10,6 @@
  *******************************************************************************/
 package edu.auburn.oaccrefac.internal.core.tests;
 
-import static edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator.addWillOverflow;
-import static edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator.multiplyWillOverflow;
-import static edu.auburn.oaccrefac.internal.core.constprop.ExpressionEvaluator.subtractWillOverflow;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Set;
@@ -24,9 +20,10 @@ import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.constprop.ExpressionEvaluator;
 
-import edu.auburn.oaccrefac.core.dataflow.ConstantPropagation;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import junit.framework.TestCase;
 
 public class ConstantPropagationTest extends TestCase {
@@ -419,9 +416,9 @@ public class ConstantPropagationTest extends TestCase {
                 BigInteger bdifference = b1.subtract(b2);
                 BigInteger bproduct = b1.multiply(b2);
 
-                assertEquals(!bsum.equals(BigInteger.valueOf(sum)), addWillOverflow(v1, v2));
-                assertEquals(!bdifference.equals(BigInteger.valueOf(difference)), subtractWillOverflow(v1, v2));
-                assertEquals(!bproduct.equals(BigInteger.valueOf(product)), multiplyWillOverflow(v1, v2));
+                assertEquals(!bsum.equals(BigInteger.valueOf(sum)), ExpressionEvaluator.addWillOverflow(v1, v2));
+                assertEquals(!bdifference.equals(BigInteger.valueOf(difference)), ExpressionEvaluator.subtractWillOverflow(v1, v2));
+                assertEquals(!bproduct.equals(BigInteger.valueOf(product)), ExpressionEvaluator.multiplyWillOverflow(v1, v2));
             }
         }
     }

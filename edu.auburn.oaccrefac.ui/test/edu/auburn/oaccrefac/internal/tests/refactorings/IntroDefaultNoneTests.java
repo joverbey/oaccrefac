@@ -15,11 +15,10 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroDefaultNoneRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import edu.auburn.oaccrefac.internal.ui.refactorings.IntroDefaultNoneRefactoring;
 
 @RunWith(Parameterized.class)
 public class IntroDefaultNoneTests extends RefactoringTest<IntroDefaultNoneRefactoring> {

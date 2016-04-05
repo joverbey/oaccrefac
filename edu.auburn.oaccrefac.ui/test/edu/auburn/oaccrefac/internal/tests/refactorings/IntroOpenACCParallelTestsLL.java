@@ -12,10 +12,9 @@ package edu.auburn.oaccrefac.internal.tests.refactorings;
 
 import java.io.File;
 
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import edu.auburn.oaccrefac.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
 
 @RunWith(Parameterized.class)
 public class IntroOpenACCParallelTestsLL extends RefactoringTestLL<IntroOpenACCParallelRefactoring> {

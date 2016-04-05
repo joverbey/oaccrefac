@@ -12,11 +12,10 @@ package edu.auburn.oaccrefac.internal.tests.refactorings;
 
 import java.io.File;
 
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopFusionRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopFusionRefactoring;
 
 @RunWith(Parameterized.class)
 public class LoopFusionTests extends RefactoringTest<LoopFusionRefactoring> {

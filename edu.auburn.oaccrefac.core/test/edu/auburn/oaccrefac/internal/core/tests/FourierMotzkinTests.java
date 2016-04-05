@@ -15,8 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import edu.auburn.oaccrefac.internal.core.dependence.FourierMotzkinEliminator;
-import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.FourierMotzkinEliminator;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.Matrix;
+
 import junit.framework.TestCase;
 
 /**

@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.Matrix;
+
 import junit.framework.TestCase;
 
 public class MatrixTests extends TestCase {

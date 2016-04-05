@@ -17,11 +17,11 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-import edu.auburn.oaccrefac.core.dependence.DataDependence;
-import edu.auburn.oaccrefac.core.dependence.DependenceAnalysis;
-import edu.auburn.oaccrefac.core.dependence.DependenceTestFailure;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import junit.framework.TestCase;
 
 public class DependenceAnalysisTest extends TestCase {

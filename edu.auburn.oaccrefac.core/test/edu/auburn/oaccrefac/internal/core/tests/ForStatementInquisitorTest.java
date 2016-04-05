@@ -20,12 +20,11 @@ import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
+import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 import org.junit.Assert;
 import org.junit.Test;
-
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.ForStatementInquisitor;
-import edu.auburn.oaccrefac.internal.core.InquisitorFactory;
 
 //TODO add tests for getLowerBound
 //TODO add more code coverage

@@ -15,11 +15,10 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopInterchangeRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import edu.auburn.oaccrefac.internal.ui.refactorings.LoopInterchangeRefactoring;
 
 @RunWith(Parameterized.class)
 public class LoopInterchangeTests extends RefactoringTest<LoopInterchangeRefactoring> {

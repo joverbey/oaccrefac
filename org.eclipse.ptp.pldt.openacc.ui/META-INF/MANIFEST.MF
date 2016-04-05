@@ -24,8 +24,7 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: edu.auburn.oaccrefac.internal.ui.refactorings,
- org.eclipse.ptp.pldt.openacc.internal.ui;x-internal:=true;
+Export-Package: org.eclipse.ptp.pldt.openacc.internal.ui;x-internal:=true;
   uses:="org.eclipse.ptp.pldt.common,
    org.osgi.framework,
    org.eclipse.ui.plugin,
@@ -35,5 +34,6 @@ Export-Package: edu.auburn.oaccrefac.internal.ui.refactorings,
  org.eclipse.ptp.pldt.openacc.internal.ui.editorHelp;x-internal:=true,
  org.eclipse.ptp.pldt.openacc.internal.ui.messages;x-internal:=true,
  org.eclipse.ptp.pldt.openacc.internal.ui.prefs;x-internal:=true,
+ org.eclipse.ptp.pldt.openacc.internal.ui.refactorings,
  org.eclipse.ptp.pldt.openacc.internal.ui.views;x-internal:=true
-Import-Package: edu.auburn.oaccrefac.core.transformations
+Import-Package: org.eclipse.ptp.pldt.openacc.core.transformations

@@ -14,10 +14,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
+import org.eclipse.ptp.pldt.openacc.core.parser.SyntaxException;
 import org.junit.Test;
-
-import edu.auburn.oaccrefac.core.parser.OpenACCParser;
-import edu.auburn.oaccrefac.core.parser.SyntaxException;
 
 public class OpenACCParserTests {
 

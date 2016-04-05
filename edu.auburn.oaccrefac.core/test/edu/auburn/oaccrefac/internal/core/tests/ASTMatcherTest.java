@@ -17,12 +17,11 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ASTMatcher;
+import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 import org.junit.Assert;
 import org.junit.Test;
-
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ASTMatcher;
-import edu.auburn.oaccrefac.internal.core.patternmatching.ArbitraryStatement;
 
 /**
  * Unit tests for {@link ASTMatcher}.

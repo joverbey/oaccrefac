@@ -7,8 +7,7 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.CoreException;
-
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class TestUtilities {
     

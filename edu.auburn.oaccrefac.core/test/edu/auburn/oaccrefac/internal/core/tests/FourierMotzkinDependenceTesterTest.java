@@ -13,12 +13,11 @@ package edu.auburn.oaccrefac.internal.core.tests;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.FourierMotzkinDependenceTester;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.Matrix;
 import org.junit.Assert;
 import org.junit.Test;
-
-import edu.auburn.oaccrefac.core.dependence.Direction;
-import edu.auburn.oaccrefac.internal.core.dependence.FourierMotzkinDependenceTester;
-import edu.auburn.oaccrefac.internal.core.dependence.Matrix;
 
 /**
  * Unit tests for FourierMotzkinDependenceTest class

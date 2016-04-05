@@ -13,11 +13,10 @@ package edu.auburn.oaccrefac.internal.core.tests;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.DirectionHierarchyTester;
 import org.junit.Assert;
 import org.junit.Test;
-
-import edu.auburn.oaccrefac.core.dependence.Direction;
-import edu.auburn.oaccrefac.internal.core.dependence.DirectionHierarchyTester;
 
 /**
  * the expectedSize parameter on setupAndAssertSubsetAndSize() may change if code changes

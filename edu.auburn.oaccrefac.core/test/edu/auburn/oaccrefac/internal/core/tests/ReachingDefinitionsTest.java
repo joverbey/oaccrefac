@@ -10,9 +10,9 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-import edu.auburn.oaccrefac.core.dataflow.ReachingDefinitions;
-import edu.auburn.oaccrefac.internal.core.ASTUtil;
 import junit.framework.TestCase;
 
 public class ReachingDefinitionsTest extends TestCase {
