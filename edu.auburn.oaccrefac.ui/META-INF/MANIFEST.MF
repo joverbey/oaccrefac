@@ -18,7 +18,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide,
  org.eclipse.ui.workbench.texteditor,
- edu.auburn.oaccrefac.core;visibility:=reexport,
- org.junit
+ edu.auburn.oaccrefac.core,
+ org.junit,
+ org.eclipse.ptp.pldt.openacc.core,
+ org.eclipse.ptp.pldt.openacc.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

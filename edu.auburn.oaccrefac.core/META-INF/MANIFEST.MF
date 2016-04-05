@@ -14,15 +14,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.codan.core.cxx,
  org.junit,
  org.eclipse.swt,
- org.eclipse.text
+ org.eclipse.text,
+ org.eclipse.ptp.pldt.openacc.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: edu.auburn.oaccrefac.core.dataflow,
- edu.auburn.oaccrefac.core.dependence,
- edu.auburn.oaccrefac.core.parser,
- edu.auburn.oaccrefac.core.transformations,
- edu.auburn.oaccrefac.internal.core,
- edu.auburn.oaccrefac.internal.core.constprop,
- edu.auburn.oaccrefac.internal.core.dependence,
- edu.auburn.oaccrefac.internal.core.patternmatching,
- edu.auburn.oaccrefac.internal.core.tests
+Export-Package: edu.auburn.oaccrefac.internal.core.tests

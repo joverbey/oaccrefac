@@ -4,8 +4,23 @@ Bundle-Name: PTP Parallel Language Development Tools OpenACC Support (Core)
 Bundle-SymbolicName: org.eclipse.ptp.pldt.openacc.core;singleton:=true
 Bundle-Version: 7.0.0.qualifier
 Bundle-Activator: org.eclipse.ptp.pldt.openacc.internal.core.Activator
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.text,
+ org.eclipse.cdt.core,
+ org.eclipse.cdt.codan.core,
+ org.eclipse.cdt.codan.core.cxx
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Eclipse PTP
-Export-Package: org.eclipse.ptp.pldt.openacc.internal.core
+Export-Package: edu.auburn.oaccrefac.core.dataflow,
+ edu.auburn.oaccrefac.core.dependence,
+ edu.auburn.oaccrefac.core.parser,
+ edu.auburn.oaccrefac.core.transformations,
+ edu.auburn.oaccrefac.internal.core,
+ edu.auburn.oaccrefac.internal.core.constprop,
+ edu.auburn.oaccrefac.internal.core.dependence,
+ edu.auburn.oaccrefac.internal.core.patternmatching,
+ org.eclipse.ptp.pldt.openacc.internal.core
