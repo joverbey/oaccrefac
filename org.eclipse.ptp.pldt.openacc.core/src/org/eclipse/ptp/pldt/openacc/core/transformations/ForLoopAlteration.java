@@ -65,7 +65,7 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
      * Sets the loop to change
      * 
      * @author Adam Eichelkraut
-     * @param newLoop,
+     * @param newLoop
      *            not null
      * @throws IllegalArgumentException
      *             if argument is null

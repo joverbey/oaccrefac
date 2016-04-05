@@ -23,10 +23,10 @@ import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ptp.pldt.internal.tests.IOUtil;
+import org.eclipse.ptp.pldt.internal.tests.refactorings.RefactoringTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import edu.auburn.oaccrefac.internal.util.IOUtil;
 
 /**
  * Base class for testing C refactorings on the Livermore Loops, the EPCC benchmarks, and other files with multiple

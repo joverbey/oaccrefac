@@ -30,12 +30,7 @@ public class ExpandDataConstructDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof ExpandDataConstructRefactoring))
-            throw new ClassCastException("Refactoring not ExpandDataConstructRefactoring!");
-        
-        //ExpandDataConstructRefactoring refac = (ExpandDataConstructRefactoring) refactoring;
-        LoopRefactoringWizard wiz = new LoopRefactoringWizard(refactoring, "Expand Default None Refactoring");
-        return wiz;
+        return new LoopRefactoringWizard(refactoring, "Expand OpenACC Data Construct");
     }
 
 }

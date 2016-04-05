@@ -37,7 +37,7 @@ public class NumberInputComposite extends Composite {
                 final String oldS = source.getText();
                 String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
                 
-                e.doit = newS.matches("[0-9]*");
+                e.doit = newS.matches("[0-9]*"); //$NON-NLS-1$
                 if (e.doit) {
                     listener.valueChanged(Integer.parseInt(newS));
                 }

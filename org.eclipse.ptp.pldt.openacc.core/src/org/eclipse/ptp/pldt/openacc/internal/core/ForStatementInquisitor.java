@@ -135,7 +135,7 @@ public class ForStatementInquisitor {
      * supported patterns for counted loops.
      * 
      * @param matchee
-     * @return
+     * @return IBinding
      */
     public IBinding getIndexVariable() {
         if (!isCountedLoop())
@@ -199,7 +199,7 @@ public class ForStatementInquisitor {
      * Assumes loops are perfectly nested
      * 
      * @param outerLoop
-     * @return
+     * @return IBinding
      */
     public IASTStatement getInnermostLoopBody() {
         return getInnermostLoopBody(statement);
@@ -298,7 +298,7 @@ public class ForStatementInquisitor {
     /**
      * Returns whether or not the loop and all of its subloops are perfectly nested 
      * 
-     * @return
+     * @return IBinding
      */
     public boolean isPerfectLoopNest() {
         return isPerfectLoopNest(Integer.MAX_VALUE, statement);
@@ -308,7 +308,7 @@ public class ForStatementInquisitor {
      * Returns whether or not the loop and its subloops are perfectly nested up to the given depth
      * 
      * @param depth A single loop with no nesting is considered to have depth 0
-     * @return
+     * @return IBinding
      */
     public boolean isPerfectLoopNest(int depth) {
         return isPerfectLoopNest(depth, statement);

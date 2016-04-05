@@ -31,12 +31,8 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopTilingRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopTilingRefactoring!");
-        }
-
         final LoopTilingRefactoring refac = (LoopTilingRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Loop Tiling Refactoring");
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loop");
         LoopRefactoringWizardPage page = wizard.getInputPage();
         page.addNumberInputControl("Tile Width: ", new ValueChangedListener() {
             @Override
@@ -53,5 +49,4 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
 
         return wizard;
     }
-
 }

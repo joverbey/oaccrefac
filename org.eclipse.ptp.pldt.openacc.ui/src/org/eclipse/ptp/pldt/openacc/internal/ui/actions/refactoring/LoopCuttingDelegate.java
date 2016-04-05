@@ -20,12 +20,9 @@ public class LoopCuttingDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopCuttingRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopCuttingRefactoring!");
-        }
         final LoopCuttingRefactoring refac = (LoopCuttingRefactoring) refactoring;
-        LoopRefactoringWizard gui = new LoopRefactoringWizard(refactoring, "LoopCuttingRefactoring");
-        gui.getInputPage().addNumberInputControl("Cut Factor", new ValueChangedListener() {
+        LoopRefactoringWizard gui = new LoopRefactoringWizard(refactoring, "Cut Loops");
+        gui.getInputPage().addNumberInputControl("Cut Size", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setCutFactor(value);

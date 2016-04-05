@@ -30,10 +30,7 @@ public class LoopInterchangeDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopInterchangeRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
-        }
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Loop Interchange Refactoring");
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Interchange Loops");
         final LoopInterchangeRefactoring refac = (LoopInterchangeRefactoring) refactoring;
         wizard.getInputPage().addNumberInputControl("Interchange Depth: ", new ValueChangedListener() {
             @Override

@@ -22,7 +22,6 @@ import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopUnrollingRefact
 
 @SuppressWarnings("restriction")
 public class LoopUnrollingDelegate extends RefactoringActionDelegate {
-    
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc,
             ITextSelection selection, ICProject project) {
@@ -31,11 +30,8 @@ public class LoopUnrollingDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopUnrollingRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopUnrollingRefactoring!");
-        }
         final LoopUnrollingRefactoring refac = (LoopUnrollingRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "LoopUnrollingRefactoring"); 
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Unroll Loop"); 
         wizard.getInputPage().addNumberInputControl("Unroll Factor", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {

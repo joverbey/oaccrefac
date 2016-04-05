@@ -24,16 +24,17 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.eclipse.ptp.pldt.openacc.internal.ui;x-internal:=true;
+Export-Package: org.eclipse.ptp.pldt.openacc.internal.ui;
   uses:="org.eclipse.ptp.pldt.common,
    org.osgi.framework,
    org.eclipse.ui.plugin,
    org.eclipse.osgi.util,
    org.eclipse.jface.resource",
- org.eclipse.ptp.pldt.openacc.internal.ui.actions;x-internal:=true,
- org.eclipse.ptp.pldt.openacc.internal.ui.editorHelp;x-internal:=true,
- org.eclipse.ptp.pldt.openacc.internal.ui.messages;x-internal:=true,
- org.eclipse.ptp.pldt.openacc.internal.ui.prefs;x-internal:=true,
+ org.eclipse.ptp.pldt.openacc.internal.ui.actions,
+ org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring,
+ org.eclipse.ptp.pldt.openacc.internal.ui.editorHelp,
+ org.eclipse.ptp.pldt.openacc.internal.ui.messages,
+ org.eclipse.ptp.pldt.openacc.internal.ui.prefs,
  org.eclipse.ptp.pldt.openacc.internal.ui.refactorings,
- org.eclipse.ptp.pldt.openacc.internal.ui.views;x-internal:=true
+ org.eclipse.ptp.pldt.openacc.internal.ui.views
 Import-Package: org.eclipse.ptp.pldt.openacc.core.transformations

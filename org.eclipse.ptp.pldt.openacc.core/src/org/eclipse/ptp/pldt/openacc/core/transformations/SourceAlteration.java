@@ -92,11 +92,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
     /**
      * Base change method for all inherited classes. This method does some initialization before calling the inherited
      * class' implemented {@link #doChange(IASTRewrite)} method.
-     * 
-     * @return -- returns the top-level rewriter used
-     * 
-     * @throws IllegalArgumentException
-     *             if the rewriter is null at this point
      */
     public final void change() throws CoreException {
         // FIXME: Eliminate doChange -- subclasses can override change() instead???
@@ -370,7 +365,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     /**
      * Called by the CLI to rewrite the AST. Not used by the Eclipse GUI.
      * 
-     * @return
+     * @return Change
      */
     public Change rewriteAST() {
         return rewriter.rewriteAST();

@@ -28,8 +28,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ptp.pldt.openacc.core,
  org.eclipse.ptp.pldt.openacc.ui
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.8
-Bundle-Activator: org.eclipse.ptp.pldt.tests.Activator
-Export-Package: edu.auburn.oaccrefac.internal.core.tests,
- edu.auburn.oaccrefac.internal.tests.refactorings,
- edu.auburn.oaccrefac.internal.util
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Activator: org.eclipse.ptp.pldt.internal.tests.Activator
+Export-Package: org.eclipse.ptp.pldt.internal.tests,
+ org.eclipse.ptp.pldt.internal.tests.analyses,
+ org.eclipse.ptp.pldt.internal.tests.artifacts,
+ org.eclipse.ptp.pldt.internal.tests.refactorings

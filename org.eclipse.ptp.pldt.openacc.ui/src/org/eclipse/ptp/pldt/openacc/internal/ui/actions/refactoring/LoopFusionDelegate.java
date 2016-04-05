@@ -29,9 +29,6 @@ public class LoopFusionDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopFusionRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopFusionRefactoring!");
-        }
-        return new LoopRefactoringWizard(refactoring, "LoopFusionRefactoring");
+        return new LoopRefactoringWizard(refactoring, "Fuse Loops");
     }
 }

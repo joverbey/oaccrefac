@@ -30,16 +30,12 @@ public class LoopStripMiningDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        if (!(refactoring instanceof LoopStripMiningRefactoring)) {
-            throw new ClassCastException("Refactoring not LoopStripMiningRefactoring!");
-        }
         final LoopStripMiningRefactoring refac = (LoopStripMiningRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "LoopStripMiningRefactoring");
-        wizard.getInputPage().addNumberInputControl("Strip Factor", new ValueChangedListener() {
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Strip Mine Loop");
+        wizard.getInputPage().addNumberInputControl("Strip Size", new ValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setStripFactor(value);
-
             }
         });
         return wizard;

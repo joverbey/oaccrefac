@@ -14,7 +14,6 @@ package org.eclipse.ptp.pldt.openacc.internal.ui.messages;
 import org.eclipse.osgi.util.NLS;
 
 /** NLS messages */
-@SuppressWarnings("javadoc")
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ptp.pldt.openacc.internal.ui.messages.messages"; //$NON-NLS-1$
 

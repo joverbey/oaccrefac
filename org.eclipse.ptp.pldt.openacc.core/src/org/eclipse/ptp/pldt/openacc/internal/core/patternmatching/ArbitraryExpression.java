@@ -22,7 +22,7 @@ import org.eclipse.cdt.internal.core.dom.parser.ProblemType;
  * 
  * @see ASTMatcher
  */
-@SuppressWarnings({"restriction", "javadoc"})
+@SuppressWarnings("restriction")
 public final class ArbitraryExpression extends ASTNode implements IASTExpression {
     public ArbitraryExpression() {
     }
