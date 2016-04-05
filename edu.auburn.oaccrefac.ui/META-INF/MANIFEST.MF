@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenACC Refactoring UI
-Bundle-SymbolicName: edu.auburn.oaccrefac.ui;singleton:=true
+Bundle-SymbolicName: org.eclipse.ptp.pldt.tests.private;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: edu.auburn.oaccrefac.internal.ui.Activator
 Bundle-Vendor: Auburn University
