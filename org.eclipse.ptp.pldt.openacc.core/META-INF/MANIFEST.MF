@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PTP Parallel Language Development Tools OpenACC Support (Core)
+Bundle-SymbolicName: org.eclipse.ptp.pldt.openacc.core;singleton:=true
+Bundle-Version: 7.0.0.qualifier
+Bundle-Activator: org.eclipse.ptp.pldt.openacc.internal.core.Activator
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: Eclipse PTP
+Export-Package: org.eclipse.ptp.pldt.openacc.internal.core
