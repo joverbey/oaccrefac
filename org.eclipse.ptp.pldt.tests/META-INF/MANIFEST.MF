@@ -5,16 +5,31 @@ Bundle-SymbolicName: org.eclipse.ptp.pldt.tests
 Bundle-Version: 1.0.0
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.junit;bundle-version="3.8.2",
+ org.junit,
  org.eclipse.core.resources,
  org.eclipse.cdt.core,
+ org.eclipse.cdt.ui,
  org.eclipse.ptp.pldt.common,
  org.eclipse.ptp.pldt.mpi.core,
+ org.eclipse.ptp.pldt.openacc.core,
+ org.eclipse.ptp.pldt.openacc.ui,
  org.eclipse.ptp.pldt.openmp.core,
  org.eclipse.ptp.pldt.openmp.analysis,
  org.eclipse.ptp.pldt.openmp.ui.pv,
  org.eclipse.ptp.pldt.mpi.analysis,
- org.eclipse.ptp.pldt.upc
+ org.eclipse.ptp.pldt.upc,
+ org.eclipse.jface.text,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.ltk.ui.refactoring,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ptp.pldt.common,
+ org.eclipse.ptp.pldt.openacc.core,
+ org.eclipse.ptp.pldt.openacc.ui
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.8
 Bundle-Activator: org.eclipse.ptp.pldt.tests.Activator
+Export-Package: edu.auburn.oaccrefac.internal.core.tests,
+ edu.auburn.oaccrefac.internal.tests.refactorings,
+ edu.auburn.oaccrefac.internal.util

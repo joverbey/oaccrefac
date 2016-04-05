@@ -18,4 +18,3 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ptp.pldt.openacc.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: edu.auburn.oaccrefac.internal.core.tests
