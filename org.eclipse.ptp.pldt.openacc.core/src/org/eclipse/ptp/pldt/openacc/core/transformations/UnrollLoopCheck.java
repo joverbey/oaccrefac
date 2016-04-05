@@ -25,74 +25,77 @@ import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
-    private final Long upperBound;
+	private final Long upperBound;
 
-    public UnrollLoopCheck(IASTForStatement loop) {
-        super(loop);
-        IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
-        ConstantPropagation constantProp = new ConstantPropagation(enclosing);
-        IASTExpression ubExpr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
-        upperBound = constantProp.evaluate(ubExpr);
-    }
+	public UnrollLoopCheck(IASTForStatement loop) {
+		super(loop);
+		IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
+		ConstantPropagation constantProp = new ConstantPropagation(enclosing);
+		IASTExpression ubExpr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
+		upperBound = constantProp.evaluate(ubExpr);
+	}
 
-    @Override
-    protected void doLoopFormCheck(RefactoringStatus status) {
-        IASTStatement body = loop.getBody();
-        // If the body is empty, exit out -- pointless to unroll.
-        if (body == null || body instanceof IASTNullStatement) {
-            status.addFatalError("Loop body is empty -- nothing to unroll!");
-            return;
-        }
+	@Override
+	protected void doLoopFormCheck(RefactoringStatus status) {
+		IASTStatement body = loop.getBody();
+		// If the body is empty, exit out -- pointless to unroll.
+		if (body == null || body instanceof IASTNullStatement) {
+			status.addFatalError("Loop body is empty -- nothing to unroll!");
+			return;
+		}
 
-        // If the loop is not a counted loop, fail
-        System.out.println();
-        if (!InquisitorFactory.getInquisitor(loop).isCountedLoop()) {
-            status.addFatalError("Loop form not supported");
-            return;
-        }
+		// If the loop is not a counted loop, fail
+		System.out.println();
+		if (!InquisitorFactory.getInquisitor(loop).isCountedLoop()) {
+			status.addFatalError("Loop form not supported");
+			return;
+		}
 
-        // If the loop contains unsupported statements, fail
-        IASTNode unsupported = InquisitorFactory.getInquisitor(loop).getFirstUnsupportedStmt();
-        if (unsupported != null) {
-            status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
-            return;
-        }
+		// If the loop contains unsupported statements, fail
+		IASTNode unsupported = InquisitorFactory.getInquisitor(loop).getFirstUnsupportedStmt();
+		if (unsupported != null) {
+			status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
+			return;
+		}
 
-        // If the upper bound is not a constant, we cannot do loop unrolling
-        if (upperBound == null) {
-            status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
-            return;
-        }
-        
-        // If lower bound is not constant, we can't calculate the number of times to repeat the "trailer"
-        //  after the unrolled loop
-        if (InquisitorFactory.getInquisitor(loop).getLowerBound() == null) {
-            status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
-            return;
-        }
+		// If the upper bound is not a constant, we cannot do loop unrolling
+		if (upperBound == null) {
+			status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+			return;
+		}
 
-    }
+		// If lower bound is not constant, we can't calculate the number of times to repeat the "trailer"
+		// after the unrolled loop
+		if (InquisitorFactory.getInquisitor(loop).getLowerBound() == null) {
+			status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+			return;
+		}
 
-    @Override
-    protected void doParameterCheck(RefactoringStatus status, UnrollLoopParams params) {
-        // Check unroll factor validity...
-        if (params.getUnrollFactor() <= 0) {
-            status.addFatalError("Invalid loop unroll factor! (<= 0)");
-            return;
-        }
-        
-        // If we are unrolling more than the number of times the loop will 
-        // run (upper bound - lower bound), we can't do the refactoring.
-        // TODO: Figure out why this code is getting an NPE.
-        long loopRunTimes = upperBound.longValue() - InquisitorFactory.getInquisitor(loop).getLowerBound().longValue();
-        if (params.getUnrollFactor() > loopRunTimes) {
-            status.addFatalError("Can't unroll loop more times than the loop runs!");
-            return;
-        }
-    }
+	}
 
-    
-    public Long getUpperBound() {
-        return upperBound;
-    }
+	@Override
+	protected void doParameterCheck(RefactoringStatus status, UnrollLoopParams params) {
+		// Check unroll factor validity...
+		if (params.getUnrollFactor() <= 0) {
+			status.addFatalError("Invalid loop unroll factor! (<= 0)");
+			return;
+		}
+
+		if (upperBound == null) {
+			status.addFatalError("Can't determine loop upper bound.");
+			return;
+		}
+
+		// If we are unrolling more than the number of times the loop will
+		// run (upper bound - lower bound), we can't do the refactoring.
+		long loopRunTimes = upperBound.longValue() - InquisitorFactory.getInquisitor(loop).getLowerBound().longValue();
+		if (params.getUnrollFactor() > loopRunTimes) {
+			status.addFatalError("Can't unroll loop more times than the loop runs");
+			return;
+		}
+	}
+
+	public Long getUpperBound() {
+		return upperBound;
+	}
 }
