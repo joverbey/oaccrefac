@@ -1,9 +1,12 @@
 #!/bin/bash
+
+PLDT_CLASSPATH=../org.eclipse.ptp.pldt.openacc.cli/lib/*:../org.eclipse.ptp.pldt.openacc.cli/bin:../org.eclipse.ptp.pldt.openacc.core/bin
+
 #TODO Throw error if not C file
 curdir=`basename "$PWD"`
-if [ "$curdir" != "edu.auburn.oaccrefac.cli" ]
+if [ "$curdir" != "org.eclipse.ptp.pldt.tests.private" ]
 then
-	echo "Error: This script must be run from the edu.auburn.oaccrefac.cli directory."
+	echo "Error: This script must be run from the org.eclipse.ptp.pldt.tests.private directory."
 	exit
 fi
 
@@ -50,7 +53,7 @@ if [ $testName == "level1" ]; then
 	RUN="./examples/testcode-epcc/oa --datasize 1024 --reps 1" > ./Scripts/result.txt
 	fileToRefactor="examples/testcode-epcc/level1-CMD.c"
 	
-	names="$(java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" FindName "examples/testcode-epcc/level1-CMD.c")"
+	names="$(java -cp $PLDT_CLASSPATH FindName "examples/testcode-epcc/level1-CMD.c")"
 	read -a nameArray <<<$names
 fi
 if [ "$testName" == "custom" ]; then
@@ -62,7 +65,7 @@ if [ "$testName" == "custom" ]; then
 	RUN="$runInput + " > ./Scripts/result.txt
 	echo "Now enter the file to be refactored"
 	read fileToRefactor
-	names="$(java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" FindName $filetoRefactor)"
+	names="$(java -cp $PLDT_CLASSPATH FindName $filetoRefactor)"
 	read -a nameArray <<<$names
 	
 
@@ -88,11 +91,11 @@ $RUN | tee ./Scripts/result.txt
 for i in "${nameArray[@]}"
 do
 	if [ "$refactoring" == "InterchangeLoops" ] || [ "$refactoring" == "LoopCutting" ]  || [ "$refactoring" == "StripMine" ] || [ "$refactoring" == "Unroll" ]; then
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$i" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "TileLoops" ]; then
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$i"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
 	else
-		java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi
 	if [[ -s $outputtemp ]]; then
 		cp $outputtemp $inputtemp
