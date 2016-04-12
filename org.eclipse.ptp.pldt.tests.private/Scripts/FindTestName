@@ -1,5 +1,6 @@
 #!/bin/bash
+PLDT_CLASSPATH=../org.eclipse.ptp.pldt.openacc.cli/lib/*:../org.eclipse.ptp.pldt.openacc.cli/bin:../org.eclipse.ptp.pldt.openacc.core/bin
 declare -a testarray
-string="$(java -cp "lib/*:bin:../edu.auburn.oaccrefac.core/bin" FindName examples/testcode-epcc/level1-CMD.c)"
+string="$(java -cp $PLDT_CLASSPATH FindName examples/testcode-epcc/level1-CMD.c)"
 read -a testarray <<<$string
 echo ${testarray[@]}

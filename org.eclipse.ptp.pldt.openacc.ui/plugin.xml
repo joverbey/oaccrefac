@@ -230,8 +230,7 @@
                class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.ExpandDataConstructDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.ExpandDataConstructDelegate"
                label="&amp;Expand Data Construct"
-               menubarPath="oaccrefac_menu/oaccrefac_group"
-               toolbarPath="oaccrefac_group"
+               menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccGroup"
                tooltip="Expands a data construct as much as possible">
          </action>
       </actionSet>

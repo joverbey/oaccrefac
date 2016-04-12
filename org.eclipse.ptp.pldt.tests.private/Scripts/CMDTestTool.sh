@@ -115,6 +115,10 @@ fi
 cp $fileToRefactor $outputtemp
 cp $inputtemp $fileToRefactor
 
+echo "Compiling..."
+$COMPILE
+
+echo "Running..."
 $RUN | tee ./Scripts/result2.txt
 
 cp $outputtemp $fileToRefactor
