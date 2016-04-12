@@ -11,16 +11,20 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
@@ -44,15 +48,16 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 			return;
 		}
 
+		ForStatementInquisitor loopInquisitor = InquisitorFactory.getInquisitor(loop);
+		
 		// If the loop is not a counted loop, fail
-		System.out.println();
-		if (!InquisitorFactory.getInquisitor(loop).isCountedLoop()) {
+		if (!loopInquisitor.isCountedLoop()) {
 			status.addFatalError("Loop form not supported");
 			return;
 		}
 
 		// If the loop contains unsupported statements, fail
-		IASTNode unsupported = InquisitorFactory.getInquisitor(loop).getFirstUnsupportedStmt();
+		IASTNode unsupported = loopInquisitor.getFirstUnsupportedStmt();
 		if (unsupported != null) {
 			status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
 			return;
@@ -66,8 +71,31 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
 		// If lower bound is not constant, we can't calculate the number of times to repeat the "trailer"
 		// after the unrolled loop
-		if (InquisitorFactory.getInquisitor(loop).getLowerBound() == null) {
+		if (loopInquisitor.getLowerBound() == null) {
 			status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+			return;
+		}
+		
+		IBinding indexBinding = loopInquisitor.getIndexVariable();
+		class DefinitionFinder extends ASTVisitor {
+			public boolean isDefinition;
+			public DefinitionFinder() {
+				this.shouldVisitNames = true;
+			}
+            @Override
+            public int visit(IASTName name) {
+            	if (ASTUtil.isDefinition(name)) {
+            		if (name.getBinding() != null && name.getBinding().equals(indexBinding)) {
+                		this.isDefinition = true;
+            		}
+            	}
+                return PROCESS_CONTINUE;
+            }
+        }
+		DefinitionFinder finder = new DefinitionFinder();
+		loop.getBody().accept(finder);
+		if (finder.isDefinition) {
+			status.addFatalError("Loop index variable is changed in the loop body. Cannot perform unrolling!");
 			return;
 		}
 
