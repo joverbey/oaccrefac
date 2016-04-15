@@ -99,9 +99,9 @@ void undoFinalOperation() {
 uint32_t crackLastRound(uint32_t outdiff) {
   printf("  Using output differential of 0x%08x\n", outdiff);
   printf("  Cracking...");
-  for (uint32_t fakeK = 0x00000000L; fakeK < 0xFFFFFFFFL; fakeK++) {
+  for (uint32_t fakeK = 0x00000000L; fakeK < 0xFFFFFFFFL; fakeK++) {/* loop1outer */
     int32_t score = 0;
-    for (int32_t c = 0; c < numPlain; c++) {
+    for (int32_t c = 0; c < numPlain; c++)/* loop1inner */
       uint32_t cipherLeft = (cipher0[c] >> 32LL);
       cipherLeft ^= (cipher1[c] >> 32LL);
       uint32_t cipherRight = cipher0[c] & 0xFFFFFFFFLL;
@@ -238,11 +238,11 @@ int32_t main() {
   printf("  Cracking...");
   startTime = time(NULL);
   uint32_t guessK0;
-  for (guessK0 = 0; guessK0 < 0xFFFFFFFFL; guessK0++) {
+  for (guessK0 = 0; guessK0 < 0xFFFFFFFFL; guessK0++) {/* loop2outer */
     uint32_t guessK4 = 0;
     uint32_t guessK5 = 0;
     int32_t c;
-    for (c = 0; c < numPlain; c++) {
+    for (c = 0; c < numPlain; c++) {/* loop2inner */
       uint32_t plainLeft0 = leftHalf(plain0[c]);
       uint32_t plainRight0 = rightHalf(plain0[c]);
       uint32_t cipherLeft0 = leftHalf(cipher0[c]);
