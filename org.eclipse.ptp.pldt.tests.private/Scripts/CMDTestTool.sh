@@ -43,7 +43,7 @@ fi
 
 fileToRefactor=""
 
-echo "please enter a test name or custom"
+echo -e "please enter one of the following test names:\nlevel1\nfeal4\ncustom"
 read testName
 
 declare -a nameArray
@@ -52,8 +52,14 @@ if [ $testName == "level1" ]; then
 	COMPILE="gcc -o examples/testcode-epcc/oa -fopenmp examples/testcode-epcc/common.c examples/testcode-epcc/level1-CMD.c examples/testcode-epcc/main.c -lm"
 	RUN="./examples/testcode-epcc/oa --datasize 1024 --reps 1" > ./Scripts/result.txt
 	fileToRefactor="examples/testcode-epcc/level1-CMD.c"
-	
 	names="$(java -cp $PLDT_CLASSPATH FindName "examples/testcode-epcc/level1-CMD.c")"
+	read -a nameArray <<<$names
+fi
+if [ $testName == "feal4"]; then
+	COMPILE="gcc -o examples/testcode-feal4/oa -fopenmp examples/testcode-feal4/feal4.c -lm"
+	RUN="./examples/testcode-feal4/oa --datasize 1024 --reps 1" > ./Scripts/result.txt
+	fileToRefactor="examples/testcode-feal4/feal4.c"
+	names="$(java -cp $PLDT_CLASSPATH FindName "examples/testcode-feal4/feal4.c")"
 	read -a nameArray <<<$names
 fi
 if [ "$testName" == "custom" ]; then
@@ -67,8 +73,6 @@ if [ "$testName" == "custom" ]; then
 	read fileToRefactor
 	names="$(java -cp $PLDT_CLASSPATH FindName $filetoRefactor)"
 	read -a nameArray <<<$names
-	
-
 fi
 
 outputtemp=$(mktemp)
