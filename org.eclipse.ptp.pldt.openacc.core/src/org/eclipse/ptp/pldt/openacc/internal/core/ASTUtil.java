@@ -639,6 +639,31 @@ public class ASTUtil {
         return finder.finalOffset;
     }
 
+    public static List<IASTPreprocessorPragmaStatement> getEnclosingPragmas(IASTStatement statement) {
+        List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
+
+        IASTPreprocessorStatement[] preprocessorStatements = statement.getTranslationUnit().getAllPreprocessorStatements();
+        
+        for (IASTNode node = statement; node != null; node = node.getParent()) {
+            int location = node.getFileLocation().getNodeOffset();
+            
+            if (node instanceof IASTStatement) {
+	            int precedingStmtOffset = getNearestPrecedingStatementOffset((IASTStatement) node);
+	            
+	            for (IASTPreprocessorStatement pre : preprocessorStatements) {
+	                if (pre instanceof IASTPreprocessorPragmaStatement
+	                        && ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < location
+	                        && ((IASTPreprocessorPragmaStatement) pre).getFileLocation()
+	                                .getNodeOffset() > precedingStmtOffset) {
+	                    pragmas.add((IASTPreprocessorPragmaStatement) pre);
+	                }
+	            }
+            }
+        }
+        Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
+        return pragmas;
+    }
+
     // FIXME this is used often, but is redundant; should use ASTUtil.find(..., IASTName.class)
     public static List<IASTName> getNames(IASTNode node) {
         class NameGetter extends ASTVisitor {
