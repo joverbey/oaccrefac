@@ -11,14 +11,20 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
 
@@ -28,7 +34,13 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         this.loop = loop;
     }
     
-    protected void doLoopFormCheck(RefactoringStatus status) { }
+    protected void doLoopFormCheck(RefactoringStatus status) { 
+    	//just added
+        if (containsUnsupportedOp(loop)) {
+            status.addFatalError(
+                    "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
+        }
+    }
     
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) { }
 
@@ -80,6 +92,45 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     @Override
     public IASTTranslationUnit getTranslationUnit() {
         return loop.getTranslationUnit();
+    }
+    
+    //just added
+    private boolean containsUnsupportedOp(IASTForStatement forStmt) {
+    	
+    	for (IASTBreakStatement statement : ASTUtil.find(forStmt, IASTBreakStatement.class)) {
+    		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
+    			if (!insideInnerWhile(statement)) {
+    				return true;
+    			}
+    		} 
+    	}
+    	
+    	for (IASTContinueStatement statement : ASTUtil.find(forStmt, IASTContinueStatement.class)) {
+    		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
+    			if (!insideInnerWhile(statement)) {
+    				return true;
+    			}
+    		} 
+    	}
+    	
+    	for (IASTGotoStatement statement : ASTUtil.find(forStmt, IASTGotoStatement.class)) {
+    		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
+    			if (!insideInnerWhile(statement)) {
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
+    }
+    
+    private boolean insideInnerWhile(IASTNode statement) {
+    	IASTWhileStatement whileStmt = ASTUtil.findNearestAncestor(statement, IASTWhileStatement.class);
+    	if (whileStmt == null) {
+    		return false;
+    	}
+    	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
+    	return !(ASTUtil.findNearestAncestor(forStmt, IASTWhileStatement.class) == whileStmt);
     }
     
 }
