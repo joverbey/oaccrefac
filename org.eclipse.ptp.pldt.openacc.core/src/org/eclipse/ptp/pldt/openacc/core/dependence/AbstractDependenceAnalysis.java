@@ -39,7 +39,9 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -121,6 +123,10 @@ public abstract class AbstractDependenceAnalysis {
                 collectAccessesFrom((IASTNullStatement) stmt);
             } else if (stmt instanceof IASTCompoundStatement) {
                 collectAccessesFrom((IASTCompoundStatement) stmt);
+            } else if (stmt instanceof IASTBreakStatement) {
+                collectAccessesFrom((IASTBreakStatement) stmt);
+            } else if (stmt instanceof IASTWhileStatement) {
+                collectAccessesFrom((IASTWhileStatement) stmt);
             } else {
                 throw unsupported(stmt);
             }
@@ -128,6 +134,10 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTNullStatement stmt) {
+        // Nothing to do
+    }
+    
+    private void collectAccessesFrom(IASTBreakStatement stmt) {
         // Nothing to do
     }
 
@@ -141,6 +151,10 @@ public abstract class AbstractDependenceAnalysis {
             throw unsupported(stmt);
         }
 
+        collectAccessesFromStatements(stmt.getBody());
+    }
+    
+    private void collectAccessesFrom(IASTWhileStatement stmt) throws DependenceTestFailure {
         collectAccessesFromStatements(stmt.getBody());
     }
 
