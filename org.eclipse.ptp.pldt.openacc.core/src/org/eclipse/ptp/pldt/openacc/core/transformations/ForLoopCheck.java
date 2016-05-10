@@ -18,6 +18,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -99,7 +100,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     	
     	for (IASTBreakStatement statement : ASTUtil.find(forStmt, IASTBreakStatement.class)) {
     		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
-    			if (!insideInnerWhile(statement)) {
+    			if (!insideInnerWhile(statement) && !insideInnerSwitch(statement)) {
     				return true;
     			}
     		} 
@@ -107,7 +108,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     	
     	for (IASTContinueStatement statement : ASTUtil.find(forStmt, IASTContinueStatement.class)) {
     		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
-    			if (!insideInnerWhile(statement)) {
+    			if (!insideInnerWhile(statement) && !insideInnerSwitch(statement)) {
     				return true;
     			}
     		} 
@@ -115,7 +116,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     	
     	for (IASTGotoStatement statement : ASTUtil.find(forStmt, IASTGotoStatement.class)) {
     		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
-    			if (!insideInnerWhile(statement)) {
+    			if (!insideInnerWhile(statement) && !insideInnerSwitch(statement)) {
     				return true;
     			}
     		}
@@ -131,6 +132,15 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     	}
     	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
     	return !(ASTUtil.findNearestAncestor(forStmt, IASTWhileStatement.class) == whileStmt);
+    }
+    
+    private boolean insideInnerSwitch(IASTNode statement) {
+    	IASTSwitchStatement switchStmt = ASTUtil.findNearestAncestor(statement, IASTSwitchStatement.class);
+    	if (switchStmt == null) {
+    		return false;
+    	}
+    	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
+    	return !(ASTUtil.findNearestAncestor(forStmt, IASTSwitchStatement.class) == switchStmt);
     }
     
 }

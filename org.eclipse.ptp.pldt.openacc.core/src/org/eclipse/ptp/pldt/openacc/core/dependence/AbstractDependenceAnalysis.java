@@ -24,6 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTDefaultStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -32,6 +33,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
@@ -39,9 +41,11 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
+import org.eclipse.cdt.core.dom.ast.IASTCaseStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -117,10 +121,20 @@ public abstract class AbstractDependenceAnalysis {
                 collectAccessesFrom((IASTDeclarationStatement) stmt);
             } else if (stmt instanceof IASTForStatement) {
                 collectAccessesFrom((IASTForStatement) stmt);
+            } else if (stmt instanceof IASTIfStatement) {
+                collectAccessesFrom((IASTIfStatement) stmt);
+            } else if (stmt instanceof IASTIfStatement) {
+                collectAccessesFrom((IASTIfStatement) stmt);
+            } else if (stmt instanceof IASTSwitchStatement) {
+                collectAccessesFrom((IASTSwitchStatement) stmt);
             } else if (stmt instanceof IASTExpressionStatement) {
                 collectAccessesFrom((IASTExpressionStatement) stmt);
             } else if (stmt instanceof IASTNullStatement) {
                 collectAccessesFrom((IASTNullStatement) stmt);
+            } else if (stmt instanceof IASTCaseStatement) {
+                collectAccessesFrom((IASTCaseStatement) stmt);
+            } else if (stmt instanceof IASTDefaultStatement) {
+                collectAccessesFrom((IASTDefaultStatement) stmt);
             } else if (stmt instanceof IASTCompoundStatement) {
                 collectAccessesFrom((IASTCompoundStatement) stmt);
             } else if (stmt instanceof IASTBreakStatement) {
@@ -140,6 +154,14 @@ public abstract class AbstractDependenceAnalysis {
     private void collectAccessesFrom(IASTBreakStatement stmt) {
         // Nothing to do
     }
+    
+    private void collectAccessesFrom(IASTCaseStatement stmt) throws DependenceTestFailure {
+        collectAccessesFromExpression(stmt.getExpression());
+    }
+    
+    private void collectAccessesFrom(IASTDefaultStatement stmt) throws DependenceTestFailure {
+        //Nothing to do
+    }
 
     private void collectAccessesFrom(IASTCompoundStatement stmt) throws DependenceTestFailure {
         collectAccessesFromStatements(stmt.getStatements());
@@ -155,6 +177,18 @@ public abstract class AbstractDependenceAnalysis {
     }
     
     private void collectAccessesFrom(IASTWhileStatement stmt) throws DependenceTestFailure {
+        collectAccessesFromStatements(stmt.getBody());
+    }
+    
+    private void collectAccessesFrom(IASTIfStatement stmt) throws DependenceTestFailure {
+    	collectAccessesFromStatements(stmt.getThenClause());
+    	IASTStatement elsePart = stmt.getElseClause();
+    	if (elsePart != null) {
+    		collectAccessesFromStatements(elsePart);
+    	}
+    }
+    
+    private void collectAccessesFrom(IASTSwitchStatement stmt) throws DependenceTestFailure {
         collectAccessesFromStatements(stmt.getBody());
     }
 
@@ -287,6 +321,7 @@ public abstract class AbstractDependenceAnalysis {
         case IASTUnaryExpression.op_minus:
         case IASTUnaryExpression.op_not:
         case IASTUnaryExpression.op_tilde:
+        case IASTUnaryExpression.op_sizeof:
             collectAccessesFromExpression(expr.getOperand());
             break;
         default:
