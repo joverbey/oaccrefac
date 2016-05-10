@@ -4,11 +4,16 @@
 IntroduceKernelsLoop
 </title>
 
-<p><b>Description:</b> IntroduceKernelsLoop refactors...</p>
+<p><b>Description:</b> Parallelizes a loop by adding a kernel loop construct over it.</p>
 
-<p><b>Example:</b><img src="">
-
+<p><b>Example:</b>
+<ul>
+<li>1. Select the desired for loop to be changed and choose Kernel Loops (OpenACC) under the Refactoring menu.</li>
+<img src="../images/refactorings/IntroduceKernelsLoop/IntroduceKernelsLoop1.png">
+<li>2. The resulting loop.</li>
+<img src="../images/refactorings/IntroduceKernelsLoop/IntroduceKernelsLoop2.png">
+</ul>
 <p><b>Use:</b></p>
 
-<p><b>Restrictions:</b></p>
+<p><b>Restrictions:</b> Has the same dependencies as Introduce Parallel Loops except it will throw a Warning instead of an error.</p>
 </html>

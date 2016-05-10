@@ -51,6 +51,10 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
         super(rewriter, check);
         loop = check.getLoop();
     }
+    
+    protected T getCheck(){
+    	return check;
+    }
 
     /**
      * Gets the loop set from constructor

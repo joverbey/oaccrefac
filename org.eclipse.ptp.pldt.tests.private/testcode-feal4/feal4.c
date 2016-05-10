@@ -101,7 +101,7 @@ uint32_t crackLastRound(uint32_t outdiff) {
   printf("  Cracking...");
   for (uint32_t fakeK = 0x00000000L; fakeK < 0xFFFFFFFFL; fakeK++) {/* loop1outer */
     int32_t score = 0;
-    for (int32_t c = 0; c < numPlain; c++)/* loop1inner */
+    for (int32_t c = 0; c < numPlain; c++){/* loop1inner */
       uint32_t cipherLeft = (cipher0[c] >> 32LL);
       cipherLeft ^= (cipher1[c] >> 32LL);
       uint32_t cipherRight = cipher0[c] & 0xFFFFFFFFLL;
@@ -302,7 +302,7 @@ int32_t main() {
     printf("Subkey 5 : BAD\n");
   printf("\n");
   uint32_t fullEndTime = time(NULL);
-  printf("Total crack time = %i seconds\n", (fullEndTime - fullStartTime));
+  //printf("Total crack time = %i seconds\n", (fullEndTime - fullStartTime));
   printf("FINISHED\n");
   return 0;
 }
