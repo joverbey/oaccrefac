@@ -123,8 +123,6 @@ public abstract class AbstractDependenceAnalysis {
                 collectAccessesFrom((IASTForStatement) stmt);
             } else if (stmt instanceof IASTIfStatement) {
                 collectAccessesFrom((IASTIfStatement) stmt);
-            } else if (stmt instanceof IASTIfStatement) {
-                collectAccessesFrom((IASTIfStatement) stmt);
             } else if (stmt instanceof IASTSwitchStatement) {
                 collectAccessesFrom((IASTSwitchStatement) stmt);
             } else if (stmt instanceof IASTExpressionStatement) {
@@ -152,7 +150,7 @@ public abstract class AbstractDependenceAnalysis {
     }
     
     private void collectAccessesFrom(IASTBreakStatement stmt) {
-        // Nothing to do
+        // Nothing to do; see ForLoopCheck#containsUnsupportedOp
     }
     
     private void collectAccessesFrom(IASTCaseStatement stmt) throws DependenceTestFailure {
@@ -177,10 +175,12 @@ public abstract class AbstractDependenceAnalysis {
     }
     
     private void collectAccessesFrom(IASTWhileStatement stmt) throws DependenceTestFailure {
+    	collectAccessesFromExpression(stmt.getCondition());
         collectAccessesFromStatements(stmt.getBody());
     }
     
     private void collectAccessesFrom(IASTIfStatement stmt) throws DependenceTestFailure {
+    	collectAccessesFromExpression(stmt.getConditionExpression());
     	collectAccessesFromStatements(stmt.getThenClause());
     	IASTStatement elsePart = stmt.getElseClause();
     	if (elsePart != null) {
@@ -234,10 +234,15 @@ public abstract class AbstractDependenceAnalysis {
 
         IASTExpression incrDecr = ASTUtil.getIncrDecr(stmt.getExpression());
         if (incrDecr != null) {
-            // The incremented variable/array element is both read and written
-            collectAccessesFromAssignmentLHS(incrDecr);
             collectAccessesFromExpression(incrDecr);
+            collectAccessesFromAssignmentLHS(incrDecr);
             return;
+        }
+        
+        IASTFunctionCallExpression function = ASTUtil.getFuncExpression(stmt.getExpression());
+        if (function != null) {
+        	collectAccessesFromExpression(function);
+        	return;
         }
 
         throw unsupported(stmt);
@@ -262,6 +267,17 @@ public abstract class AbstractDependenceAnalysis {
         Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
         if (arrayAccess != null) {
             variableAccesses.add(new VariableAccess(true, arrayAccess.getFirst(), arrayAccess.getSecond()));
+            IASTInitializerClause arg = ((IASTArraySubscriptExpression) expr).getArgument();
+            if (arg instanceof IASTExpression) {
+            	collectAccessesFromExpression((IASTExpression)arg);
+                return;
+            }
+        }
+        
+        IASTExpression incrDecr = ASTUtil.getIncrDecr(expr);
+        if (incrDecr != null) {
+            collectAccessesFromExpression(incrDecr);
+            collectAccessesFromAssignmentLHS(incrDecr);
             return;
         }
 
@@ -322,6 +338,13 @@ public abstract class AbstractDependenceAnalysis {
         case IASTUnaryExpression.op_not:
         case IASTUnaryExpression.op_tilde:
         case IASTUnaryExpression.op_sizeof:
+            collectAccessesFromExpression(expr.getOperand());
+            break;
+        case IASTUnaryExpression.op_prefixIncr:
+        case IASTUnaryExpression.op_prefixDecr:
+        case IASTUnaryExpression.op_postFixIncr:
+        case IASTUnaryExpression.op_postFixDecr:
+        	collectAccessesFromAssignmentLHS(expr.getOperand());
             collectAccessesFromExpression(expr.getOperand());
             break;
         default:

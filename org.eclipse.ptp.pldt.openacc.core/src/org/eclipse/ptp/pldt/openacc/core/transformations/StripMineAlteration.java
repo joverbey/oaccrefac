@@ -93,13 +93,15 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 
         String innerInit, innerCond, innerIter, innerBody, inner;
         String outerInit, outerCond, outerIter, outer;
-        String ub = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature();
+        IASTBinaryExpression condExpr = (IASTBinaryExpression) loop.getConditionExpression();
+		String compOp = getOperatorAsString(condExpr);
+		String ub = condExpr.getOperand2().getRawSignature();
         if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
             innerInit = String.format("int %s = %s", indexVar, newName);
         } else {
             innerInit = String.format("%s = %s", indexVar, newName);
         }
-        innerCond = parenth(String.format("%s <  %s + %d && %s < %s", indexVar, newName, stripFactor, indexVar, ub));
+        innerCond = parenth(String.format("%s <  %s + %d && %s %s %s", indexVar, newName, stripFactor, indexVar, compOp, ub));
         innerIter = loop.getIterationExpression().getRawSignature();
         innerBody = "";
         IASTNode[] innerBodyObjects = getBodyObjects(loop);
@@ -109,25 +111,44 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
         inner = forLoop(innerInit, innerCond, innerIter, compound(innerBody));
 
         String initRhs;
+        String initType;
         //TODO we're making a lot of typecast assumptions - be sure they won't break anything
         if(loop.getInitializerStatement() instanceof IASTExpressionStatement) {
             IASTExpressionStatement es = (IASTExpressionStatement) loop.getInitializerStatement();
             IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
             initRhs = e.getOperand2().getRawSignature();
+            initType = e.getOperand1().getExpressionType().toString();
         }
         else {
             IASTDeclarationStatement ds = (IASTDeclarationStatement) loop.getInitializerStatement();
             IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             initRhs = init.getInitializerClause().getRawSignature();
+            String decString = dec.getRawSignature();
+            initType = decString.substring(0, decString.indexOf(' '));
         }
-        outerInit = String.format("int %s = %s", newName, initRhs);
-        outerCond = String.format("%s < %s", newName, ub);
+        outerInit = String.format("%s %s = %s", initType, newName, initRhs);
+        outerCond = String.format("%s %s %s", newName, compOp, ub);
         outerIter = String.format("%s += %d", newName, stripFactor);
         outer = forLoop(outerInit, outerCond, outerIter, compound(inner));
         this.replace(loop, outer);
         finalizeChanges();
     }
+
+	private String getOperatorAsString(IASTBinaryExpression condExpr) {
+		String compOp;
+		switch (condExpr.getOperator()) {
+		case IASTBinaryExpression.op_lessEqual:
+			compOp = "<=";
+			break;
+		case IASTBinaryExpression.op_lessThan:
+			compOp = "<";
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		return compOp;
+	}
 
     /**
      * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
