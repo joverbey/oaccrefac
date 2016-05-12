@@ -177,7 +177,7 @@ PRAGMA_ACC ::= "#" [ \t]* "pragma" [ \t]+ "acc"
 
 # ACC data construct
 <acc-data> ::= PRAGMA_ACC "data" <acc-data-clause-list>
-(list):<acc-data-clause-list> ::= <acc-data-clause>
+(list):<acc-data-clause-list> ::= (empty)
 | <acc-data-clause-list>     <acc-data-clause>
 | <acc-data-clause-list> "," <acc-data-clause>
 
