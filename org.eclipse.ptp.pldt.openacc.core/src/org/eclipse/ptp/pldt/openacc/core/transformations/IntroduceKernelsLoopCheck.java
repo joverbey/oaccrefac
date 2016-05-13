@@ -11,9 +11,15 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
+import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
 /**
  * IntroduceKernelsLoopCheck checks a for loop for the ability to add an
@@ -33,7 +39,8 @@ public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
  
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
-        if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
+    	checkParallel(status);
+    	if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
             status.addError("This loop contains an ACC pragma.");
         }
     }
@@ -44,5 +51,26 @@ public class IntroduceKernelsLoopCheck extends ForLoopCheck<RefactoringParams> {
             status.addWarning("This loop may not be parallelizable because it carries a dependence.");
         }
     }
+    
+	private void checkParallel(RefactoringStatus status) {
+		IASTNode node = loop.getParent();
+		IASTStatement stat = (IASTStatement) node;
+		while (stat != null) {
+			if (OpenACCUtil.isAccConstruct(stat, ASTAccParallelNode.class)
+					|| OpenACCUtil.isAccConstruct(stat, ASTAccParallelLoopNode.class)) {
+				status.addFatalError("When a loop has a parent with a parallel pragma associated with it, it cannot kernelized.");
+				break;
+			} else if (stat.getParent() instanceof IASTStatement) {
+					stat = (IASTStatement) stat.getParent();
+			}
+			else if (stat.getParent() instanceof IASTFunctionDefinition){
+				break;
+			}
+			else {
+				break;
+			}
+
+		}
+	}
     
 }
