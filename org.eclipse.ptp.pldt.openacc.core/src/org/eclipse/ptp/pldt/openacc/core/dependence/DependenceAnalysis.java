@@ -39,13 +39,21 @@ import org.eclipse.ptp.pldt.openacc.internal.core.dependence.VariableAccess;
  */
 public class DependenceAnalysis extends AbstractDependenceAnalysis {
 
+	private IBinding index;
+	
     /**
      * Analyzes dependences in a sequence of C statements.
      * 
      * @throws DependenceTestFailure
-     */
+     */	
     public DependenceAnalysis(IProgressMonitor pm, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
         super(pm, statements);
+        IASTForStatement loop = null;
+        if (statements.length != 0) {
+        	loop = ASTUtil.findNearestAncestor(statements[0], IASTForStatement.class);
+        }
+        index = ForStatementInquisitor.getInquisitor(loop).getIndexVariable();
+        
         pm.subTask("Analyzing dependences...");
         computeDependences(pm);
     }
@@ -57,6 +65,10 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         for (VariableAccess v1 : getVariableAccesses()) {
             progress.subTask(String.format("Analyzing line %d - %s",
                     v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
+            if (writesToIndex(v1)) {
+            	throw new DependenceTestFailure(String.format("Loop cannot be analyzed.  Loop index variable is changed on line %d.",
+                    v1.getVariableName().getFileLocation().getStartingLineNumber()));
+            }
             for (VariableAccess v2 : getVariableAccesses()) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)
                         //if the sink is a declaration of the same variable, there is no dependence
@@ -129,4 +141,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         return false;
     }
     
+    private boolean writesToIndex(VariableAccess write) {
+    	return write.isWrite() && write.bindsTo(index);
+    }
 }

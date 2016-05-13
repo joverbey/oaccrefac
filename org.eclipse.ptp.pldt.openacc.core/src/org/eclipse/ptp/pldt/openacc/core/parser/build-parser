@@ -9,8 +9,8 @@ echo Generating parser and AST classes...
 java -Xmx1024M -cp $SRCDIR/ludwig.jar \
 	Main_LALR1_Java_AST_Prototype \
 	-startSymbols "<acc-construct>" \
-	-package "edu.auburn.oaccrefac.core.parser" \
-	-imports "import edu.auburn.oaccrefac.core.parser.SyntaxException; \
+	-package "org.eclipse.ptp.pldt.openacc.core.parser" \
+	-imports "import org.eclipse.ptp.pldt.openacc.core.parser.SyntaxException; \
                   import java.io.IOException;" \
 	-description "An LALR(1) parser for OpenACC 2.0" \
 	-throws "IOException, SyntaxException, Exception" \
@@ -20,7 +20,7 @@ java -Xmx1024M -cp $SRCDIR/ludwig.jar \
 	OpenACC-2.0.ebnf
 
 cat >SyntaxException.java <<EOF
-package edu.auburn.oaccrefac.core.parser;
+package org.eclipse.ptp.pldt.openacc.core.parser;
 
 @SuppressWarnings("serial")
 public class SyntaxException extends Exception {

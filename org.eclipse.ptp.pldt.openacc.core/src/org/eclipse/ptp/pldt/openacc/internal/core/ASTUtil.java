@@ -34,6 +34,7 @@ import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
@@ -301,6 +302,12 @@ public class ASTUtil {
             return unaryExp.getOperand();
         }
         return null;
+    }
+    
+    public static IASTFunctionCallExpression getFuncExpression(IASTExpression expr) {
+    	if (!(expr instanceof IASTFunctionCallExpression)) 
+    		return null;
+    	return (IASTFunctionCallExpression) expr;
     }
 
     public static Pair<IASTExpression, IASTExpression> getAssignEq(IASTExpression expr) {

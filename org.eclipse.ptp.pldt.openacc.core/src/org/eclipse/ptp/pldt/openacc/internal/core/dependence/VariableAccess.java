@@ -173,4 +173,10 @@ public class VariableAccess implements Comparable<VariableAccess> {
         else
             return DependenceType.INPUT;
     }
+
+	public boolean bindsTo(IBinding binding) {
+        if (this.binding == null)
+            throw new IllegalStateException("Unable to resolve binding");
+		return this.binding.equals(binding);
+	}
 }
