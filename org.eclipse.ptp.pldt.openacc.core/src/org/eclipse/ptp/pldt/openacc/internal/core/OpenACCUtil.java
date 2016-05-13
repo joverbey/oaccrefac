@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
@@ -26,10 +27,13 @@ import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataClauseListNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataItemNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsClauseListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelClauseListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 
 public class OpenACCUtil {
 
@@ -79,6 +83,41 @@ public class OpenACCUtil {
         
         return copyin;
     }
+    
+    public static boolean isAccConstruct(IASTStatement statement) {
+    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+    		try {
+    			new OpenACCParser().parse(pragma.getRawSignature());
+    		}
+    		catch(Exception e) {
+    			continue;
+    		}
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public static <T extends IAccConstruct> boolean isAccConstruct(IASTStatement statement, Class<T> accClazz) {
+    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+    		IAccConstruct construct = null;
+    		try {
+    			construct = new OpenACCParser().parse(pragma.getRawSignature());
+    		}
+    		catch(Exception e) {
+    			continue;
+    		}
+    		return (construct != null) && (accClazz.isInstance(construct));
+    	}
+    	return false;
+    }
+    
+    public static boolean isAccAccelConstruct(IASTStatement statement) {
+    	return isAccConstruct(statement, ASTAccParallelNode.class) || 
+    			isAccConstruct(statement, ASTAccParallelLoopNode.class) || 
+    			isAccConstruct(statement, ASTAccKernelsLoopNode.class) ||
+    			isAccConstruct(statement, ASTAccKernelsLoopNode.class);
+    }
+
   
     /**
      * Get the existing copyin set from a parsed OpenAcc construct 
