@@ -35,17 +35,17 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     }
     
     protected void doLoopFormCheck(RefactoringStatus status) { 
-    	//just added
-        if (containsUnsupportedOp(loop)) {
-            status.addFatalError(
-                    "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
-        }
+
     }
     
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) { }
 
     public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
-        doLoopFormCheck(status);
+    	if (containsUnsupportedOp(loop)) {
+            status.addFatalError(
+                    "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
+        }
+    	doLoopFormCheck(status);
         return status;
     }
     

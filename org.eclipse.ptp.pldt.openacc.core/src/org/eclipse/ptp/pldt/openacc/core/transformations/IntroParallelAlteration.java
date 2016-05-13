@@ -19,16 +19,16 @@ public class IntroParallelAlteration extends ForLoopAlteration<IntroParallelChec
 
     @Override
     protected void doChange() {
-    	if(getCheck().getEnclosedPragma()){
-//    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
-//    		this.insert(offset, pragma("acc loop") + System.lineSeparator());
-//    		finalizeChanges();
+    	if(check.getParentPragma()){
+    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
+    		this.insert(offset, pragma("acc loop") + System.lineSeparator());
+    		finalizeChanges();
     	}
-//    	else{
-//    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
-//    		this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
-//    		finalizeChanges();
-//    	}
+    	else{
+    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
+    		this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
+    		finalizeChanges();
+    	}
     }
 
 }
