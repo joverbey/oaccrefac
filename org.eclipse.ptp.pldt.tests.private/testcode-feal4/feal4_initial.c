@@ -1,10 +1,10 @@
 // FEAL4 code taken from http://www.theamazingking.com/crypto-feal.php and
 // modified.
-// 
+//
 // For demonstration of how to parallelize real code and a demonstration of the
 // openacc parallel refactoring tool.
-// 
-// This file contains the initial code. 
+//
+// This file contains the initial code.
 
 #include <time.h>
 #include <stdlib.h>
