@@ -133,8 +133,6 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             initRhs = init.getInitializerClause().getRawSignature();
             initType = dec.getDeclSpecifier().getRawSignature();
-            //String decString = dec.getRawSignature();
-            //initType = decString.substring(0, decString.indexOf(' '));
         }
         outerInit = String.format("%s %s = %s", initType, newName, initRhs);
         outerCond = String.format("%s %s %s", newName, compOp, ub);
@@ -189,10 +187,15 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
                             + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
                     && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
                             + loop.getBody().getFileLocation().getNodeLength()) {
+            	boolean inner = false;
                 for(IASTStatement stmt : getBodyStatements(loop)) {
-                    if(!ASTUtil.doesNodeLexicallyContain(stmt, comment)) {
-                        comments.add(comment);      
+                    if(ASTUtil.doesNodeLexicallyContain(stmt, comment)) {
+                        inner = true;
+                        break;
                     }
+                }
+                if (!inner) {
+                	comments.add(comment);
                 }
             }
         }
