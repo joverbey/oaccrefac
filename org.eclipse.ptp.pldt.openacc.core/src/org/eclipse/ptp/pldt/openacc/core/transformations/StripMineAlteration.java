@@ -28,6 +28,8 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
+import org.eclipse.cdt.core.dom.ast.IType;
+import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
@@ -117,15 +119,22 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
             IASTExpressionStatement es = (IASTExpressionStatement) loop.getInitializerStatement();
             IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
             initRhs = e.getOperand2().getRawSignature();
-            initType = e.getOperand1().getExpressionType().toString();
+            IType type = e.getOperand1().getExpressionType();
+            if (type instanceof ITypedef) {
+            	initType = ((ITypedef) type).getType().toString();
+            }
+            else {
+            	initType = type.toString();
+            }
         }
         else {
             IASTDeclarationStatement ds = (IASTDeclarationStatement) loop.getInitializerStatement();
             IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             initRhs = init.getInitializerClause().getRawSignature();
-            String decString = dec.getRawSignature();
-            initType = decString.substring(0, decString.indexOf(' '));
+            initType = dec.getDeclSpecifier().getRawSignature();
+            //String decString = dec.getRawSignature();
+            //initType = decString.substring(0, decString.indexOf(' '));
         }
         outerInit = String.format("%s %s = %s", initType, newName, initRhs);
         outerCond = String.format("%s %s %s", newName, compOp, ub);

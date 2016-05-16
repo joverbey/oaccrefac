@@ -22,6 +22,7 @@ import java.util.TreeSet;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTDefaultStatement;
@@ -32,6 +33,7 @@ import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
@@ -137,6 +139,10 @@ public abstract class AbstractDependenceAnalysis {
                 collectAccessesFrom((IASTCompoundStatement) stmt);
             } else if (stmt instanceof IASTBreakStatement) {
                 collectAccessesFrom((IASTBreakStatement) stmt);
+            } else if (stmt instanceof IASTContinueStatement) {
+                collectAccessesFrom((IASTContinueStatement) stmt);
+            } else if (stmt instanceof IASTGotoStatement) {
+                collectAccessesFrom((IASTGotoStatement) stmt);
             } else if (stmt instanceof IASTWhileStatement) {
                 collectAccessesFrom((IASTWhileStatement) stmt);
             } else {
@@ -151,6 +157,14 @@ public abstract class AbstractDependenceAnalysis {
     
     private void collectAccessesFrom(IASTBreakStatement stmt) {
         // Nothing to do; see ForLoopCheck#containsUnsupportedOp
+    }
+    
+    private void collectAccessesFrom(IASTContinueStatement stmt) {
+        // Nothing to do; see ForLoopCheck#containsUnsupportedOp
+    }
+    
+    private void collectAccessesFrom(IASTGotoStatement stmt) throws DependenceTestFailure {
+        throw unsupported(stmt); // goto statements might break out of the loop completely, even if inner
     }
     
     private void collectAccessesFrom(IASTCaseStatement stmt) throws DependenceTestFailure {

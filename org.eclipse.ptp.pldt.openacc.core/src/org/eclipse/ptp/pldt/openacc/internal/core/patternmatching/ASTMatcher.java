@@ -41,6 +41,7 @@ import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLabelStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
@@ -94,7 +95,7 @@ public final class ASTMatcher {
             return true;
         if (pattern instanceof ArbitraryStatement && node instanceof IASTStatement)
             return true;
-        if (!pattern.getClass().equals(node.getClass()))
+        if (!pattern.getClass().equals(node.getClass()) && !(node instanceof IASTNamedTypeSpecifier))
             return false;
 
         if (pattern instanceof IASTBreakStatement) {
