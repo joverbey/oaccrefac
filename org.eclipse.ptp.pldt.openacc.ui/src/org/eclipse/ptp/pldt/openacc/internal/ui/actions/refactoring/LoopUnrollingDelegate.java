@@ -17,7 +17,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.ValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopUnrollingRefactoring;
 
 @SuppressWarnings("restriction")
@@ -32,7 +32,7 @@ public class LoopUnrollingDelegate extends RefactoringActionDelegate {
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final LoopUnrollingRefactoring refac = (LoopUnrollingRefactoring) refactoring;
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Unroll Loop"); 
-        wizard.getInputPage().addNumberInputControl("Unroll Factor", new ValueChangedListener() {
+        wizard.getInputPage().addInputControl("Unroll Factor", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setUnrollFactor(value);

@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     John William O'Rourke (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -35,16 +36,21 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      * stripFactor is the factor to use in strip mining the loop
      */
     private int stripFactor = 0;
+    private String newName = "";
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
+        if (!(((args.length == 4 || args.length == 5) && args[1].equals("-ln")) || ((args.length == 3
+        		|| args.length == 2)))) {
             printUsage();
             return false;
         }
         if (args[1].equals("-ln")) {
             try {
                 stripFactor = Integer.parseInt(args[3]);
+                if (args.length == 5) {
+                	newName = args[4];
+                }
             } catch (NumberFormatException e) {
                 printUsage();
                 return false;
@@ -52,6 +58,9 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
         } else {
             try {
                 stripFactor = Integer.parseInt(args[1]);
+                if (args.length == 3) {
+                	newName = args[2];
+                }
             } catch (NumberFormatException e) {
                 printUsage();
                 return false;
@@ -75,12 +84,12 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
 
     @Override
     protected StripMineParams createParams(IASTForStatement forLoop) {
-        return new StripMineParams(stripFactor);
+        return new StripMineParams(stripFactor, newName);
     }
 
     @Override
     protected StripMineAlteration createAlteration(IASTRewrite rewriter, StripMineCheck check) throws CoreException {
-        return new StripMineAlteration(rewriter, stripFactor, check);
+        return new StripMineAlteration(rewriter, stripFactor, newName, check);
     }
 
 }
