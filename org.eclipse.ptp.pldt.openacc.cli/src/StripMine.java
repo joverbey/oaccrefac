@@ -40,12 +40,15 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (!(((args.length == 4 || args.length == 5) && args[1].equals("-ln")) || ((args.length == 3
-        		|| args.length == 2)))) {
+    	if (args.length < 2) {
             printUsage();
             return false;
         }
         if (args[1].equals("-ln")) {
+        	if (args.length != 4 && args.length != 5) {
+                printUsage();
+                return false;
+            }
             try {
                 stripFactor = Integer.parseInt(args[3]);
                 if (args.length == 5) {
@@ -56,6 +59,10 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
                 return false;
             }
         } else {
+        	if (args.length != 2 && args.length != 3) {
+                printUsage();
+                return false;
+            }
             try {
                 stripFactor = Integer.parseInt(args[1]);
                 if (args.length == 3) {
