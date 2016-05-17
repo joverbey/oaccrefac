@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
@@ -64,6 +65,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 
     private int stripFactor;
+    private String newName;
 
     /**
      * Constructor. Takes parameters for strip factor and strip depth to tell the refactoring which perfectly nested
@@ -75,9 +77,10 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
      * @param stripFactor
      *            -- factor for how large strips are
      */
-    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, StripMineCheck check) {
+    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, String newName, StripMineCheck check) {
         super(rewriter, check);
         this.stripFactor = stripFactor;
+        this.newName = newName;
     }
 
     @Override
@@ -85,12 +88,13 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
         IASTForStatement loop = getLoopToChange();
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
         String indexVar = inq.getIndexVariable().toString();
-        String newName;
-        try {
-            newName = createNewName(indexVar, loop.getScope().getParent());
-        } catch (DOMException e) {
-            e.printStackTrace();
-            return;
+        if (newName.equals("")) {
+        	try {
+        		newName = createNewName(indexVar, loop.getScope().getParent());
+        	} catch (DOMException e) {
+        		e.printStackTrace();
+        		return;
+        	}
         }
 
         String innerInit, innerCond, innerIter, innerBody, inner;

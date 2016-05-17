@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
 
@@ -24,6 +25,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 public class LoopStripMiningRefactoring extends ForLoopRefactoring {
 
     private int stripFactor = -1;
+    private String newName = "";
     private StripMineCheck check;
 
     public LoopStripMiningRefactoring(ICElement element, ISelection selection, ICProject project) {
@@ -33,15 +35,19 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     public void setStripFactor(int factor) {
         stripFactor = factor;
     }
+    
+    public void setNewName(String name) {
+    	newName = name;
+    }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new StripMineCheck(getLoop());
-        check.performChecks(status, pm, new StripMineParams(stripFactor));
+        check.performChecks(status, pm, new StripMineParams(stripFactor, newName));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, stripFactor, check).change();
+        new StripMineAlteration(rewriter, stripFactor, newName, check).change();
     }
 }
