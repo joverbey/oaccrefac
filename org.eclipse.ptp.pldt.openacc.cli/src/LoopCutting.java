@@ -36,23 +36,38 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
      * cutFactor represents how much the loop is cut.
      */
     private int cutFactor = 0;
+    private String newName = "";
 
     @Override
     protected boolean checkArgs(String[] args) {
-        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
+    	if (args.length < 2) {
             printUsage();
             return false;
         }
         if (args[1].equals("-ln")) {
+        	if (args.length != 4 && args.length != 5) {
+                printUsage();
+                return false;
+            }
             try {
                 cutFactor = Integer.parseInt(args[3]);
+                if (args.length == 5) {
+                	newName = args[4];
+                }
             } catch (NumberFormatException e) {
                 printUsage();
                 return false;
             }
         } else {
+        	if (args.length != 2 && args.length != 3) {
+                printUsage();
+                return false;
+            }
             try {
                 cutFactor = Integer.parseInt(args[1]);
+                if (args.length == 3) {
+                	newName = args[2];
+                }
             } catch (NumberFormatException e) {
                 printUsage();
                 return false;
@@ -76,13 +91,13 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
 
     @Override
     protected LoopCuttingParams createParams(IASTForStatement forLoop) {
-        return new LoopCuttingParams(cutFactor);
+        return new LoopCuttingParams(cutFactor, newName);
     }
 
     @Override
     protected LoopCuttingAlteration createAlteration(IASTRewrite rewriter, LoopCuttingCheck check)
             throws CoreException {
-        return new LoopCuttingAlteration(rewriter, cutFactor, check);
+        return new LoopCuttingAlteration(rewriter, cutFactor, newName, check);
     }
 
 }

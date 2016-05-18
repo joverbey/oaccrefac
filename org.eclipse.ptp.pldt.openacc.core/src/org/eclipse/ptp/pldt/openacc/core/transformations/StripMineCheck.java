@@ -17,7 +17,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
-public class StripMineCheck extends ForLoopCheck<StripMineParams> {
+public class StripMineCheck extends AbstractStripMineCheck<StripMineParams> {
 
     public StripMineCheck(IASTForStatement loop) {
         super(loop);
@@ -33,7 +33,7 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
     	// independent, meaning they are still parellelizable.
     	
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.loop);
-
+        
         // Check strip factor validity...
         if (params.getStripFactor() <= 0) {
             status.addFatalError("Invalid strip factor (<= 0).");

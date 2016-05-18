@@ -16,7 +16,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
-public class LoopCuttingCheck extends ForLoopCheck<LoopCuttingParams> {
+public class LoopCuttingCheck extends AbstractStripMineCheck<LoopCuttingParams> {
 
     public LoopCuttingCheck(IASTForStatement loop) {
         super(loop);

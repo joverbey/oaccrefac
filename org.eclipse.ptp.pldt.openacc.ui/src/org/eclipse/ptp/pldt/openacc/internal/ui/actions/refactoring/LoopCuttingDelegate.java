@@ -7,7 +7,9 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
+import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.StringInputComposite.StringValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopCuttingRefactoring;
 
 @SuppressWarnings("restriction")
@@ -21,13 +23,20 @@ public class LoopCuttingDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final LoopCuttingRefactoring refac = (LoopCuttingRefactoring) refactoring;
-        LoopRefactoringWizard gui = new LoopRefactoringWizard(refactoring, "Cut Loops");
-        gui.getInputPage().addInputControl("Cut Size", new NumberValueChangedListener() {
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Cut Loops");
+        LoopRefactoringWizardPage page = wizard.getInputPage();
+        page.addInputControl("Cut Size", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setCutFactor(value);
             }
         });
-        return gui;
+        page.addInputControl("Index Variable Name", new StringValueChangedListener() {
+            @Override
+            public void stringValueChanged(String value) {
+                refac.setNewName(value);
+            }
+        });
+        return wizard;
     }
 }
