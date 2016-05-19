@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,13 +7,16 @@
  *
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.ui;
 
 import java.util.ArrayList;
 
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
-import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.ValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.AbstractInputComposite.ValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.StringInputComposite.StringValueChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -27,7 +30,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         super(name);
     }
 
-    public void addNumberInputControl(String label, ValueChangedListener callback) {
+    public void addInputControl(String label, ValueChangedListener callback) {
         controlLabels.add(label);
         controlListeners.add(callback);
     }
@@ -38,8 +41,16 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         c.setLayout(new GridLayout());
 
         for (int i = 0; i < controlListeners.size(); i++) {
-            NumberInputComposite nic = new NumberInputComposite(c, SWT.NONE, controlListeners.get(i));
-            nic.setLabelText(controlLabels.get(i));
+        	if (controlListeners.get(i) instanceof NumberValueChangedListener) {
+        		NumberInputComposite nic = new NumberInputComposite(c, SWT.NONE, 
+        				(NumberValueChangedListener) controlListeners.get(i));
+        		nic.setLabelText(controlLabels.get(i));
+        	}
+        	else if (controlListeners.get(i) instanceof StringValueChangedListener) {
+        		StringInputComposite sic = new StringInputComposite(c, SWT.NONE, 
+        				(StringValueChangedListener) controlListeners.get(i));
+            	sic.setLabelText(controlLabels.get(i));
+        	}
         }
 
         setControl(c);

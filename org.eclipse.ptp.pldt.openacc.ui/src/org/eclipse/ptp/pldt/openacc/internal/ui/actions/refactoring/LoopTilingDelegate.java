@@ -18,7 +18,7 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
-import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.ValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopTilingRefactoring;
 
 @SuppressWarnings("restriction")
@@ -34,13 +34,13 @@ public class LoopTilingDelegate extends RefactoringActionDelegate {
         final LoopTilingRefactoring refac = (LoopTilingRefactoring) refactoring;
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loop");
         LoopRefactoringWizardPage page = wizard.getInputPage();
-        page.addNumberInputControl("Tile Width: ", new ValueChangedListener() {
+        page.addInputControl("Tile Width: ", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setWidth(value);
             }
         });
-        page.addNumberInputControl("Tile Height: ", new ValueChangedListener() {
+        page.addInputControl("Tile Height: ", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setHeight(value);

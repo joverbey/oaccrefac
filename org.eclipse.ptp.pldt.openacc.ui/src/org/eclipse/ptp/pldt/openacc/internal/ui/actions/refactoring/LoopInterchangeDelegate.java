@@ -17,7 +17,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.ValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopInterchangeRefactoring;
 
 @SuppressWarnings("restriction")
@@ -32,7 +32,7 @@ public class LoopInterchangeDelegate extends RefactoringActionDelegate {
     public RefactoringWizard createWizard(Refactoring refactoring) {
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Interchange Loops");
         final LoopInterchangeRefactoring refac = (LoopInterchangeRefactoring) refactoring;
-        wizard.getInputPage().addNumberInputControl("Interchange Depth: ", new ValueChangedListener() {
+        wizard.getInputPage().addInputControl("Interchange Depth: ", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setExchangeDepth(value);
