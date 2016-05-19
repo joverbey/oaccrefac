@@ -132,6 +132,15 @@ public class ASTUtil {
         }
         return false;
     }
+    
+    public static boolean isAncestor(IASTNode descendant, IASTNode... ancestors) {
+        for(IASTNode ancestor : ancestors) {
+        	if(isAncestor(ancestor, descendant)) {
+        		return true;
+        	}
+        }
+        return false;
+    }
 
     /**
      * returns <code>true</code> if <code>ancestor</code> is an ancestor of AND is the not the same node as
@@ -708,6 +717,15 @@ public class ASTUtil {
         return false;
     }
 
+    public static IASTStatement[] getStatementsIfCompound(IASTStatement statement) {
+    	if(statement instanceof IASTCompoundStatement) {
+    		return ((IASTCompoundStatement) statement).getStatements();
+    	}
+    	else {
+    		return new IASTStatement[] {statement};
+    	}
+    }
+    
     private ASTUtil() {
     }
 }
