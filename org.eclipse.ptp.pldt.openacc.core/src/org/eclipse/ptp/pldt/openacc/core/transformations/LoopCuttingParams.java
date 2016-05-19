@@ -16,8 +16,4 @@ public class LoopCuttingParams extends AbstractStripMineParams {
     public LoopCuttingParams(int cutFactor, String newName) {
         super(cutFactor, newName);
     }
-
-    public int getCutFactor() {
-        return super.numFactor;
-    }
 }

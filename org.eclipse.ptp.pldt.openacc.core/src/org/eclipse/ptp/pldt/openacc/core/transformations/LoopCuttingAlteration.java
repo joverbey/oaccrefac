@@ -37,9 +37,10 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
  * @author Jeff Overbey
  * @author Jacob Neeley
  */
-public class LoopCuttingAlteration extends AbstractStripMineAlteration<LoopCuttingCheck> {
+public class LoopCuttingAlteration extends AbstractStripMineAlteration {
     
-    public LoopCuttingAlteration(IASTRewrite rewriter, int cutFactorIn, String newNameIn, LoopCuttingCheck check) {
+    public LoopCuttingAlteration(IASTRewrite rewriter, int cutFactorIn, 
+    		String newNameIn, AbstractStripMineCheck check) {
         super(rewriter, cutFactorIn, newNameIn, check);
     }
     

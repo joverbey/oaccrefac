@@ -29,7 +29,6 @@ public class Refactor {
         refactorings.put("IntroduceDefaultNone", new IntroduceDefaultNone());
         refactorings.put("IntroduceKernelsLoop", new IntroduceKernelsLoop());
         refactorings.put("IntroduceParallelLoop", new IntroduceParallelLoop());
-        refactorings.put("LoopCutting", new LoopCutting());
         refactorings.put("StripMine", new StripMine());
         refactorings.put("TileLoops", new TileLoops());
         refactorings.put("Unroll", new Unroll());

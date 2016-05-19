@@ -41,7 +41,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
  * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
-public class StripMineAlteration extends AbstractStripMineAlteration<StripMineCheck> {
+public class StripMineAlteration extends AbstractStripMineAlteration {
 
     /**
      * Constructor. Takes parameters for strip factor and strip depth to tell the refactoring which perfectly nested
@@ -53,7 +53,7 @@ public class StripMineAlteration extends AbstractStripMineAlteration<StripMineCh
      * @param stripFactor
      *            -- factor for how large strips are
      */
-    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, String newName, StripMineCheck check) {
+    public StripMineAlteration(IASTRewrite rewriter, int stripFactor, String newName, AbstractStripMineCheck check) {
         super(rewriter, stripFactor, newName, check);
     }
     

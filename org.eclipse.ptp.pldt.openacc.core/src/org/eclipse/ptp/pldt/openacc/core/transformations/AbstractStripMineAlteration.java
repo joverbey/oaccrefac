@@ -33,13 +33,14 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
-public abstract class AbstractStripMineAlteration<T extends ForLoopCheck<?>> 
-	extends ForLoopAlteration<T> {
+public abstract class AbstractStripMineAlteration 
+	extends ForLoopAlteration<AbstractStripMineCheck> {
 	
 	private int numFactor;
 	private String newName;
 	
-	public AbstractStripMineAlteration(IASTRewrite rewriter, int numValue, String newName, T check) {
+	public AbstractStripMineAlteration(IASTRewrite rewriter, int numValue, 
+			String newName, AbstractStripMineCheck check) {
         super(rewriter, check);
         this.numFactor = numValue;
         this.newName = newName;

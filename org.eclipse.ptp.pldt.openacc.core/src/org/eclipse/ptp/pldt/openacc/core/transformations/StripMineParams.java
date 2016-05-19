@@ -18,8 +18,4 @@ public class StripMineParams extends AbstractStripMineParams {
         super(stripFactor, newName);
     }
 
-    public int getStripFactor() {
-        return super.numFactor;
-    }
-
 }

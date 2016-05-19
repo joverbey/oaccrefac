@@ -12,7 +12,7 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 
-public abstract class AbstractStripMineCheck<T extends RefactoringParams> extends ForLoopCheck<T> {
+public abstract class AbstractStripMineCheck extends ForLoopCheck<AbstractStripMineParams> {
 	
 	public AbstractStripMineCheck(IASTForStatement loop) {
         super(loop);

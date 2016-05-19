@@ -12,7 +12,13 @@
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
@@ -20,8 +26,10 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 /**
  * StripMine performs the strip mine refactoring.
  */
-public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMineAlteration> {
+public class StripMine extends LoopMain<AbstractStripMineParams, AbstractStripMineCheck, AbstractStripMineAlteration> {
 
+	private boolean cut = false;
+	
     /**
      * main begins refactoring execution.
      * 
@@ -35,7 +43,7 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
     /**
      * stripFactor is the factor to use in strip mining the loop
      */
-    private int stripFactor = 0;
+    private int numFactor = 0;
     private String newName = "";
 
     @Override
@@ -45,14 +53,46 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
             return false;
         }
         if (args[1].equals("-ln")) {
-        	if (args.length != 4 && args.length != 5) {
+        	if (args[3].equals("-c")) {
+        		cut = true;
+        		if (args.length != 5 && args.length != 6) {
+        			printUsage();
+        			return false;
+        		}
+        		try {
+        			numFactor = Integer.parseInt(args[4]);
+        			if (args.length == 6) {
+        				newName = args[5];
+        			}
+        		} catch (NumberFormatException e) {
+        			printUsage();
+        			return false;
+        		}
+        	} else {
+	        	if (args.length != 4 && args.length != 5) {
+	                printUsage();
+	                return false;
+	            }
+	            try {
+	                numFactor = Integer.parseInt(args[3]);
+	                if (args.length == 5) {
+	                	newName = args[4];
+	                }
+	            } catch (NumberFormatException e) {
+	                printUsage();
+	                return false;
+	            }
+        	}
+        } else if (args[1].equals("-c")) {
+        	cut = true;
+        	if (args.length != 3 && args.length != 4) {
                 printUsage();
                 return false;
             }
             try {
-                stripFactor = Integer.parseInt(args[3]);
-                if (args.length == 5) {
-                	newName = args[4];
+                numFactor = Integer.parseInt(args[2]);
+                if (args.length == 4) {
+                	newName = args[3];
                 }
             } catch (NumberFormatException e) {
                 printUsage();
@@ -64,7 +104,7 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
                 return false;
             }
             try {
-                stripFactor = Integer.parseInt(args[1]);
+                numFactor = Integer.parseInt(args[1]);
                 if (args.length == 3) {
                 	newName = args[2];
                 }
@@ -80,23 +120,38 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      * printUsage prints the usage of the refactoring.
      */
     private void printUsage() {
-        System.err.println("Usage: StripMine <filename.c> <strip_factor>");
-        System.err.println("Usage: StripMine <filename.c> -ln <loopname> <strip_factor>");
+        System.err.println("Usage: StripMine <filename.c> <strip_factor> <index_name>");
+        System.err.println("Usage: StripMine <filename.c> -c <strip_factor> <index_name>");
+        System.err.println("Usage: StripMine <filename.c> -ln <loopname> <strip_factor> <index_name>");
+        System.err.println("Usage: StripMine <filename.c> -ln <loopname> -c <strip_factor> <index_name>");
     }
 
     @Override
-    protected StripMineCheck createCheck(IASTForStatement loop) {
-        return new StripMineCheck(loop);
+    protected AbstractStripMineCheck createCheck(IASTForStatement loop) {
+    	if (cut) {
+    		return new LoopCuttingCheck(loop);
+    	} else {
+    		return new StripMineCheck(loop);
+    	}
     }
 
     @Override
-    protected StripMineParams createParams(IASTForStatement forLoop) {
-        return new StripMineParams(stripFactor, newName);
+    protected AbstractStripMineParams createParams(IASTForStatement forLoop) {
+    	if (cut) {
+    		return new LoopCuttingParams(numFactor, newName);
+    	} else {
+            return new StripMineParams(numFactor, newName);
+    	}
     }
 
     @Override
-    protected StripMineAlteration createAlteration(IASTRewrite rewriter, StripMineCheck check) throws CoreException {
-        return new StripMineAlteration(rewriter, stripFactor, newName, check);
+    protected AbstractStripMineAlteration createAlteration(IASTRewrite rewriter, 
+    		AbstractStripMineCheck check) throws CoreException {
+    	if (cut) {
+    		return new LoopCuttingAlteration(rewriter, numFactor, newName, check);
+    	} else {
+            return new StripMineAlteration(rewriter, numFactor, newName, check);
+    	}
     }
 
 }

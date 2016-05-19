@@ -16,9 +16,14 @@ public abstract class AbstractStripMineParams extends RefactoringParams {
     
     public AbstractStripMineParams(int numValue, String newName) {
         this.numFactor = numValue;
+        this.newName = newName;
     }
    
     public String getNewName() {
     	return newName;
+    }
+    
+    public int getNumFactor() {
+    	return numFactor;
     }
 }
