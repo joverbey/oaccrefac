@@ -4,24 +4,20 @@ int main() {
 
 	printf("test");
 
-	int i, b;
+	int i, b, a;
 
 	for (i = 0; i < 10; i++) {
 
-		int a;
-
-#pragma acc data copyin(i) /*<<<<< 13,0,14,0,pass*/
+#pragma acc data copyin(i) /*<<<<< 11,0,12,0,pass*/
 		{
 #pragma acc parallel loop
-			for (; i < 10; i++)
+			for (i = 0; i < 10; i++)
 				a = i;
-		}
-
 #pragma acc parallel loop
-		for(i = 0; i < 10; i++) {
-			a = i;
+			for (i = 0; i < 10; i++) {
+				a = i;
+			}
 		}
-
 	}
 
 	b = 6;

@@ -25,7 +25,6 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 @SuppressWarnings("restriction")
 public class ExpandDataConstructRefactoring extends PragmaDirectiveRefactoring {
 
-
     private ExpandDataConstructCheck check;
     
     public ExpandDataConstructRefactoring(ICElement element, ISelection selection, ICProject project) {
