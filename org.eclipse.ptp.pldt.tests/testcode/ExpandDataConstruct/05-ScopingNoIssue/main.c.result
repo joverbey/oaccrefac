@@ -1,0 +1,16 @@
+int main() {
+
+#pragma acc data copyin(i)
+	{
+		printf("test");
+		int a, b, i;
+#pragma acc parallel loop
+		for (; i < 10; i++)
+			a = i;
+		b = a;
+		while (0)
+			;
+		return 0;
+	}
+
+}

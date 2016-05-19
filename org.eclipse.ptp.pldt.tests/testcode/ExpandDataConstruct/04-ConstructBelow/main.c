@@ -1,0 +1,34 @@
+int a, i;
+
+int main() {
+
+	for (i = 0; i < 10; i++)
+		;
+
+	if (0) {
+
+	}
+
+#pragma acc data copyin(i) /*<<<<< 12,0,13,0,pass*/
+	{
+#pragma acc parallel loop
+		for (i = 0; i < 10; i++)
+			a = i;
+	}
+
+	while (0)
+		;
+
+#pragma acc data copyin(a)
+	{
+		for (int j = 0; j < 10; j++) {
+			j += a;
+		}
+	}
+
+	for (i = 0; i < 10; i++)
+		;
+
+	return 0;
+
+}
