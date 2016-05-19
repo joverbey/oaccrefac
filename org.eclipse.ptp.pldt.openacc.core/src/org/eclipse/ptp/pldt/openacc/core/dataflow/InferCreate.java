@@ -3,6 +3,7 @@ package org.eclipse.ptp.pldt.openacc.core.dataflow;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -27,9 +28,17 @@ public class InferCreate extends InferDataTransfer {
     		if(tree.isAccAccelRegion(K)) {
     			nextV:
     			for(IBinding V : varsInConstruct(K)) { 
+    				//prove that, for V, 
+    				//NO defs reaching construct are outside
+    				//NO uses reached construct are outside
     				for(IASTName D : rd.reachingDefinitions(K)) {
-    					if(tree.isAncestor(K, D)) {
-    						continue nextV;
+    					if(!tree.isAncestor(K, D)) {
+    						//special case declaration with no initializer - 
+    						//assume we want to create if this is the only definition reaching in
+    						IASTDeclarator decl = ASTUtil.findNearestAncestor(D, IASTDeclarator.class);
+    						if(decl == null || decl.getInitializer() != null) {
+    							continue nextV;
+    						}
     					}
     				}
     				for(IASTName D : rd.reachedUses(K)) {
