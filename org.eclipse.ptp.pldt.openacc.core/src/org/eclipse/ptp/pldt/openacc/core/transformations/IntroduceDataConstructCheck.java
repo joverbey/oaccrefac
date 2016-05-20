@@ -7,21 +7,29 @@
  *
  * Contributors:
  *     Alexander Calvert (Auburn) - initial API and implementation
+ *     William Hester (Auburn) - Decouple SourceStatementsCheck and
+ *     			IntroduceDataConstructCheck
  *******************************************************************************/
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
@@ -30,9 +38,15 @@ public class IntroduceDataConstructCheck extends SourceStatementsCheck<Refactori
     public IntroduceDataConstructCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
         super(statements, statementsAndComments);
     }
-
+    
     @Override
-    protected void doReachingDefinitionsCheck(RefactoringStatus status, ReachingDefinitions rd) {
+	public RefactoringStatus check(RefactoringStatus status, IProgressMonitor pm) {
+        doCheck(status, new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0],
+        		IASTFunctionDefinition.class)));
+        return status;
+    }
+
+    private void doCheck(RefactoringStatus status, ReachingDefinitions rd) {
         populateAccMap();
         //TODO i don't like calling inferCopy* both here and in the alteration, but i don't know what to do about it 
         //TODO handle case where construct being introduced inside other construct w/ copies
@@ -51,6 +65,22 @@ public class IntroduceDataConstructCheck extends SourceStatementsCheck<Refactori
                     }
                 }
             }
+        }
+    }
+
+    protected final void populateAccMap() {
+        OpenACCParser parser = new OpenACCParser();
+        for (IASTStatement statement : getStatements()) {
+            Map<IASTPreprocessorPragmaStatement, IAccConstruct> prags = new HashMap<>();
+            for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+                try {
+                    IAccConstruct con = parser.parse(pragma.getRawSignature());
+                    prags.put(pragma, con);
+                } catch(Exception e) {
+                    
+                }
+            }
+            accRegions.put(statement, prags);
         }
     }
 

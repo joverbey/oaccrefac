@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
@@ -639,8 +640,8 @@ public class ASTUtil {
         return finder.finalOffset;
     }
 
-    public static List<IASTPreprocessorPragmaStatement> getEnclosingPragmas(IASTStatement statement) {
-        List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
+    public static Map<IASTPreprocessorPragmaStatement, IASTNode> getEnclosingPragmas(IASTStatement statement) {
+        Map<IASTPreprocessorPragmaStatement, IASTNode> pragmas = new TreeMap<>(ASTUtil.FORWARD_COMPARATOR);
 
         IASTPreprocessorStatement[] preprocessorStatements = statement.getTranslationUnit().getAllPreprocessorStatements();
         
@@ -655,12 +656,11 @@ public class ASTUtil {
 	                        && ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < location
 	                        && ((IASTPreprocessorPragmaStatement) pre).getFileLocation()
 	                                .getNodeOffset() > precedingStmtOffset) {
-	                    pragmas.add((IASTPreprocessorPragmaStatement) pre);
+	                    pragmas.put((IASTPreprocessorPragmaStatement) pre, node);
 	                }
 	            }
             }
         }
-        Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
         return pragmas;
     }
 
@@ -724,7 +724,7 @@ public class ASTUtil {
             }
         }
         return false;
-    }
+    } 
 
     private ASTUtil() {
     }
