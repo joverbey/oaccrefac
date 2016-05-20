@@ -14,10 +14,10 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceAtomicsCheck;
 public class IntroduceAtomicsRefactoring extends StatementsRefactoring {
 
     private IntroduceAtomicsCheck check;
-    
+
     public IntroduceAtomicsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
-        
+
         if (selection == null || tu.getResource() == null || project == null) {
             initStatus.addFatalError("Invalid selection");
         }
@@ -27,7 +27,7 @@ public class IntroduceAtomicsRefactoring extends StatementsRefactoring {
     protected RefactoringDescriptor getRefactoringDescriptor() {
         return null;
     }
-    
+
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new IntroduceAtomicsCheck(getStatements(), getAllEnclosedNodes());
