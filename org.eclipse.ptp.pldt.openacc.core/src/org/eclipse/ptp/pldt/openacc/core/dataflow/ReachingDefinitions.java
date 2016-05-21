@@ -175,11 +175,6 @@ public class ReachingDefinitions {
         return uses;
     }
     
-    /*FIXME 
-     *  sometimes identifies reaching definitions for both a statement and its contained expression.
-     *  the expression's definitions are incorrect.
-     *  the expression should never be used to find a reaching definition though, so this is low priority.
-     */
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
         boolean changed;
         do {
@@ -344,10 +339,6 @@ public class ReachingDefinitions {
             if (data != null && data instanceof IASTNode) {
                 sb.append(((IASTNode) data).getRawSignature() + " at "
                         + ((IASTNode) data).getFileLocation().getStartingLineNumber() + ":");
-                // }
-                // else {
-                // sb.append(bb + ":");
-                // }
                 sb.append(System.lineSeparator());
 
                 sb.append("\tEntries: ");
