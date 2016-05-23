@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Carl Worley (Auburn) - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.model.ICElement;
@@ -14,6 +25,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 public class LoopCuttingRefactoring extends ForLoopRefactoring{
 
     private int cutFactor;
+    private String newName = "";
     private LoopCuttingCheck check;
     
     // TODO: put a good comment here
@@ -25,14 +37,18 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
         this.cutFactor = factor;
     }
     
+    public void setNewName(String newName) {
+    	this.newName = newName;
+    }
+    
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
         check = new LoopCuttingCheck(getLoop());
-        check.performChecks(status, pm, new LoopCuttingParams(cutFactor));
+        check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
     }
     
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new LoopCuttingAlteration(rewriter, cutFactor, check).change();
+        new LoopCuttingAlteration(rewriter, cutFactor, newName, check).change();
     }
 }

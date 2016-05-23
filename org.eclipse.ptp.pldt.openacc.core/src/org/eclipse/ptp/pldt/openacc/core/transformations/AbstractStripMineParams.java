@@ -6,14 +6,24 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Jeff Overbey (Auburn) - initial API and implementation
- *     Jacob Neeley (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class LoopCuttingParams extends AbstractStripMineParams {
+public abstract class AbstractStripMineParams extends RefactoringParams {
+    protected int numFactor;
+    private String newName;
     
-    public LoopCuttingParams(int cutFactor, String newName) {
-        super(cutFactor, newName);
+    public AbstractStripMineParams(int numValue, String newName) {
+        this.numFactor = numValue;
+        this.newName = newName;
+    }
+   
+    public String getNewName() {
+    	return newName;
+    }
+    
+    public int getNumFactor() {
+    	return numFactor;
     }
 }
