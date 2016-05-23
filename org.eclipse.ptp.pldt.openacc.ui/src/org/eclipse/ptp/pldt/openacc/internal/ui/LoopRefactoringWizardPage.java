@@ -17,7 +17,7 @@ import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.AbstractInputComposite.ValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.StringInputComposite.StringValueChangedListener;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopStripMiningRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -26,7 +26,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
 
     private final ArrayList<String> controlLabels = new ArrayList<>();
     private final ArrayList<ValueChangedListener> controlListeners = new ArrayList<>();
-    private LoopStripMiningRefactoring refac;
+    private StripMineLoopRefactoring refac;
     boolean button = false;
 
     public LoopRefactoringWizardPage(String name) {
@@ -38,7 +38,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         controlListeners.add(callback);
     }
     
-    public void setButton(boolean button, LoopStripMiningRefactoring refac) {
+    public void setButton(boolean button, StripMineLoopRefactoring refac) {
     	this.button = button;
     	this.refac = refac;
     }

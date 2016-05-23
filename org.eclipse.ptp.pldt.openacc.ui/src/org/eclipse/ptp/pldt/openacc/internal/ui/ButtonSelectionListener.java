@@ -11,18 +11,18 @@
 
 package org.eclipse.ptp.pldt.openacc.internal.ui;
 
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopStripMiningRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 
 public class ButtonSelectionListener implements SelectionListener {
 	
-	private LoopStripMiningRefactoring refac;
+	private StripMineLoopRefactoring refac;
 	private Button listenButton;
 	private NumberInputComposite stringToChange;
 	
-	public ButtonSelectionListener(LoopStripMiningRefactoring refac, Button listenButton) {
+	public ButtonSelectionListener(StripMineLoopRefactoring refac, Button listenButton) {
 		this.refac = refac;
 		this.listenButton = listenButton;
 	}

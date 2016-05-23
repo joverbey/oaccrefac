@@ -54,6 +54,7 @@
             </message_arguments>
         </filter>
     </resource>
+<<<<<<< HEAD
     <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/IntroOpenACCParallelLoopDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroOpenACCParallelLoopDelegate">
         <filter id="643842064">
             <message_arguments>
@@ -104,6 +105,13 @@
             <message_arguments>
                 <message_argument value="CRefactoring"/>
                 <message_argument value="LoopUnrollingDelegate"/>
+=======
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopCuttingDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopCuttingDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="LoopCuttingDelegate"/>
+>>>>>>> master
                 <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
             </message_arguments>
         </filter>

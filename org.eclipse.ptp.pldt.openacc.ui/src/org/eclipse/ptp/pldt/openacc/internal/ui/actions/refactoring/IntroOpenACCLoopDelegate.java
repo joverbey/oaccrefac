@@ -17,7 +17,7 @@ import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCLoopRefactoring;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 /**
@@ -27,11 +27,11 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
  * @see IWorkbenchWindowActionDelegate
  */
 @SuppressWarnings("restriction")
-public class IntroOpenACCParallelLoopDelegate extends RefactoringActionDelegate {
+public class IntroOpenACCLoopDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new IntroOpenACCParallelRefactoring(wc, selection, project);
+        return new IntroOpenACCLoopRefactoring(wc, selection, project);
     }
 
     @Override

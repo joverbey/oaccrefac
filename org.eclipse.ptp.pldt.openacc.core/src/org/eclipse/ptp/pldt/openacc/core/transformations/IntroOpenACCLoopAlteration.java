@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class IntroParallelAlteration extends ForLoopAlteration<IntroParallelCheck> {
+public class IntroOpenACCLoopAlteration extends ForLoopAlteration<IntroOpenACCLoopCheck> {
 
-    public IntroParallelAlteration(IASTRewrite rewriter, IntroParallelCheck check) {
+    public IntroOpenACCLoopAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check) {
         super(rewriter, check);
     }
 

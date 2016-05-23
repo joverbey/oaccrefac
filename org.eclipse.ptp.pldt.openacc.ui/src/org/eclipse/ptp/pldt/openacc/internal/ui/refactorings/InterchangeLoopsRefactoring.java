@@ -16,40 +16,38 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.FuseLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.FuseLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsCheck;
 
 /**
- * This class defines the implementation for re-factoring using loop fusion. For example:
+ * This class implements refactoring for loop interchange. Loop interchange is the exchange of the ordering of two
+ * iteration variables used in nested loops.
  * 
- * ORIGINAL:                  REFACTORED: 
- * int i, a[100], b[100];    | int i, a[100], b[100]; 
- * for (i = 0; i < 100; i++) | for (i = 0; i <100; i++)
- *    a[i] = 1;              | { 
- * for (i = 0; i < 100; i++) | a[i] = 1; 
- *    b[i] = 2;              | b[i] = 2; 
- *                           | }
- * 
- * (Example taken from Wikipedia's web page on loop Fusion)
  */
-public class LoopFusionRefactoring extends ForLoopRefactoring {
+public class InterchangeLoopsRefactoring extends ForLoopRefactoring {
 
-    private FuseLoopsCheck check;
-    
-    public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
+    private int depth = 1;
+    private InterchangeLoopsCheck check;
+
+    public InterchangeLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
+    public void setExchangeDepth(int depth) {
+        this.depth = depth;
+    }
+
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new FuseLoopsCheck(getLoop());
-        check.performChecks(status, pm, null);
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
+        check = new InterchangeLoopsCheck(getLoop());
+        check.performChecks(status, pm, new InterchangeLoopParams(depth));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new FuseLoopsAlteration(rewriter, check).change();
+        new InterchangeLoopsAlteration(rewriter, check).change();
     }
 
 }

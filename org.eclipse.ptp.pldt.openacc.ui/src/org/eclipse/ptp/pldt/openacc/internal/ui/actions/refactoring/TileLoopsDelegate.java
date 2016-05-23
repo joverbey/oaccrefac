@@ -19,20 +19,20 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopTilingRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.TileLoopsRefactoring;
 
 @SuppressWarnings("restriction")
-public class LoopTilingDelegate extends RefactoringActionDelegate {
+public class TileLoopsDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new LoopTilingRefactoring(wc, selection, project);
+        return new TileLoopsRefactoring(wc, selection, project);
     }
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        final LoopTilingRefactoring refac = (LoopTilingRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loop");
+        final TileLoopsRefactoring refac = (TileLoopsRefactoring) refactoring;
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loops");
         LoopRefactoringWizardPage page = wizard.getInputPage();
         page.addInputControl("Tile Width: ", new NumberValueChangedListener() {
             @Override

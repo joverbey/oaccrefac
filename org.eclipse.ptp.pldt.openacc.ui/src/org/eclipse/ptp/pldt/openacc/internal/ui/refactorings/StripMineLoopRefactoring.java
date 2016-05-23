@@ -25,7 +25,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 
-public class LoopStripMiningRefactoring extends ForLoopRefactoring {
+public class StripMineLoopRefactoring extends ForLoopRefactoring {
 
     private int numFactor = -1;
     private String newName = "";
@@ -33,7 +33,7 @@ public class LoopStripMiningRefactoring extends ForLoopRefactoring {
     private LoopCuttingCheck loopCheck;
     private boolean cut = false;
 
-    public LoopStripMiningRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public StripMineLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 

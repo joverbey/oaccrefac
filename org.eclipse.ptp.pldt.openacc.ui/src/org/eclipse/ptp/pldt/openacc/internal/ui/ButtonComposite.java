@@ -11,7 +11,7 @@
 
 package org.eclipse.ptp.pldt.openacc.internal.ui;
 
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopStripMiningRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -21,7 +21,7 @@ public class ButtonComposite extends Composite {
 	
 	private ButtonSelectionListener regListener;
 
-	public ButtonComposite(Composite parent, int style, LoopStripMiningRefactoring refac) {
+	public ButtonComposite(Composite parent, int style, StripMineLoopRefactoring refac) {
 		super(parent, style);
 		
 		setLayout(new GridLayout(2, false));

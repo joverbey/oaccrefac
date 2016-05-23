@@ -17,37 +17,43 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
 
 /**
- * This class implements refactoring for loop interchange. Loop interchange is the exchange of the ordering of two
- * iteration variables used in nested loops.
+ * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange. Basically, it consists of
+ * strip-mining a given loop into two loops, one that iterates within contiguous strips and an outer loop that iterates
+ * strip-by-strip, then interchanging the by-strip loop to the outside of the outer containing loops." -- 9.3.2 Legality
+ * of Blocking, p.480, Optimizing Compilers for Modern Architectures
  * 
  */
-public class LoopInterchangeRefactoring extends ForLoopRefactoring {
+public class TileLoopsRefactoring extends ForLoopRefactoring {
 
-    private int depth = 1;
-    private InterchangeLoopsCheck check;
+    private int width = 0;
+    private int height = 0;
+    private TileLoopsCheck check;
 
-    public LoopInterchangeRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public TileLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
-    public void setExchangeDepth(int depth) {
-        this.depth = depth;
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new InterchangeLoopsCheck(getLoop());
-        check.performChecks(status, pm, new InterchangeLoopParams(depth));
+        check = new TileLoopsCheck(getLoop());
+        check.performChecks(status, pm, new TileLoopsParams(width, height));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new InterchangeLoopsAlteration(rewriter, check).change();
+        new TileLoopsAlteration(rewriter, width, height, check).change();
     }
-
 }

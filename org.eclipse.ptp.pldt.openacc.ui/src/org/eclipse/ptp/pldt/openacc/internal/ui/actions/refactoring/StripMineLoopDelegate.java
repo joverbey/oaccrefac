@@ -21,19 +21,19 @@ import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.StringInputComposite.StringValueChangedListener;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopStripMiningRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
 
 @SuppressWarnings("restriction")
-public class LoopStripMiningDelegate extends RefactoringActionDelegate {
+public class StripMineLoopDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new LoopStripMiningRefactoring(wc, selection, project);
+        return new StripMineLoopRefactoring(wc, selection, project);
     }
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        final LoopStripMiningRefactoring refac = (LoopStripMiningRefactoring) refactoring;
+        final StripMineLoopRefactoring refac = (StripMineLoopRefactoring) refactoring;
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Strip Mine Loop");
         LoopRefactoringWizardPage page = wizard.getInputPage();
         page.addInputControl("Strip Size", new NumberValueChangedListener() {

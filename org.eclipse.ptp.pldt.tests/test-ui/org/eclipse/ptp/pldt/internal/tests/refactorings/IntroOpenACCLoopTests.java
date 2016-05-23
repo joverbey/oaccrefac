@@ -15,29 +15,27 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopTilingRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCLoopRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class LoopTilingTests extends RefactoringTest<LoopTilingRefactoring> {
+public class IntroOpenACCLoopTests extends RefactoringTest<IntroOpenACCLoopRefactoring> {
+    
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/LoopTiling");
+        return generateParameters("testcode/IntroOpenACCLoop");
     }
 
-    public LoopTilingTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(LoopTilingRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public IntroOpenACCLoopTests(String description, File fileContainingMarker, int markerOffset, String markerText)
+            throws Exception {
+        super(IntroOpenACCLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(LoopTilingRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroOpenACCLoopRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-        String width = markerFields.removeFirst();
-        refactoring.setWidth(Integer.parseInt(width));
-        
-        String height = markerFields.removeFirst();
-        refactoring.setHeight(Integer.parseInt(height));
     }
+    
 }

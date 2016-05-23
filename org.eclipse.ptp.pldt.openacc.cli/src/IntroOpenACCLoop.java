@@ -12,14 +12,14 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroParallelAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroParallelCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 
 /**
  * IntroduceParallelLoop performs the introduce parallel loop refactoring.
  */
-public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroParallelCheck, IntroParallelAlteration> {
+public class IntroOpenACCLoop extends LoopMain<RefactoringParams, IntroOpenACCLoopCheck, IntroOpenACCLoopAlteration> {
     
     /**
      * main begins refactoring execution.
@@ -27,7 +27,7 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
      * @param args Arguments to the refactoring.
      */
     public static void main(String[] args) {
-        new IntroduceParallelLoop().run(args);
+        new IntroOpenACCLoop().run(args);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
     }
 
     @Override
-    protected IntroParallelCheck createCheck(IASTForStatement loop) {
-        return new IntroParallelCheck(loop);
+    protected IntroOpenACCLoopCheck createCheck(IASTForStatement loop) {
+        return new IntroOpenACCLoopCheck(loop);
     }
     
     @Override
@@ -67,8 +67,8 @@ public class IntroduceParallelLoop extends LoopMain<RefactoringParams, IntroPara
     }
     
     @Override
-    protected IntroParallelAlteration createAlteration(IASTRewrite rewriter, IntroParallelCheck check) throws CoreException {
-        return new IntroParallelAlteration(rewriter, check);
+    protected IntroOpenACCLoopAlteration createAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check) throws CoreException {
+        return new IntroOpenACCLoopAlteration(rewriter, check);
     }
 
 }

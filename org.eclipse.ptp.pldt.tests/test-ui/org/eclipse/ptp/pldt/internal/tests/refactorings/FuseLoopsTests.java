@@ -11,30 +11,20 @@
 package org.eclipse.ptp.pldt.internal.tests.refactorings;
 
 import java.io.File;
-import java.util.LinkedList;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.text.TextSelection;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopUnrollingRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.FuseLoopsRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class LoopUnrollingTests extends RefactoringTest<LoopUnrollingRefactoring> {
+public class FuseLoopsTests extends RefactoringTest<FuseLoopsRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/LoopUnrolling");
+        return generateParameters("testcode/FuseLoops");
     }
 
-    public LoopUnrollingTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(LoopUnrollingRefactoring.class, fileContainingMarker, markerOffset, markerText);
-    }
-
-    @Override
-    protected void configureRefactoring(LoopUnrollingRefactoring refactoring, IFile file,
-            TextSelection selection, LinkedList<String> markerFields) {
-         String unrollFactor = markerFields.removeFirst();
-         refactoring.setUnrollFactor(Integer.parseInt(unrollFactor));
+    public FuseLoopsTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(FuseLoopsRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 }
