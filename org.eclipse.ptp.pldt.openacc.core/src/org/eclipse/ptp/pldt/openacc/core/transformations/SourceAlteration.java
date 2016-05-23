@@ -70,7 +70,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
     private List<Repl> repls;
     private int numRepls;
     
-    // FIXME should somehow get an IASTRewrite from the tu and only take one argument
     public SourceAlteration(IASTRewrite rewriter, T check) {
         this.tu = check.getTranslationUnit();
         this.rewriter = rewriter;
