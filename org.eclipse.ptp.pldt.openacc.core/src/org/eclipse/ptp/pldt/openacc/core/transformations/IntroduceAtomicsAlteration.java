@@ -1,10 +1,10 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class IntroduceAtomicsAlteration extends SourceStatementsAlteration<IntroduceAtomicsCheck> {
+public class IntroduceAtomicsAlteration extends SourceStatementsAlteration<IntroAtomicsCheck> {
 
 	private int type;
 	
-    public IntroduceAtomicsAlteration(IASTRewrite rewriter, IntroduceAtomicsCheck check) {
+    public IntroduceAtomicsAlteration(IASTRewrite rewriter, IntroAtomicsCheck check) {
         super(rewriter, check);
         type = check.getType();
     }
@@ -14,16 +14,16 @@ public class IntroduceAtomicsAlteration extends SourceStatementsAlteration<Intro
 		int offset = getStatements()[0].getFileLocation().getNodeOffset();
 		String pragma = "#pragma acc atomic ";
 		switch (type) {
-		case IntroduceAtomicsCheck.READ:
+		case IntroAtomicsCheck.READ:
 			pragma += "read";
 			break;
-		case IntroduceAtomicsCheck.WRITE:
+		case IntroAtomicsCheck.WRITE:
 			pragma += "write";
 			break;
-		case IntroduceAtomicsCheck.UPDATE:
+		case IntroAtomicsCheck.UPDATE:
 			pragma += "update";
 			break;
-		case IntroduceAtomicsCheck.NONE:
+		case IntroAtomicsCheck.NONE:
 			return;
 		}
 		insert(offset, pragma + System.lineSeparator());

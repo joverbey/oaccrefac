@@ -10,6 +10,7 @@ import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
@@ -18,7 +19,7 @@ import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.AtomicStatementInquisitor;
 
-public class IntroduceAtomicsCheck extends SourceStatementsCheck<RefactoringParams> {
+public class IntroAtomicsCheck extends SourceStatementsCheck<RefactoringParams> {
 	
 	public static final int NONE = 0;
 	public static final int READ = 1;
@@ -27,7 +28,7 @@ public class IntroduceAtomicsCheck extends SourceStatementsCheck<RefactoringPara
 	
 	private int type = NONE;
 
-    public IntroduceAtomicsCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
+    public IntroAtomicsCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
     	super(statements, statementsAndComments);
     }
 
@@ -74,7 +75,7 @@ public class IntroduceAtomicsCheck extends SourceStatementsCheck<RefactoringPara
 		IASTNode parallelRegion = null;
 		for (IAccConstruct construct : prags.keySet()) {
 			if (construct instanceof ASTAccParallelLoopNode || construct instanceof ASTAccParallelNode 
-					|| construct instanceof ASTAccKernelsNode) {
+					|| construct instanceof ASTAccKernelsNode || construct instanceof ASTAccKernelsLoopNode) {
 				parallelRegion = prags.get(construct);
 				break;
 			}

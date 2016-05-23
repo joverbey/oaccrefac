@@ -7,14 +7,14 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroduceAtomicsRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroAtomicsRefactoring;
 
 @SuppressWarnings("restriction")
-public class IntroduceAtomicsDelegate extends RefactoringActionDelegate {
+public class IntroAtomicsDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new IntroduceAtomicsRefactoring(wc, selection, project);
+        return new IntroAtomicsRefactoring(wc, selection, project);
     }
 
     @Override

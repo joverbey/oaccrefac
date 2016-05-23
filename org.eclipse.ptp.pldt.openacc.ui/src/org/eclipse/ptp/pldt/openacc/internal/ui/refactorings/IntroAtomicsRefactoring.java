@@ -9,13 +9,13 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceAtomicsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceAtomicsCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicsCheck;
 
-public class IntroduceAtomicsRefactoring extends StatementsRefactoring {
+public class IntroAtomicsRefactoring extends StatementsRefactoring {
 
-    private IntroduceAtomicsCheck check;
+    private IntroAtomicsCheck check;
 
-    public IntroduceAtomicsRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public IntroAtomicsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
 
         if (selection == null || tu.getResource() == null || project == null) {
@@ -30,7 +30,7 @@ public class IntroduceAtomicsRefactoring extends StatementsRefactoring {
 
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroduceAtomicsCheck(getStatements(), getAllEnclosedNodes());
+        check = new IntroAtomicsCheck(getStatements(), getAllEnclosedNodes());
         check.performChecks(initStatus, pm, null);
     }
 
