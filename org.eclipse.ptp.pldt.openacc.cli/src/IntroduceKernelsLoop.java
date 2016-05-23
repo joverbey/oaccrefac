@@ -10,6 +10,7 @@
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceKernelsLoopAlteration;
@@ -19,48 +20,17 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 /**
  * IntroduceKernelsLoop performs the introduce kernels loop refactoring.
  */
-public class IntroduceKernelsLoop extends LoopMain<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
-    
-    /**
-     * main begins refactoring execution.
-     * 
-     * @param args Arguments to the refactoring.
-     */
-    public static void main(String[] args) {
-        new IntroduceKernelsLoop().run(args);
-    }
-    
-    @Override
-    protected boolean checkArgs(String[] args) {
-        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
-            printUsage();
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * printUsage prints the usage of the refactoring.
-     */
-    private void printUsage() {
-        System.err.println("Usage: IntroduceKernelsLoop <filename.c>");
-        System.err.println("Usage2: IntroduceKernelsLoop <filename.c> -ln <loopname>");
-    }
+public class IntroduceKernelsLoop 
+		extends CLILoopRefactoring<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
 
     
     @Override
-    protected IntroduceKernelsLoopCheck createCheck(IASTForStatement loop) {
-        return new IntroduceKernelsLoopCheck(loop);
+    protected IntroduceKernelsLoopCheck createCheck(IASTStatement loop) {
+        return new IntroduceKernelsLoopCheck((IASTForStatement) loop);
     }
 
     @Override
-    protected RefactoringParams createParams(IASTForStatement forLoop) {
-        // RefactoringParams is abstract
-        return null;
-    }
-
-    @Override
-    protected IntroduceKernelsLoopAlteration createAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check) throws CoreException {
+    public IntroduceKernelsLoopAlteration createAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check) throws CoreException {
         return new IntroduceKernelsLoopAlteration(rewriter, check);
     }
     

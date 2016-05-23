@@ -11,6 +11,7 @@
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
@@ -20,67 +21,29 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 /**
  * LoopCutting performs the loop cutting refactoring.
  */
-public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, LoopCuttingAlteration> {
-
-    /**
-     * main begins refactoring execution.
-     * 
-     * @param args
-     *            Arguments to the refactoring.
-     */
-    public static void main(String[] args) {
-        new LoopCutting().run(args);
-    }
+public class LoopCutting extends CLILoopRefactoring<LoopCuttingParams, LoopCuttingCheck, LoopCuttingAlteration> {
 
     /**
      * cutFactor represents how much the loop is cut.
      */
     private int cutFactor = 0;
-
-    @Override
-    protected boolean checkArgs(String[] args) {
-        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
-            printUsage();
-            return false;
-        }
-        if (args[1].equals("-ln")) {
-            try {
-                cutFactor = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                printUsage();
-                return false;
-            }
-        } else {
-            try {
-                cutFactor = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e) {
-                printUsage();
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * printUsage prints the usage of the refactoring.
-     */
-    private void printUsage() {
-        System.err.println("Usage: LoopCutting <filename.c> <cut_factor>");
-        System.err.println("Usage: LoopCutting <filename.c> -ln <loopname> <cut_factor>");
+    
+    public LoopCutting(int cutFactor) {
+    	this.cutFactor = cutFactor;
     }
 
     @Override
-    protected LoopCuttingCheck createCheck(IASTForStatement loop) {
-        return new LoopCuttingCheck(loop);
+    protected LoopCuttingCheck createCheck(IASTStatement loop) {
+        return new LoopCuttingCheck((IASTForStatement) loop);
     }
 
     @Override
-    protected LoopCuttingParams createParams(IASTForStatement forLoop) {
+    protected LoopCuttingParams createParams(IASTStatement forLoop) {
         return new LoopCuttingParams(cutFactor);
     }
 
     @Override
-    protected LoopCuttingAlteration createAlteration(IASTRewrite rewriter, LoopCuttingCheck check)
+    public LoopCuttingAlteration createAlteration(IASTRewrite rewriter, LoopCuttingCheck check)
             throws CoreException {
         return new LoopCuttingAlteration(rewriter, cutFactor, check);
     }

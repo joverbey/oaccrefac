@@ -11,6 +11,7 @@
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopAlteration;
@@ -20,54 +21,15 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopParams;
 /**
  * Unroll performs the unroll loops refactoring.
  */
-public class UnrollLoop extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
-
-    /**
-     * main begins refactoring execution.
-     * 
-     * @param args
-     *            Arguments to the refactoring.
-     */
-    public static void main(String[] args) {
-        new UnrollLoop().run(args);
-    }
+public class UnrollLoop extends CLILoopRefactoring<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
 
     /**
      * unrollFactor represents how much to unroll the loop.
      */
-    private int unrollFactor = 0;
-
-    @Override
-    protected boolean checkArgs(String[] args) {
-        if (!((args.length == 4 && args[1].equals("-ln")) || (args.length == 2 ))) {
-            printUsage();
-            return false;
-        }
-        if (args[1].equals("-ln")) {
-            try {
-                unrollFactor = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                printUsage();
-                return false;
-            }
-        } else {
-            try {
-                unrollFactor = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e) {
-                printUsage();
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * printUsage prints the usage of the refactoring.
-     */
-    private void printUsage() {
-        System.err.println("Usage: Unroll <filename.c> <factor>");
-        System.err.println("Usage: Unroll <filename.c> -ln <loopname> <factor>");
+    private final int unrollFactor;
+    
+    public UnrollLoop(int unrollFactor) {
+    	this.unrollFactor = unrollFactor;
     }
 
     /**
@@ -78,17 +40,17 @@ public class UnrollLoop extends LoopMain<UnrollLoopParams, UnrollLoopCheck, Unro
      * @return Check to be performed on the loop.
      */
     @Override
-    protected UnrollLoopCheck createCheck(IASTForStatement loop) {
-        return new UnrollLoopCheck(loop);
+    protected UnrollLoopCheck createCheck(IASTStatement loop) {
+        return new UnrollLoopCheck((IASTForStatement) loop);
     }
 
     @Override
-    protected UnrollLoopParams createParams(IASTForStatement forLoop) {
+    protected UnrollLoopParams createParams(IASTStatement forLoop) {
         return new UnrollLoopParams(unrollFactor);
     }
 
     @Override
-    protected UnrollLoopAlteration createAlteration(IASTRewrite rewriter, UnrollLoopCheck check) throws CoreException {
+    public UnrollLoopAlteration createAlteration(IASTRewrite rewriter, UnrollLoopCheck check) throws CoreException {
         return new UnrollLoopAlteration(rewriter, unrollFactor, check);
     }
 

@@ -1,15 +1,5 @@
 
-/*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Jeff Overbey (Auburn) - initial API and implementation
- *     John William O'Rourke (Auburn) - initial API and implementation
- *******************************************************************************/
+import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,92 +19,159 @@ import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
-import org.eclipse.ptp.pldt.openacc.core.transformations.Check;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
 
-/**
- * Main serves as a generic base for any refactoring Runnables.
- *
- * @param <S>
- *            Statement type refactoring uses.
- * @param <P>
- *            Refactoring parameters.
- * @param <C>
- *            Checker.
- * @param <A>
- *            Source alteration.
- */
-public abstract class Main<S extends IASTStatement, P extends RefactoringParams, C extends Check<P>, A extends SourceAlteration<C>>
-        implements Runnable {
+public class Main {
 
-    /**
-     * run satisfies the Runnable interface so that refactorings can be generically run.
-     * 
-     * @param args
-     *            Arguments passed to the refactoring.
-     */
-    public final void run(String[] args) {
-        boolean expectLoopName = false;
-        String loopName = new String();
-        if (args.length > 1) {
-            if (args[1].equals("-ln")) {
-                expectLoopName = true;
-                loopName = args[2];
-            }
-        }
-        if (!checkArgs(args)) {
-            System.exit(1);
-        }
-        String filename = args[0];
-        IASTTranslationUnit translationUnit = null;
+	private Main() {}
+
+	public static void main(String[] args) {
+		if (args.length < 1) {
+			printUsage();
+			System.exit(1);
+		}
+		CLIRefactoring<?, ?, ?> m = null;
+		int argIndex = 1;
+		String filename = null;
+		String loopName = null;
+		int row = -1, col = -1;
+		try {
+			switch (args[0]) {
+			// 2 args
+			case "TileLoops":
+				m = new TileLoops(parseInt(args[argIndex++]), parseInt(args[argIndex++]));
+				break;
+			case "StripMine":
+				m = new StripMineLoop(parseInt(args[argIndex++]), args[argIndex++]);
+				break;
+			// 1 arg
+			case "InterchangeLoops":
+				m = new InterchangeLoops(parseInt(args[argIndex++]));
+				break;
+			case "LoopCutting":
+				m = new LoopCutting(parseInt(args[argIndex++]));
+				break;
+			case "Unroll":
+				m = new UnrollLoop(parseInt(args[argIndex++]));
+				break;
+			// no args
+			case "DistributeLoops":
+				m = new DistributeLoops();
+				break;
+			case "FuseLoops":
+				m = new FuseLoops();
+				break;
+			case "IntroduceDefaultNone":
+				m = new IntroduceDefaultNone();
+				break;
+			case "IntroduceKernelsLoop":
+				m = new IntroduceKernelsLoop();
+				break;
+			case "IntroduceParallelLoop":
+				m = new IntroOpenACCLoop();
+				break;
+			default:
+				throw new IllegalArgumentException("Specified refactoring is invalid");
+			}
+
+			for (int i = argIndex; i < args.length; i++) {
+				switch (args[i]) {
+				case "-ln":
+				case "--loop-name":
+					loopName = args[++i];
+					break;
+				case "-pos":
+				case "--position":
+					row = parseInt(args[++i]);
+					col = parseInt(args[++i]);
+					break;
+				default:
+					filename = args[i];
+					break;
+				}
+			}
+		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+			printUsage();
+			System.exit(1);
+		}
+
+		if (filename == null && (row == -1 && col == -1 || loopName == null)) {
+			printUsage();
+			System.exit(1);
+		}
+
+		IASTTranslationUnit translationUnit = null;
         try {
             translationUnit = parse(filename);
         } catch (CoreException e) {
             System.err.printf("Unable to parse %s (%s)\n", filename, e.getMessage());
             System.exit(2);
         }
+
+        IASTStatement statement = null;
         IASTRewrite rw = ASTRewrite.create(translationUnit);
-        S statement = findStatementToAutotune(translationUnit, rw, loopName, expectLoopName);
+        if (row != -1 && col != -1) {
+        	statement = findStatementForPosition(translationUnit, row);
+        } else {
+	        statement = findStatementToAutotune(translationUnit, loopName);        	
+        }
+
         if (statement == null) {
             System.err.println(
                     "Please add a comment containing the loop name entered immediately above the loop to refactor.");
             System.exit(3);
         }
-        C check = createCheck(statement);
-        RefactoringStatus status = check.performChecks(new RefactoringStatus(), new NullProgressMonitor(),
-                createParams(statement));
+        
+        RefactoringStatus status = m.performChecks(statement);
+        if (status == null) {
+        	System.err.println("No applicable statement found at selection.");
+        	System.exit(4);
+        }
+
         printStatus(status);
         if (status.hasFatalError()) {
-            System.exit(4);
+        	System.exit(4);
         }
-        try {
-            A xform = createAlteration(rw, check);
-            xform.change();
-            xform.rewriteAST().perform(new NullProgressMonitor());
-        } catch (CoreException e) {
-            System.err.printf("Internal error creating change: %s\n", e.getMessage());
+        
+        String error = m.performAlteration(rw);
+        if (error != null) {
+            System.err.printf("Internal error creating change: %s\n", error);
             System.exit(5);
         }
-    }
+	}
 
-    /**
-     * printStatus prints all entries in a refactoring status.
-     * 
-     * @param status
-     *            Status to print.
-     */
-    private void printStatus(RefactoringStatus status) {
-        for (RefactoringStatusEntry entry : status.getEntries()) {
+	public static void printUsage() {
+	    System.err.println("Main DistributeLoops <filename.c>");
+        System.err.println("Main DistributeLoops <filename.c> -ln <loopname>");
+        System.err.println("Main FuseLoops <filename.c>");
+        System.err.println("Main FuseLoops <filename.c> -ln <loopname>");
+        System.err.println("Main InterchangeLoops <filename.c> <depth>");
+        System.err.println("Main InterchangeLoops <filename.c> -ln <loopname> <depth>");
+        System.err.println("Main IntroduceDefaultNone <filename.c>");
+        System.err.println("Main IntroduceDefaultNone <filename.c> -ln <loopname>");
+        System.err.println("Main IntroduceKernelsLoop <filename.c>");
+        System.err.println("Main IntroduceKernelsLoop <filename.c> -ln <loopname>");
+        System.err.println("Main IntroduceParallelLoop <filename.c>");
+        System.err.println("Main IntroduceParallelLoop <filename.c> -ln <loopname>");
+        System.err.println("Main LoopCutting <filename.c> <cut_factor>");
+        System.err.println("Main LoopCutting <filename.c> -ln <loopname> <cut_factor>");
+        System.err.println("Main StripMine <filename.c> <strip_factor>");
+        System.err.println("Main StripMine <filename.c> -ln <loopname> <strip_factor>");
+        System.err.println("Main TileLoops <filename.c> <width> <height>");
+        System.err.println("Main TileLoops <filename.c> -ln <loopname> <width> <height>");
+        System.err.println("Main Unroll <filename.c> <factor>");
+        System.err.println("Main Unroll <filename.c> -ln <loopname> <factor>");
+	}
+	
+	public static void printStatus(RefactoringStatus status) {
+		for (RefactoringStatusEntry entry : status.getEntries()) {
             System.err.println(entry);
         }
-    }
+	}
 
     /**
      * Parses a file for the translation unit which represents it.
@@ -125,7 +182,7 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
      * @throws CoreException
      *             If getting the translation unit fails.
      */
-    private IASTTranslationUnit parse(String filename) throws CoreException {
+    private static IASTTranslationUnit parse(String filename) throws CoreException {
         IParserLogService log = new DefaultLogService();
         FileContent fileContent = FileContent.createForExternalFileLocation(filename);
         Map<String, String> definedSymbols = new HashMap<String, String>();
@@ -148,10 +205,10 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
      *            Name of statement to be altered
      * @return Statement to be altered.
      */
-    protected S findStatementToAutotune(final IASTTranslationUnit translationUnit, final IASTRewrite rw,
-            final String loopName, final boolean expectLoopName) {
+    private static final IASTStatement findStatementToAutotune(final IASTTranslationUnit translationUnit,
+    		final String loopName) {
         class V extends ASTVisitor {
-            private S found = null;
+            private IASTStatement found = null;
 
             ArrayList<Integer> pragmaPositions;
 
@@ -183,13 +240,12 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
                         if (start - finish == 0
                                 && start == statement.getFileLocation().getStartingLineNumber() - (pragmasToSkip + 1)) {
                             String commentLower = String.valueOf(comment.getComment()).toLowerCase();
-                            if (commentLower.contains(loopName) && expectLoopName) {
-                                found = convertStatement(statement);
+                            if (loopName != null && commentLower.contains(loopName)) {
+                                found = statement;
                                 return PROCESS_ABORT;
-                            }
-                            if (!expectLoopName) {
-                                if(commentLower.contains("autotune") || commentLower.contains("refactor")){
-                                    found = convertStatement(statement);
+                            } else {
+                                if (commentLower.contains("autotune") || commentLower.contains("refactor")){
+                                    found = statement;
                                 }
                                 return PROCESS_ABORT;
                             }
@@ -204,50 +260,34 @@ public abstract class Main<S extends IASTStatement, P extends RefactoringParams,
         translationUnit.accept(visitor);
         return visitor.found;
     }
+    
+    private static final IASTStatement findStatementForPosition(final IASTTranslationUnit translationUnit, int lineNum) {
+    	class V extends ASTVisitor {
+            private IASTStatement found = null;
 
-    /**
-     * convertStatement should accept a statement and convert it to the type of S.
-     * 
-     * @param statement
-     *            Statement to convert.loopName = args[2];
-     * @return Converted statement.
-     */
-    protected abstract S convertStatement(IASTStatement statement);
+            ArrayList<Integer> pragmaPositions;
 
-    /**
-     * checkArgs should check the arguments passed into an alteration.
-     * 
-     * @param args
-     *            Arguments passed into an alteration.
-     * @return Value representing whether or not the arguments passed the check.
-     */
-    protected abstract boolean checkArgs(String[] args);
+            public V() {
+                this.shouldVisitStatements = true;
+                pragmaPositions = new ArrayList<>();
+                for (IASTPreprocessorStatement statement : translationUnit.getAllPreprocessorStatements()) {
+                    pragmaPositions.add(statement.getFileLocation().getStartingLineNumber());
+                }
+                Collections.sort(pragmaPositions);
+            }
 
-    /**
-     * createCheck creates the checker for an alteration.
-     * 
-     * @param statement
-     *            Statement to check.
-     * @return Checker.
-     */
-    protected abstract C createCheck(S statement);
-
-    /**
-     * createParams creates parameters for an alteration.
-     * 
-     * @param statement
-     *            Statement to create the parameters for.
-     * @return Params.
-     */
-    protected abstract P createParams(S statement);
-
-    /**
-     * createAlteration writes the alteration.
-     * 
-     * @param rewriter
-     * @param check
-     * @return Alteration to use on file.
-     * @throws CoreException
-     */
-    protected abstract A createAlteration(IASTRewrite rewriter, C check) throws CoreException;
+            @Override
+            public int visit(IASTStatement statement) {
+            	int line = statement.getFileLocation().getStartingLineNumber();
+            	if (line == lineNum) {
+            		found = statement;
+            		return PROCESS_ABORT;
+            	}
+                return PROCESS_CONTINUE;
+            }
+        }
+        V visitor = new V();
+        translationUnit.accept(visitor);
+        return visitor.found;
+    }
 }
