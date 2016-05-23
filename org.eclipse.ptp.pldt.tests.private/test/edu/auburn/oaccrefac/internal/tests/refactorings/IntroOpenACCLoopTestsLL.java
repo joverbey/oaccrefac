@@ -12,17 +12,17 @@ package edu.auburn.oaccrefac.internal.tests.refactorings;
 
 import java.io.File;
 
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCParallelRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCLoopRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
-public class IntroOpenACCParallelTestsLL extends RefactoringTestLL<IntroOpenACCParallelRefactoring> {
+public class IntroOpenACCLoopTestsLL extends RefactoringTestLL<IntroOpenACCLoopRefactoring> {
     
     private static final String m_testDir = "testcode-ll/IntroOpenACCParallel/";
     
-    public IntroOpenACCParallelTestsLL(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(IntroOpenACCParallelRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public IntroOpenACCLoopTestsLL(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(IntroOpenACCLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override

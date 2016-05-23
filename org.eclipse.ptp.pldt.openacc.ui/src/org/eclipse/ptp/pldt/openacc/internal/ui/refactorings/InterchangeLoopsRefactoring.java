@@ -7,7 +7,6 @@
  *
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
- *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
 
@@ -18,36 +17,37 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsCheck;
 
-public class LoopStripMiningRefactoring extends ForLoopRefactoring {
+/**
+ * This class implements refactoring for loop interchange. Loop interchange is the exchange of the ordering of two
+ * iteration variables used in nested loops.
+ * 
+ */
+public class InterchangeLoopsRefactoring extends ForLoopRefactoring {
 
-    private int stripFactor = -1;
-    private String newName = "";
-    private StripMineCheck check;
+    private int depth = 1;
+    private InterchangeLoopsCheck check;
 
-    public LoopStripMiningRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public InterchangeLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
-    public void setStripFactor(int factor) {
-        stripFactor = factor;
-    }
-    
-    public void setNewName(String name) {
-    	newName = name;
+    public void setExchangeDepth(int depth) {
+        this.depth = depth;
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new StripMineCheck(getLoop());
-        check.performChecks(status, pm, new StripMineParams(stripFactor, newName));
+        check = new InterchangeLoopsCheck(getLoop());
+        check.performChecks(status, pm, new InterchangeLoopParams(depth));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, stripFactor, newName, check).change();
+        new InterchangeLoopsAlteration(rewriter, check).change();
     }
+
 }

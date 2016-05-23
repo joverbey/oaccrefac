@@ -20,7 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopParams;
 /**
  * Unroll performs the unroll loops refactoring.
  */
-public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
+public class UnrollLoop extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
 
     /**
      * main begins refactoring execution.
@@ -29,7 +29,7 @@ public class Unroll extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLo
      *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
-        new Unroll().run(args);
+        new UnrollLoop().run(args);
     }
 
     /**

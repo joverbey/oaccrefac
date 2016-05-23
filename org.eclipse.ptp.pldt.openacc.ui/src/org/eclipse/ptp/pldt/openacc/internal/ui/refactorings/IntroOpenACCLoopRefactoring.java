@@ -19,8 +19,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroParallelAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroParallelCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopCheck;
 
 /**
  * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.
@@ -28,23 +28,23 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IntroParallelCheck;
  * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
-public class IntroOpenACCParallelRefactoring extends ForLoopRefactoring {
+public class IntroOpenACCLoopRefactoring extends ForLoopRefactoring {
 
-    private IntroParallelCheck check;
+    private IntroOpenACCLoopCheck check;
     
-    public IntroOpenACCParallelRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public IntroOpenACCLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroParallelCheck(getLoop());        
+        check = new IntroOpenACCLoopCheck(getLoop());        
         check.performChecks(status, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new IntroParallelAlteration(rewriter, check).change();
+        new IntroOpenACCLoopAlteration(rewriter, check).change();
         
     }
 

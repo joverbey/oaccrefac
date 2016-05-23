@@ -20,7 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 /**
  * StripMine performs the strip mine refactoring.
  */
-public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMineAlteration> {
+public class StripMineLoop extends LoopMain<StripMineParams, StripMineCheck, StripMineAlteration> {
 
     /**
      * main begins refactoring execution.
@@ -29,7 +29,7 @@ public class StripMine extends LoopMain<StripMineParams, StripMineCheck, StripMi
      *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
-        new StripMine().run(args);
+        new StripMineLoop().run(args);
     }
 
     /**

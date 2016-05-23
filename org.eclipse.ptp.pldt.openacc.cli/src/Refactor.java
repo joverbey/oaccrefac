@@ -28,11 +28,11 @@ public class Refactor {
         refactorings.put("InterchangeLoops", new InterchangeLoops());
         refactorings.put("IntroduceDefaultNone", new IntroduceDefaultNone());
         refactorings.put("IntroduceKernelsLoop", new IntroduceKernelsLoop());
-        refactorings.put("IntroduceParallelLoop", new IntroduceParallelLoop());
+        refactorings.put("IntroduceParallelLoop", new IntroOpenACCLoop());
         refactorings.put("LoopCutting", new LoopCutting());
-        refactorings.put("StripMine", new StripMine());
+        refactorings.put("StripMine", new StripMineLoop());
         refactorings.put("TileLoops", new TileLoops());
-        refactorings.put("Unroll", new Unroll());
+        refactorings.put("Unroll", new UnrollLoop());
     }
     
     /**

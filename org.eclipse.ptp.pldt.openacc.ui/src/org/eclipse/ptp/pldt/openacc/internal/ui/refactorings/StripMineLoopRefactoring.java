@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
 
@@ -16,40 +17,37 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.FuseLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.FuseLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 
-/**
- * This class defines the implementation for re-factoring using loop fusion. For example:
- * 
- * ORIGINAL:                  REFACTORED: 
- * int i, a[100], b[100];    | int i, a[100], b[100]; 
- * for (i = 0; i < 100; i++) | for (i = 0; i <100; i++)
- *    a[i] = 1;              | { 
- * for (i = 0; i < 100; i++) | a[i] = 1; 
- *    b[i] = 2;              | b[i] = 2; 
- *                           | }
- * 
- * (Example taken from Wikipedia's web page on loop Fusion)
- */
-public class LoopFusionRefactoring extends ForLoopRefactoring {
+public class StripMineLoopRefactoring extends ForLoopRefactoring {
 
-    private FuseLoopsCheck check;
-    
-    public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
+    private int stripFactor = -1;
+    private String newName = "";
+    private StripMineCheck check;
+
+    public StripMineLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
+    public void setStripFactor(int factor) {
+        stripFactor = factor;
+    }
+    
+    public void setNewName(String name) {
+    	newName = name;
+    }
+
     @Override
-    protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new FuseLoopsCheck(getLoop());
-        check.performChecks(status, pm, null);
+    protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
+        check = new StripMineCheck(getLoop());
+        check.performChecks(status, pm, new StripMineParams(stripFactor, newName));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new FuseLoopsAlteration(rewriter, check).change();
+        new StripMineAlteration(rewriter, stripFactor, newName, check).change();
     }
-
 }
