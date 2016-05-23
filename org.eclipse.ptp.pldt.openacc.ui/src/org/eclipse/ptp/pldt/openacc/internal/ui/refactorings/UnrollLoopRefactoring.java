@@ -17,43 +17,48 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopParams;
 
 /**
- * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange. Basically, it consists of
- * strip-mining a given loop into two loops, one that iterates within contiguous strips and an outer loop that iterates
- * strip-by-strip, then interchanging the by-strip loop to the outside of the outer containing loops." -- 9.3.2 Legality
- * of Blocking, p.480, Optimizing Compilers for Modern Architectures
+ * This class defines the implementation for refactoring a loop so that it is unrolled. For example:
  * 
+ * <pre>
+ * ORIGINAL:				REFACTORED:
+ * int x;					|  int x;
+ * for (x=0; x<100; x++)	|  for (x=0; x<100; x++) {
+ *   delete(a[x]);			|    delete(a[x]); x++;
+ *   						|    delete(a[x]); x++;
+ *   						|	 delete(a[x]); x++;
+ *   						|	 delete(a[x]); x++;
+ *  						|	 delete(a[x]);
+ *  						|  }
+ * </pre>
+ * 
+ * (Example taken from Wikipedia's webpage on loop unrolling)
  */
-public class LoopTilingRefactoring extends ForLoopRefactoring {
+public class UnrollLoopRefactoring extends ForLoopRefactoring {
 
-    private int width = 0;
-    private int height = 0;
-    private TileLoopsCheck check;
+    private int unrollFactor;
+    private UnrollLoopCheck check;
 
-    public LoopTilingRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public UnrollLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
+    public void setUnrollFactor(int toSet) {
+        unrollFactor = toSet;
     }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new TileLoopsCheck(getLoop());
-        check.performChecks(status, pm, new TileLoopsParams(width, height));
+        check = new UnrollLoopCheck(getLoop());
+        check.performChecks(status, pm, new UnrollLoopParams(unrollFactor));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new TileLoopsAlteration(rewriter, width, height, check).change();
+        new UnrollLoopAlteration(rewriter, unrollFactor, check).change();
     }
 }

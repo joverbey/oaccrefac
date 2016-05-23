@@ -17,18 +17,27 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopFusionRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.UnrollLoopRefactoring;
 
 @SuppressWarnings("restriction")
-public class LoopFusionDelegate extends RefactoringActionDelegate {
-
+public class UnrollLoopDelegate extends RefactoringActionDelegate {
     @Override
-    public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new LoopFusionRefactoring(wc, selection, project);
+    public CRefactoring createRefactoring(IWorkingCopy wc,
+            ITextSelection selection, ICProject project) {
+        return new UnrollLoopRefactoring(wc, selection, project);
     }
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopRefactoringWizard(refactoring, "Fuse Loops");
+        final UnrollLoopRefactoring refac = (UnrollLoopRefactoring) refactoring;
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Unroll Loop"); 
+        wizard.getInputPage().addInputControl("Unroll Factor", new NumberValueChangedListener() {
+            @Override
+            public void valueChanged(int value) {
+                refac.setUnrollFactor(value);
+            }
+        });
+        return wizard;
     }
 }
