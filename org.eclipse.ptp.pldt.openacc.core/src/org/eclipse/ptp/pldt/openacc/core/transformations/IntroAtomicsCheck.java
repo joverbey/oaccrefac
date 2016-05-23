@@ -42,6 +42,7 @@ public class IntroAtomicsCheck extends SourceStatementsCheck<RefactoringParams> 
 		// Find all of the pragmas surrounding the highlighted statements.
 		if (getStatements().length == 0) {
 			// Failed because there weren't any statements to analyze.
+			status.addFatalError("No statements selected");
 			return;
 		}
 		IASTStatement statement = getStatements()[0];

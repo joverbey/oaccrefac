@@ -24,7 +24,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryExpre
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryLValue;
 
 @SuppressWarnings("unused")
-public class AtomicStatementInquisitor {
+public final class AtomicStatementInquisitor {
 	
 	public static final int NONE = 0;
 	public static final int READ = 1;
@@ -59,7 +59,7 @@ public class AtomicStatementInquisitor {
 			"{ x = expr + x; v = x; }",
 	};
 
-	private int type = NONE;
+	private final int type;
 	
 	public static AtomicStatementInquisitor newInstance(IASTStatement statement, IASTNode parallelRegion) {
 		return new AtomicStatementInquisitor(statement, parallelRegion);
@@ -75,8 +75,6 @@ public class AtomicStatementInquisitor {
             @Override
             public int visit(IASTExpression expr) {
             	if (expr.getParent() instanceof IASTUnaryExpression) {
-	            	// TODO: Probably be more strict about replacing the unary expression here or at least test
-	            	// thoroughly.
 	            	IASTUnaryExpression unaryExpression = (IASTUnaryExpression) expr.getParent();
 	            	unaryExpression.setOperand(new ArbitraryLValue("x"));
 	            }
@@ -148,7 +146,6 @@ public class AtomicStatementInquisitor {
 			IASTExpressionStatement patternAST = orig.copy(CopyStyle.withoutLocations);
 			patternAST.accept(new ExprReplacer());
 
-			
 			ASTMatcher matcher = ASTMatcher.unifyWithMatcher(patternAST, statement);
 			if (matcher != null) {
 				updateMapping = matcher.getNameMapping();
@@ -157,42 +154,43 @@ public class AtomicStatementInquisitor {
 			}
 		}
 
-		if (readMapping != null && isDeclaredInScope(readMapping.get("v"), parallelRegion)
-				&& !isDeclaredInScope(readMapping.get("x"), parallelRegion)
+		if (readMapping != null && isDeclaredInNode(readMapping.get("v"), parallelRegion)
+				&& !isDeclaredInNode(readMapping.get("x"), parallelRegion)
 				&& isScalarType(readType)) {
 			type = READ;
-			return;
-		}
-		if (updateMapping != null && !isDeclaredInScope(updateMapping.get("x"), parallelRegion)
+		} else if (updateMapping != null && !isDeclaredInNode(updateMapping.get("x"), parallelRegion)
 				&& isScalarType(updateType)) {
 			type = UPDATE;
-			return;
-		}
-		if (writeMapping != null && !isDeclaredInScope(writeMapping.get("x"), parallelRegion)
+		} else if (writeMapping != null && !isDeclaredInNode(writeMapping.get("x"), parallelRegion)
 				&& isScalarType(writeType)) {
 			type = WRITE;
-			return;
+		} else {
+			type = NONE;
 		}
-		type = NONE;
 	}
 	
 	private static boolean isScalarType(IType type) {
 		return type instanceof IBasicType || type instanceof IPointerType;
 	}
 	
-	public static boolean isDeclaredInScope(String name, IASTNode node) {
+	public static boolean isDeclaredInNode(String name, IASTNode node) {
 		if (node instanceof IASTDeclarationStatement) {
 			IASTDeclarationStatement declarationStatement = (IASTDeclarationStatement) node;
 			IASTDeclaration declaration = declarationStatement.getDeclaration();
 			if (declaration instanceof IASTSimpleDeclaration) {
 				IASTSimpleDeclaration simple = (IASTSimpleDeclaration) declaration;
 				IASTDeclarator[] declarators = simple.getDeclarators();
-				return declarators.length > 0 && declarators[0].getName().toString().equals(name);				
+				for (IASTDeclarator declarator : declarators) {
+					if (declarator.getName().toString().equals(name)) {
+						return true;
+					}
+				}
+				return false;				
 			}
 			return false;
 		}
 		for (IASTNode n : node.getChildren()) {
-			if (isDeclaredInScope(name, n)) {
+			if (isDeclaredInNode(name, n)) {
 				return true;
 			}
 		}
