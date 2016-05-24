@@ -34,7 +34,7 @@ public class Main {
 			printUsage();
 			System.exit(1);
 		}
-		CLIRefactoring<?, ?> m = null;
+		CLIRefactoring<?, ?> refactoring = null;
 		int argIndex = 1;
 		String filename = null;
 		String loopName = null;
@@ -43,36 +43,36 @@ public class Main {
 			switch (args[0]) {
 			// 2 args
 			case "TileLoops":
-				m = new TileLoops(parseInt(args[argIndex++]), parseInt(args[argIndex++]));
+				refactoring = new TileLoops(parseInt(args[argIndex++]), parseInt(args[argIndex++]));
 				break;
 			case "StripMine":
-				m = new StripMineLoop(parseInt(args[argIndex++]), args[argIndex++]);
+				refactoring = new StripMineLoop(parseInt(args[argIndex++]), args[argIndex++]);
 				break;
 			// 1 arg
 			case "InterchangeLoops":
-				m = new InterchangeLoops(parseInt(args[argIndex++]));
+				refactoring = new InterchangeLoops(parseInt(args[argIndex++]));
 				break;
 			case "LoopCutting":
-				m = new LoopCutting(parseInt(args[argIndex++]));
+				refactoring = new LoopCutting(parseInt(args[argIndex++]));
 				break;
 			case "Unroll":
-				m = new UnrollLoop(parseInt(args[argIndex++]));
+				refactoring = new UnrollLoop(parseInt(args[argIndex++]));
 				break;
 			// no args
 			case "DistributeLoops":
-				m = new DistributeLoops();
+				refactoring = new DistributeLoops();
 				break;
 			case "FuseLoops":
-				m = new FuseLoops();
+				refactoring = new FuseLoops();
 				break;
 			case "IntroduceDefaultNone":
-				m = new IntroduceDefaultNone();
+				refactoring = new IntroduceDefaultNone();
 				break;
 			case "IntroduceKernelsLoop":
-				m = new IntroduceKernelsLoop();
+				refactoring = new IntroduceKernelsLoop();
 				break;
 			case "IntroduceParallelLoop":
-				m = new IntroOpenACCLoop();
+				refactoring = new IntroOpenACCLoop();
 				break;
 			default:
 				throw new IllegalArgumentException("Specified refactoring is invalid");
@@ -126,7 +126,7 @@ public class Main {
             System.exit(3);
         }
         
-        RefactoringStatus status = m.performChecks(statement);
+        RefactoringStatus status = refactoring.performChecks(statement);
         if (status == null) {
         	System.err.println("No applicable statement found at selection.");
         	System.exit(4);
@@ -137,7 +137,7 @@ public class Main {
         	System.exit(4);
         }
         
-        String error = m.performAlteration(rw);
+        String error = refactoring.performAlteration(rw);
         if (error != null) {
             System.err.printf("Internal error creating change: %s\n", error);
             System.exit(5);
