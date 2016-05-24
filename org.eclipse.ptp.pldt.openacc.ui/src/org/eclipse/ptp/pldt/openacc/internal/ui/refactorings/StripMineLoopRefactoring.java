@@ -45,7 +45,8 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     	newName = name;
     }
     
-    public void setCut(boolean cut) {
+    @Override
+    public void setSecondOption(boolean cut) {
     	this.cut = cut;
     }
 

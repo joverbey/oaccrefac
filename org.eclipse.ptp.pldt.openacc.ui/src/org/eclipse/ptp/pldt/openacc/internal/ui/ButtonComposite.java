@@ -11,7 +11,6 @@
 
 package org.eclipse.ptp.pldt.openacc.internal.ui;
 
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -21,19 +20,21 @@ public class ButtonComposite extends Composite {
 	
 	private ButtonSelectionListener regListener;
 
-	public ButtonComposite(Composite parent, int style, StripMineLoopRefactoring refac) {
+	public ButtonComposite(Composite parent, int style, String label1, String label2, 
+			ButtonSelectionListener regListener) {
 		super(parent, style);
 		
 		setLayout(new GridLayout(2, false));
 		
 		Button regButton = new Button(this, SWT.RADIO);
-		regButton.setText("Regular");
-		regListener = new ButtonSelectionListener(refac, regButton);
+		regButton.setText(label1);
+		this.regListener = regListener;
+		regListener.setButton(regButton);
 		regButton.addSelectionListener(regListener);
         regButton.setSelection(true);
         
         Button cutButton = new Button(this, SWT.RADIO);
-        cutButton.setText("Cutting");
+        cutButton.setText(label2);
         
 	}
 	
