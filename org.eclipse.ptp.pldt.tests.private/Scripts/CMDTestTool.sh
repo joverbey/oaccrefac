@@ -43,17 +43,23 @@ fi
 
 fileToRefactor=""
 
-echo "please enter a test name or custom"
+echo -e "please enter one of the following test names:\nlevel1\nfeal4\ncustom"
 read testName
 
 declare -a nameArray
 
 if [ $testName == "level1" ]; then
-	COMPILE="gcc -o examples/testcode-epcc/oa -fopenmp examples/testcode-epcc/common.c examples/testcode-epcc/level1-CMD.c examples/testcode-epcc/main.c -lm"
+	COMPILE="gcc -std=c99 -o examples/testcode-epcc/oa -fopenmp examples/testcode-epcc/common.c examples/testcode-epcc/level1-CMD.c examples/testcode-epcc/main.c -lm"
 	RUN="./examples/testcode-epcc/oa --datasize 1024 --reps 1" > ./Scripts/result.txt
 	fileToRefactor="examples/testcode-epcc/level1-CMD.c"
-	
 	names="$(java -cp $PLDT_CLASSPATH FindName "examples/testcode-epcc/level1-CMD.c")"
+	read -a nameArray <<<$names
+fi
+if [ $testName == "feal4" ]; then
+	COMPILE="gcc -std=c99 testcode-feal4/feal4.c -o testcode-feal4/oa"
+	RUN="./testcode-feal4/oa --datasize 1024 --reps 1" > ./Scripts/result.txt
+	fileToRefactor="testcode-feal4/feal4.c"
+	names="$(java -cp $PLDT_CLASSPATH FindName "testcode-feal4/feal4.c")"
 	read -a nameArray <<<$names
 fi
 if [ "$testName" == "custom" ]; then
@@ -67,8 +73,6 @@ if [ "$testName" == "custom" ]; then
 	read fileToRefactor
 	names="$(java -cp $PLDT_CLASSPATH FindName $filetoRefactor)"
 	read -a nameArray <<<$names
-	
-
 fi
 
 outputtemp=$(mktemp)
@@ -87,9 +91,11 @@ fi
 
 echo "Running..."
 $RUN | tee ./Scripts/result.txt
-
+> ./Scripts/errorlog.txt
+thing=0
 for i in "${nameArray[@]}"
 do
+	echo $i >> ./Scripts/errorlog.txt
 	if [ "$refactoring" == "InterchangeLoops" ] || [ "$refactoring" == "LoopCutting" ]  || [ "$refactoring" == "StripMine" ] || [ "$refactoring" == "Unroll" ]; then
 		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "TileLoops" ]; then
@@ -98,6 +104,7 @@ do
 		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi
 	if [[ -s $outputtemp ]]; then
+		thing=$(($thing + 1))
 		cp $outputtemp $inputtemp
 	fi
 	echo $i
@@ -117,7 +124,7 @@ cp $inputtemp $fileToRefactor
 
 echo "Compiling..."
 $COMPILE
-
+echo "Do not turn off while Running"
 echo "Running..."
 $RUN | tee ./Scripts/result2.txt
 
@@ -128,3 +135,4 @@ then
 else
 	echo "The results did not match"
 fi
+echo $thing

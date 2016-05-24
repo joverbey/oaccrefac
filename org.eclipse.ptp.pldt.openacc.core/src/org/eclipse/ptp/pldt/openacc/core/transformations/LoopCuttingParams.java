@@ -11,14 +11,9 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class LoopCuttingParams extends RefactoringParams {
-    private int cutFactor;
+public class LoopCuttingParams extends AbstractStripMineParams {
     
-    public LoopCuttingParams(int stripFactor) {
-        this.cutFactor = stripFactor;
-    }
-
-    public int getCutFactor() {
-        return cutFactor;
+    public LoopCuttingParams(int cutFactor, String newName) {
+        super(cutFactor, newName);
     }
 }

@@ -317,12 +317,17 @@ public class OpenACCParserTests {
             "#pragma acc atomic capture", //
     };
 
+    private String[] miscPragmas = { //
+            "#pragma acc data", // GitHub issue #22
+    };
+
     @Test
     public void testOpenACCPragmas() throws IOException, SyntaxException, Exception {
         test(epccPragmas);
         test(openaccExamplePragmas);
         test(npbPragmas);
         test(version20Pragmas);
+        test(miscPragmas);
     }
 
     private void test(String[] pragmas) throws Exception {

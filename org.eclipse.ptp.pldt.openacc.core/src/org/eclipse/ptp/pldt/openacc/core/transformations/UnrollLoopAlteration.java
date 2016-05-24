@@ -211,7 +211,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         // if the init statement is a declaration, move the declaration
         // to outer scope if possible and continue
         if (shouldMoveDeclAboveLoop()) {
-            IASTName varname = ASTUtil.findOne(loop.getInitializerStatement(), IASTName.class);
+            IASTName varname = ASTUtil.findFirst(loop.getInitializerStatement(), IASTName.class);
             String declaration;
             StringBuilder newDeclaration = new StringBuilder(loop.getInitializerStatement().getRawSignature());
             int start = varname.getFileLocation().getNodeOffset()
@@ -338,7 +338,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         Collections.sort(uses, ASTUtil.REVERSE_COMPARATOR);
         StringBuilder sb = new StringBuilder(original.getRawSignature());
         for (IASTName use : uses) {
-            if (ASTUtil.isAncestor(original, use)) {
+            if (ASTUtil.isAncestor(use, original)) {
                 int offsetIntoStatement = use.getFileLocation().getNodeOffset()
                         - original.getFileLocation().getNodeOffset();
                 sb.replace(offsetIntoStatement, offsetIntoStatement + use.getFileLocation().getNodeLength(),

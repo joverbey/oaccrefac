@@ -54,7 +54,7 @@ public class Example {
         }
 
         IASTRewrite rw = ASTRewrite.create(translationUnit);
-        IASTForStatement forLoop = ASTUtil.findOne(translationUnit, IASTForStatement.class);
+        IASTForStatement forLoop = ASTUtil.findFirst(translationUnit, IASTForStatement.class);
         if (forLoop == null) {
             System.err.println("No loop found");
             System.exit(1);

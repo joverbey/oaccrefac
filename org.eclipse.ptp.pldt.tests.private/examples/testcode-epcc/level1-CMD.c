@@ -73,19 +73,24 @@ double twomm(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
-
-  for (i = 0; i < n; i++){ /* loop1outer */
-    for (j = 0; j < n; j++){ /* loop1inner */
+  /* loop1outer */
+  for (i = 0; i < n; i++){
+	/* loop1inner */
+    for (j = 0; j < n; j++){
       A[i*n+j] = rand()/ (1.0 + RAND_MAX);
     }
   }
-  for (i = 0; i < n; i++){ /* loop2outer */
-    for (j = 0; j < n; j++){ /* loop2inner */
+  /* loop2outer */
+  for (i = 0; i < n; i++){
+	  /* loop2inner */
+    for (j = 0; j < n; j++){
       B[i*n+j] = rand()/ (1.0 + RAND_MAX);
     }
   }
-  for (i = 0; i < n; i++){ /* loop3outer */
-    for (j = 0; j < n; j++){ /* loop3inner */
+  /* loop3outer */
+  for (i = 0; i < n; i++){
+	  /* loop3inner */
+    for (j = 0; j < n; j++){
       D[i*n+j] = rand()/ (1.0 + RAND_MAX);
     }
   }
@@ -121,12 +126,15 @@ double twomm(){
   {
 
 #pragma acc parallel loop private(tmp)
-    for (i = 0; i < n; i++){ /* loop4outer */
+	  /* loop4outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop private(tmp)
-      for (j = 0; j < n; j++){ /* loop4inner */
+    	/* loop4inner */
+      for (j = 0; j < n; j++){
 	tmp = 0;
 #pragma acc loop reduction(+:tmp)
-        for (k = 0; k < n; k++){ /* loop4inner2 */
+	/* loop4inner2 */
+        for (k = 0; k < n; k++){
 	  tmp += A[i*n+k] * B[k*n+j];
         }
 	C[i*n+j] = tmp;
@@ -135,12 +143,15 @@ double twomm(){
 
 
 #pragma acc parallel loop private(tmp)
-    for (i = 0; i < n; i++){ /* loop5outer */
+    /* loop5outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop private(tmp)
-      for (j = 0; j < n; j++){ /* loop5inner */
+    	/* loop5inner */
+      for (j = 0; j < n; j++){
 	tmp = 0;
 #pragma acc loop reduction(+:tmp)
-        for (k = 0; k < n; k++){ /* loop5inner2 */
+	/* loop5inner2 */
+        for (k = 0; k < n; k++){
           tmp += C[i*n+k] * D[k*n+j];
         }
         E[i*n+j] = tmp;
@@ -202,9 +213,10 @@ double threemm(){
     return(-10000);
   }
 
-
-  for (i = 0; i < n; i++){ /* loop6outer */
-    for (j = 0; j < n; j++){ /* loop6inner */
+  /* loop6outer */
+  for (i = 0; i < n; i++){
+	  /* loop6inner */
+    for (j = 0; j < n; j++){
       A[i*n+j] = rand()/ (1.0 + RAND_MAX);
       B[i*n+j] = rand()/ (1.0 + RAND_MAX);
       C[i*n+j] = rand()/ (1.0 + RAND_MAX);
@@ -218,32 +230,39 @@ double threemm(){
 
   /* Host version for reference. */
   /* E := A*B */
-
-  for (i = 0; i < n; i++) {/* loop7outer */
-
-    for (j = 0; j < n; j++){ /* loop7inner */
+  /* loop7outer */
+  for (i = 0; i < n; i++) {
+	  /* loop7inner */
+    for (j = 0; j < n; j++){
       E[i*n+j] = 0;
-      for (k = 0; k < n; k++){ /* loop7inner2 */
+      /* loop7inner2 */
+      for (k = 0; k < n; k++){
         E[i*n+j] += A[i*n+k] * B[k*n+j];
       }
     }
   }
 
   /* F := C*D */
-  for (i = 0; i < n; i++) { /* loop8outer */
-    for (j = 0; j < n; j++) { /* loop8inner */
+  /* loop8outer */
+  for (i = 0; i < n; i++) {
+	  /* loop8inner */
+    for (j = 0; j < n; j++) {
       F[i*n+j] = 0;
-      for (k = 0; k < n; k++){ /* loop8inner2 */
+      /* loop8inner2 */
+      for (k = 0; k < n; k++){
         F[i*n+j] += C[i*n+k] * D[k*n+j];
       }
     }
   }
 
   /* G := E*F */
-  for (i = 0; i < n; i++) { /* loop9outer */
-    for (j = 0; j < n; j++) { /* loop9inner */
+  /* loop9outer */
+  for (i = 0; i < n; i++) {
+	  /* loop9inner */
+    for (j = 0; j < n; j++) {
       H[i*n+j] = 0;
-      for (k = 0; k < n; k++){ /* loop9inner2 */
+      /* loop9inner2 */
+      for (k = 0; k < n; k++){
         H[i*n+j] += E[i*n+k] * F[k*n+j];
       }
     }
@@ -256,11 +275,14 @@ double threemm(){
 #pragma acc data copyin(A[0:n*n],B[0:n*n],C[0:n*n],D[0:n*n]), create(E[0:n*n],F[0:n*n]), copyout(G[0:n*n])
   {
 #pragma acc parallel loop
-    for (i = 0; i < n; i++) { /* loop10outer */
+	  /* loop10outer */
+    for (i = 0; i < n; i++) {
 #pragma acc loop
-      for (j = 0; j < n; j++){ /* loop10inner */
+    	/* loop10inner */
+      for (j = 0; j < n; j++){
         E[i*n+j] = 0;
-        for (k = 0; k < n; k++){ /* loop10inner2 */
+        /* loop10inner2 */
+        for (k = 0; k < n; k++){
           E[i*n+j] += A[i*n+k] * B[k*n+j];
         }
       }
@@ -268,11 +290,14 @@ double threemm(){
 
     /* F := C*D */
 #pragma acc parallel loop
-    for (i = 0; i < n; i++) { /* loop11outer */
+    /* loop11outer */
+    for (i = 0; i < n; i++) {
 #pragma acc loop
-      for (j = 0; j < n; j++) { /* loop11inner */
+    	/* loop11inner */
+      for (j = 0; j < n; j++) {
         F[i*n+j] = 0;
-        for (k = 0; k < n; k++){ /* loop11inner2 */
+        /* loop11inner2 */
+        for (k = 0; k < n; k++){
           F[i*n+j] += C[i*n+k] * D[k*n+j];
         }
       }
@@ -280,11 +305,14 @@ double threemm(){
 
     /* G := E*F */
 #pragma acc parallel loop
-    for (i = 0; i < n; i++) { /* loop12outer */
+    /* loop12outer */
+    for (i = 0; i < n; i++) {
 #pragma acc loop
-      for (j = 0; j < n; j++) { /* loop12inner */
+    	/* loop12inner */
+      for (j = 0; j < n; j++) {
         G[i*n+j] = 0;
-        for (k = 0; k < n; k++){ /* loop12inner2 */
+        /* loop12inner2 */
+        for (k = 0; k < n; k++){
           G[i*n+j] += E[i*n+k] * F[k*n+j];
         }
       }
@@ -294,9 +322,10 @@ double threemm(){
   t_end=gettime();
 
 
-
-  for (i = 0; i < n; i++){ /* loop13outer */
-    for (j = 0; j < n; j++){ /* loop13inner */
+  /* loop13outer */
+  for (i = 0; i < n; i++){
+	  /* loop13inner */
+    for (j = 0; j < n; j++){
       if (  fabs(H[i*n+j] - G[i*n+j])/H[i*n+j] > TOL ){
         flag = 1;
       }
@@ -348,27 +377,30 @@ double atax(){
   }
 
 
-
-  for (i = 0; i < n; i++){ /* loop14outer */
+  /* loop14outer */
+  for (i = 0; i < n; i++){
     x[i] = rand() / (1.0 + RAND_MAX);
     y[i] = 0;
-    for (j = 0; j < n; j++){ /* loop14inner */
+    /* loop14inner */
+    for (j = 0; j < n; j++){
       A[i*n+j] = rand() / (1.0 + RAND_MAX);
     }
   }
-
-  for (i = 0; i < n; i++){ /* loop15outer */
+  /* loop15outer */
+  for (i = 0; i < n; i++){
     tmpscalar = 0;
-    for (j = 0; j < n; j++){ /* loop15inner */
+    /* loop15inner */
+    for (j = 0; j < n; j++){
       tmpscalar += A[i*n+j] * x[j];
     }
     tmp[i] = tmpscalar;
   }
 
-
-  for (j = 0; j < n; j++){ /* loop16outer */
+  /* loop16outer */
+  for (j = 0; j < n; j++){
     tmpscalar = 0;
-    for (i = 0; i < n; i++){ /* loop16inner */
+    /* loop16inner */
+    for (i = 0; i < n; i++){
       tmpscalar += A[i*n+j] * tmp[i];
     }
     y[j] = tmpscalar;
@@ -382,20 +414,24 @@ double atax(){
   {
 
 #pragma acc parallel loop private(tmpscalar)
-    for (i = 0; i < n; i++){ /* loop17outer */
+	  /* loop17outer */
+    for (i = 0; i < n; i++){
       tmpscalar = 0;
 #pragma acc loop reduction(+:tmpscalar)
-      for (j = 0; j < n; j++){ /* loop17inner */
+      /* loop17inner */
+      for (j = 0; j < n; j++){
         tmpscalar += A[i*n+j] * x[j];
       }
       tmp[i] = tmpscalar;
     }
 
 #pragma acc parallel loop private(tmpscalar)
-    for (j = 0; j < n; j++){ /* loop18outer */
+    /* loop18outer */
+    for (j = 0; j < n; j++){
       tmpscalar = 0;
 #pragma acc loop reduction(+:tmpscalar)
-      for (i = 0; i < n; i++){ /* loop18inner */
+      /* loop18inner */
+      for (i = 0; i < n; i++){
         tmpscalar += A[i*n+j] * tmp[i];
       }
       ya[j] = tmpscalar;
@@ -404,8 +440,8 @@ double atax(){
 
   } /* end data */
   t_end = gettime();
-
-  for (j = 0; j < n; j++){ /* loop19outer */
+  /* loop19outer */
+  for (j = 0; j < n; j++){
     if (  fabs(y[j] - ya[j])/y[j] > TOL ){
       flag = 1;
     }
@@ -448,11 +484,12 @@ double bicg(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
-
-  for (i = 0; i < n; i++) { /* loop20outer */
+  /* loop20outer */
+  for (i = 0; i < n; i++) {
     r[i] = rand() / (1.0 + RAND_MAX);
     p[i] = rand() / (1.0 + RAND_MAX);
-    for (j = 0; j < n; j++) { /* loop20inner */
+    /* loop20inner */
+    for (j = 0; j < n; j++) {
       A[i*n+j] = rand() / (1.0 + RAND_MAX);
     }
   }
@@ -464,20 +501,24 @@ double bicg(){
   {
 
 #pragma acc parallel loop private(tmp)
-    for (i = 0; i < n; i++){ /* loop21outer */
+	  /* loop21outer */
+    for (i = 0; i < n; i++){
       tmp = 0;
 #pragma acc loop reduction(+:tmp)
-      for (j = 0; j < n; j++){ /* loop21inner */
+      /* loop21inner */
+      for (j = 0; j < n; j++){
         tmp += A[i*n+j] * p[j];
       }
       q[i] = tmp;
     }
 
 #pragma acc parallel loop private(tmp)
-    for (j = 0; j < n; j++){ /* loop22outer */
+    /* loop22outer */
+    for (j = 0; j < n; j++){
       tmp = 0;
 #pragma acc loop reduction(+:tmp)
-      for (i = 0; i < n; i++){ /* loop22inner */
+      /* loop22inner */
+      for (i = 0; i < n; i++){
         tmp += r[i] * A[i*n+j];
       }
       s[j] = tmp;
@@ -487,32 +528,34 @@ double bicg(){
   }
   t_end = gettime();
 
-
-  for (i = 0; i < n; i++){ /* loop23outer */
+  /* loop23outer */
+  for (i = 0; i < n; i++){
     tmp = 0;
-    for (j = 0; j < n; j++){ /* loop23inner */
+    /* loop23inner */
+    for (j = 0; j < n; j++){
       tmp += A[i*n+j] * p[j];
     }
     qh[i] = tmp;
   }
 
-
-  for (j = 0; j < n; j++){ /* loop24outer */
+  /* loop24outer */
+  for (j = 0; j < n; j++){
     tmp = 0;
-    for (i = 0; i < n; i++){ /* loop24inner */
+    /* loop24inner */
+    for (i = 0; i < n; i++){
       tmp += r[i] * A[i*n+j];
     }
     sh[j] = tmp;
   }
 
-
-  for (j = 0; j < n; j++){ /* loop25outer */
+  /* loop25outer */
+  for (j = 0; j < n; j++){
     if (fabs(qh[j] - q[j])/qh[j] > TOL ){
       flag = 1;
     }
   }
-
-  for (j = 0; j < n; j++){ /* loop26outer */
+  /* loop26outer */
+  for (j = 0; j < n; j++){
     if (fabs(sh[j] - s[j])/sh[j] > TOL ){
       flag = 1;
     }
@@ -559,32 +602,37 @@ double mvt(){
   }
 
   /* Init */
-  for (i = 0; i < n; i++){ /* loop27outer */
+  /* loop27outer */
+  for (i = 0; i < n; i++){
     x1[i] = (i+1) / n;
     x1_Gpu[i] = (i+1) / n;
     x2[i] = (i + 1) / n;
     x2_Gpu[i] = (i + 1) / n;
     y1[i] = (i + 3) / n;
     y2[i] = (i + 4) / n;
-    for (j = 0; j < n; j++){ /* loop27inner */
+    /* loop27inner */
+    for (j = 0; j < n; j++){
       a[i*n+j] = ((i+1)*(j+1)) / n;
     }
   }
 
   /* HOST */
-  for (i=0; i<n; i++){ /* loop28outer */
+  /* loop28outer */
+  for (i=0; i<n; i++){
     tmp1 = 0;
-    for (j=0; j<n; j++){ /* loop28inner */
+    /* loop28inner */
+    for (j=0; j<n; j++){
       tmp1 += a[i*n+j] * y1[j];
     }
     x1[i] += tmp1;
   }
 
 
-
-  for (i=0; i<n; i++){ /* loop29outer */
+  /* loop29outer */
+  for (i=0; i<n; i++){
     tmp2 = 0;
-    for (j=0; j<n; j++){ /* loop29inner */
+    /* loop29inner */
+    for (j=0; j<n; j++){
       tmp2 += a[j*n+i] * y2[j];
     }
     x2[i] += tmp2;
@@ -601,10 +649,12 @@ double mvt(){
   {
 
 #pragma acc parallel loop private(tmp1)
-    for (i=0; i<n; i++){ /* loop30outer */
+	  /* loop30outer */
+    for (i=0; i<n; i++){
       tmp1 = 0;
 #pragma acc loop reduction(+:tmp1)
-      for (j=0; j<n; j++){ /* loop30inner */
+      /* loop30inner */
+      for (j=0; j<n; j++){
         tmp1 += a[i*n+j] * y1[j];
       }
       x1_Gpu[i] += tmp1;
@@ -612,10 +662,12 @@ double mvt(){
 
 
 #pragma acc parallel loop private(tmp2)
-    for (i=0; i<n; i++){ /* loop31outer */
+    /* loop31outer */
+    for (i=0; i<n; i++){
       tmp2 = 0;
 #pragma acc loop reduction(+:tmp2)
-      for (j=0; j<n; j++){ /* loop31inner */
+      /* loop31inner */
+      for (j=0; j<n; j++){
         tmp2 += a[j*n+i] * y2[j];
       }
       x2_Gpu[i] += tmp2;
@@ -626,13 +678,14 @@ double mvt(){
   t_end = gettime();
 
   /* Compare */
-  for (i=0; i<n; i++){ /* loop32outer */
+  /* loop32outer */
+  for (i=0; i<n; i++){
     if (fabs(x1[i] - x1_Gpu[i])/x1[i] > TOL){
       flag1 = 1;
     }
   }
-
-  for (i=0; i<n; i++){ /* loop33outer */
+  /* loop33outer */
+  for (i=0; i<n; i++){
     if (fabs(x2[i] - x2_Gpu[i])/x2[i] > TOL){
       flag2 = 1;
     }
@@ -677,8 +730,10 @@ double syrk(){
   }
 
   /* Init */
-  for (i = 0; i < n; i++){ /* loop34outer */
-    for (j = 0; j < n; j++){ /* loop34inner */
+  /* loop34outer */
+  for (i = 0; i < n; i++){
+	  /* loop34inner */
+    for (j = 0; j < n; j++){
       A[i*n+j] = (i*j) / n;
       C[i*n+j] = (i*j + 2) / n;
       CG[i*n+j] = (i*j + 2) / n;
@@ -686,16 +741,20 @@ double syrk(){
   }
 
   /* HOST */
-  for (i = 0; i < n; i++){/* loop35outer */
-    for (j = 0; j < n; j++){/* loop35inner */
+  /* loop35outer */
+  for (i = 0; i < n; i++){
+	  /* loop35inner */
+    for (j = 0; j < n; j++){
       C[i*n+j] *= beta;
     }
   }
 
-
-  for (i = 0; i < n; i++){ /* loop36outer */
-    for (j = 0; j < n; j++){ /* loop36inner */
-      for (k = 0; k < n; k++){ /* loop36inner2 */
+  /* loop36outer */
+  for (i = 0; i < n; i++){
+	  /* loop36inner */
+    for (j = 0; j < n; j++){
+    	/* loop36inner2 */
+      for (k = 0; k < n; k++){
         C[i*n+j] += alpha * A[i*n+k] * A[j*n+k];
       }
     }
@@ -709,19 +768,24 @@ double syrk(){
 #pragma acc data copyin(A[0:n*n]), copy(CG[0:n*n])
   {
 #pragma acc parallel loop
-    for (i = 0; i < n; i++){ /* loop37outer */
+	  /* loop37outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop
-      for (j = 0; j < n; j++){ /* loop37inner */
+    	/* loop37inner */
+      for (j = 0; j < n; j++){
         CG[i*n+j] *= beta;
       }
     }
 
 #pragma acc parallel loop
-    for (i = 0; i < n; i++){ /* loop38outer */
+    /* loop38outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop
-      for (j = 0; j < n; j++){ /* loop38inner */
+    	/* loop38inner */
+      for (j = 0; j < n; j++){
         tmp = CG[i*n+j];
-        for (k = 0; k < n; k++){ /* loop38inner2 */
+        /* loop38inner2 */
+        for (k = 0; k < n; k++){
           tmp += alpha * A[i*n+k] * A[j*n+k];
         }
         CG[i*n+j] = tmp;
@@ -732,8 +796,10 @@ double syrk(){
   t_end = gettime();
 
   /* Compare */
-  for (i = 0; i < n; i++){ /* loop39outer */
-    for (j = 0; j < n; j++){ /* loop39inner */
+  /* loop39outer */
+  for (i = 0; i < n; i++){
+	  /* loop39inner */
+    for (j = 0; j < n; j++){
       if (fabs(C[i*n+j] - CG[i*n+j])/C[i*n+j] > TOL){
         flag = 1;
       }
@@ -779,9 +845,10 @@ double covariance(){
   }
 
   /* Initialize data arrays */
-
-  for (i = 0; i < n; i++){ /* loop40outer */
-    for (j = 0; j < n; j++){ /* loop40inner */
+  /* loop40outer */
+  for (i = 0; i < n; i++){
+	  /* loop40inner */
+    for (j = 0; j < n; j++){
       data[i*n+j] =  i % 12 + 2 * (j % 7);
       hdata[i*n+j] = data[i*n+j];
     }
@@ -790,26 +857,33 @@ double covariance(){
 
 
   /* Determine mean of column vectors of input data matrix */
-  for (j = 0; j < n; j++){ /* loop41outer */
+  /* loop41outer */
+  for (j = 0; j < n; j++){
     hmean[j] = 0.0;
-    for (i = 0; i < n; i++){ /* loop41inner */
+    /* loop41inner */
+    for (i = 0; i < n; i++){
       hmean[j] += hdata[i*n+j];
     }
     hmean[j] /= n;
   }
 
   /* Center the column vectors. */
-  for (i = 0; i < n; i++){ /* loop42outer */
-    for (j = 0; j < n; j++){ /* loop42inner */
+  /* loop42outer */
+  for (i = 0; i < n; i++){
+	  /* loop42inner */
+    for (j = 0; j < n; j++){
       hdata[i*n+j] -= hmean[j];
     }
   }
 
   /* Calculate the n * n covariance matrix. */
-  for (j1 = 0; j1 < n; j1++){ /* loop43outer */
-    for (j2 = j1; j2 < n; j2++){ /* loop43inner */
+  /* loop43outer */
+  for (j1 = 0; j1 < n; j1++){
+	  /* loop43inner */
+    for (j2 = j1; j2 < n; j2++){
       hsymmat[j1*n+j2] = 0.0;
-      for (i = 0; i < n; i++){ /* loop43inner2 */
+      /* loop43inner2 */
+      for (i = 0; i < n; i++){
         hsymmat[j1*n+j2] += hdata[i*n+j1] * hdata[i*n+j2];
       }
       hsymmat[j1*n+j2] /= n-1;
@@ -826,10 +900,12 @@ double covariance(){
   {
     /* Determine mean of column vectors of input data matrix */
 #pragma acc parallel loop private(tmp)
-    for (j = 0; j < n; j++){ /* loop44outer */
+	  /* loop44outer */
+    for (j = 0; j < n; j++){
       tmp = 0;
 #pragma acc loop reduction(+:tmp)
-      for (i = 0; i < n; i++){ /* loop44inner */
+      /* loop44inner */
+      for (i = 0; i < n; i++){
         tmp += data[i*n+j];
       }
       mean[j] = tmp/n;
@@ -837,21 +913,26 @@ double covariance(){
 
     /* Center the column vectors. */
 #pragma acc parallel loop
-    for (i = 0; i < n; i++){ /* loop45outer */
+    /* loop45outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop
-      for (j = 0; j < n; j++){ /* loop45inner */
+    	/* loop45inner */
+      for (j = 0; j < n; j++){
         data[i*n+j] -= mean[j];
       }
     }
 
     /* Calculate the n * n covariance matrix. */
 #pragma acc parallel loop
-    for (j1 = 0; j1 < n; j1++){ /* loop46outer */
+    /* loop46outer */
+    for (j1 = 0; j1 < n; j1++){
 #pragma acc loop private(tmp)
-      for (j2 = j1; j2 < n; j2++){ /* loop46inner */
+    	/* loop46inner */
+      for (j2 = j1; j2 < n; j2++){
         tmp = 0;
 #pragma acc loop reduction(+:tmp)
-        for (i = 0; i < n; i++){ /* loop46inner2 */
+        /* loop46inner2 */
+        for (i = 0; i < n; i++){
           tmp += data[i*n+j1] * data[i*n+j2];
         }
         symmat[j1*n+j2] = tmp/(n-1);
@@ -869,8 +950,10 @@ double covariance(){
    * Test for a difference between host and accelerator results.
    * Use a percentage difference as there will inevitably be some bit differences
    */
-  for (j1 = 0; j1 < n; j1++){ /* loop47outer */
-    for (j2 = 0; j2 < n; j2++){ /* loop47inner */
+  /* loop47outer */
+  for (j1 = 0; j1 < n; j1++){
+	  /* loop47inner */
+    for (j2 = 0; j2 < n; j2++){
       if (fabs(hsymmat[j1*n+j2] - symmat[j1*n+j2])/hsymmat[j1*n+j2] > TOL){
         flag = 1;
       }
@@ -917,27 +1000,32 @@ double correlation(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
-
-  for (i = 0; i < n; i++){ /* loop48outer */
-    for (j = 0; j < n; j++){ /* loop48inner */
+  /* loop48outer */
+  for (i = 0; i < n; i++){
+	  /* loop48inner */
+    for (j = 0; j < n; j++){
       data[i*n+j] =  i % 12 + 2 * (j % 7);
       hdata[i*n+j] = data[i*n+j];
     }
   }
 
   /* Determine mean of column vectors of input data matrix */
-  for (j = 0; j < n; j++){ /* loop49outer */
+  /* loop49outer */
+  for (j = 0; j < n; j++){
     hmean[j] = 0.0;
-    for (i = 0; i < n; i++){ /* loop49inner */
+    /* loop49inner */
+    for (i = 0; i < n; i++){
       hmean[j] += hdata[i*n+j];
     }
     hmean[j] /= n;
   }
 
   /* Determine standard deviations of column vectors of data matrix. */
-  for (j = 0; j < n; j++){ /* loop50outer */
+  /* loop50outer */
+  for (j = 0; j < n; j++){
     hstddev[j] = 0.0;
-    for (i = 0; i < n; i++){ /* loop50inner */
+    /* loop50inner */
+    for (i = 0; i < n; i++){
       hstddev[j] += (hdata[i*n+j] - hmean[j]) * (hdata[i*n+j] - hmean[j]);
     }
     hstddev[j] /= n-1; /* Unbiased estimator */
@@ -950,8 +1038,10 @@ double correlation(){
 
 
   /* Center and reduce the column vectors. */
-  for (i = 0; i < n; i++){ /* loop51outer */
-    for (j = 0; j < n; j++){ /* loop51outer */
+  /* loop51outer */
+  for (i = 0; i < n; i++){
+	  /* loop51outer */
+    for (j = 0; j < n; j++){
       hdata[i*n+j] -= hmean[j];
       hdata[i*n+j] = hdata[i*n+j] / hstddev[j];
     }
@@ -961,10 +1051,13 @@ double correlation(){
 
 
   /* Calculate the n * n correlation matrix. */
-  for (j1 = 0; j1 < n; j1++){ /* loop52outer */
-    for (j2 = j1; j2 < n; j2++){ /* loop52inner */
+  /* loop52outer */
+  for (j1 = 0; j1 < n; j1++){
+	  /* loop52inner */
+    for (j2 = j1; j2 < n; j2++){
       hsymmat[j1*n+j2] = 0.0;
-      for (i = 0; i < n; i++){ /* loop52inner2 */
+      /* loop52inner2 */
+      for (i = 0; i < n; i++){
         hsymmat[j1*n+j2] += hdata[i*n+j1] * hdata[i*n+j2];
       }
       hsymmat[j1*n+j2] /= n-1;
@@ -984,21 +1077,25 @@ double correlation(){
   {
 
 #pragma acc parallel loop private(tmp)
-    for (j = 0; j < n; j++){ /* loop53outer */
+	  /* loop53outer */
+    for (j = 0; j < n; j++){
       tmp = 0.0;
 #pragma acc loop reduction(+:tmp)
-      for (i = 0; i < n; i++){ /* loop53inner */
+      /* loop53inner */
+      for (i = 0; i < n; i++){
         tmp += data[i*n+j];
       }
       mean[j] = tmp / n;
     }
 
 #pragma acc parallel loop private(tmp)
-    for (j = 0; j < n; j++){ /* loop54outer */
+    /* loop54outer */
+    for (j = 0; j < n; j++){
       stddev[j] = 0.0;
       tmp = 0;
 #pragma acc loop reduction(+:tmp)
-      for (i = 0; i < n; i++){ /* loop54inner */
+      /* loop54inner */
+      for (i = 0; i < n; i++){
         tmp += (data[i*n+j] - mean[j]) * (data[i*n+j] - mean[j]);
       }
       tmp /= (n-1);
@@ -1013,22 +1110,27 @@ double correlation(){
 
 
 #pragma acc parallel loop
-    for (j = 0; j < n; j++){ /* loop55outer */
+    /* loop55outer */
+    for (j = 0; j < n; j++){
 #pragma acc loop
-      for (i = 0; i < n; i++){ /* loop55inner */
+    	/* loop55inner */
+      for (i = 0; i < n; i++){
         data[i*n+j] -= mean[j];
         data[i*n+j] /= stddev[j];
       }
     }
 
 #pragma acc parallel loop
-    for (j1 = 0; j1 < n; j1++){ /* loop56outer */
+    /* loop56outer */
+    for (j1 = 0; j1 < n; j1++){
       symmat[j1*n+j1] = 0;
 #pragma acc loop private(tmp)
-      for (j2 = j1; j2 < n; j2++){ /* loop56inner */
+      /* loop56inner */
+      for (j2 = j1; j2 < n; j2++){
         tmp = 0;
 #pragma acc loop reduction(+:tmp)
-        for (i = 0; i < n; i++){ /* loop56inner2 */
+        /* loop56inner2 */
+        for (i = 0; i < n; i++){
           tmp += (data[i*n+j1] * data[i*n+j2]);
         }
         symmat[j1*n+j2] = tmp/(n-1);
@@ -1039,9 +1141,10 @@ double correlation(){
   } /* end_data */
   t_end = gettime();
 
-
-  for (i = 0; i < n;i++){ /* loop57outer */
-    for (j = 0; j < n; j++){ /* loop57inner */
+  /* loop57outer */
+  for (i = 0; i < n;i++){
+	  /* loop57inner */
+    for (j = 0; j < n; j++){
       if (fabs(symmat[i*n+j] - hsymmat[i*n+j])/hsymmat[i*n+j] > TOL) {
 	flag = 1;
       }
@@ -1093,8 +1196,10 @@ double syr2k(){
   beta = 4546;
 
   /* Init */
-  for (i = 0; i < n; i++){ /* loop58outer */
-    for (j = 0; j < n; j++){ /* loop58inner */
+  /* loop58outer */
+  for (i = 0; i < n; i++){
+	  /* loop58inner */
+    for (j = 0; j < n; j++){
       C[i*n+j] = rand() / (1.0 + RAND_MAX);
       CG[i*n+j] = C[i*n+j];
       A[i*n+j] = rand() / (1.0 + RAND_MAX);
@@ -1103,16 +1208,20 @@ double syr2k(){
   }
 
   /* HOST */
-  for (i = 0; i < n; i++){ /* loop59outer */
-    for (j = 0; j < n; j++){ /* loop59inner */
+  /* loop59outer */
+  for (i = 0; i < n; i++){
+	  /* loop59inner */
+    for (j = 0; j < n; j++){
       C[i*n+j] *= beta;
     }
   }
-
-  for (i = 0; i < n; i++){ /* loop60outer */
-    for (j = 0; j < n; j++){ /* loop60inner */
+  /* loop60outer */
+  for (i = 0; i < n; i++){
+	  /* loop60inner */
+    for (j = 0; j < n; j++){
       tmp = C[i*n+j];
-      for (k = 0; k < n; k++){ /* loop60inner2 */
+      /* loop60inner2 */
+      for (k = 0; k < n; k++){
         tmp += (alpha * A[i*n+k] * B[j*n+k]) + (alpha * B[i*n+k] * A[j*n+k]);
       }
       C[i*n+j] = tmp;
@@ -1126,19 +1235,24 @@ double syr2k(){
 #pragma acc data copy(CG[0:n*n]), copyin(A[0:n*n], B[0:n*n])
   {
 #pragma acc parallel loop
-    for (i = 0; i < n; i++){ /* loop61outer */
-      for (j = 0; j < n; j++){ /* loop61inner */
+	  /* loop61outer */
+    for (i = 0; i < n; i++){
+    	/* loop61inner */
+      for (j = 0; j < n; j++){
         CG[i*n+j] *= beta;
       }
     }
 
 #pragma acc parallel loop
-    for (i = 0; i < n; i++){ /* loop62outer */
+    /* loop62outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop private(tmp)
-      for (j = 0; j < n; j++){ /* loop62inner */
+    	/* loop62inner */
+      for (j = 0; j < n; j++){
         tmp = CG[i*n+j];
 #pragma acc loop reduction(+:tmp)
-        for (k = 0; k < n; k++){ /* loop62inner2 */
+        /* loop62inner2 */
+        for (k = 0; k < n; k++){
           tmp += (alpha * A[i*n+k] * B[j*n+k]) + (alpha * B[i*n+k] * A[j*n+k]);
         }
         CG[i*n+j] = tmp;
@@ -1151,8 +1265,10 @@ double syr2k(){
 
 
   /* Compare */
-  for (i = 0; i < n; i++){ /* loop63outer */
-    for (j = 0; j < n; j++){ /* loop63inner */
+  /* loop63outer */
+  for (i = 0; i < n; i++){
+	  /* loop63inner */
+    for (j = 0; j < n; j++){
       if (fabs(C[i*n+j] - CG[i*n+j])/C[i*n+j] > TOL){
         flag = 1;
       }
@@ -1197,19 +1313,23 @@ double gesummv(){
 
   alpha = 43532;
   beta = 12313;
-  for (i = 0; i < n; i++){ /* loop63outer */
+  /* loop63outer */
+  for (i = 0; i < n; i++){
     x[i] = i / n;
-    for (j = 0; j < n; j++){ /* loop63outer */
+    /* loop63outer */
+    for (j = 0; j < n; j++){
       A[i*n+j] = (i*j) / n;
       B[i*n+j] = A[i*n+j];
     }
   }
 
   /* Host */
-  for (i = 0; i < n; i++){ /* loop63outer */
+  /* loop63outer */
+  for (i = 0; i < n; i++){
     Htmp[i] = 0;
     Hy[i] = 0;
-    for (j = 0; j < n; j++){ /* loop63outer */
+    /* loop63outer */
+    for (j = 0; j < n; j++){
       Htmp[i] = A[i*n+j] * x[j] + Htmp[i];
       Hy[i] = B[i*n+j] * x[j] + Hy[i];
     }
@@ -1225,11 +1345,13 @@ double gesummv(){
 #pragma acc data copyin(A[0:n*n], B[0:n*n], x[0:n], beta, alpha), copyout(Ay[0:n]), create(i,j,t1,t2)
   {
 #pragma acc parallel loop private(t1,t2)
-    for (i = 0; i < n; i++){ /* loop64outer */
+	  /* loop64outer */
+    for (i = 0; i < n; i++){
       t1 = 0;
       t2 = 0;
 #pragma acc loop reduction(+:t1,t2)
-      for (j = 0; j < n; j++){ /* loop64inner */
+      /* loop64inner */
+      for (j = 0; j < n; j++){
         t1 += A[i*n+j] * x[j];
 	t2 += B[i*n+j] * x[j];
       }
@@ -1240,7 +1362,8 @@ double gesummv(){
   t_end = gettime();
 
   /* Compare */
-  for (i=0;i<n;i++){ /* loop65outer */
+  /* loop65outer */
+  for (i=0;i<n;i++){
     if ( fabs(Ay[i] - Hy[i])/Hy[i] > TOL ){
       flag = 1;
     }
@@ -1289,8 +1412,10 @@ double gemm(){
 
   alpha = 32412;
   beta = 2123;
-  for (i = 0; i < n; i++){ /* loop66outer */
-    for (j = 0; j < n; j++){ /* loop66inner */
+  /* loop66outer */
+  for (i = 0; i < n; i++){
+	  /* loop66inner */
+    for (j = 0; j < n; j++){
       A[i*n+j] = rand()/(1.0+RAND_MAX);
       B[i*n+j] = rand()/(1.0+RAND_MAX);
       C[i*n+j] = rand()/(1.0+RAND_MAX);
@@ -1300,10 +1425,13 @@ double gemm(){
 
 
   /* Host for reference */
-  for (i = 0; i < n; i++){ /* loop67outer */
-    for (j = 0; j < n; j++){ /* loop67inner */
+  /* loop67outer */
+  for (i = 0; i < n; i++){
+	  /* loop67inner */
+    for (j = 0; j < n; j++){
         H[i*n+j] *= beta;
-        for (k = 0; k < n; k++) /* loop67inner2 */
+        /* loop67inner2 */
+        for (k = 0; k < n; k++)
           H[i*n+j] += alpha * A[i*n+k] * B[k*n+j];
     }
   }
@@ -1317,11 +1445,14 @@ double gemm(){
   {
 #pragma acc kernels
 #pragma acc loop independent
-    for (i = 0; i < n; i++){ /* loop68outer */
+	  /* loop68outer */
+    for (i = 0; i < n; i++){
 #pragma acc loop independent
-      for (j = 0; j < n; j++){ /* loop68inner */
+    	/* loop68inner */
+      for (j = 0; j < n; j++){
         C[i*n+j] *= beta;
-        for (k = 0; k < n; k++){ /* loop68inner2 */
+        /* loop68inner2 */
+        for (k = 0; k < n; k++){
           C[i*n+j] += alpha * A[i*n+k] * B[k*n+j];
         }
       }
@@ -1331,8 +1462,10 @@ double gemm(){
   t_end = gettime();
 
   /* Compare */
-  for (i = 0; i < n; i++){ /* loop69outer */
-    for (j = 0; j < n; j++){ /* loop69inner */
+  /* loop69outer */
+  for (i = 0; i < n; i++){
+	  /* loop69inner */
+    for (j = 0; j < n; j++){
       if (fabs(H[i*n+j] - C[i*n+j])/H[i*n+j] > TOL){
         flag = 1;
       }
@@ -1371,9 +1504,10 @@ double twodconv(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
-
-  for (i = 0; i < n; i++){ /* loop70outer */
-    for (j = 0; j < n; j++){ /* loop70inner */
+  /* loop70outer */
+  for (i = 0; i < n; i++){
+	  /* loop70inner */
+    for (j = 0; j < n; j++){
       A[i*n+j] = rand()/(1.0+RAND_MAX);
     }
   }
@@ -1383,9 +1517,10 @@ double twodconv(){
   c11 = +2;  c21 = +5;  c31 = -8;
   c12 = -3;  c22 = +6;  c32 = -9;
   c13 = +4;  c23 = +7;  c33 = +10;
-
-  for (i = 1; i < n - 1; i++){ /* loop71outer */
-    for (j = 1; j < n - 1; j++){ /* loop71inner */
+  /* loop71outer */
+  for (i = 1; i < n - 1; i++){
+	  /* loop71inner */
+    for (j = 1; j < n - 1; j++){
       B[i*n+j] = c11 * A[(i-1)*n+(j-1)] + c12 * A[i*n+(j-1)] + c13 * A[(i+1)*n+(j-1)]
         + c21 * A[(i-1)*n+j] + c22 * A[i*n+j] + c23 * A[(i+1)*n+j]
         + c31 * A[(i-1)*n+(j+1)] + c32 * A[i*n+(j+1)] + c33 * A[(i+1)*n+(j+1)];
@@ -1400,8 +1535,10 @@ double twodconv(){
   {
 #pragma acc kernels
 #pragma acc loop independent
-    for (i = 1; i < n - 1; i++){ /* loop72outer */
-      for (j = 1; j < n - 1; j++){ /* loop72inner */
+	  /* loop72outer */
+    for (i = 1; i < n - 1; i++){
+    	/* loop72inner */
+      for (j = 1; j < n - 1; j++){
       B_Gpu[i*n+j] = c11 * A[(i-1)*n+(j-1)] + c12 * A[i*n+(j-1)] + c13 * A[(i+1)*n+(j-1)]
         + c21 * A[(i-1)*n+j] + c22 * A[i*n+j] + c23 * A[(i+1)*n+j]
         + c31 * A[(i-1)*n+(j+1)] + c32 * A[i*n+(j+1)] + c33 * A[(i+1)*n+(j+1)];
@@ -1409,9 +1546,10 @@ double twodconv(){
     }
   }
   t_end = gettime();
-
-  for (i = 1; i < n-1; i++){ /* loop73outer */
-    for (j = 1; j < n-1; j++){ /* loop73inner */
+  /* loop73outer */
+  for (i = 1; i < n-1; i++){
+	  /* loop73inner */
+    for (j = 1; j < n-1; j++){
       if (fabs(B[i*n+j] - B_Gpu[i*n+j])/B[i*n+j] > TOL){
         flag = 1;
       }
@@ -1452,18 +1590,24 @@ double threedconv(){
 
 
   /* Init */
-  for (i = 0; i < n; i++){ /* loop74outer */
-    for (j = 0; j < n; j++){ /* loop74inner */
-      for (k = 0; k < n; k++){ /* loop74inner2 */
+  /* loop74outer */
+  for (i = 0; i < n; i++){
+	  /* loop74inner */
+    for (j = 0; j < n; j++){
+    	/* loop74inner2 */
+      for (k = 0; k < n; k++){
         A[i*n*n+j*n+k] = rand()/(1.0+RAND_MAX);
       }
     }
   }
 
   /* HOST */
-  for (i = 1; i < n - 1; i++){ /* loop75outer */
-    for (j = 1; j < n - 1; j++){ /* loop75inner */
-      for (k = 1; k < n - 1; k++){ /* loop75inner2 */
+  /* loop75outer */
+  for (i = 1; i < n - 1; i++){
+	  /* loop75inner */
+    for (j = 1; j < n - 1; j++){
+    	/* loop75inner2 */
+      for (k = 1; k < n - 1; k++){
         B[i*n*n+j*n+k] = 0
           +   c11 * A[(i-1)*n*n + (j-1)*n + (k-1)]  +  c13 * A[(i+1)*n*n + (j-1)*n + (k-1)]
           +   c21 * A[(i-1)*n*n + (j-1)*n + (k-1)]  +  c23 * A[(i+1)*n*n + (j-1)*n + (k-1)]
@@ -1487,9 +1631,12 @@ double threedconv(){
   {
 #pragma acc kernels
 #pragma acc loop independent
-    for (i = 1; i < n - 1; i++){ /* loop76outer */
-      for (j = 1; j < n - 1; j++){ /* loop76inner */
-        for (k = 1; k < n - 1; k++){ /* loop76inner2 */
+	  /* loop76outer */
+    for (i = 1; i < n - 1; i++){
+    	/* loop76inner */
+      for (j = 1; j < n - 1; j++){
+    	  /* loop76inner2 */
+        for (k = 1; k < n - 1; k++){
           B_Gpu[i*n*n+j*n+k] = 0
           +   c11 * A[(i-1)*n*n + (j-1)*n + (k-1)]  +  c13 * A[(i+1)*n*n + (j-1)*n + (k-1)]
           +   c21 * A[(i-1)*n*n + (j-1)*n + (k-1)]  +  c23 * A[(i+1)*n*n + (j-1)*n + (k-1)]
@@ -1508,9 +1655,12 @@ double threedconv(){
   t_end = gettime();
 
   /* Compare */
-  for (i = 1; i < n - 1; i++){ /* loop77outer */
-    for (j = 1; j < n - 1; j++){ /* loop77inner */
-      for (k = 1; k < n - 1; k++){ /* loop77inner2 */
+  /* loop77outer */
+  for (i = 1; i < n - 1; i++){
+	  /* loop77inner */
+    for (j = 1; j < n - 1; j++){
+    	/* loop77inner2 */
+      for (k = 1; k < n - 1; k++){
         if (fabs(B[i*n*n+j*n+k] - B_Gpu[i*n*n+j*n+k])/B[i*n*n+j*n+k] > TOL){
           flag = 1;
         }

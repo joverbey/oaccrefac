@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,9 @@
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
  *     Alexander Calvert (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
+
 package org.eclipse.ptp.pldt.openacc.core.dependence;
 
 import java.util.ArrayList;
@@ -39,13 +41,21 @@ import org.eclipse.ptp.pldt.openacc.internal.core.dependence.VariableAccess;
  */
 public class DependenceAnalysis extends AbstractDependenceAnalysis {
 
+	private IBinding index;
+	
     /**
      * Analyzes dependences in a sequence of C statements.
      * 
      * @throws DependenceTestFailure
-     */
+     */	
     public DependenceAnalysis(IProgressMonitor pm, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
         super(pm, statements);
+        IASTForStatement loop = null;
+        if (statements.length != 0) {
+        	loop = ASTUtil.findNearestAncestor(statements[0], IASTForStatement.class);
+        }
+        index = ForStatementInquisitor.getInquisitor(loop).getIndexVariable();
+        
         pm.subTask("Analyzing dependences...");
         computeDependences(pm);
     }
@@ -57,6 +67,10 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         for (VariableAccess v1 : getVariableAccesses()) {
             progress.subTask(String.format("Analyzing line %d - %s",
                     v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
+            if (writesToIndex(v1)) {
+            	throw new DependenceTestFailure(String.format("Loop cannot be analyzed.  Loop index variable is changed on line %d.",
+                    v1.getVariableName().getFileLocation().getStartingLineNumber()));
+            }
             for (VariableAccess v2 : getVariableAccesses()) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)
                         //if the sink is a declaration of the same variable, there is no dependence
@@ -68,7 +82,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                         addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
                     } else {
                         List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
-                        List<IBinding> indexVars = ASTUtil.getLoopIndexVariables(commonLoops);
+                        List<IBinding> indexVars = DependenceAnalysis.getLoopIndexVariables(commonLoops);
                         Set<IBinding> otherVars = collectAllVariables(v1.getLinearSubscriptExpressions(),
                                 v2.getLinearSubscriptExpressions());
                         otherVars.removeAll(indexVars);
@@ -129,4 +143,19 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         return false;
     }
     
+    private boolean writesToIndex(VariableAccess write) {
+    	return write.isWrite() && write.bindsTo(index);
+    }
+
+	private static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
+	    List<IBinding> result = new ArrayList<IBinding>(loops.size());
+	    for (IASTForStatement forStmt : loops) {
+	        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(forStmt);
+	        IBinding variable = loop.getIndexVariable();
+	        if (variable != null) {
+	            result.add(variable);
+	        }
+	    }
+	    return result;
+	}
 }

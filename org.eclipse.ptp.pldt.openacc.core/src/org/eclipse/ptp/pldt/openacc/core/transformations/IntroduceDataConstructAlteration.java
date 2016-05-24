@@ -11,26 +11,26 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.InferDataTransfer;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyoutClauseNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataClauseListNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataItemNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsClauseListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelClauseListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
-import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
 public class IntroduceDataConstructAlteration extends SourceStatementsAlteration<IntroduceDataConstructCheck> {
 
@@ -42,161 +42,91 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
     protected void doChange() throws Exception {
         IASTStatement[] stmts = getStatements();
         ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
-        Set<String> copyin = OpenACCUtil.inferCopyin(rd, getStatements());
-        Set<String> copyout = OpenACCUtil.inferCopyout(rd, getStatements());
-
-        //TODO modify existing create set as necessary
-        //handle parallel loop constructs?
         
-        StringBuilder newPragma = new StringBuilder(pragma("acc data"));
-        if(!copyin.isEmpty()) {
-            newPragma.append(" ");
-            newPragma.append(copyin(copyin.toArray(new String[copyin.size()])));
+        InferCopyin inferCopyin = new InferCopyin(rd, getStatements());
+        InferCopyout inferCopyout = new InferCopyout(rd, getStatements());
+        InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
+        InferCreate inferCreate = new InferCreate(rd, getStatements());
+        InferDataTransfer.normalizeRoot(inferCopyin, inferCopyout, inferCopy, inferCreate);
+        
+        StringBuilder newOuterPragma = new StringBuilder(pragma("acc data"));
+        if(!inferCopyin.get().get(inferCopyin.getRoot()).isEmpty()) {
+        	newOuterPragma.append(" ");
+        	newOuterPragma.append(copyin(inferCopyin.get().get(inferCopyin.getRoot())));
         }
-        if(!copyout.isEmpty()) {
-            newPragma.append(" ");
-            newPragma.append(copyout(copyout.toArray(new String[copyout.size()])));
+        if(!inferCopyout.get().get(inferCopyout.getRoot()).isEmpty()) {
+        	newOuterPragma.append(" ");
+            newOuterPragma.append(copyout(inferCopyout.get().get(inferCopyout.getRoot())));
+        }
+        if(!inferCopy.get().get(inferCopy.getRoot()).isEmpty()) {
+        	newOuterPragma.append(" ");
+            newOuterPragma.append(copyout(inferCopy.get().get(inferCopy.getRoot())));
+        }
+        if(!inferCreate.get().get(inferCreate.getRoot()).isEmpty()) {
+        	newOuterPragma.append(" ");
+            newOuterPragma.append(create(inferCreate.get().get(inferCreate.getRoot())));
         }
         
-        //TODO make SourceStatementsRefactoring aware of pragmas in the selection as well as comments
-        replaceContainedPragmas(copyin, copyout);
-        this.insertBefore(getAllEnclosedNodes()[0], newPragma.toString() + NL + LCURLY);
-//        this.insertBefore(getAllEnclosedNodes()[0], NL);
-//        this.insertBefore(getAllEnclosedNodes()[0], LCURLY);
+        replaceContainedPragmas(inferCopyin, inferCopyout, inferCopy, inferCreate);
+        
+        this.insertBefore(getAllEnclosedNodes()[0], newOuterPragma.toString() + NL + LCURLY);
         this.insertAfter(getAllEnclosedNodes()[getAllEnclosedNodes().length - 1], RCURLY);
 
         finalizeChanges();
     }
     
-    private void replaceContainedPragmas(Set<String> copyin, Set<String> copyout) {
-        
-        for(IASTStatement statement : check.getAccRegions().keySet()) {
-            for(IASTPreprocessorPragmaStatement pragma : check.getAccRegions().get(statement).keySet()) {
-                IAccConstruct con = check.getAccRegions().get(statement).get(pragma);
-                if(con instanceof ASTAccParallelNode) {
-                    StringBuilder newPragma = new StringBuilder(pragma("acc parallel"));
-                    newPragma.append(" ");
-                    newPragma.append(getParallelClauseList((ASTAccParallelNode) con, copyin, copyout));
-                    this.replace(pragma, newPragma.toString());
-                }
-                else if(con instanceof ASTAccKernelsNode) {
-                    StringBuilder newPragma = new StringBuilder(pragma("acc kernels"));
-                    newPragma.append(" ");
-                    newPragma.append(getKernelsClauseList((ASTAccKernelsNode) con, copyin, copyout));
-                    this.replace(pragma, newPragma.toString());
-                } 
-                else if (con instanceof ASTAccDataNode) {
-                    StringBuilder newPragma = new StringBuilder(pragma("acc data"));
-                    newPragma.append(" ");
-                    newPragma.append(getDataClauseList((ASTAccDataNode) con, copyin, copyout));
-                    this.replace(pragma, newPragma.toString());
-                }
-                
-            }
-        }
-        
-    }
-    
-    private String getParallelClauseList(ASTAccParallelNode par, Set<String> copyin, Set<String> copyout) {
-        StringBuilder clauseList = new StringBuilder();
-        for(ASTAccParallelClauseListNode clause : par.getAccParallelClauseList()) {
-            if(clause.getAccParallelClause() instanceof ASTAccCopyinClauseNode) {
-                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) clause.getAccParallelClause();
-                List<String> vars = new ArrayList<String>();
-                for(ASTAccDataItemNode item : copyinClause.getAccDataList()) {
-                    if(!copyin.contains(item.getIdentifier().getIdentifier().getText())) {
-                        vars.add(item.toString());
-                    }
-                }
-                if(!vars.isEmpty()) {
-                    clauseList.append(copyin(vars.toArray(new String[vars.size()])));
-                    clauseList.append(" ");
-                }
-            }
-            else if(clause.getAccParallelClause() instanceof ASTAccCopyoutClauseNode) {
-                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) clause.getAccParallelClause();
-                List<String> vars = new ArrayList<String>();
-                for(ASTAccDataItemNode item : copyoutClause.getAccDataList()) {
-                    if(!copyin.contains(item.getIdentifier().getIdentifier().getText())) {
-                        vars.add(item.toString());
-                    }
-                }
-                if(!vars.isEmpty()) {
-                    clauseList.append(copyout(vars.toArray(new String[vars.size()])));
-                    clauseList.append(" ");
-                }
-            }
-            else {
-                clauseList.append(clause);
-                clauseList.append(" ");
-            }
-        }
-        return clauseList.toString();
-    }
-    
-    private String getKernelsClauseList(ASTAccKernelsNode ker, Set<String> copyin, Set<String> copyout) {
-        StringBuilder clauseList = new StringBuilder();
-        for(ASTAccKernelsClauseListNode clause : ker.getAccKernelsClauseList()) {
-            if(clause.getAccKernelsClause() instanceof ASTAccCopyinClauseNode) {
-                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) clause.getAccKernelsClause();
-                List<String> vars = new ArrayList<String>();
-                for(ASTAccDataItemNode item : copyinClause.getAccDataList()) {
-                    if(!copyin.contains(item.getIdentifier().getIdentifier().getText())) {
-                        vars.add(item.toString());
-                    }
-                }
-                clauseList.append(copyin(vars.toArray(new String[vars.size()])));
-                clauseList.append(" ");
-            }
-            else if(clause.getAccKernelsClause() instanceof ASTAccCopyoutClauseNode) {
-                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) clause.getAccKernelsClause();
-                List<String> vars = new ArrayList<String>();
-                for(ASTAccDataItemNode item : copyoutClause.getAccDataList()) {
-                    if(!copyin.contains(item.getIdentifier().getIdentifier().getText())) {
-                        vars.add(item.toString());
-                    }
-                }
-                clauseList.append(copyout(vars.toArray(new String[vars.size()])));
-                clauseList.append(" ");
-            }
-            else {
-                clauseList.append(clause);
-                clauseList.append(" ");
-            }
-        }
-        return clauseList.toString();
-    }
-
-    private String getDataClauseList(ASTAccDataNode data, Set<String> copyin, Set<String> copyout) {
-        StringBuilder clauseList = new StringBuilder();
-        for(ASTAccDataClauseListNode clause : data.getAccDataClauseList()) {
-            if(clause.getAccDataClause() instanceof ASTAccCopyinClauseNode) {
-                ASTAccCopyinClauseNode copyinClause = (ASTAccCopyinClauseNode) clause.getAccDataClause();
-                List<String> vars = new ArrayList<String>();
-                for(ASTAccDataItemNode item : copyinClause.getAccDataList()) {
-                    if(!copyin.contains(item.getIdentifier().getIdentifier().getText())) {
-                        vars.add(item.toString());
-                    }
-                }
-                clauseList.append(copyin(vars.toArray(new String[vars.size()])));
-                clauseList.append(" ");
-            }
-            else if(clause.getAccDataClause() instanceof ASTAccCopyoutClauseNode) {
-                ASTAccCopyoutClauseNode copyoutClause = (ASTAccCopyoutClauseNode) clause.getAccDataClause();
-                List<String> vars = new ArrayList<String>();
-                for(ASTAccDataItemNode item : copyoutClause.getAccDataList()) {
-                    if(!copyin.contains(item.getIdentifier().getIdentifier().getText())) {
-                        vars.add(item.toString());
-                    }
-                }
-                clauseList.append(copyout(vars.toArray(new String[vars.size()])));
-                clauseList.append(" ");
-            }
-            else {
-                clauseList.append(clause);
-                clauseList.append(" ");
-            }
-        }
-        return clauseList.toString();
+    private void replaceContainedPragmas(InferCopyin inferCopyin, InferCopyout inferCopyout, InferCopy inferCopy, InferCreate inferCreate) {
+    	Set<IASTStatement> allStatements = new HashSet<IASTStatement>();
+    	allStatements.addAll(inferCopyin.get().keySet());
+    	allStatements.addAll(inferCopyout.get().keySet());
+    	allStatements.addAll(inferCopy.get().keySet());
+    	allStatements.addAll(inferCreate.get().keySet());
+    	for(IASTStatement statement : allStatements) {
+    		if (statement != inferCopyin.getRoot()) {
+				for (IASTPreprocessorPragmaStatement prag : ASTUtil.getPragmaNodes(statement)) {
+					StringBuilder sb = new StringBuilder();
+					IAccConstruct construct = null;
+					try {
+						construct = new OpenACCParser().parse(prag.getRawSignature());
+					} catch (Exception e) {
+						continue;
+					}
+					//TODO also get clauses other than copyin/copyout/create from constructs here
+					if (construct instanceof ASTAccDataNode) {
+						sb.append(pragma("acc data"));
+					} else if (construct instanceof ASTAccKernelsNode) {
+						sb.append(pragma("acc kernels"));
+					} else if (construct instanceof ASTAccKernelsLoopNode) {
+						sb.append(pragma("acc kernels loop"));
+					} else if (construct instanceof ASTAccParallelNode) {
+						sb.append(pragma("acc parallel"));
+					} else if (construct instanceof ASTAccParallelLoopNode) {
+						sb.append(pragma("acc parallel loop"));
+					}
+					if(!inferCopyin.get().get(statement).isEmpty())
+						sb.append(" " + copyin(inferCopyin.get().get(statement)));
+					if(!inferCopyout.get().get(statement).isEmpty())
+						sb.append(" " + copyout(inferCopyout.get().get(statement)));
+					if(!inferCopy.get().get(statement).isEmpty())
+						sb.append(" " + copy(inferCopy.get().get(statement)));
+					if(!inferCreate.get().get(statement).isEmpty())
+						sb.append(" " + create(inferCreate.get().get(statement)));
+					this.replace(prag, sb.toString());
+				} 
+			}
+    	}
+    	/*
+    	for(IASTStatement statement : allStatements) {
+    		prag = get data/par/ker/parloop/kerloop pragma from statement
+    		stringbuilder sb = header for pragma type
+    		if prag has clauses other than copyin/out/create
+    			sb.append those clauses
+    		sb.append copyin(copyin.get statement)
+    		sb.append copyout(copyout.get statement)
+    		sb.append create(create.get statement)
+    		replace prag with sb
+    	}
+    	*/
+    	
     }
 }

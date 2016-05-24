@@ -11,14 +11,24 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
 
@@ -28,12 +38,18 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         this.loop = loop;
     }
     
-    protected void doLoopFormCheck(RefactoringStatus status) { }
+    protected void doLoopFormCheck(RefactoringStatus status) { 
+
+    }
     
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) { }
 
     public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
-        doLoopFormCheck(status);
+    	if (containsUnsupportedOp(loop)) {
+            status.addFatalError(
+                    "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
+        }
+    	doLoopFormCheck(status);
         return status;
     }
     
@@ -55,6 +71,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
             status.addError("Dependences could not be analyzed.  " + e.getMessage());
             return status;
         }
+        
         doDependenceCheck(status, dependenceAnalysis);
         return status;
     }
@@ -80,6 +97,41 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     @Override
     public IASTTranslationUnit getTranslationUnit() {
         return loop.getTranslationUnit();
+    }
+    
+    private boolean containsUnsupportedOp(IASTForStatement forStmt) {
+    	List<IASTStatement> ctlFlowStmts = new ArrayList<>();
+    	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTBreakStatement.class));
+    	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTContinueStatement.class));
+    	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTGotoStatement.class));
+    	
+    	for (IASTStatement statement : ctlFlowStmts) {
+    		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
+    			if (!insideInnerWhile(statement) && !insideInnerSwitch(statement)) {
+    				return true;
+    			}
+    		} 
+    	}
+
+    	return false;
+    }
+    
+    private boolean insideInnerWhile(IASTNode statement) {
+    	IASTWhileStatement whileStmt = ASTUtil.findNearestAncestor(statement, IASTWhileStatement.class);
+    	if (whileStmt == null) {
+    		return false;
+    	}
+    	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
+    	return !(ASTUtil.findNearestAncestor(forStmt, IASTWhileStatement.class) == whileStmt);
+    }
+    
+    private boolean insideInnerSwitch(IASTNode statement) {
+    	IASTSwitchStatement switchStmt = ASTUtil.findNearestAncestor(statement, IASTSwitchStatement.class);
+    	if (switchStmt == null) {
+    		return false;
+    	}
+    	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
+    	return !(ASTUtil.findNearestAncestor(forStmt, IASTSwitchStatement.class) == switchStmt);
     }
     
 }

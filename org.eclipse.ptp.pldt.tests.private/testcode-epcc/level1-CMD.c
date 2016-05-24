@@ -219,7 +219,7 @@ double threemm(){
   /* Host version for reference. */
   /* E := A*B */
 
-  for (i = 0; i < n; i++) {/* loop7outer */
+  for (i = 0; i < n; i++) { /* loop7outer */
 
     for (j = 0; j < n; j++){ /* loop7inner */
       E[i*n+j] = 0;

@@ -133,8 +133,8 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     }
     
     private static boolean statementsComeFromDifferentLoops(IASTForStatement l1, IASTForStatement l2, IASTStatement s1, IASTStatement s2) {
-        return (ASTUtil.isAncestorOf(l1, s1) && ASTUtil.isAncestorOf(l2, s2)) || 
-                (ASTUtil.isAncestorOf(l1, s2) && ASTUtil.isAncestorOf(l2, s1));
+        return (ASTUtil.isAncestor(s1, l1) && ASTUtil.isAncestor(s2, l2)) || 
+                (ASTUtil.isAncestor(s1, l2) && ASTUtil.isAncestor(s2, l1));
     }
     
     private void checkPragma(RefactoringStatus status) {

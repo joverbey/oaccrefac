@@ -12,12 +12,17 @@
 package org.eclipse.ptp.pldt.openacc.internal.core;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyoutClauseNode;
@@ -26,63 +31,108 @@ import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataClauseListNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataItemNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsClauseListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelClauseListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 
 public class OpenACCUtil {
 
-
-    /**
-     * Uses reaching definitions analysis to infer the appropriate copyin variables for a data construct
-     * 
-     * @param construct the children of the data construct
-     * @param rd the reaching definitions analysis
-     * @return a set of strings representing the inferred copied-in variables
-     */
-    public static Set<String> inferCopyout(ReachingDefinitions rd, IASTStatement... construct) {
-        Set<String> copyout = new HashSet<String>();
-        
-        //all uses reached by definitions in the construct
-        Set<IASTName> uses = rd.reachedUses(construct);
-        
-        //retain only those uses that are not in the construct
-        for(IASTName use : uses) {
-            if(!ASTUtil.inStatements(use, construct)) {
-                copyout.add(use.getRawSignature());
-            }
-        }
-        
-        return copyout;
+    public static Set<IBinding> simpleInferCopyin(ReachingDefinitions rd, IASTStatement... construct) {
+    	Set<IBinding> copyins = new HashSet<IBinding>();
+    	class ParFinder extends ASTVisitor {
+    		ParFinder() {
+    			shouldVisitStatements = true;
+    		}
+    		@Override
+    		public int visit(IASTStatement statement) {
+    			if(isAccConstruct(statement, null)) {
+    				Set<IASTName> rds = rd.reachingDefinitions(statement);
+    				for(IASTName rd : rds) {
+    					if(!ASTUtil.isAncestor(rd, construct)) {
+    						copyins.add(rd.resolveBinding());
+    					}
+    				}
+    			}
+    			return PROCESS_CONTINUE;
+    		}
+    	}
+    	
+    	for(IASTStatement statement : construct) {
+    		statement.accept(new ParFinder());
+    	}
+    	
+    	return copyins;
     }
     
-    /**
-     * Uses reaching definitions analysis to infer the appropriate copyout variables for a data construct
-     * 
-     * @param construct the children of the data construct
-     * @param rd the reaching definitions analysis
-     * @return a set of strings representing the inferred copied-out variables
-     */
-    public static Set<String> inferCopyin(ReachingDefinitions rd, IASTStatement... construct) {
-        Set<String> copyin = new HashSet<String>();
-        
-        //all definitions reaching statements in the construct
-        Set<IASTName> defs = rd.reachingDefinitions(construct);
-        
-        //if the definition is outside the construct, keep it
-        for(IASTName def : defs) {
-            if(!ASTUtil.inStatements(def, construct)) {
-                copyin.add(def.getRawSignature());
-            }
-        }
-        
-        return copyin;
+    public static Set<IBinding> simpleInferCopyout(ReachingDefinitions rd, IASTStatement... construct) {
+    	Set<IBinding> copyouts = new HashSet<IBinding>();
+    	class ParFinder extends ASTVisitor {
+    		ParFinder() {
+    			shouldVisitStatements = true;
+    		}
+    		@Override
+    		public int visit(IASTStatement statement) {
+    			if(isAccConstruct(statement, null)) {
+    				Set<IASTName> rus = rd.reachedUses(statement);
+    				for(IASTName rd : rus) {
+    					if(!ASTUtil.isAncestor(rd, construct)) {
+    						copyouts.add(rd.resolveBinding());
+    					}
+    				}
+    			}
+    			return PROCESS_CONTINUE;
+    		}
+    	}
+    	
+    	for(IASTStatement statement : construct) {
+    		statement.accept(new ParFinder());
+    	}
+    	
+    	return copyouts;
+    }
+
+    public static <T extends IAccConstruct> boolean isAccConstruct(IASTStatement statement, Class<T> accClazz) {
+    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
+    		IAccConstruct construct = null;
+    		try {
+    			construct = new OpenACCParser().parse(pragma.getRawSignature());
+    		}
+    		catch(Exception e) {
+    			continue;
+    		}
+    		if((construct != null) && (accClazz.isInstance(construct))) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public static boolean isAccConstruct(IASTStatement statement) {
+    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
+    		try {
+    			new OpenACCParser().parse(pragma.getRawSignature());
+    		}
+    		catch(Exception e) {
+    			continue;
+    		}
+    		return true;
+    	}
+    	return false;
     }
   
+    public static boolean isAccAccelConstruct(IASTStatement statement) {
+    	return isAccConstruct(statement, ASTAccParallelNode.class) || 
+    			isAccConstruct(statement, ASTAccParallelLoopNode.class) || 
+    			isAccConstruct(statement, ASTAccKernelsNode.class) ||
+    			isAccConstruct(statement, ASTAccKernelsLoopNode.class);
+    }
+
     /**
      * Get the existing copyin set from a parsed OpenAcc construct 
-     * TODO use reflection instead of four different methods?
      * @param construct the construct
      * @return a mapping from strings representing the variables being copied in to
      * the actual strings found in the set (i.e., may include a range, etc), or null
@@ -159,7 +209,6 @@ public class OpenACCUtil {
     
     /**
      * Get the existing copyout set from a parsed OpenAcc construct 
-     * TODO use reflection instead of four different methods?
      * @param construct the construct
      * @return a mapping from strings representing the variables being copied out to
      * the actual strings found in the set (i.e., may include a range, etc), or null
@@ -251,6 +300,39 @@ public class OpenACCUtil {
         }
         return create;
     }
+  
+    public static Set<String> getGpuVars(IASTNode node, boolean shouldGetDefs) {
+        Set<String> gpuVars = new HashSet<String>();
+        getGpuVars(node, gpuVars, shouldGetDefs);
+        return gpuVars;
+    }
+    
+    private static void getGpuVars(IASTNode node, Set<String> gpuVars, boolean shouldGetDefs) {
+        if(node instanceof IASTStatement) {
+            IASTStatement stmt = (IASTStatement) node;
+            String[] prags = ASTUtil.getPragmaStrings(stmt);
+            for(String prag : prags) {
+                //TODO should we parse this instead?
+                if(prag.startsWith("#pragma acc parallel") || prag.startsWith("#pragma acc kernels")) {
+                    List<IASTName> names = ASTUtil.find(stmt, IASTName.class);
+                    for(IASTName name : names) {
+                        if(ASTUtil.isDefinition(name) && shouldGetDefs) {
+                            gpuVars.add(name.getRawSignature());
+                        }
+                        else if(!ASTUtil.isDefinition(name) && !shouldGetDefs) {
+                            gpuVars.add(name.getRawSignature());
+                        }
+                    }
+                }
+            }
+        }
+        
+        for(IASTNode child : node.getChildren()) {
+            getGpuVars(child, gpuVars, shouldGetDefs);
+        }
+        
+    }
+    
     
     private OpenACCUtil() {
     }

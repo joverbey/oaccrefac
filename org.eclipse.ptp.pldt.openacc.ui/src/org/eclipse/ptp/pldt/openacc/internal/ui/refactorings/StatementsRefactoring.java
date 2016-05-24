@@ -131,7 +131,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         Set<IASTStatement> children = new HashSet<IASTStatement>();
         for (IASTStatement child : statements) {
             for (IASTStatement parent : statements) {
-                if (ASTUtil.isStrictAncestor(parent, child)) {
+                if (ASTUtil.isStrictAncestor(child, parent)) {
                     children.add(child);
                 }
             }

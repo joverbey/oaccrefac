@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.dependence;
 
@@ -22,8 +23,10 @@ import java.util.TreeSet;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTDefaultStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -31,7 +34,9 @@ import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
@@ -39,12 +44,17 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
+import org.eclipse.cdt.core.dom.ast.IASTCaseStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.BindingComparator;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
@@ -115,12 +125,28 @@ public abstract class AbstractDependenceAnalysis {
                 collectAccessesFrom((IASTDeclarationStatement) stmt);
             } else if (stmt instanceof IASTForStatement) {
                 collectAccessesFrom((IASTForStatement) stmt);
+            } else if (stmt instanceof IASTIfStatement) {
+                collectAccessesFrom((IASTIfStatement) stmt);
+            } else if (stmt instanceof IASTSwitchStatement) {
+                collectAccessesFrom((IASTSwitchStatement) stmt);
             } else if (stmt instanceof IASTExpressionStatement) {
                 collectAccessesFrom((IASTExpressionStatement) stmt);
             } else if (stmt instanceof IASTNullStatement) {
                 collectAccessesFrom((IASTNullStatement) stmt);
+            } else if (stmt instanceof IASTCaseStatement) {
+                collectAccessesFrom((IASTCaseStatement) stmt);
+            } else if (stmt instanceof IASTDefaultStatement) {
+                collectAccessesFrom((IASTDefaultStatement) stmt);
             } else if (stmt instanceof IASTCompoundStatement) {
                 collectAccessesFrom((IASTCompoundStatement) stmt);
+            } else if (stmt instanceof IASTBreakStatement) {
+                collectAccessesFrom((IASTBreakStatement) stmt);
+            } else if (stmt instanceof IASTContinueStatement) {
+                collectAccessesFrom((IASTContinueStatement) stmt);
+            } else if (stmt instanceof IASTGotoStatement) {
+                collectAccessesFrom((IASTGotoStatement) stmt);
+            } else if (stmt instanceof IASTWhileStatement) {
+                collectAccessesFrom((IASTWhileStatement) stmt);
             } else {
                 throw unsupported(stmt);
             }
@@ -129,6 +155,26 @@ public abstract class AbstractDependenceAnalysis {
 
     private void collectAccessesFrom(IASTNullStatement stmt) {
         // Nothing to do
+    }
+    
+    private void collectAccessesFrom(IASTBreakStatement stmt) {
+        // Nothing to do; see ForLoopCheck#containsUnsupportedOp
+    }
+    
+    private void collectAccessesFrom(IASTContinueStatement stmt) {
+        // Nothing to do; see ForLoopCheck#containsUnsupportedOp
+    }
+    
+    private void collectAccessesFrom(IASTGotoStatement stmt) throws DependenceTestFailure {
+        throw unsupported(stmt); // goto statements might break out of the loop completely, even if inner
+    }
+    
+    private void collectAccessesFrom(IASTCaseStatement stmt) throws DependenceTestFailure {
+        collectAccessesFromExpression(stmt.getExpression());
+    }
+    
+    private void collectAccessesFrom(IASTDefaultStatement stmt) throws DependenceTestFailure {
+        //Nothing to do
     }
 
     private void collectAccessesFrom(IASTCompoundStatement stmt) throws DependenceTestFailure {
@@ -141,6 +187,24 @@ public abstract class AbstractDependenceAnalysis {
             throw unsupported(stmt);
         }
 
+        collectAccessesFromStatements(stmt.getBody());
+    }
+    
+    private void collectAccessesFrom(IASTWhileStatement stmt) throws DependenceTestFailure {
+    	collectAccessesFromExpression(stmt.getCondition());
+        collectAccessesFromStatements(stmt.getBody());
+    }
+    
+    private void collectAccessesFrom(IASTIfStatement stmt) throws DependenceTestFailure {
+    	collectAccessesFromExpression(stmt.getConditionExpression());
+    	collectAccessesFromStatements(stmt.getThenClause());
+    	IASTStatement elsePart = stmt.getElseClause();
+    	if (elsePart != null) {
+    		collectAccessesFromStatements(elsePart);
+    	}
+    }
+    
+    private void collectAccessesFrom(IASTSwitchStatement stmt) throws DependenceTestFailure {
         collectAccessesFromStatements(stmt.getBody());
     }
 
@@ -168,14 +232,14 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTExpressionStatement stmt) throws DependenceTestFailure {
-        Pair<IASTExpression, IASTExpression> asgt = ASTUtil.getAssignment(stmt.getExpression());
+        Pair<IASTExpression, IASTExpression> asgt = ASTPatternUtil.getAssignment(stmt.getExpression());
         if (asgt != null) {
             collectAccessesFromAssignmentLHS(asgt.getFirst());
             collectAccessesFromExpression(asgt.getSecond());
             return;
         }
 
-        Pair<IASTExpression, IASTExpression> assignEq = ASTUtil.getAssignEq(stmt.getExpression());
+        Pair<IASTExpression, IASTExpression> assignEq = ASTPatternUtil.getAssignEq(stmt.getExpression());
         if (assignEq != null) {
             // The variable on the LHS is both read and written
             collectAccessesFromAssignmentLHS(assignEq.getFirst());
@@ -184,25 +248,30 @@ public abstract class AbstractDependenceAnalysis {
             return;
         }
 
-        IASTExpression incrDecr = ASTUtil.getIncrDecr(stmt.getExpression());
+        IASTExpression incrDecr = ASTPatternUtil.getIncrDecr(stmt.getExpression());
         if (incrDecr != null) {
-            // The incremented variable/array element is both read and written
-            collectAccessesFromAssignmentLHS(incrDecr);
             collectAccessesFromExpression(incrDecr);
+            collectAccessesFromAssignmentLHS(incrDecr);
             return;
+        }
+        
+        IASTFunctionCallExpression function = ASTPatternUtil.getFuncExpression(stmt.getExpression());
+        if (function != null) {
+        	collectAccessesFromExpression(function);
+        	return;
         }
 
         throw unsupported(stmt);
     }
 
     private void collectAccessesFromAssignmentLHS(IASTExpression expr) throws DependenceTestFailure {
-        IASTName scalar = ASTUtil.getIdExpression(expr);
+        IASTName scalar = ASTPatternUtil.getIdExpression(expr);
         if (scalar != null) {
             variableAccesses.add(new VariableAccess(true, scalar));
             return;
         }
 
-        Pair<IASTName, IASTName> fieldReference = ASTUtil.getSimpleFieldReference(expr);
+        Pair<IASTName, IASTName> fieldReference = ASTPatternUtil.getSimpleFieldReference(expr);
         if (fieldReference != null) {
             IASTName owner = fieldReference.getFirst();
             IASTName field = fieldReference.getSecond();
@@ -211,9 +280,20 @@ public abstract class AbstractDependenceAnalysis {
             return;
         }
 
-        Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
+        Pair<IASTName, LinearExpression[]> arrayAccess = ASTPatternUtil.getMultidimArrayAccess(expr);
         if (arrayAccess != null) {
             variableAccesses.add(new VariableAccess(true, arrayAccess.getFirst(), arrayAccess.getSecond()));
+            IASTInitializerClause arg = ((IASTArraySubscriptExpression) expr).getArgument();
+            if (arg instanceof IASTExpression) {
+            	collectAccessesFromExpression((IASTExpression)arg);
+                return;
+            }
+        }
+        
+        IASTExpression incrDecr = ASTPatternUtil.getIncrDecr(expr);
+        if (incrDecr != null) {
+            collectAccessesFromExpression(incrDecr);
+            collectAccessesFromAssignmentLHS(incrDecr);
             return;
         }
 
@@ -273,6 +353,14 @@ public abstract class AbstractDependenceAnalysis {
         case IASTUnaryExpression.op_minus:
         case IASTUnaryExpression.op_not:
         case IASTUnaryExpression.op_tilde:
+        case IASTUnaryExpression.op_sizeof:
+            collectAccessesFromExpression(expr.getOperand());
+            break;
+        case IASTUnaryExpression.op_prefixIncr:
+        case IASTUnaryExpression.op_prefixDecr:
+        case IASTUnaryExpression.op_postFixIncr:
+        case IASTUnaryExpression.op_postFixDecr:
+        	collectAccessesFromAssignmentLHS(expr.getOperand());
             collectAccessesFromExpression(expr.getOperand());
             break;
         default:
@@ -285,14 +373,14 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTIdExpression expr) throws DependenceTestFailure {
-        IASTName name = ASTUtil.getIdExpression(expr);
+        IASTName name = ASTPatternUtil.getIdExpression(expr);
         if (name == null)
             throw unsupported(expr);
         variableAccesses.add(new VariableAccess(false, name));
     }
 
     private void collectAccessesFrom(IASTFieldReference expr) throws DependenceTestFailure {
-        Pair<IASTName, IASTName> pair = ASTUtil.getSimpleFieldReference(expr);
+        Pair<IASTName, IASTName> pair = ASTPatternUtil.getSimpleFieldReference(expr);
         if (pair == null)
             throw unsupported(expr);
 
@@ -326,7 +414,7 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
-        Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
+        Pair<IASTName, LinearExpression[]> arrayAccess = ASTPatternUtil.getMultidimArrayAccess(expr);
         if (arrayAccess == null)
             throw unsupported(expr);
         variableAccesses.add(new VariableAccess(false, arrayAccess.getFirst(), arrayAccess.getSecond()));

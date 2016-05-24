@@ -37,6 +37,7 @@ import org.eclipse.cdt.core.parser.IProblem;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
 import org.eclipse.ptp.pldt.openacc.core.dependence.AddressTakenAnalysis;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.Pair;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.FunctionWhitelist;
@@ -315,8 +316,8 @@ public class ExpressionEvaluator {
         final int op = exp.getOperator();
 
         if (isAssignmentOperator(op)) {
-            IASTName lhsName = ASTUtil.getIdExpression(exp.getOperand1());
-            Pair<IASTName, LinearExpression[]> lhsArrayAccess = ASTUtil.getMultidimArrayAccess(exp.getOperand1());
+            IASTName lhsName = ASTPatternUtil.getIdExpression(exp.getOperand1());
+            Pair<IASTName, LinearExpression[]> lhsArrayAccess = ASTPatternUtil.getMultidimArrayAccess(exp.getOperand1());
             Long rhsValue = evaluate(exp.getOperand2());
             if (lhsName != null && rhsValue != null) {
                 // name = value
@@ -515,7 +516,7 @@ public class ExpressionEvaluator {
     }
 
     private void setEnvValue(IASTExpression exp, long value) {
-        IASTName lhsName = ASTUtil.getIdExpression(exp);
+        IASTName lhsName = ASTPatternUtil.getIdExpression(exp);
         if (lhsName != null) {
             if (env == null)
                 env = ConstEnv.EMPTY;

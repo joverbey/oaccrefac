@@ -42,6 +42,7 @@ import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLabelStatement;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
@@ -118,7 +119,7 @@ public final class ASTMatcher {
             return true;
         if (pattern instanceof ArbitraryStatement && node instanceof IASTStatement)
             return true;
-        if (!pattern.getClass().equals(node.getClass()))
+        if (!pattern.getClass().equals(node.getClass()) && !(node instanceof IASTNamedTypeSpecifier))
             return false;
 
         if (pattern instanceof IASTBreakStatement) {
@@ -232,13 +233,13 @@ public final class ASTMatcher {
     }
     
     public boolean match(IASTDeclaration pattern, IASTDeclaration node) {
-        IASTNode[] patternChilluns = pattern.getChildren();
-        IASTNode[] nodeChilluns = node.getChildren();
-        int len = patternChilluns.length;
-        if (nodeChilluns.length != len)
+        IASTNode[] patternChildren = pattern.getChildren();
+        IASTNode[] nodeChildren = node.getChildren();
+        int len = patternChildren.length;
+        if (nodeChildren.length != len)
             return false;
         for (int i = 0; i < len; i++) {
-            if (!genericMatch(patternChilluns[i], nodeChilluns[i])) {
+            if (!genericMatch(patternChildren[i], nodeChildren[i])) {
                 return false;
             }
         }

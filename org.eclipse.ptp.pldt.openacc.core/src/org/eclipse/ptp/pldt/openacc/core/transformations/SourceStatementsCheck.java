@@ -10,32 +10,23 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
 
 public abstract class SourceStatementsCheck<T extends RefactoringParams> extends Check<T> {
 
     private final IASTStatement[] statements;
     private final IASTNode[] allEnclosedNodes;
     
-    //map of each statement with OpenAcc directives to those directives, both as CDT AST nodes and parsed constructs
-    Map<IASTStatement, Map<IASTPreprocessorPragmaStatement, IAccConstruct>> accRegions;
-    
     protected SourceStatementsCheck(IASTStatement[] statements, IASTNode[] allEnclosedNodes) {
         this.statements = statements;
         this.allEnclosedNodes = allEnclosedNodes;
-        this.accRegions = new HashMap<IASTStatement, Map<IASTPreprocessorPragmaStatement, IAccConstruct>>();
     }
     
-    public abstract RefactoringStatus check(RefactoringStatus status, IProgressMonitor pm);
+    public abstract RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm);
     
     @Override
     public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
@@ -43,7 +34,7 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
         if (status.hasFatalError()) {
             return status;
         }
-        check(status, pm);
+        doCheck(status, pm);
         return status;
     }
     
@@ -61,10 +52,6 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
 
     public IASTNode[] getAllEnclosedNodes() {
         return allEnclosedNodes;
-    }
-    
-    public Map<IASTStatement, Map<IASTPreprocessorPragmaStatement, IAccConstruct>> getAccRegions() {
-        return accRegions;
     }
     
 }

@@ -15,11 +15,13 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -50,6 +52,8 @@ public abstract class SourceAlteration<T extends Check<?>> {
     public static final String NL = System.lineSeparator();
     public static final String COPYIN = "copyin";
     public static final String COPYOUT = "copyout";
+    public static final String COPY = "copy";
+    public static final String CREATE = "create";
 
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
@@ -66,7 +70,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
     private List<Repl> repls;
     private int numRepls;
     
-    // FIXME should somehow get an IASTRewrite from the tu and only take one argument
     public SourceAlteration(IASTRewrite rewriter, T check) {
         this.tu = check.getTranslationUnit();
         this.rewriter = rewriter;
@@ -186,24 +189,48 @@ public abstract class SourceAlteration<T extends Check<?>> {
         return " " + PRAGMA + " " + code.trim();
     }
     
-    protected final String copyin(String... vars) {
+    protected final String copyin(Set<IBinding> vars) {
         StringBuilder sb = new StringBuilder(COPYIN + LPAREN);
         String separator = "";
-        for(String var : vars) {
+        for(IBinding var : vars) {
             sb.append(separator);
-            sb.append(var.trim());
+            sb.append(var.getName().trim());
             separator = COMMA;
         }
         sb.append(RPAREN);
         return sb.toString();
     }
     
-    protected final String copyout(String... vars) {
+    protected final String copyout(Set<IBinding> vars) {
         StringBuilder sb = new StringBuilder(COPYOUT + LPAREN);
         String separator = "";
-        for(String var : vars) {
+        for(IBinding var : vars) {
             sb.append(separator);
-            sb.append(var.trim());
+            sb.append(var.getName().trim());
+            separator = COMMA;
+        }
+        sb.append(RPAREN);
+        return sb.toString();
+    }
+    
+    protected final String copy(Set<IBinding> vars) {
+        StringBuilder sb = new StringBuilder(COPY + LPAREN);
+        String separator = "";
+        for(IBinding var : vars) {
+            sb.append(separator);
+            sb.append(var.getName().trim());
+            separator = COMMA;
+        }
+        sb.append(RPAREN);
+        return sb.toString();
+    }
+    
+    protected final String create(Set<IBinding> vars) {
+        StringBuilder sb = new StringBuilder(CREATE + LPAREN);
+        String separator = "";
+        for(IBinding var : vars) {
+            sb.append(separator);
+            sb.append(var.getName().trim());
             separator = COMMA;
         }
         sb.append(RPAREN);

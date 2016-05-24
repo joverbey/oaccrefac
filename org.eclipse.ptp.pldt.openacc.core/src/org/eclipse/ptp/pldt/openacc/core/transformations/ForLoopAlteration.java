@@ -49,7 +49,8 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
      */
     public ForLoopAlteration(IASTRewrite rewriter, T check) {
         super(rewriter, check);
-        loop = check.getLoop();
+        this.loop = check.getLoop();
+        this.check = check;
     }
 
     /**

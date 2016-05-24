@@ -75,7 +75,7 @@ public class ReachingDefinitions {
         RDVarSet entrySet = null;
         for(IBasicBlock bb : entrySets.keySet()) {
             Object data = ((ICfgData) bb).getData();
-            if (data != null && data instanceof IASTNode && ASTUtil.isAncestor((IASTNode) data, varUse)) {
+            if (data != null && data instanceof IASTNode && ASTUtil.isAncestor(varUse, (IASTNode) data)) {
                 entrySet = entrySets.get(bb);
             }
         }
@@ -94,7 +94,7 @@ public class ReachingDefinitions {
          */
         Set<IASTName> reachingDefNames = new HashSet<IASTName>();
         for(IASTNode def : reachingDefs) {
-            for(IASTName name : ASTUtil.getNames(def)) {
+            for(IASTName name : ASTUtil.find(def, IASTName.class)) {
                 //if a name found under the definition node is a definition and refers to the right variable
                 if(ASTUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
                     reachingDefNames.add(name);
@@ -175,11 +175,6 @@ public class ReachingDefinitions {
         return uses;
     }
     
-    /*FIXME 
-     *  sometimes identifies reaching definitions for both a statement and its contained expression.
-     *  the expression's definitions are incorrect.
-     *  the expression should never be used to find a reaching definition though, so this is low priority.
-     */
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
         boolean changed;
         do {
@@ -202,13 +197,17 @@ public class ReachingDefinitions {
                 if(entrySets.containsKey(bb)) {
                     bbExit.union(entrySets.get(bb));
                 }
-                for(IBinding write : varsWrittenToIn(bb)) {
-                    bbExit.killAll(write);
+                for(IASTName write : varWritesIn(bb)) {
+                	//if writing to an array, don't consider it to kill previous writes
+                	IASTArraySubscriptExpression arr = ASTUtil.findNearestAncestor(write, IASTArraySubscriptExpression.class);
+                	if(arr == null || !ASTUtil.isAncestor(write, arr.getArrayExpression())) {
+                		bbExit.killAll(write.resolveBinding());
+                	}
                 }
-                for(IBinding write : varsWrittenToIn(bb)) {
+                for(IASTName write : varWritesIn(bb)) {
                     Object data = ((ICfgData) bb).getData();
                     if (data != null && data instanceof IASTNode) {
-                        bbExit.add(write, (IASTNode) data);
+                        bbExit.add(write.resolveBinding(), (IASTNode) data);
                     }
                 }
                 
@@ -229,8 +228,8 @@ public class ReachingDefinitions {
         return;
     }
     
-    private List<IBinding> varsWrittenToIn(IBasicBlock bb) {
-        List<IBinding> writeAccesses = new ArrayList<IBinding>();
+    private List<IASTName> varWritesIn(IBasicBlock bb) {
+        List<IASTName> writeAccesses = new ArrayList<IASTName>();
         Object data = ((ICfgData) bb).getData();
         if (data == null || !(data instanceof IASTNode))
             return writeAccesses;
@@ -239,7 +238,7 @@ public class ReachingDefinitions {
             if(((IASTDeclarationStatement) data).getDeclaration() instanceof IASTSimpleDeclaration) {
                 //int x; int x, y; int x = 1;
                 for(IASTDeclarator dec : ((IASTSimpleDeclaration) (((IASTDeclarationStatement) data).getDeclaration())).getDeclarators()) {
-                    writeAccesses.add(dec.getName().resolveBinding());
+                    writeAccesses.add(dec.getName());
                 }
             }
         }
@@ -259,7 +258,7 @@ public class ReachingDefinitions {
                         unary.getOperator() == IASTUnaryExpression.op_prefixIncr ||
                         unary.getOperator() == IASTUnaryExpression.op_postFixDecr ||
                         unary.getOperator() == IASTUnaryExpression.op_prefixIncr)) {
-                    writeAccesses.add(((IASTIdExpression) (unary.getOperand())).getName().resolveBinding());
+                    writeAccesses.add(((IASTIdExpression) (unary.getOperand())).getName());
                 }
             }
             //x = 1; x += 1; ...
@@ -277,11 +276,11 @@ public class ReachingDefinitions {
                         binary.getOperator() == IASTBinaryExpression.op_plusAssign ||
                         binary.getOperator() == IASTBinaryExpression.op_shiftLeftAssign ||
                         binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign)) {
-                    writeAccesses.add(((IASTIdExpression) ((IASTBinaryExpression) expr).getOperand1()).getName().resolveBinding());
+                    writeAccesses.add(((IASTIdExpression) ((IASTBinaryExpression) expr).getOperand1()).getName());
                 }
                 else if(binary.getOperand1() instanceof IASTArraySubscriptExpression) {
                     if(((IASTArraySubscriptExpression) binary.getOperand1()).getArrayExpression() instanceof IASTIdExpression) {
-                        writeAccesses.add(((IASTIdExpression) ((IASTArraySubscriptExpression) binary.getOperand1()).getArrayExpression()).getName().resolveBinding());
+                        writeAccesses.add(((IASTIdExpression) ((IASTArraySubscriptExpression) binary.getOperand1()).getArrayExpression()).getName());
                     }
                 }
             }
@@ -340,10 +339,6 @@ public class ReachingDefinitions {
             if (data != null && data instanceof IASTNode) {
                 sb.append(((IASTNode) data).getRawSignature() + " at "
                         + ((IASTNode) data).getFileLocation().getStartingLineNumber() + ":");
-                // }
-                // else {
-                // sb.append(bb + ":");
-                // }
                 sb.append(System.lineSeparator());
 
                 sb.append("\tEntries: ");

@@ -38,7 +38,7 @@ public class IntroAtomicsCheck extends SourceStatementsCheck<RefactoringParams> 
      * 
      * For now, we're only going to care about the first statement in the list of statements given to us.
      */
-	protected void checkAtomicsAvaliable(RefactoringStatus status) {
+	protected void checkAtomicsAvailable(RefactoringStatus status) {
 		// Find all of the pragmas surrounding the highlighted statements.
 		if (getStatements().length == 0) {
 			// Failed because there weren't any statements to analyze.
@@ -109,8 +109,8 @@ public class IntroAtomicsCheck extends SourceStatementsCheck<RefactoringParams> 
 	}
 
 	@Override
-	public RefactoringStatus check(RefactoringStatus status, IProgressMonitor pm) {
-		checkAtomicsAvaliable(status);
+	public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
+		checkAtomicsAvailable(status);
 		return status;
 	}
 
