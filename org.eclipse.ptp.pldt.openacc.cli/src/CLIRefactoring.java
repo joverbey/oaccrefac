@@ -35,7 +35,7 @@ public abstract class CLIRefactoring<P extends RefactoringParams, C extends Chec
 	private C check;
     
     public RefactoringStatus performChecks(IASTStatement statement) {
-    	C check = createCheck(statement);
+    	check = createCheck(statement);
     	if (check == null) {
     		return null;
     	}

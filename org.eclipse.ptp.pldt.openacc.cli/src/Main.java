@@ -145,26 +145,20 @@ public class Main {
 	}
 
 	public static void printUsage() {
-	    System.err.println("Main DistributeLoops <filename.c>");
-        System.err.println("Main DistributeLoops <filename.c> -ln <loopname>");
-        System.err.println("Main FuseLoops <filename.c>");
-        System.err.println("Main FuseLoops <filename.c> -ln <loopname>");
-        System.err.println("Main InterchangeLoops <filename.c> <depth>");
-        System.err.println("Main InterchangeLoops <filename.c> -ln <loopname> <depth>");
-        System.err.println("Main IntroduceDefaultNone <filename.c>");
-        System.err.println("Main IntroduceDefaultNone <filename.c> -ln <loopname>");
-        System.err.println("Main IntroduceKernelsLoop <filename.c>");
-        System.err.println("Main IntroduceKernelsLoop <filename.c> -ln <loopname>");
-        System.err.println("Main IntroduceParallelLoop <filename.c>");
-        System.err.println("Main IntroduceParallelLoop <filename.c> -ln <loopname>");
-        System.err.println("Main LoopCutting <filename.c> <cut_factor>");
-        System.err.println("Main LoopCutting <filename.c> -ln <loopname> <cut_factor>");
-        System.err.println("Main StripMine <filename.c> <strip_factor>");
-        System.err.println("Main StripMine <filename.c> -ln <loopname> <strip_factor>");
-        System.err.println("Main TileLoops <filename.c> <width> <height>");
-        System.err.println("Main TileLoops <filename.c> -ln <loopname> <width> <height>");
-        System.err.println("Main Unroll <filename.c> <factor>");
-        System.err.println("Main Unroll <filename.c> -ln <loopname> <factor>");
+		StringBuilder sb = new StringBuilder();
+		sb.append("Usage: Main <refactoring> <refactoring args> <options> <filename>\n")
+				.append("  Refactorings:\n")
+				.append("    DistributeLoops  - Break up one loop with independent statements to many loops\n")
+				.append("    FuseLoops        - Join loops with independent statements into one loo\n")
+				.append("    InterchangeLoops - Swap nested loops\n")
+				.append("    IntroduceDefaultNone - add default(none) to pragma\n")
+				.append("    IntroduceKernelsLoop - change loop to acc kernels loop\n")
+				.append("    IntroduceParallelLoop - change loop to acc parallel loop\n")
+				.append("    LoopCutting <cut_factor> - insert loop with cut_factor iterations\n")
+				.append("    StripMine <strip_factor> - insert loop with strip_factor iterations\n")
+				.append("    TileLoops <width> <height> - break up loop into tiles of width by height\n")
+				.append("    Unroll <factor> - unroll loop by factor");
+		System.err.println(sb);
 	}
 	
 	public static void printStatus(RefactoringStatus status) {
