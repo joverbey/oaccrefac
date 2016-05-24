@@ -97,11 +97,11 @@ for i in "${nameArray[@]}"
 do
 	echo $i >> ./Scripts/errorlog.txt
 	if [ "$refactoring" == "InterchangeLoops" ] || [ "$refactoring" == "LoopCutting" ]  || [ "$refactoring" == "StripMine" ] || [ "$refactoring" == "Unroll" ]; then
-		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i" "$param1"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "TileLoops" ]; then
-		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i"  "$param1" "$param2" > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "$param2" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	else
-		java -cp $PLDT_CLASSPATH "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi
 	if [[ -s $outputtemp ]]; then
 		thing=$(($thing + 1))

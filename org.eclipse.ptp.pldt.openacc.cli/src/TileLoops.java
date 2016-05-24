@@ -11,6 +11,7 @@
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
@@ -20,74 +21,35 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
 /**
  * TileLoops performs the tile loops refactoring.
  */
-public class TileLoops extends LoopMain<TileLoopsParams, TileLoopsCheck, TileLoopsAlteration> {
-
-    /**
-     * main begins refactoring execution.
-     * 
-     * @param args
-     *            Arguments to the refactoring.
-     */
-    public static void main(String[] args) {
-        new TileLoops().run(args);
-    }
+public class TileLoops extends CLILoopRefactoring<TileLoopsParams, TileLoopsCheck> {
 
     /**
      * width represents the width of the tiles.
      */
-    private int width = 0;
+    private final int width;
 
     /**
      * height represents the height of the tiles
      */
-    private int height = 0;
-
-    @Override
-    protected boolean checkArgs(String[] args) {
-        if (!((args.length == 5 && args[1].equals("-ln")) || (args.length == 3 ))) {
-            printUsage();
-            return false;
-        }
-        if (args[1].equals("-ln")) {
-            try {
-                width = Integer.parseInt(args[3]);
-                height = Integer.parseInt(args[4]);
-            } catch (NumberFormatException e) {
-                printUsage();
-                return false;
-            }
-        } else {
-            try {
-                width = Integer.parseInt(args[1]);
-                height = Integer.parseInt(args[2]);
-            } catch (NumberFormatException e) {
-                printUsage();
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * printUsage prints the usage of the refactoring.
-     */
-    private void printUsage() {
-        System.err.println("Usage: TileLoops <filename.c> <width> <height>");
-        System.err.println("Usage: TileLoops <filename.c> -ln <loopname> <width> <height>");
+    private final int height;
+    
+    public TileLoops(int width, int height) {
+    	this.width = width;
+    	this.height = height;
     }
 
     @Override
-    protected TileLoopsCheck createCheck(IASTForStatement loop) {
-        return new TileLoopsCheck(loop);
+    protected TileLoopsCheck createCheck(IASTStatement loop) {
+        return new TileLoopsCheck((IASTForStatement) loop);
     }
 
     @Override
-    protected TileLoopsParams createParams(IASTForStatement forLoop) {
+    protected TileLoopsParams createParams(IASTStatement forLoop) {
         return new TileLoopsParams(width, height);
     }
 
     @Override
-    protected TileLoopsAlteration createAlteration(IASTRewrite rewriter, TileLoopsCheck check) throws CoreException {
+    public TileLoopsAlteration createAlteration(IASTRewrite rewriter, TileLoopsCheck check) throws CoreException {
         return new TileLoopsAlteration(rewriter, width, height, check);
     }
 

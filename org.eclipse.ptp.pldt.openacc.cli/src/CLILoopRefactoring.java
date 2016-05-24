@@ -11,9 +11,9 @@
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.Check;
 import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
 
 /**
  * LoopMain is a generic base for loop refactorings.
@@ -22,11 +22,12 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
  * @param <C> Checker.
  * @param <A> Source alteration.
  */
-public abstract class LoopMain<P extends RefactoringParams, C extends Check<P>, A extends SourceAlteration<C>> extends Main<IASTForStatement, P, C, A> {
-
-    @Override
-    protected IASTForStatement convertStatement(IASTStatement statement) {
-        return (IASTForStatement) statement;
+public abstract class CLILoopRefactoring<P extends RefactoringParams, C extends Check<P>>
+		extends CLIRefactoring<P, C> {
+    public RefactoringStatus performChecks(IASTStatement statement) {
+    	if (statement instanceof IASTForStatement) {
+    		return super.performChecks(statement);
+    	}
+    	return null;
     }
-    
 }
