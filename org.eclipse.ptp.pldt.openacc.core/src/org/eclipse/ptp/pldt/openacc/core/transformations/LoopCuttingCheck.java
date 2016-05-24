@@ -15,6 +15,7 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
@@ -39,6 +40,10 @@ public class LoopCuttingCheck extends AbstractStripMineCheck {
         if (params.getNumFactor() <= 0) {
         	status.addFatalError("Invalid cut factor (<= 0).");
         	return;
+        }
+        
+        if (ASTUtil.isNameInScope(params.getNewName(), loop.getScope())) {
+        	status.addWarning("Index variable name already exists in scope.");
         }
     
         //Check that iterator is divisible by cut size(new loop iterations = 4)

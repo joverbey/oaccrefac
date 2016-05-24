@@ -14,6 +14,7 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
@@ -38,6 +39,10 @@ public class StripMineCheck extends AbstractStripMineCheck {
         if (params.getNumFactor() <= 0) {
             status.addFatalError("Invalid strip factor (<= 0).");
             return;
+        }
+        
+        if (ASTUtil.isNameInScope(params.getNewName(), loop.getScope())) {
+        	status.addWarning("Index variable name already exists in scope.");
         }
 
         // If the strip factor is not divisible by the original linear
