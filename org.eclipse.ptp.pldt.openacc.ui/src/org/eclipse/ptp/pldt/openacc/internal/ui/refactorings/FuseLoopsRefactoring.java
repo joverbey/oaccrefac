@@ -33,11 +33,11 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
  * 
  * (Example taken from Wikipedia's web page on loop Fusion)
  */
-public class LoopFusionRefactoring extends ForLoopRefactoring {
+public class FuseLoopsRefactoring extends ForLoopRefactoring {
 
     private FuseLoopsCheck check;
     
-    public LoopFusionRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public FuseLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 

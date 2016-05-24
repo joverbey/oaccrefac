@@ -214,7 +214,7 @@ public class ForStatementInquisitorTest {
                 + "int x;\n"
                 + "for(i=0;i<10;i++);\n"
                 + "}\n");
-        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
         List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
         Assert.assertTrue(prags.size() == 0);
@@ -227,7 +227,7 @@ public class ForStatementInquisitorTest {
                 + "#pragma one\n"
                 + "for(i=0;i<10;i++);\n"
                 + "}\n");
-        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
         List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
         Assert.assertTrue(prags.size() == 1);
@@ -242,7 +242,7 @@ public class ForStatementInquisitorTest {
                 + "#pragma two\n"
                 + "for(i=0;i<10;i++);\n"
                 + "}\n");
-        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
         List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
         Assert.assertTrue(prags.size() == 2);
@@ -259,7 +259,7 @@ public class ForStatementInquisitorTest {
                 + "#pragma two\n"
                 + "for(i=0;i<10;i++);\n"
                 + "}\n");
-        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
         List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
         Assert.assertTrue(prags.size() == 1);
@@ -279,12 +279,12 @@ public class ForStatementInquisitorTest {
                 + "  }\n"
                 + "}\n"
                 + "}\n");
-        IASTForStatement loop = ASTUtil.findOne(tu, IASTForStatement.class);
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
         List<IASTPreprocessorPragmaStatement> prags = inq.getLeadingPragmas();
         Assert.assertTrue(prags.size() == 1);
         Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
-        loop = ASTUtil.findOne(loop.getBody(), IASTForStatement.class);
+        loop = ASTUtil.findFirst(loop.getBody(), IASTForStatement.class);
         inq = InquisitorFactory.getInquisitor(loop);
         prags = inq.getLeadingPragmas();
         Assert.assertTrue(prags.size() == 1);

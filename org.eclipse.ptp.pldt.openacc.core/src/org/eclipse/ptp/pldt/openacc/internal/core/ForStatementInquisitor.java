@@ -267,10 +267,10 @@ public class ForStatementInquisitor {
         } else if (body instanceof IASTExpressionStatement) {
             if (body.getChildren()[0] instanceof IASTBinaryExpression) {
                 IASTBinaryExpression expr = (IASTBinaryExpression) body.getChildren()[0];
-                return ASTUtil.getAssignment(expr) != null || ASTUtil.getAssignEq(expr) != null;
+                return ASTPatternUtil.getAssignment(expr) != null || ASTPatternUtil.getAssignEq(expr) != null;
             } else if (body.getChildren()[0] instanceof IASTUnaryExpression) {
                 IASTUnaryExpression expr = (IASTUnaryExpression) body.getChildren()[0];
-                return ASTUtil.getIncrDecr(expr) != null;
+                return ASTPatternUtil.getIncrDecr(expr) != null;
             }
         }
         return false;
@@ -370,7 +370,7 @@ public class ForStatementInquisitor {
         // Based on our accepted patterns, the only literal in this expression
         // should be how the linear iteration is depicted. For now, find the
         // only literal expression in this and return it.
-        IASTLiteralExpression literal = ASTUtil.findOne(iterationExpression, IASTLiteralExpression.class);
+        IASTLiteralExpression literal = ASTUtil.findFirst(iterationExpression, IASTLiteralExpression.class);
         if (literal != null) {
             return Integer.parseInt(new String(literal.getValue()));
         } else {

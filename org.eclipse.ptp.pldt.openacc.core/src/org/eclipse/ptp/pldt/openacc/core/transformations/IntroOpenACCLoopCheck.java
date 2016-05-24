@@ -25,11 +25,11 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
-public class IntroParallelCheck extends ForLoopCheck<RefactoringParams> {
+public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 
 	protected boolean parentPragma = false;
 
-	public IntroParallelCheck(final IASTForStatement loop) {
+	public IntroOpenACCLoopCheck(final IASTForStatement loop) {
 		super(loop);
 	}
 

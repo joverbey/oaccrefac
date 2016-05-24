@@ -13,14 +13,14 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopParams;
 
 /**
- * LoopCutting performs the loop cutting refactoring.
+ * Unroll performs the unroll loops refactoring.
  */
-public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, LoopCuttingAlteration> {
+public class UnrollLoop extends LoopMain<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
 
     /**
      * main begins refactoring execution.
@@ -29,13 +29,13 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
      *            Arguments to the refactoring.
      */
     public static void main(String[] args) {
-        new LoopCutting().run(args);
+        new UnrollLoop().run(args);
     }
 
     /**
-     * cutFactor represents how much the loop is cut.
+     * unrollFactor represents how much to unroll the loop.
      */
-    private int cutFactor = 0;
+    private int unrollFactor = 0;
 
     @Override
     protected boolean checkArgs(String[] args) {
@@ -45,19 +45,20 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
         }
         if (args[1].equals("-ln")) {
             try {
-                cutFactor = Integer.parseInt(args[3]);
+                unrollFactor = Integer.parseInt(args[3]);
             } catch (NumberFormatException e) {
                 printUsage();
                 return false;
             }
         } else {
             try {
-                cutFactor = Integer.parseInt(args[1]);
+                unrollFactor = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
                 printUsage();
                 return false;
             }
         }
+
         return true;
     }
 
@@ -65,24 +66,30 @@ public class LoopCutting extends LoopMain<LoopCuttingParams, LoopCuttingCheck, L
      * printUsage prints the usage of the refactoring.
      */
     private void printUsage() {
-        System.err.println("Usage: LoopCutting <filename.c> <cut_factor>");
-        System.err.println("Usage: LoopCutting <filename.c> -ln <loopname> <cut_factor>");
+        System.err.println("Usage: Unroll <filename.c> <factor>");
+        System.err.println("Usage: Unroll <filename.c> -ln <loopname> <factor>");
+    }
+
+    /**
+     * createCheck creates an UnrollLoopCheck.
+     * 
+     * @param loop
+     *            Loop to create the check for.
+     * @return Check to be performed on the loop.
+     */
+    @Override
+    protected UnrollLoopCheck createCheck(IASTForStatement loop) {
+        return new UnrollLoopCheck(loop);
     }
 
     @Override
-    protected LoopCuttingCheck createCheck(IASTForStatement loop) {
-        return new LoopCuttingCheck(loop);
+    protected UnrollLoopParams createParams(IASTForStatement forLoop) {
+        return new UnrollLoopParams(unrollFactor);
     }
 
     @Override
-    protected LoopCuttingParams createParams(IASTForStatement forLoop) {
-        return new LoopCuttingParams(cutFactor);
-    }
-
-    @Override
-    protected LoopCuttingAlteration createAlteration(IASTRewrite rewriter, LoopCuttingCheck check)
-            throws CoreException {
-        return new LoopCuttingAlteration(rewriter, cutFactor, check);
+    protected UnrollLoopAlteration createAlteration(IASTRewrite rewriter, UnrollLoopCheck check) throws CoreException {
+        return new UnrollLoopAlteration(rewriter, unrollFactor, check);
     }
 
 }

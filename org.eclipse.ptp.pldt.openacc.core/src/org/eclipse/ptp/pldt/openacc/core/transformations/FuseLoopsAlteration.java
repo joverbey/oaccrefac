@@ -92,7 +92,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
     @Override
     protected void doChange() {
         remove(second.getFileLocation().getNodeOffset(), second.getFileLocation().getNodeLength());
-        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getLeadingPragmas(second);
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(second);
         Collections.reverse(prags);
         for (IASTPreprocessorPragmaStatement prag : prags) {
             remove(prag.getFileLocation().getNodeOffset(),
@@ -258,7 +258,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
     private IASTName[] getReferencesToModify(IASTStatement original, Set<IASTName> allRefs) {
         List<IASTName> refsToMod = new ArrayList<IASTName>();
         for (IASTName ref : allRefs) {
-            if (ASTUtil.isAncestor(original, ref)) {
+            if (ASTUtil.isAncestor(ref, original)) {
                 refsToMod.add(ref);
             }
         }

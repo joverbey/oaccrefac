@@ -6,14 +6,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Jeff Overbey (Auburn) - initial API and implementation
- *     Jacob Neeley (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class LoopCuttingParams extends AbstractStripMineParams {
-    
-    public LoopCuttingParams(int cutFactor, String newName) {
-        super(cutFactor, newName);
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+
+public abstract class AbstractStripMineCheck extends ForLoopCheck<AbstractStripMineParams> {
+	
+	public AbstractStripMineCheck(IASTForStatement loop) {
+        super(loop);
     }
+	
 }

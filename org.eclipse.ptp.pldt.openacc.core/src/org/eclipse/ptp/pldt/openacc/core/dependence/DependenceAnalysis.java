@@ -82,7 +82,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                         addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
                     } else {
                         List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
-                        List<IBinding> indexVars = ASTUtil.getLoopIndexVariables(commonLoops);
+                        List<IBinding> indexVars = DependenceAnalysis.getLoopIndexVariables(commonLoops);
                         Set<IBinding> otherVars = collectAllVariables(v1.getLinearSubscriptExpressions(),
                                 v2.getLinearSubscriptExpressions());
                         otherVars.removeAll(indexVars);
@@ -146,4 +146,16 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
     private boolean writesToIndex(VariableAccess write) {
     	return write.isWrite() && write.bindsTo(index);
     }
+
+	private static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
+	    List<IBinding> result = new ArrayList<IBinding>(loops.size());
+	    for (IASTForStatement forStmt : loops) {
+	        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(forStmt);
+	        IBinding variable = loop.getIndexVariable();
+	        if (variable != null) {
+	            result.add(variable);
+	        }
+	    }
+	    return result;
+	}
 }

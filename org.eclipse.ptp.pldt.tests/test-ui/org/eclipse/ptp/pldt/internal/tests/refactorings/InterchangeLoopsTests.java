@@ -15,26 +15,27 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopStripMiningRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.InterchangeLoopsRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class LoopStripMiningTests extends RefactoringTest<LoopStripMiningRefactoring> {
+public class InterchangeLoopsTests extends RefactoringTest<InterchangeLoopsRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
-        return generateParameters("testcode/LoopStripMining");
+        Iterable<Object[]> params = generateParameters("testcode/InterchangeLoops");
+        return params;
     }
 
-    public LoopStripMiningTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(LoopStripMiningRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public InterchangeLoopsTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(InterchangeLoopsRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(LoopStripMiningRefactoring refactoring, IFile file,
+    protected void configureRefactoring(InterchangeLoopsRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-         String stripFactor = markerFields.removeFirst();
-         refactoring.setStripFactor(Integer.parseInt(stripFactor));
+         String unrollFactor = markerFields.removeFirst();
+         refactoring.setExchangeDepth(Integer.parseInt(unrollFactor));
     }
 }

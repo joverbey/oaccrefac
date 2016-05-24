@@ -54,6 +54,7 @@ import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.BindingComparator;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
@@ -231,14 +232,14 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTExpressionStatement stmt) throws DependenceTestFailure {
-        Pair<IASTExpression, IASTExpression> asgt = ASTUtil.getAssignment(stmt.getExpression());
+        Pair<IASTExpression, IASTExpression> asgt = ASTPatternUtil.getAssignment(stmt.getExpression());
         if (asgt != null) {
             collectAccessesFromAssignmentLHS(asgt.getFirst());
             collectAccessesFromExpression(asgt.getSecond());
             return;
         }
 
-        Pair<IASTExpression, IASTExpression> assignEq = ASTUtil.getAssignEq(stmt.getExpression());
+        Pair<IASTExpression, IASTExpression> assignEq = ASTPatternUtil.getAssignEq(stmt.getExpression());
         if (assignEq != null) {
             // The variable on the LHS is both read and written
             collectAccessesFromAssignmentLHS(assignEq.getFirst());
@@ -247,14 +248,14 @@ public abstract class AbstractDependenceAnalysis {
             return;
         }
 
-        IASTExpression incrDecr = ASTUtil.getIncrDecr(stmt.getExpression());
+        IASTExpression incrDecr = ASTPatternUtil.getIncrDecr(stmt.getExpression());
         if (incrDecr != null) {
             collectAccessesFromExpression(incrDecr);
             collectAccessesFromAssignmentLHS(incrDecr);
             return;
         }
         
-        IASTFunctionCallExpression function = ASTUtil.getFuncExpression(stmt.getExpression());
+        IASTFunctionCallExpression function = ASTPatternUtil.getFuncExpression(stmt.getExpression());
         if (function != null) {
         	collectAccessesFromExpression(function);
         	return;
@@ -264,13 +265,13 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFromAssignmentLHS(IASTExpression expr) throws DependenceTestFailure {
-        IASTName scalar = ASTUtil.getIdExpression(expr);
+        IASTName scalar = ASTPatternUtil.getIdExpression(expr);
         if (scalar != null) {
             variableAccesses.add(new VariableAccess(true, scalar));
             return;
         }
 
-        Pair<IASTName, IASTName> fieldReference = ASTUtil.getSimpleFieldReference(expr);
+        Pair<IASTName, IASTName> fieldReference = ASTPatternUtil.getSimpleFieldReference(expr);
         if (fieldReference != null) {
             IASTName owner = fieldReference.getFirst();
             IASTName field = fieldReference.getSecond();
@@ -279,7 +280,7 @@ public abstract class AbstractDependenceAnalysis {
             return;
         }
 
-        Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
+        Pair<IASTName, LinearExpression[]> arrayAccess = ASTPatternUtil.getMultidimArrayAccess(expr);
         if (arrayAccess != null) {
             variableAccesses.add(new VariableAccess(true, arrayAccess.getFirst(), arrayAccess.getSecond()));
             IASTInitializerClause arg = ((IASTArraySubscriptExpression) expr).getArgument();
@@ -289,7 +290,7 @@ public abstract class AbstractDependenceAnalysis {
             }
         }
         
-        IASTExpression incrDecr = ASTUtil.getIncrDecr(expr);
+        IASTExpression incrDecr = ASTPatternUtil.getIncrDecr(expr);
         if (incrDecr != null) {
             collectAccessesFromExpression(incrDecr);
             collectAccessesFromAssignmentLHS(incrDecr);
@@ -372,14 +373,14 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTIdExpression expr) throws DependenceTestFailure {
-        IASTName name = ASTUtil.getIdExpression(expr);
+        IASTName name = ASTPatternUtil.getIdExpression(expr);
         if (name == null)
             throw unsupported(expr);
         variableAccesses.add(new VariableAccess(false, name));
     }
 
     private void collectAccessesFrom(IASTFieldReference expr) throws DependenceTestFailure {
-        Pair<IASTName, IASTName> pair = ASTUtil.getSimpleFieldReference(expr);
+        Pair<IASTName, IASTName> pair = ASTPatternUtil.getSimpleFieldReference(expr);
         if (pair == null)
             throw unsupported(expr);
 
@@ -413,7 +414,7 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTArraySubscriptExpression expr) throws DependenceTestFailure {
-        Pair<IASTName, LinearExpression[]> arrayAccess = ASTUtil.getMultidimArrayAccess(expr);
+        Pair<IASTName, LinearExpression[]> arrayAccess = ASTPatternUtil.getMultidimArrayAccess(expr);
         if (arrayAccess == null)
             throw unsupported(expr);
         variableAccesses.add(new VariableAccess(false, arrayAccess.getFirst(), arrayAccess.getSecond()));

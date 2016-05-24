@@ -6,9 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
+ *     Jeff Overbey (Auburn) - initial API and implementation
  *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
-
 package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
 
 import org.eclipse.cdt.core.model.ICElement;
@@ -21,34 +21,54 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 
-public class LoopCuttingRefactoring extends ForLoopRefactoring{
+public class StripMineLoopRefactoring extends ForLoopRefactoring {
 
-    private int cutFactor;
+    private int numFactor = -1;
     private String newName = "";
-    private LoopCuttingCheck check;
-    
-    // TODO: put a good comment here
-    public LoopCuttingRefactoring(ICElement element, ISelection selection, ICProject project) {
+    private StripMineCheck stripCheck;
+    private LoopCuttingCheck loopCheck;
+    private boolean cut = false;
+
+    public StripMineLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
-    public void setCutFactor(int factor) {
-        this.cutFactor = factor;
+    public void setStripFactor(int factor) {
+        numFactor = factor;
     }
     
-    public void setNewName(String newName) {
-    	this.newName = newName;
+    public void setNewName(String name) {
+    	newName = name;
     }
     
+    public void setCut(boolean cut) {
+    	this.cut = cut;
+    }
+
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new LoopCuttingCheck(getLoop());
-        check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
+    	if (cut) {
+    		loopCheck = new LoopCuttingCheck(getLoop());
+    		loopCheck.performChecks(status, pm, new LoopCuttingParams(numFactor, newName));
+    	}
+    	else {
+    		stripCheck = new StripMineCheck(getLoop());
+            stripCheck.performChecks(status, pm, new StripMineParams(numFactor, newName));
+    	}
     }
-    
+
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new LoopCuttingAlteration(rewriter, cutFactor, newName, check).change();
+    	if (cut) {
+    		new LoopCuttingAlteration(rewriter, numFactor, newName, loopCheck).change();
+    	}
+    	else {
+            new StripMineAlteration(rewriter, numFactor, newName, stripCheck).change();
+
+    	}
     }
 }

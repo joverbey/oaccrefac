@@ -366,7 +366,7 @@ public class ConstantPropagationTest extends TestCase {
 
     private void check(String program, String[] expectedValues) throws CoreException {
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(program);
-        IASTFunctionDefinition main = ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
+        IASTFunctionDefinition main = ASTUtil.findFirst(translationUnit, IASTFunctionDefinition.class);
 
         final ConstantPropagation analysis = new ConstantPropagation(main);
         final Set<String> values = new TreeSet<String>();

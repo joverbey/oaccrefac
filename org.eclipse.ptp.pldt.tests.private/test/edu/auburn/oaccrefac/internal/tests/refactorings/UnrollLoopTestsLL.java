@@ -15,21 +15,21 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.LoopUnrollingRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.UnrollLoopRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
-public class LoopUnrollingTestsLL extends RefactoringTestLL<LoopUnrollingRefactoring> {
+public class UnrollLoopTestsLL extends RefactoringTestLL<UnrollLoopRefactoring> {
     
     private static final String m_testDir = "testcode-ll/LoopUnrolling/";
     
-    public LoopUnrollingTestsLL(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(LoopUnrollingRefactoring.class, fileContainingMarker, markerOffset, markerText);
+    public UnrollLoopTestsLL(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
+        super(UnrollLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
     
     @Override
-    protected void configureRefactoring(LoopUnrollingRefactoring refactoring, IFile file, TextSelection selection, LinkedList<String> markerFields) {
+    protected void configureRefactoring(UnrollLoopRefactoring refactoring, IFile file, TextSelection selection, LinkedList<String> markerFields) {
         super.configureRefactoring(refactoring, file, selection, markerFields); 
         //For now, just set the parameter to a constant 2
         //TODO Figure out a way to test multiple input parameters? From result file maybe?

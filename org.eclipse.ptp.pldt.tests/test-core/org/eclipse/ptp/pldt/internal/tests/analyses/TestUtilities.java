@@ -26,7 +26,7 @@ public class TestUtilities {
         }
         function = function.substring(0, function.length()-1);
         IASTTranslationUnit translationUnit = ASTUtil.translationUnitForString(function);
-        return ASTUtil.findOne(translationUnit, IASTFunctionDefinition.class);
+        return ASTUtil.findFirst(translationUnit, IASTFunctionDefinition.class);
     }
     
     /**

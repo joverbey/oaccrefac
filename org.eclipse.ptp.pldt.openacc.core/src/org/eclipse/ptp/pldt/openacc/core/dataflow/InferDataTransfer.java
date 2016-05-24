@@ -185,10 +185,10 @@ public abstract class InferDataTransfer {
     		}
     		IASTStatement parent = null;
     		for (IASTStatement node : nodes) {
-    			if (ASTUtil.isStrictAncestor(node, construct)) {
+    			if (ASTUtil.isStrictAncestor(construct, node)) {
     				if (parent == null) {
     					parent = node;
-    				} else if (ASTUtil.isStrictAncestor(parent, node)) {
+    				} else if (ASTUtil.isStrictAncestor(node, parent)) {
     					parent = node;
     				}
     			}
@@ -215,14 +215,14 @@ public abstract class InferDataTransfer {
     		if(ancestor.equals(root)) {
     			//is an ancestor if descendant is anywhere in the main construct
     			for(IASTStatement statement : construct) {
-    				if(ASTUtil.isAncestor(statement, descendant)) {
+    				if(ASTUtil.isAncestor(descendant, statement)) {
     					return true;
     				}
     			}
     			return false;
     		}
     		else {
-    			return ASTUtil.isAncestor(ancestor, descendant);
+    			return ASTUtil.isAncestor(descendant, ancestor);
     		}
     	}
     	

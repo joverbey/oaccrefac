@@ -12,22 +12,10 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class StripMineParams extends RefactoringParams {
-
-    private int stripFactor;
-    private String newName;
+public class StripMineParams extends AbstractStripMineParams {
 
     public StripMineParams(int stripFactor, String newName) {
-        this.stripFactor = stripFactor;
-        this.newName = newName;
-    }
-
-    public int getStripFactor() {
-        return stripFactor;
-    }
-    
-    public String getNewName() {
-    	return newName;
+        super(stripFactor, newName);
     }
 
 }
