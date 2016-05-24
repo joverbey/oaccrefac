@@ -83,7 +83,7 @@ public class IntroduceDataConstructAlteration extends SourceStatementsAlteration
     	allStatements.addAll(inferCreate.get().keySet());
     	for(IASTStatement statement : allStatements) {
     		if (statement != inferCopyin.getRoot()) {
-				for (IASTPreprocessorPragmaStatement prag : ASTUtil.getLeadingPragmas(statement)) {
+				for (IASTPreprocessorPragmaStatement prag : ASTUtil.getPragmaNodes(statement)) {
 					StringBuilder sb = new StringBuilder();
 					IAccConstruct construct = null;
 					try {

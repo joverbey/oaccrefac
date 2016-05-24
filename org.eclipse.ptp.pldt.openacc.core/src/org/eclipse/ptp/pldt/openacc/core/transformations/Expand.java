@@ -57,7 +57,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 
 		String newConstruct = "";
 		for (IASTStatement statement : largestexp.getStatements()) {
-			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
 				if (!pragma.equals(getPragma()))
 					newConstruct += pragma.getRawSignature() + System.lineSeparator();
 			}

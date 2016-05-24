@@ -75,7 +75,7 @@ public class ReachingDefinitions {
         RDVarSet entrySet = null;
         for(IBasicBlock bb : entrySets.keySet()) {
             Object data = ((ICfgData) bb).getData();
-            if (data != null && data instanceof IASTNode && ASTUtil.isAncestor((IASTNode) data, varUse)) {
+            if (data != null && data instanceof IASTNode && ASTUtil.isAncestor(varUse, (IASTNode) data)) {
                 entrySet = entrySets.get(bb);
             }
         }
@@ -94,7 +94,7 @@ public class ReachingDefinitions {
          */
         Set<IASTName> reachingDefNames = new HashSet<IASTName>();
         for(IASTNode def : reachingDefs) {
-            for(IASTName name : ASTUtil.getNames(def)) {
+            for(IASTName name : ASTUtil.find(def, IASTName.class)) {
                 //if a name found under the definition node is a definition and refers to the right variable
                 if(ASTUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
                     reachingDefNames.add(name);
@@ -205,7 +205,7 @@ public class ReachingDefinitions {
                 for(IASTName write : varWritesIn(bb)) {
                 	//if writing to an array, don't consider it to kill previous writes
                 	IASTArraySubscriptExpression arr = ASTUtil.findNearestAncestor(write, IASTArraySubscriptExpression.class);
-                	if(arr == null || !ASTUtil.isAncestor(arr.getArrayExpression(), write)) {
+                	if(arr == null || !ASTUtil.isAncestor(write, arr.getArrayExpression())) {
                 		bbExit.killAll(write.resolveBinding());
                 	}
                 }

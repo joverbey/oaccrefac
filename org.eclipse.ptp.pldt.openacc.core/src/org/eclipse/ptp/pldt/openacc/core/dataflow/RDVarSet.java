@@ -92,7 +92,7 @@ public class RDVarSet {
         for(IBinding binding : set.keySet()) {
             if(binding.equals(definition.resolveBinding())) {
                 for(IASTNode node : set.get(binding)) {
-                    if(ASTUtil.isAncestor(node, definition)) {
+                    if(ASTUtil.isAncestor(definition, node)) {
                         return true;
                     }
                 }

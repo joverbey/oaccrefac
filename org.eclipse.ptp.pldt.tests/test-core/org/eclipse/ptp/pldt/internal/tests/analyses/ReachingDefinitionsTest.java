@@ -29,7 +29,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "    a = 14;      \n" //7
                 + "    b = a + 1;   \n" //8
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -93,7 +93,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "    a = 14;      \n" //7
                 + "    b = a + 1;   \n" //8
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -158,7 +158,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "    b[0] = a[2] + 1;         \n" //8
                 + "    a[0] = b[2] + 2;         \n" //9
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -243,7 +243,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "        b = a + i;       \n" //11
                 + "    }"
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -333,7 +333,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "        b[5] = a[6] + i;     \n" //11
                 + "    }"
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -439,7 +439,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "    }                \n" //9
                 + "    b = a + 1;       \n" //10
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -520,7 +520,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "    }                \n" //11
                 + "    b = a + 1;       \n" //12
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
@@ -597,7 +597,7 @@ public class ReachingDefinitionsTest extends TestCase {
                 + "    } while(a < 12); \n" //9
                 + "    b = a + 1;       \n" //10
                 + "}");
-        IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
         ReachingDefinitions rda = new ReachingDefinitions(func);
         for(IASTNode node : getStatements(func)) {
             Set<IASTName> rd = rda.reachingDefinitions(node);
