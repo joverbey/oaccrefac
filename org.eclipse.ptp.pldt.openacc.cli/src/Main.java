@@ -38,37 +38,55 @@ public class Main {
 		int argIndex = 1;
 		String filename = null;
 		String loopName = null;
-		int row = -1, col = -1;
+		int row = -1;
 		try {
 			switch (args[0]) {
 			// 2 args
-			case "TileLoops":
+			case "-tile":
 				refactoring = new TileLoops(parseInt(args[argIndex++]), parseInt(args[argIndex++]));
 				break;
-			case "StripMine":
-				refactoring = new StripMineLoop(parseInt(args[argIndex++]), args[argIndex++], false);
+			case "-strip-mine":
+				String name = "";
+				boolean cut = false;
+				int factor = parseInt(args[argIndex++]);
+				loop:
+				for (int i = argIndex; i < args.length; i++) {
+					switch (args[i]) {
+					case "-name":
+						name = args[++i];
+						argIndex += 2;
+						break;
+					case "-cut":
+						cut = true;
+						argIndex++;
+						break;
+					default:
+						break loop;
+					}
+				}
+				refactoring = new StripMineLoop(factor, name, cut);
 				break;
 			// 1 arg
-			case "InterchangeLoops":
+			case "-interchange":
 				refactoring = new InterchangeLoops(parseInt(args[argIndex++]));
 				break;
-			case "Unroll":
+			case "-unroll":
 				refactoring = new UnrollLoop(parseInt(args[argIndex++]));
 				break;
 			// no args
-			case "DistributeLoops":
+			case "-distribute":
 				refactoring = new DistributeLoops();
 				break;
-			case "FuseLoops":
+			case "-fuse":
 				refactoring = new FuseLoops();
 				break;
-			case "IntroduceDefaultNone":
+			case "-introduce-default-none":
 				refactoring = new IntroduceDefaultNone();
 				break;
-			case "IntroduceKernelsLoop":
+			case "-introduce-kernels-loop":
 				refactoring = new IntroduceKernelsLoop();
 				break;
-			case "IntroduceParallelLoop":
+			case "-introduce-parallel-loop":
 				refactoring = new IntroOpenACCLoop();
 				break;
 			default:
@@ -84,7 +102,6 @@ public class Main {
 				case "-pos":
 				case "--position":
 					row = parseInt(args[++i]);
-					col = parseInt(args[++i]);
 					break;
 				default:
 					filename = args[i];
@@ -96,7 +113,7 @@ public class Main {
 			System.exit(1);
 		}
 
-		if (filename == null && (row == -1 && col == -1 || loopName == null)) {
+		if (filename == null && (row == -1 || loopName == null)) {
 			printUsage();
 			System.exit(1);
 		}
@@ -111,7 +128,7 @@ public class Main {
 
         IASTStatement statement = null;
         IASTRewrite rw = ASTRewrite.create(translationUnit);
-        if (row != -1 && col != -1) {
+        if (row != -1) {
         	statement = findStatementForPosition(translationUnit, row);
         } else {
 	        statement = findStatementToAutotune(translationUnit, loopName);        	
@@ -142,8 +159,8 @@ public class Main {
 	}
 
 	public static void printUsage() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Usage: Main <refactoring> <refactoring args> <options> <filename>\n")
+		System.err.println(new StringBuilder()
+				.append("Usage: Main <refactoring> <refactoring args> <options> <filename>\n")
 				.append("  Refactorings:\n")
 				.append("    DistributeLoops            - Break up one loop with independent statements to many loops\n")
 				.append("    FuseLoops                  - Join loops with independent statements into one loo\n")
@@ -151,13 +168,19 @@ public class Main {
 				.append("    IntroduceDefaultNone       - add default(none) to pragma\n")
 				.append("    IntroduceKernelsLoop       - change loop to acc kernels loop\n")
 				.append("    IntroduceParallelLoop      - change loop to acc parallel loop\n")
-				.append("    StripMine <strip_factor>   - insert loop with strip_factor iterations\n")
+				.append("    StripMine <strip_factor> [-name <new_name>] [-cut]\n")
+				.append("                               - insert loop with strip_factor iterations\n")
+				.append("                <strip_factor>:  the number of times to strip the loop iterations\n")
+				.append("              -name <new_name>:  (optional) the new variable name\n")
+				.append("                          -cut:  (optional) specifies that a loop cut intead of a strip mine\n")
 				.append("    TileLoops <width> <height> - break up loop into tiles of width by height\n")
+				.append("                       <width>:  the width of the tiles\n")
+				.append("                      <height>:  the height of the tiles\n")
 				.append("    Unroll <factor>            - unroll loop by factor\n")
+				.append("                      <factor>:  the number of loop iterations to unroll\n")
 				.append("  Options:\n")
-				.append("    -ln  or --loop-name <name>         - the name of the loop to refactor\n")
-				.append("    -pos or --position <line> <column> - the line and column of the statement");
-		System.err.println(sb);
+				.append("    -ln  or --loop-name <name> - the name of the loop to refactor\n")
+				.append("    -pos or --position <line> 	- the line number of the statement"));
 	}
 	
 	public static void printStatus(RefactoringStatus status) {
