@@ -233,6 +233,51 @@ public class DependenceAnalysisTest extends TestCase {
         }
     }
 
+    public void testIfStatement() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+              /* 2 */ "  double a = 1, b;\n" +
+              /* 3 */ "  if (a < 5)\n" +
+              /* 4 */ "    a++;\n" +
+              /* 5 */ "  b = a;\n" +
+              /* 6 */ "}");
+        String[] expected = new String[] { //
+                "ANTI 3 -> 4 []", //
+                "FLOW 2 -> 3 []", //
+                "FLOW 2 -> 4 []", //
+                "FLOW 2 -> 5 []", //
+                "FLOW 4 -> 5 []", //
+                "OUTPUT 2 -> 4 []", //
+                "OUTPUT 2 -> 5 []" };
+        assertDependencesEqual(expected, stmt);
+    }
+
+    public void testIfElseStatement() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+              /* 2 */ "  double a = 1, b;\n" +
+              /* 3 */ "  if (a < 5)\n" +
+              /* 4 */ "    a++;\n" +
+              /* 5 */ "  else\n" +
+              /* 6 */ "    a--;\n" +
+              /* 7 */ "  b = a;\n" +
+              /* 8 */ "}");
+        String[] expected = new String[] { //
+                "ANTI 3 -> 4 []\n" + //
+                "ANTI 3 -> 6 []\n" + //
+                "ANTI 4 -> 6 []\n" + // spurious
+                "FLOW 2 -> 3 []\n" + //
+                "FLOW 2 -> 4 []\n" + //
+                "FLOW 2 -> 6 []\n" + //
+                "FLOW 2 -> 7 []\n" + //
+                "FLOW 4 -> 6 []\n" + // spurious
+                "FLOW 4 -> 7 []\n" + //
+                "FLOW 6 -> 7 []\n" + //
+                "OUTPUT 2 -> 4 []\n" + //
+                "OUTPUT 2 -> 6 []\n" + //
+                "OUTPUT 2 -> 7 []\n" + //
+                "OUTPUT 4 -> 6 []" }; // spurious
+        assertDependencesEqual(expected, stmt);
+    }
+
     private void assertDependencesEqual(String[] expectedStrings, IASTStatement stmt) throws DependenceTestFailure {
         TreeSet<String> expected = new TreeSet<String>(Arrays.asList(expectedStrings));
 
