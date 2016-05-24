@@ -34,7 +34,7 @@ public class Main {
 			printUsage();
 			System.exit(1);
 		}
-		CLIRefactoring<?, ?, ?> m = null;
+		CLIRefactoring<?, ?> m = null;
 		int argIndex = 1;
 		String filename = null;
 		String loopName = null;

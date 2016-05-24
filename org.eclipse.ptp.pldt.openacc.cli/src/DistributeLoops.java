@@ -20,7 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
  * DistributeLoops performs the distribute loops refactoring.
  */
 public class DistributeLoops
-		extends CLILoopRefactoring<RefactoringParams, DistributeLoopsCheck, DistributeLoopsAlteration> {
+		extends CLILoopRefactoring<RefactoringParams, DistributeLoopsCheck> {
 
     @Override
     protected DistributeLoopsCheck createCheck(IASTStatement loop) {

@@ -21,7 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopParams;
 /**
  * Unroll performs the unroll loops refactoring.
  */
-public class UnrollLoop extends CLILoopRefactoring<UnrollLoopParams, UnrollLoopCheck, UnrollLoopAlteration> {
+public class UnrollLoop extends CLILoopRefactoring<UnrollLoopParams, UnrollLoopCheck> {
 
     /**
      * unrollFactor represents how much to unroll the loop.

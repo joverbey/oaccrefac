@@ -21,7 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
  * IntroduceKernelsLoop performs the introduce kernels loop refactoring.
  */
 public class IntroduceKernelsLoop 
-		extends CLILoopRefactoring<RefactoringParams, IntroduceKernelsLoopCheck, IntroduceKernelsLoopAlteration> {
+		extends CLILoopRefactoring<RefactoringParams, IntroduceKernelsLoopCheck> {
 
     
     @Override
@@ -30,7 +30,8 @@ public class IntroduceKernelsLoop
     }
 
     @Override
-    public IntroduceKernelsLoopAlteration createAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check) throws CoreException {
+    public IntroduceKernelsLoopAlteration createAlteration(IASTRewrite rewriter, IntroduceKernelsLoopCheck check)
+    		throws CoreException {
         return new IntroduceKernelsLoopAlteration(rewriter, check);
     }
     

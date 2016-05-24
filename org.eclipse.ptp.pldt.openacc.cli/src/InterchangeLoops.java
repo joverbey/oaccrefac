@@ -21,8 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsCheck;
 /**
  * InterchangeLoops performs the interchange loops alteration.
  */
-public class InterchangeLoops
-        extends CLILoopRefactoring<InterchangeLoopParams, InterchangeLoopsCheck, InterchangeLoopsAlteration> {
+public class InterchangeLoops extends CLILoopRefactoring<InterchangeLoopParams, InterchangeLoopsCheck> {
 
     /**
      * depth is the depth to interchange to.

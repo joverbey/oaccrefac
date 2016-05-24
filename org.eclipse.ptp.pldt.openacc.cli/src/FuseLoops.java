@@ -21,7 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 /**
  * FuseLoops performs the fuse loops refactoring.
  */
-public class FuseLoops extends CLILoopRefactoring<RefactoringParams, FuseLoopsCheck, FuseLoopsAlteration> {
+public class FuseLoops extends CLILoopRefactoring<RefactoringParams, FuseLoopsCheck> {
 
     @Override
     protected FuseLoopsCheck createCheck(IASTStatement loop) {

@@ -6,8 +6,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-public class ExpandDataConstruct 
-		extends CLIRefactoring<RefactoringParams, ExpandDataConstructCheck, ExpandDataConstructAlteration> {
+public class ExpandDataConstruct extends CLIRefactoring<RefactoringParams, ExpandDataConstructCheck> {
 
     @Override
     protected ExpandDataConstructCheck createCheck(IASTStatement statement) {

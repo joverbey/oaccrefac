@@ -20,7 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 /**
  * IntroduceParallelLoop performs the introduce parallel loop refactoring.
  */
-public class IntroOpenACCLoop extends CLILoopRefactoring<RefactoringParams, IntroOpenACCLoopCheck, IntroOpenACCLoopAlteration> {
+public class IntroOpenACCLoop extends CLILoopRefactoring<RefactoringParams, IntroOpenACCLoopCheck> {
 
     @Override
     protected IntroOpenACCLoopCheck createCheck(IASTStatement loop) {
@@ -28,7 +28,8 @@ public class IntroOpenACCLoop extends CLILoopRefactoring<RefactoringParams, Intr
     }
     
     @Override
-    public IntroOpenACCLoopAlteration createAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check) throws CoreException {
+    public IntroOpenACCLoopAlteration createAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check)
+    		throws CoreException {
         return new IntroOpenACCLoopAlteration(rewriter, check);
     }
 

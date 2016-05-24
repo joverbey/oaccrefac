@@ -21,7 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 /**
  * StripMine performs the strip mine refactoring.
  */
-public class StripMineLoop extends CLILoopRefactoring<StripMineParams, StripMineCheck, StripMineAlteration> {
+public class StripMineLoop extends CLILoopRefactoring<StripMineParams, StripMineCheck> {
     /**
      * stripFactor is the factor to use in strip mining the loop
      */

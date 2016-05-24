@@ -30,7 +30,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
  * @param <A>
  *            Source alteration.
  */
-public abstract class CLIRefactoring<P extends RefactoringParams, C extends Check<P>, A extends SourceAlteration<C>> {
+public abstract class CLIRefactoring<P extends RefactoringParams, C extends Check<P>> {
 
 	private C check;
     

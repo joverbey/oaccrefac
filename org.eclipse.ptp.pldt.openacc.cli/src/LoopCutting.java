@@ -21,7 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 /**
  * LoopCutting performs the loop cutting refactoring.
  */
-public class LoopCutting extends CLILoopRefactoring<LoopCuttingParams, LoopCuttingCheck, LoopCuttingAlteration> {
+public class LoopCutting extends CLILoopRefactoring<LoopCuttingParams, LoopCuttingCheck> {
 
     /**
      * cutFactor represents how much the loop is cut.

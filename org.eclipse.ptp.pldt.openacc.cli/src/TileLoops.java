@@ -21,22 +21,22 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
 /**
  * TileLoops performs the tile loops refactoring.
  */
-public class TileLoops extends CLILoopRefactoring<TileLoopsParams, TileLoopsCheck, TileLoopsAlteration> {
+public class TileLoops extends CLILoopRefactoring<TileLoopsParams, TileLoopsCheck> {
+
+    /**
+     * width represents the width of the tiles.
+     */
+    private final int width;
+
+    /**
+     * height represents the height of the tiles
+     */
+    private final int height;
     
     public TileLoops(int width, int height) {
     	this.width = width;
     	this.height = height;
     }
-
-    /**
-     * width represents the width of the tiles.
-     */
-    private int width = 0;
-
-    /**
-     * height represents the height of the tiles
-     */
-    private int height = 0;
 
     @Override
     protected TileLoopsCheck createCheck(IASTStatement loop) {

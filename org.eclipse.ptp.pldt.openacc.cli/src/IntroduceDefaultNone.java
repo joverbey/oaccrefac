@@ -21,7 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 /**
  * IntroduceDefaultNone performs the introduce default none refactoring.
  */
-public class IntroduceDefaultNone extends CLIRefactoring<RefactoringParams, IntroDefaultNoneCheck, IntroDefaultNoneAlteration> {
+public class IntroduceDefaultNone extends CLIRefactoring<RefactoringParams, IntroDefaultNoneCheck> {
 
     @Override
     protected IntroDefaultNoneCheck createCheck(IASTStatement statement) {
