@@ -1,6 +1,7 @@
 int main() {
     int a, b, c, d;
-    for (int i = 0; i < 100; i++) { /*<<<<< 3,1,12,6,pass*/
+#pragma acc kernels loop
+	for (int i = 0; i < 100; i++) { /*<<<<< 3,1,12,6,pass*/
         a = 5;
         if(a < c){
         	b = 6;
