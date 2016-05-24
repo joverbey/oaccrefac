@@ -8,11 +8,13 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Jacob Neeley (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
@@ -52,4 +54,12 @@ public class LoopCuttingCheck extends AbstractStripMineCheck {
         }
     
     }
+    
+    @Override
+	public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+		if (dep != null && dep.hasLevel1CarriedDependence()) {
+			status.addError("This loop cannot be cut because it carries a dependence.");
+		}
+
+	}
 }
