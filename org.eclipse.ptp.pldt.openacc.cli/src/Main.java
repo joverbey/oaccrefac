@@ -148,16 +148,19 @@ public class Main {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Usage: Main <refactoring> <refactoring args> <options> <filename>\n")
 				.append("  Refactorings:\n")
-				.append("    DistributeLoops  - Break up one loop with independent statements to many loops\n")
-				.append("    FuseLoops        - Join loops with independent statements into one loo\n")
-				.append("    InterchangeLoops - Swap nested loops\n")
-				.append("    IntroduceDefaultNone - add default(none) to pragma\n")
-				.append("    IntroduceKernelsLoop - change loop to acc kernels loop\n")
-				.append("    IntroduceParallelLoop - change loop to acc parallel loop\n")
-				.append("    LoopCutting <cut_factor> - insert loop with cut_factor iterations\n")
-				.append("    StripMine <strip_factor> - insert loop with strip_factor iterations\n")
+				.append("    DistributeLoops            - Break up one loop with independent statements to many loops\n")
+				.append("    FuseLoops                  - Join loops with independent statements into one loo\n")
+				.append("    InterchangeLoops           - Swap nested loops\n")
+				.append("    IntroduceDefaultNone       - add default(none) to pragma\n")
+				.append("    IntroduceKernelsLoop       - change loop to acc kernels loop\n")
+				.append("    IntroduceParallelLoop      - change loop to acc parallel loop\n")
+				.append("    LoopCutting <cut_factor>   - insert loop with cut_factor iterations\n")
+				.append("    StripMine <strip_factor>   - insert loop with strip_factor iterations\n")
 				.append("    TileLoops <width> <height> - break up loop into tiles of width by height\n")
-				.append("    Unroll <factor> - unroll loop by factor");
+				.append("    Unroll <factor>            - unroll loop by factor\n")
+				.append("  Options:\n")
+				.append("    -ln  or --loop-name <name>         - the name of the loop to refactor\n")
+				.append("    -pos or --position <line> <column> - the line and column of the statement");
 		System.err.println(sb);
 	}
 	
