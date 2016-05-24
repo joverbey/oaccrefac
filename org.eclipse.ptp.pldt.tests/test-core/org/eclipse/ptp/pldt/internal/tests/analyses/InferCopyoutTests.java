@@ -10,7 +10,6 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
