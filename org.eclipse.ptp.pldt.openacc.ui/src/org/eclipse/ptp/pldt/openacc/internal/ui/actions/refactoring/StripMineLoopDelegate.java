@@ -48,6 +48,7 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
                 refac.setNewName(value);
             }
         });
+        page.setButton(true, refac);
         return wizard;
     }
 

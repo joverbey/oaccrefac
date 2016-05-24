@@ -54,11 +54,64 @@
             </message_arguments>
         </filter>
     </resource>
+<<<<<<< HEAD
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/IntroOpenACCParallelLoopDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroOpenACCParallelLoopDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="IntroOpenACCParallelLoopDelegate"/>
+                <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopFusionDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopFusionDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="LoopFusionDelegate"/>
+                <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopInterchangeDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopInterchangeDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="LoopInterchangeDelegate"/>
+                <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopStripMiningDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopStripMiningDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="LoopStripMiningDelegate"/>
+                <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopTilingDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopTilingDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="LoopTilingDelegate"/>
+                <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopUnrollingDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopUnrollingDelegate">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="CRefactoring"/>
+                <message_argument value="LoopUnrollingDelegate"/>
+=======
     <resource path="src/org/eclipse/ptp/pldt/openacc/internal/ui/actions/refactoring/LoopCuttingDelegate.java" type="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.LoopCuttingDelegate">
         <filter id="643842064">
             <message_arguments>
                 <message_argument value="CRefactoring"/>
                 <message_argument value="LoopCuttingDelegate"/>
+>>>>>>> master
                 <message_argument value="createRefactoring(IWorkingCopy, ITextSelection, ICProject)"/>
             </message_arguments>
         </filter>

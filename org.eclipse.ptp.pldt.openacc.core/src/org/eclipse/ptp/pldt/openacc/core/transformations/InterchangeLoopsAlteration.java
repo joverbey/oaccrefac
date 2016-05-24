@@ -66,8 +66,8 @@ public class InterchangeLoopsAlteration extends ForLoopAlteration<InterchangeLoo
     @Override
     protected void doChange() {
         IASTForStatement first = getLoopToChange();
-        List<IASTPreprocessorPragmaStatement> firstPrags = ASTUtil.getLeadingPragmas(first);
-        List<IASTPreprocessorPragmaStatement> secondPrags = ASTUtil.getLeadingPragmas(inner);
+        List<IASTPreprocessorPragmaStatement> firstPrags = ASTUtil.getPragmaNodes(first);
+        List<IASTPreprocessorPragmaStatement> secondPrags = ASTUtil.getPragmaNodes(inner);
         Collections.reverse(firstPrags);
         Collections.reverse(secondPrags);
 

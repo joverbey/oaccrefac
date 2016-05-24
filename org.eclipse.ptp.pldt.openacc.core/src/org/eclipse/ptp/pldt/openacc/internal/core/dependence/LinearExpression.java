@@ -23,7 +23,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
-import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.BindingComparator;
 
 public class LinearExpression {
@@ -229,7 +229,7 @@ public class LinearExpression {
     }
 
     private static ILENode translate(IASTLiteralExpression expr) throws DependenceTestFailure {
-        Integer value = ASTUtil.getConstantExpression(expr);
+        Integer value = ASTPatternUtil.getConstantExpression(expr);
         if (value != null)
             return new ILEConst(value.intValue());
         else

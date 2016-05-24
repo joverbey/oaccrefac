@@ -209,13 +209,13 @@ public final class ASTMatcher {
     }
     
     public boolean match(IASTDeclaration pattern, IASTDeclaration node) {
-        IASTNode[] patternChilluns = pattern.getChildren();
-        IASTNode[] nodeChilluns = node.getChildren();
-        int len = patternChilluns.length;
-        if (nodeChilluns.length != len)
+        IASTNode[] patternChildren = pattern.getChildren();
+        IASTNode[] nodeChildren = node.getChildren();
+        int len = patternChildren.length;
+        if (nodeChildren.length != len)
             return false;
         for (int i = 0; i < len; i++) {
-            if (!genericMatch(patternChilluns[i], nodeChilluns[i])) {
+            if (!genericMatch(patternChildren[i], nodeChildren[i])) {
                 return false;
             }
         }

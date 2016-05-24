@@ -96,7 +96,7 @@ public class OpenACCUtil {
     }
 
     public static <T extends IAccConstruct> boolean isAccConstruct(IASTStatement statement, Class<T> accClazz) {
-    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
     		IAccConstruct construct = null;
     		try {
     			construct = new OpenACCParser().parse(pragma.getRawSignature());
@@ -112,7 +112,7 @@ public class OpenACCUtil {
     }
     
     public static boolean isAccConstruct(IASTStatement statement) {
-    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(statement)) {
+    	for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
     		try {
     			new OpenACCParser().parse(pragma.getRawSignature());
     		}
@@ -310,11 +310,11 @@ public class OpenACCUtil {
     private static void getGpuVars(IASTNode node, Set<String> gpuVars, boolean shouldGetDefs) {
         if(node instanceof IASTStatement) {
             IASTStatement stmt = (IASTStatement) node;
-            String[] prags = ASTUtil.getPragmas(stmt);
+            String[] prags = ASTUtil.getPragmaStrings(stmt);
             for(String prag : prags) {
                 //TODO should we parse this instead?
                 if(prag.startsWith("#pragma acc parallel") || prag.startsWith("#pragma acc kernels")) {
-                    List<IASTName> names = ASTUtil.getNames(stmt);
+                    List<IASTName> names = ASTUtil.find(stmt, IASTName.class);
                     for(IASTName name : names) {
                         if(ASTUtil.isDefinition(name) && shouldGetDefs) {
                             gpuVars.add(name.getRawSignature());

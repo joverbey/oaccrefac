@@ -10,7 +10,7 @@ public class ExpandDataConstruct extends CLIRefactoring<RefactoringParams, Expan
 
     @Override
     protected ExpandDataConstructCheck createCheck(IASTStatement statement) {
-        return new ExpandDataConstructCheck(ASTUtil.getLeadingPragmas(statement).get(0), statement);
+        return new ExpandDataConstructCheck(ASTUtil.getPragmaNodes(statement).get(0), statement);
     }
 
     @Override

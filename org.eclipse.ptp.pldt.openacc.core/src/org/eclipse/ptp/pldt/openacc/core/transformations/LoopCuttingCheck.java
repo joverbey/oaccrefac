@@ -8,22 +8,24 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Jacob Neeley (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
-public class LoopCuttingCheck extends ForLoopCheck<LoopCuttingParams> {
+public class LoopCuttingCheck extends AbstractStripMineCheck {
 
     public LoopCuttingCheck(IASTForStatement loop) {
         super(loop);
     }
     
     @Override
-    protected void doParameterCheck(RefactoringStatus status, LoopCuttingParams params) {
+    protected void doParameterCheck(RefactoringStatus status, AbstractStripMineParams params) {
     	
     	// Presence of a openacc pragma doesn't influence whether or not loop 
     	// cutting can be performed. This is because for loop cutting to be 
@@ -34,7 +36,7 @@ public class LoopCuttingCheck extends ForLoopCheck<LoopCuttingParams> {
         ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.loop);
     
         // Check strip factor validity...
-        if (params.getCutFactor() <= 0) {
+        if (params.getNumFactor() <= 0) {
         	status.addFatalError("Invalid cut factor (<= 0).");
         	return;
         }
@@ -43,7 +45,7 @@ public class LoopCuttingCheck extends ForLoopCheck<LoopCuttingParams> {
         //If not then refactoring will not be allowed because 
         //loop behavior would change.
         int iterator = inq.getIterationFactor();
-        if (params.getCutFactor() % iterator != 0 || params.getCutFactor() <= iterator) {
+        if (params.getNumFactor() % iterator != 0 || params.getNumFactor() <= iterator) {
         	status.addFatalError(
         		"LoopCut factor must be greater than and "
         				+ "divisible by the intended loop's iteration factor."
@@ -52,4 +54,12 @@ public class LoopCuttingCheck extends ForLoopCheck<LoopCuttingParams> {
         }
     
     }
+    
+    @Override
+	public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+		if (dep != null && dep.hasLevel1CarriedDependence()) {
+			status.addError("This loop cannot be cut because it carries a dependence.");
+		}
+
+	}
 }

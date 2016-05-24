@@ -46,14 +46,11 @@ public class Main {
 				refactoring = new TileLoops(parseInt(args[argIndex++]), parseInt(args[argIndex++]));
 				break;
 			case "StripMine":
-				refactoring = new StripMineLoop(parseInt(args[argIndex++]), args[argIndex++]);
+				refactoring = new StripMineLoop(parseInt(args[argIndex++]), args[argIndex++], false);
 				break;
 			// 1 arg
 			case "InterchangeLoops":
 				refactoring = new InterchangeLoops(parseInt(args[argIndex++]));
-				break;
-			case "LoopCutting":
-				refactoring = new LoopCutting(parseInt(args[argIndex++]));
 				break;
 			case "Unroll":
 				refactoring = new UnrollLoop(parseInt(args[argIndex++]));
@@ -154,7 +151,6 @@ public class Main {
 				.append("    IntroduceDefaultNone       - add default(none) to pragma\n")
 				.append("    IntroduceKernelsLoop       - change loop to acc kernels loop\n")
 				.append("    IntroduceParallelLoop      - change loop to acc parallel loop\n")
-				.append("    LoopCutting <cut_factor>   - insert loop with cut_factor iterations\n")
 				.append("    StripMine <strip_factor>   - insert loop with strip_factor iterations\n")
 				.append("    TileLoops <width> <height> - break up loop into tiles of width by height\n")
 				.append("    Unroll <factor>            - unroll loop by factor\n")
