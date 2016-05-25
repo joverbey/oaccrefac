@@ -22,14 +22,14 @@ public class IntroOpenACCLoopAlteration extends ForLoopAlteration<IntroOpenACCLo
 
     @Override
     protected void doChange() {
-    	if (kernels) {
-    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
-            this.insert(offset, pragma("acc kernels loop"));
-            finalizeChanges();
-    	} else if(check.getParentPragma()){
+    	if(check.getParentPragma()){
     		int offset = getLoopToChange().getFileLocation().getNodeOffset();
     		this.insert(offset, pragma("acc loop") + System.lineSeparator());
     		finalizeChanges();
+    	} else if (kernels) {
+    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
+            this.insert(offset, pragma("acc kernels loop"));
+            finalizeChanges();
     	} else {
     		int offset = getLoopToChange().getFileLocation().getNodeOffset();
     		this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());

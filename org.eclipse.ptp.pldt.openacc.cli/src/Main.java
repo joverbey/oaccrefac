@@ -73,7 +73,7 @@ public class Main {
 			case "-unroll":
 				refactoring = new UnrollLoop(parseInt(args[argIndex++]));
 				break;
-			case "-introduce-parallel-loop":
+			case "-introduce-loop":
 				boolean kernels = false;
 				loop:
 				for (int i = argIndex; i < args.length; i++) {
@@ -176,7 +176,7 @@ public class Main {
 				.append("    FuseLoops                  - Join loops with independent statements into one loo\n")
 				.append("    InterchangeLoops           - Swap nested loops\n")
 				.append("    IntroduceDefaultNone       - add default(none) to pragma\n")
-				.append("    IntroduceParallelLoop [-kernels]\n")
+				.append("    IntroduceACCLoop [-kernels]\n")
 				.append("                               - change loop to acc parallel loop\n")
 				.append("                      -kernels:  (optional) change loop to acc kernels loop\n")
 				.append("    StripMine <strip_factor> [-name <new_name>] [-cut]\n")
