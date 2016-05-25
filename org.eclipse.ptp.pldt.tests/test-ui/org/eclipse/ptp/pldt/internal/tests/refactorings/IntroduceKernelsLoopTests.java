@@ -16,13 +16,12 @@ import java.util.LinkedList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCLoopRefactoring;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroduceKernelsLoopRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class IntroduceKernelsLoopTests extends RefactoringTest<IntroduceKernelsLoopRefactoring> {
+public class IntroduceKernelsLoopTests extends RefactoringTest<IntroOpenACCLoopRefactoring> {
 
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
@@ -31,13 +30,13 @@ public class IntroduceKernelsLoopTests extends RefactoringTest<IntroduceKernelsL
 
     public IntroduceKernelsLoopTests(String description, File fileContainingMarker, int markerOffset, String markerText)
             throws Exception {
-        super(IntroduceKernelsLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
+        super(IntroOpenACCLoopRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(IntroduceKernelsLoopRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroOpenACCLoopRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-
+    	refactoring.setSecondOption(true);
     }
     
 }
