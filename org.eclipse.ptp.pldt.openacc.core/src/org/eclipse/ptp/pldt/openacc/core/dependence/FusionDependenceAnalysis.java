@@ -73,7 +73,6 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
                     v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
             for (VariableAccess v2 : getVariableAccesses()) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite())) {
-                    System.out.println(v1.toString() + " " + v2.toString() + ": in if");
                     DependenceType dependenceType = v1.getDependenceTypeTo(v2);
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
                         Direction[] directionVector = new Direction[v1.numEnclosingLoops()];
