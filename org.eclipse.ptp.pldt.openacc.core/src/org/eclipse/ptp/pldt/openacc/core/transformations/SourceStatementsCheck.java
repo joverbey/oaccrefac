@@ -20,14 +20,14 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
 
     private final IASTStatement[] statements;
     private final IASTNode[] allEnclosedNodes;
-    
+
     protected SourceStatementsCheck(IASTStatement[] statements, IASTNode[] allEnclosedNodes) {
         this.statements = statements;
         this.allEnclosedNodes = allEnclosedNodes;
     }
-    
+
     public abstract RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm);
-    
+
     @Override
     public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
         super.performChecks(status, pm, params);
@@ -37,15 +37,15 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
         doCheck(status, pm);
         return status;
     }
-    
+
     @Override
     public IASTTranslationUnit getTranslationUnit() {
-    	if (statements.length == 0) {
-    		return null;
-    	}
+        if (statements.length == 0) {
+            return null;
+        }
         return statements[0].getTranslationUnit();
     }
-    
+
     public IASTStatement[] getStatements() {
         return statements;
     }
@@ -53,5 +53,5 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
     public IASTNode[] getAllEnclosedNodes() {
         return allEnclosedNodes;
     }
-    
+
 }

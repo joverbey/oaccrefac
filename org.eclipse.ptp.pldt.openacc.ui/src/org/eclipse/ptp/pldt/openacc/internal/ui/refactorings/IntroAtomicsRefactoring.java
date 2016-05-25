@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceAtomicsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicsCheck;
 
 public class IntroAtomicsRefactoring extends StatementsRefactoring {
@@ -36,7 +36,7 @@ public class IntroAtomicsRefactoring extends StatementsRefactoring {
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new IntroduceAtomicsAlteration(rewriter, check).change();
+        new IntroAtomicsAlteration(rewriter, check).change();
     }
 
 

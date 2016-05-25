@@ -6,19 +6,19 @@ package org.eclipse.ptp.pldt.openacc.internal.core.patternmatching;
  * @author William Hester
  */
 public class ArbitraryLValue extends ArbitraryExpression {
-	
-	private String id;
-	
-	public ArbitraryLValue(String id) {
-		this.id = id;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	@Override
-	public boolean isLValue() {
-		return true;
-	}
+    
+    private String id;
+    
+    public ArbitraryLValue(String id) {
+        this.id = id;
+    }
+    
+    public String getId() {
+        return id;
+    }
+    
+    @Override
+    public boolean isLValue() {
+        return true;
+    }
 }
