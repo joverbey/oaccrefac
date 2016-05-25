@@ -28,9 +28,11 @@ import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 
 	protected boolean parentPragma = false;
+	private boolean kernels;
 
-	public IntroOpenACCLoopCheck(final IASTForStatement loop) {
+	public IntroOpenACCLoopCheck(final IASTForStatement loop, boolean kernels) {
 		super(loop);
+		this.kernels = kernels;
 	}
 
 	public boolean getParentPragma() {
@@ -43,9 +45,16 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 
 	@Override
 	protected void doLoopFormCheck(RefactoringStatus status) {
-		checkPragma(status);
-		checkParentPragma(status);
-		checkKernel(status);
+		if (kernels) {
+			checkParallel(status);
+	    	if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
+	            status.addError("This loop contains an ACC pragma.");
+	        }
+		} else {
+			checkPragma(status);
+			checkParentPragma(status);
+			checkKernel(status);
+		}
 	}
 
 	@Override
@@ -103,14 +112,26 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 
 		}
 	}
+	
+	private void checkParallel(RefactoringStatus status) {
+		IASTNode node = loop.getParent();
+		IASTStatement stat = (IASTStatement) node;
+		while (stat != null) {
+			if (OpenACCUtil.isAccConstruct(stat, ASTAccParallelNode.class)
+					|| OpenACCUtil.isAccConstruct(stat, ASTAccParallelLoopNode.class)) {
+				status.addFatalError("When a loop has a parent with a parallel pragma associated with it, it cannot kernelized.");
+				break;
+			} else if (stat.getParent() instanceof IASTStatement) {
+					stat = (IASTStatement) stat.getParent();
+			}
+			else if (stat.getParent() instanceof IASTFunctionDefinition){
+				break;
+			}
+			else {
+				break;
+			}
+
+		}
+	}
 
 }
-
-// boolean checkBreak(RefactoringStatus status){
-// ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(loop);
-// IASTStatement body = loop.getBody();
-// if( body ){
-//
-// }
-// return true;
-// }

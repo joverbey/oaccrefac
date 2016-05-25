@@ -22,15 +22,20 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
  */
 public class IntroOpenACCLoop extends CLILoopRefactoring<RefactoringParams, IntroOpenACCLoopCheck> {
 
+	private boolean kernels;
+	
+	public IntroOpenACCLoop(boolean kernels) {
+		this.kernels = kernels;
+	}
     @Override
     protected IntroOpenACCLoopCheck createCheck(IASTStatement loop) {
-        return new IntroOpenACCLoopCheck((IASTForStatement) loop);
+        return new IntroOpenACCLoopCheck((IASTForStatement) loop, kernels);
     }
     
     @Override
     public IntroOpenACCLoopAlteration createAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check)
     		throws CoreException {
-        return new IntroOpenACCLoopAlteration(rewriter, check);
+        return new IntroOpenACCLoopAlteration(rewriter, check, kernels);
     }
 
 }
