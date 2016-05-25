@@ -143,6 +143,10 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         pm.subTask("Done checking initial conditions");
         return initStatus;
     }
+    
+    public void setSecondOption(boolean option) {
+    	
+    }
 
     /*private boolean containsUnsupportedOp(IASTForStatement forStmt) {
         return !ASTUtil.find(forStmt, IASTBreakStatement.class).isEmpty()

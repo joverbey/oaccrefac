@@ -73,6 +73,22 @@ public class Main {
 			case "-unroll":
 				refactoring = new UnrollLoop(parseInt(args[argIndex++]));
 				break;
+			case "-introduce-loop":
+				boolean kernels = false;
+				loop:
+				for (int i = argIndex; i < args.length; i++) {
+					switch (args[i]) {
+					case "-k":
+					case "-kernels":
+						kernels = true;
+						argIndex++;
+						break;
+					default:
+						break loop;
+					}
+				}
+				refactoring = new IntroOpenACCLoop(kernels);
+				break;
 			// no args
 			case "-distribute":
 				refactoring = new DistributeLoops();
@@ -82,12 +98,6 @@ public class Main {
 				break;
 			case "-introduce-default-none":
 				refactoring = new IntroduceDefaultNone();
-				break;
-			case "-introduce-kernels-loop":
-				refactoring = new IntroduceKernelsLoop();
-				break;
-			case "-introduce-parallel-loop":
-				refactoring = new IntroOpenACCLoop();
 				break;
 			default:
 				throw new IllegalArgumentException("Specified refactoring is invalid");
@@ -166,8 +176,9 @@ public class Main {
 				.append("    FuseLoops                  - Join loops with independent statements into one loo\n")
 				.append("    InterchangeLoops           - Swap nested loops\n")
 				.append("    IntroduceDefaultNone       - add default(none) to pragma\n")
-				.append("    IntroduceKernelsLoop       - change loop to acc kernels loop\n")
-				.append("    IntroduceParallelLoop      - change loop to acc parallel loop\n")
+				.append("    IntroduceACCLoop [-kernels]\n")
+				.append("                               - change loop to acc parallel loop\n")
+				.append("                      -kernels:  (optional) change loop to acc kernels loop\n")
 				.append("    StripMine <strip_factor> [-name <new_name>] [-cut]\n")
 				.append("                               - insert loop with strip_factor iterations\n")
 				.append("                <strip_factor>:  the number of times to strip the loop iterations\n")

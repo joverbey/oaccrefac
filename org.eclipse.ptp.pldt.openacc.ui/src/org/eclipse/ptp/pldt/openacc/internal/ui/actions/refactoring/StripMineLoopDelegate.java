@@ -17,6 +17,7 @@ import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
+import org.eclipse.ptp.pldt.openacc.internal.ui.ButtonSelectionListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
@@ -36,6 +37,7 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
         final StripMineLoopRefactoring refac = (StripMineLoopRefactoring) refactoring;
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Strip Mine Loop");
         LoopRefactoringWizardPage page = wizard.getInputPage();
+        page.addInputControl("Cutting", new ButtonSelectionListener(refac, "Strip Size", "Cut Size"));
         page.addInputControl("Strip Size", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
@@ -48,7 +50,6 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
                 refac.setNewName(value);
             }
         });
-        page.setButton(true, refac);
         return wizard;
     }
 

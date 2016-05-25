@@ -31,21 +31,26 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopCheck;
 public class IntroOpenACCLoopRefactoring extends ForLoopRefactoring {
 
     private IntroOpenACCLoopCheck check;
+    private boolean kernels = false;
     
     public IntroOpenACCLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
+    
+    @Override
+    public void setSecondOption(boolean kernels) {
+    	this.kernels = kernels;
+    }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroOpenACCLoopCheck(getLoop());        
-        check.performChecks(status, pm, null);
+	    check = new IntroOpenACCLoopCheck(getLoop(), kernels);        
+	    check.performChecks(status, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new IntroOpenACCLoopAlteration(rewriter, check).change();
-        
+    	new IntroOpenACCLoopAlteration(rewriter, check, kernels).change();
     }
 
     @Override
