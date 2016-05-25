@@ -83,27 +83,23 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     @Override
     public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
         
-        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(first);
         FusionDependenceAnalysis dep;
         
         try {
-            dep = new FusionDependenceAnalysis(pm, 
-                    loop.getIndexVariable(), loop.getLowerBound(), loop.getInclusiveUpperBound(), 
-                    getStatementsFromLoopBodies(first, second));
+            dep = new FusionDependenceAnalysis(pm, first, getStatementsFromLoopBodies(first, second));
         } catch (DependenceTestFailure e) {
             status.addError("Dependences could not be analyzed.  " + e.getMessage());
             return status;
         }
         
-        for(DataDependence d : dep.getDependences()) {
+        for (DataDependence d : dep.getDependences()) {
 
-            if(d.isLoopCarried() &&
+            if (d.isLoopCarried() &&
                     statementsComeFromDifferentLoops(second, first, d.getStatement1(), d.getStatement2()) &&
                     (d.getDirectionVector()[d.getLevel()-1] == Direction.LT || d.getDirectionVector()[d.getLevel()-1] == Direction.LE) &&
                     d.getType() == DependenceType.ANTI)  {
                 
                 status.addError("A dependence in the loops is fusion-preventing");
-                
             }
             
         }
@@ -113,6 +109,9 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     private IASTStatement[] getStatementsFromLoopBodies(IASTForStatement l1, IASTForStatement l2) {
         List<IASTStatement> stmts = new ArrayList<IASTStatement>();
         
+        stmts.add(l1);
+        stmts.add(l2);
+
         if(l1.getBody() instanceof IASTCompoundStatement) {
             IASTStatement[] bodyStmts = ((IASTCompoundStatement) l1.getBody()).getStatements();
             stmts.addAll(Arrays.asList(bodyStmts));

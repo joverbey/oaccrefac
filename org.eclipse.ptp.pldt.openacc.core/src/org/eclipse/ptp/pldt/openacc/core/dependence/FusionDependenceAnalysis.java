@@ -19,11 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
+import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.DirectionHierarchyTester;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.VariableAccess;
 
@@ -47,12 +50,15 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
      * 
      * @throws DependenceTestFailure
      */
-    public FusionDependenceAnalysis(IProgressMonitor pm, IBinding indexVar, Long lowerBound, Long inclusiveUpperBound, IASTStatement... statements) throws DependenceTestFailure, OperationCanceledException {
+    public FusionDependenceAnalysis(IProgressMonitor pm, IASTForStatement loopStatement, IASTStatement... statements)
+            throws DependenceTestFailure, OperationCanceledException {
         super(pm, statements);
         
-        this.indexVar = indexVar;
-        this.lowerBound = lowerBound;
-        this.inclusiveUpperBound = inclusiveUpperBound;
+        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loopStatement);
+
+        this.indexVar = loop.getIndexVariable();
+        this.lowerBound = loop.getLowerBound();
+        this.inclusiveUpperBound = loop.getInclusiveUpperBound();
 
         pm.subTask("Analyzing dependences...");
         computeDependences(pm);
