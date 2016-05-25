@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
@@ -31,12 +30,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 
 		int maxup = getMaxInDirection(getStatement(), true);
 		int maxdown = getMaxInDirection(getStatement(), false);
-		int osize;
-		if (getStatement() instanceof IASTCompoundStatement) {
-			osize = ((IASTCompoundStatement) getStatement()).getStatements().length;
-		} else {
-			osize = 1;
-		}
+		int osize = ASTUtil.getStatementsIfCompound(getStatement()).length;
 		List<Expansion> expansions = new ArrayList<Expansion>();
 
 		for (int i = 0; i <= maxup; i++) {

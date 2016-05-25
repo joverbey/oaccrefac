@@ -21,7 +21,6 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -251,14 +250,6 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         return newIndexVariable + "++";
     }
 
-    private IASTStatement[] getBodyStatements() {
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            return ((IASTCompoundStatement) loop.getBody()).getStatements();
-        } else {
-            return new IASTStatement[] { loop.getBody() };
-        }
-    }
-
     private IASTNode[] getBodyObjects() {
         return getBodyObjects(false);
     }
@@ -266,7 +257,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
     // gets statements AND comments from a loop body in forward order
     private IASTNode[] getBodyObjects(boolean reverse) {
         List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements()));
+        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()

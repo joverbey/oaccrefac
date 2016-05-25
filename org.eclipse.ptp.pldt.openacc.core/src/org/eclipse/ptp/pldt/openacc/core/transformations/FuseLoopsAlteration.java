@@ -129,8 +129,8 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
     }
 
     private Map<IASTName, String> getNameModifications(IASTForStatement loop1, IASTForStatement loop2) {
-        IASTStatement[] body1 = getBodyStatements(loop1);
-        IASTStatement[] body2 = getBodyStatements(loop2);
+        IASTStatement[] body1 = ASTUtil.getStatementsIfCompound(loop1.getBody());
+        IASTStatement[] body2 = ASTUtil.getStatementsIfCompound(loop2.getBody());
         Map<IASTName, String> map = new HashMap<IASTName, String>();
         for (IASTStatement stmt1 : body1) {
             for (IASTStatement stmt2 : body2) {
@@ -150,18 +150,10 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         return map;
     }
 
-    private IASTStatement[] getBodyStatements(IASTForStatement loop) {
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            return ((IASTCompoundStatement) loop.getBody()).getStatements();
-        } else {
-            return new IASTStatement[] { loop.getBody() };
-        }
-    }
-
     // gets statements AND comments from a loop body in forward order
     private IASTNode[] getBodyObjects(IASTForStatement loop) {
         List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
