@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
@@ -58,12 +57,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         IASTStatement[] statements;
         DependenceAnalysis dependenceAnalysis;
         
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            statements = ((IASTCompoundStatement) loop.getBody()).getStatements();
-        } else {
-            statements = new IASTStatement[1];
-            statements[0] = loop.getBody();
-        }
+        statements = ASTUtil.getStatementsIfCompound(loop.getBody());
         
         try {
             dependenceAnalysis = new DependenceAnalysis(pm, statements);

@@ -31,12 +31,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 
 		int maxup = getMaxInDirection(getStatement(), true);
 		int maxdown = getMaxInDirection(getStatement(), false);
-		int osize;
-		if (getStatement() instanceof IASTCompoundStatement) {
-			osize = ((IASTCompoundStatement) getStatement()).getStatements().length;
-		} else {
-			osize = 1;
-		}
+		int osize = ASTUtil.getStatementsIfCompound(getStatement()).length;
 		List<Expansion> expansions = new ArrayList<Expansion>();
 
 		for (int i = 0; i <= maxup; i++) {
