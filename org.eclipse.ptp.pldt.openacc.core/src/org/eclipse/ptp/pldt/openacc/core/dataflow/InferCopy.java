@@ -39,12 +39,12 @@ public class InferCopy extends InferDataTransfer {
     					if(inVar.equals(outVar)) {
     						ins.remove(inVar);
     						outs.remove(outVar);
-    						if(copies.containsKey(construct)) {
-    							copies.get(construct).add(inVar);
+    						if(transfers.containsKey(construct)) {
+    							transfers.get(construct).add(inVar);
     						}
     						else {
-    							copies.put(construct, new TreeSet<IBinding>());
-    							copies.get(construct).add(inVar);
+    							transfers.put(construct, new TreeSet<IBinding>());
+    							transfers.get(construct).add(inVar);
     						}
     					}
     				}

@@ -41,27 +41,50 @@ public class InferCreate extends InferDataTransfer {
     					continue;
     				}
     				//if we make it here, no defs outside K reach K and no defs inside K reach outside
-    				copies.get(K).add(V);
+    				transfers.get(K).add(V);
     			}
     		}
     		else {
     			//can propagate up if all children have it in their create clauses
-    		    //if all children that have the opportunity to transfer data opt out, then there's nothing to make the parent transfer data either
+    		    //if all children data opt out of data transfer, then there's nothing to make the parent transfer data either
     			//so propagate the intersection of all child create sets
+    			Set<IBinding> all = new HashSet<IBinding>();
     			Set<IBinding> kCreate = new HashSet<IBinding>();
     			//get the intersection of all children's create sets
     			//	get all variables in child create sets
     			for(IASTStatement C : tree.getChildren(K)) {
-    				kCreate.addAll(copies.get(C));
+    				all.addAll(transfers.get(C));
     			}
-    			//	remove every variable not in any one of the child create sets 
-    			for(IASTStatement C : tree.getChildren(K)) {
-    				kCreate.retainAll(copies.get(C));
+    			
+    			/*
+    			 * for each V
+    			 *     if for every child, V is either in the create set or isn't accessed in the child, 
+    			 *         add V to kcreate
+    			 */
+    			nextV:
+    			for(IBinding V : all) {
+    				for(IASTStatement C : tree.getChildren(K)) {
+    					/*V is not in C's copies and V is accessed in C*/
+    					if(!transfers.get(C).contains(V) && varsInConstruct(C).contains(V)) {
+    						continue nextV;
+    					}
+    				}
+    				if(K.equals(tree.getRoot())) {
+    					if(!varIsDeclaredInConstruct(V, construct)) {
+        					kCreate.add(V);
+        				}
+    				}
+    				else {
+    					if(!varIsDeclaredInConstruct(V, K)) {
+        					kCreate.add(V);
+        				}
+    				}
     			}
+    			
     			//add to this create set, remove from child create sets
-    			copies.put(K, kCreate);
+    			transfers.put(K, kCreate);
     			for(IASTStatement C : tree.getChildren(K)) {
-    				copies.get(C).removeAll(kCreate);
+    				transfers.get(C).removeAll(kCreate);
     			}
     		}
     	}
@@ -89,12 +112,14 @@ public class InferCreate extends InferDataTransfer {
 		return false;
 	}
 	
-	private boolean varIsDeclaredInConstruct(IBinding V, IASTStatement K) {
-		for(IASTName name : ASTUtil.find(K, IASTName.class)) {
-			if(name.resolveBinding().equals(V)
-					&& ASTUtil.findNearestAncestor(name, IASTDeclarationStatement.class) != null 
-					&& ASTUtil.isDefinition(name)) {
-				return true;
+	private boolean varIsDeclaredInConstruct(IBinding V, IASTStatement... construct) {
+		for(IASTStatement K : construct) {
+			for(IASTName name : ASTUtil.find(K, IASTName.class)) {
+				if(name.resolveBinding().equals(V)
+						&& ASTUtil.findNearestAncestor(name, IASTDeclarationStatement.class) != null 
+						&& ASTUtil.isDefinition(name)) {
+					return true;
+				}
 			}
 		}
 		return false;

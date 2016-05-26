@@ -25,18 +25,18 @@ public class InferCopyout extends InferDataTransfer {
     		if(tree.isAccAccelRegion(K)) {
     			for(IASTName U : rd.reachedUses(K)) {
     				if(!tree.isAncestor(K, U)) {
-    					copies.get(K).add(U.resolveBinding());
+    					transfers.get(K).add(U.resolveBinding());
     				}
     			}
     		}
     		else {
     			for(IASTStatement C : tree.getChildren(K)) {
     				Set<IBinding> copyoutC = treeSetIBinding();
-    				copyoutC.addAll(copies.get(C));
+    				copyoutC.addAll(transfers.get(C));
     				for(IBinding V : copyoutC) {
     					if(canPropagateUp(V, K, C, rd)) {
-    						copies.get(C).remove(V);
-    						copies.get(K).add(V);
+    						transfers.get(C).remove(V);
+    						transfers.get(K).add(V);
     					}
     				}
     			}
@@ -50,7 +50,7 @@ public class InferCopyout extends InferDataTransfer {
 			if(V.equals(U.resolveBinding()) && 
 					tree.isAncestor(K, U) && 
 					!tree.isAncestor(C, U) && 
-					copies.get(C).contains(U.resolveBinding())) { 
+					transfers.get(C).contains(U.resolveBinding())) { 
 				return false;
 			}
 		}

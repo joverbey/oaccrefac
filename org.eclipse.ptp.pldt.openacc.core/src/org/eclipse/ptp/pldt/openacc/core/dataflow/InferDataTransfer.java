@@ -24,7 +24,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryState
 public abstract class InferDataTransfer {
 	
 	/** everything checking to see if a node copies in something should look to this map, not to the actual AST **/
-	protected Map<IASTStatement, Set<IBinding>> copies;
+	protected Map<IASTStatement, Set<IBinding>> transfers;
 	
 	/** should be used for all data construct hierarchy operations **/
 	protected ConstructTree tree;
@@ -49,7 +49,7 @@ public abstract class InferDataTransfer {
 		if(construct.length == 0) {
 			throw new IllegalArgumentException("At least one statement should be in the construct");
 		}
-		copies = new HashMap<IASTStatement, Set<IBinding>>();
+		transfers = new HashMap<IASTStatement, Set<IBinding>>();
     	tree = new ConstructTree(construct);
     	this.construct = construct;
     	this.rd = rd;
@@ -61,7 +61,7 @@ public abstract class InferDataTransfer {
     		@Override
     		public int visit(IASTStatement statement) {
     			if(OpenACCUtil.isAccAccelConstruct(statement) || OpenACCUtil.isAccConstruct(statement, ASTAccDataNode.class)) {
-    				copies.put(statement, treeSetIBinding());
+    				transfers.put(statement, treeSetIBinding());
     				tree.addNode(statement);
     			}
     			return PROCESS_CONTINUE;
@@ -70,13 +70,13 @@ public abstract class InferDataTransfer {
     	for(IASTStatement statement : construct) {
     		statement.accept(new Init());
     	}
-    	copies.put(tree.getRoot(), treeSetIBinding());
+    	transfers.put(tree.getRoot(), treeSetIBinding());
     	
     	topoSorted = topoSortAccConstructs();
 	}
 	
 	public Map<IASTStatement, Set<IBinding>> get() {
-		return copies;
+		return transfers;
 	}
 	
 	/** populates the copies map **/
@@ -111,10 +111,10 @@ public abstract class InferDataTransfer {
 	public static IASTStatement normalizeRoot(InferDataTransfer... sets)  {
     	ArbitraryStatement root = new ArbitraryStatement();
     	for(InferDataTransfer set : sets) {
-    		Map<IASTStatement, Set<IBinding>> copy = new HashMap<IASTStatement, Set<IBinding>>(set.copies);
+    		Map<IASTStatement, Set<IBinding>> copy = new HashMap<IASTStatement, Set<IBinding>>(set.transfers);
     		for(IASTStatement statement : copy.keySet()) {
     			if(statement instanceof ArbitraryStatement) {
-    				set.copies.put(root, set.copies.remove(statement));
+    				set.transfers.put(root, set.transfers.remove(statement));
     			}
     		}
     	}
@@ -122,7 +122,7 @@ public abstract class InferDataTransfer {
     }
     
     public IASTStatement getRoot() {
-    	for(IASTStatement statement : copies.keySet()) {
+    	for(IASTStatement statement : transfers.keySet()) {
     		if(statement instanceof ArbitraryStatement) {
     			return statement;
     		}
@@ -145,7 +145,7 @@ public abstract class InferDataTransfer {
     		else
     			sb.append("l" + statement.getFileLocation().getStartingLineNumber());
     		sb.append(" : ");
-    		sb.append(copies.get(statement));
+    		sb.append(transfers.get(statement));
     		sb.append("\n");
     	}
     	return sb.toString();

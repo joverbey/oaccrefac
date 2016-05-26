@@ -32,7 +32,7 @@ public class InferCopyin extends InferDataTransfer {
     					//see InferCreate
     					IASTDeclarator decl = ASTUtil.findNearestAncestor(D, IASTDeclarator.class);
 						if(decl == null || decl.getInitializer() != null) {
-							copies.get(K).add(D.resolveBinding());
+							transfers.get(K).add(D.resolveBinding());
 						}
     				}
     			}
@@ -40,11 +40,11 @@ public class InferCopyin extends InferDataTransfer {
     		else {
     			for(IASTStatement C : tree.getChildren(K)) {
     				Set<IBinding> copyinC = treeSetIBinding();
-    				copyinC.addAll(copies.get(C));
+    				copyinC.addAll(transfers.get(C));
     				for(IBinding V : copyinC) {
     					if(canPropagateUp(V, K, C, rd)) {
-    						copies.get(C).remove(V);
-    						copies.get(K).add(V);
+    						transfers.get(C).remove(V);
+    						transfers.get(K).add(V);
     					}
     				}
     			}
@@ -58,7 +58,7 @@ public class InferCopyin extends InferDataTransfer {
 			if(V.equals(D.resolveBinding()) && 
 					tree.isAncestor(K, D) && 
 					!tree.isAncestor(C, D) && 
-					copies.get(C).contains(D.resolveBinding())) { 
+					transfers.get(C).contains(D.resolveBinding())) { 
 				return false;
 			}
 		}
