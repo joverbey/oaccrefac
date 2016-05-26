@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -50,12 +49,15 @@ public class FusionDependenceAnalysis extends AbstractDependenceAnalysis {
      * 
      * @throws DependenceTestFailure
      */
-    public FusionDependenceAnalysis(IProgressMonitor pm, IASTForStatement loopStatement, IASTStatement... statements)
+    public FusionDependenceAnalysis(IProgressMonitor pm, IASTForStatement loop1, IASTForStatement loop2)
             throws DependenceTestFailure, OperationCanceledException {
-        super(pm, statements);
+        super(pm, loop1.getBody(), loop2.getBody());
         
-        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loopStatement);
+        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loop1);
 
+        if (!loop.isCountedLoop()) {
+        	throw new DependenceTestFailure("Loop is not a counted loop");
+        }
         this.indexVar = loop.getIndexVariable();
         this.lowerBound = loop.getLowerBound();
         this.inclusiveUpperBound = loop.getInclusiveUpperBound();
