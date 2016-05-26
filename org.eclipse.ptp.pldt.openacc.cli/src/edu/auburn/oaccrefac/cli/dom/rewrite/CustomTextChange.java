@@ -48,7 +48,8 @@ public class CustomTextChange extends TextChange {
 
     @Override
     protected void commit(IDocument document, IProgressMonitor pm) throws CoreException {
-        System.out.println(document.get());
+        System.out.print(document.get());
+        System.out.flush();
     }
 
     @Override
