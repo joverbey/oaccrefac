@@ -14,11 +14,11 @@ public class InferCopy extends InferDataTransfer {
 	Map<IASTStatement, Set<IBinding>> copyout;
 	
 	public InferCopy(ReachingDefinitions rd, IASTStatement... construct) {
-		throw new IllegalStateException("Copy inference should only be done using copyin and copyout inferences");
+		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");
 	}
 	
 	public InferCopy(IASTStatement... construct) {
-		throw new IllegalStateException("Copy inference should only be done using copyin and copyout inferences");
+		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");
 	}
 	
 	public InferCopy(InferCopyin inferCopyin, InferCopyout inferCopyout) {
