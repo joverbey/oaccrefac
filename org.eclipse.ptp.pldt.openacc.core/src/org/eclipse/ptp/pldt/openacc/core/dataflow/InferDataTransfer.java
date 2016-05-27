@@ -116,6 +116,7 @@ public abstract class InferDataTransfer {
     			if(statement instanceof ArbitraryStatement) {
     				set.transfers.put(root, set.transfers.remove(statement));
     				set.topoSorted.set(set.topoSorted.indexOf(statement), root);
+    				set.tree.replaceRoot(root);
     			}
     		}
     	}

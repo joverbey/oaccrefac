@@ -10,7 +10,6 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
@@ -27,7 +26,7 @@ public class InferCreateTests extends TestCase {
 				+ "        ;//do nothing            \n" 
 				+ "    }                            \n" 
 				+ "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTStatement[] stmts = ((IASTCompoundStatement) func.getBody()).getStatements();
 		Map<IASTStatement, Set<IBinding>> copyins = new InferCopyin(stmts).get();
 		for (IASTStatement stmt : copyins.keySet()) {
@@ -47,7 +46,7 @@ public class InferCreateTests extends TestCase {
 				+ "        }                            \n" 
 				+ "    }                                \n" 
 				+ "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> copyins = new InferCopyin(stmts).get();
@@ -72,7 +71,7 @@ public class InferCreateTests extends TestCase {
 				+ "        }                            \n" // 12
 				+ "    }                                \n" // 13
 				+ "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
@@ -111,7 +110,7 @@ public class InferCreateTests extends TestCase {
 				+ "        }                            \n" // 12
 				+ "    }                                \n" // 13
 				+ "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
@@ -149,7 +148,7 @@ public class InferCreateTests extends TestCase {
 				+ "        }                            \n" // 12
 				+ "    }                                \n" // 13
 				+ "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
@@ -188,7 +187,7 @@ public class InferCreateTests extends TestCase {
 				+ "        }                            \n" // 12
 				+ "    }                                \n" // 13
 				+ "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
@@ -223,7 +222,7 @@ public class InferCreateTests extends TestCase {
                 + "        c[i] = a[i];                     \n" //22
                 + "    }                                    \n" //23
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
@@ -276,7 +275,7 @@ public class InferCreateTests extends TestCase {
                 + "        c[i] = b[i];                     \n" //22
                 + "    }                                    \n" //23
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
@@ -329,7 +328,7 @@ public class InferCreateTests extends TestCase {
                 + "        c[i] = b[i];                     \n" //22
                 + "    }                                    \n" //23
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
@@ -388,7 +387,7 @@ public class InferCreateTests extends TestCase {
                 + "        c[i] = b[i];                         \n" //28
                 + "    }                                        \n" //29
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
@@ -447,7 +446,7 @@ public class InferCreateTests extends TestCase {
                 + "        c[i] = b[i];                         \n" //28
                 + "    }                                        \n" //29
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
@@ -503,7 +502,7 @@ public class InferCreateTests extends TestCase {
                 + "        }                                      \n" //25
                 + "    }                                          \n" //26
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCreate infer = new InferCreate(stmts);

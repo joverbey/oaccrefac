@@ -1,6 +1,5 @@
 package org.eclipse.ptp.pldt.internal.tests.analyses;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -14,7 +13,6 @@ import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferDataTransfer;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
-import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
 import junit.framework.TestCase;
 
@@ -28,7 +26,7 @@ public class InferCopyTests extends TestCase {
                 + "        ;//do nothing            \n"
                 + "    }                            \n"
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTStatement[] stmts = ((IASTCompoundStatement) func.getBody()).getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
 		InferCopyout copyouts = new InferCopyout(stmts);
@@ -56,7 +54,7 @@ public class InferCopyTests extends TestCase {
                 + "        }                            \n"
                 + "    }                                \n"
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
@@ -85,7 +83,7 @@ public class InferCopyTests extends TestCase {
                 + "    }                                \n" //12
                 + "    int c = a + b;                   \n" //13
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
@@ -131,7 +129,7 @@ public class InferCopyTests extends TestCase {
                 + "        a[i] = b[i];                 \n" //13
                 + "    }                                \n" //14
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
@@ -184,7 +182,7 @@ public class InferCopyTests extends TestCase {
                 + "        c[i] = b[i];                 \n" //20
                 + "    }                                \n" //21
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
@@ -248,7 +246,7 @@ public class InferCopyTests extends TestCase {
                 + "        b[i] = c[i];                     \n" //30
                 + "    }                                    \n" //31
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
@@ -316,7 +314,7 @@ public class InferCopyTests extends TestCase {
                 + "        c[i] = a[i];                     \n" //29
                 + "    }                                    \n" //30
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
 		InferCopyin copyins = new InferCopyin(stmts);
@@ -393,15 +391,14 @@ public class InferCopyTests extends TestCase {
                 + "        printf(\"%d\", c[i]);                  \n" //36
                 + "    }                                          \n" //37
                 + "}");
-		IASTFunctionDefinition func = ASTUtil.findOne(tu, IASTFunctionDefinition.class);
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyout infer = new InferCopyout(stmts);
 		InferCopyin copyins = new InferCopyin(stmts);
 		InferCopyout copyouts = new InferCopyout(stmts);
 		InferCopy copies = new InferCopy(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
-			if(stmt.equals(copies.getRoot())) { //copyout b, in b
+			if(stmt.equals(copies.getRoot())) {
 				assertTrue(copyins.get().get(stmt).isEmpty());
 				assertTrue(copyouts.get().get(stmt).isEmpty());
 				assertTrue(containsBinding(copies, stmt, "a"));

@@ -79,7 +79,7 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     			replace(getFirstPragma(), top);
     		}
     		else {
-    			for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getLeadingPragmas(con)) {
+    			for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(con)) {
     				IAccConstruct ast = null;
     				try {
     					ast = new OpenACCParser().parse(pragma.getRawSignature());

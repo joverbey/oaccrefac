@@ -40,7 +40,7 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
         
         secondStmt = (IASTStatement) next;
         IAccConstruct second = null;
-        for(IASTPreprocessorPragmaStatement prag : ASTUtil.getLeadingPragmas((IASTStatement) next)) {
+        for(IASTPreprocessorPragmaStatement prag : ASTUtil.getPragmaNodes((IASTStatement) next)) {
         	IAccConstruct nextCon = null;
         	try {
         		nextCon = parser.parse(prag.getRawSignature());

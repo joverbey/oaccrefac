@@ -93,7 +93,7 @@ public class InferCreate extends InferDataTransfer {
 	
 	private boolean anyDefReachingConstructIsOutside(IBinding V, IASTStatement K) {
 		for(IASTName D : rd.reachingDefinitions(K)) {
-			if(!ASTUtil.isAncestor(K, D) && D.resolveBinding().equals(V)) {
+			if(!ASTUtil.isAncestor(D, K) && D.resolveBinding().equals(V)) {
 				IASTDeclarator decl = ASTUtil.findNearestAncestor(D, IASTDeclarator.class);
 				if(decl == null || decl.getInitializer() != null) {
 					return true;
@@ -105,7 +105,7 @@ public class InferCreate extends InferDataTransfer {
 	
 	private boolean anyUseReachedByConstructIsOutside(IBinding V, IASTStatement K) {
 		for(IASTName D : rd.reachedUses(K)) {
-			if(!ASTUtil.isAncestor(K, D) && D.resolveBinding().equals(V)) {
+			if(!ASTUtil.isAncestor(D, K) && D.resolveBinding().equals(V)) {
 				return true;
 			}
 		}
