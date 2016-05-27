@@ -26,7 +26,7 @@ public class InferCopyin extends InferDataTransfer {
 		for(IASTStatement K : topoSorted) {
     		if(tree.isAccAccelRegion(K)) {
     			for(IASTName D : rd.reachingDefinitions(K)) {
-    				if(!tree.isAncestor(K, D)) {
+    				if(!tree.isAncestor(D, K)) {
     					//special case declaration with no initializer - 
 						//assume we want to create (not copy in) if this is the only definition reaching in
     					//see InferCreate
@@ -56,8 +56,8 @@ public class InferCopyin extends InferDataTransfer {
 		//if a definition of V is inside K, is not inside C, reaches C, and is being copied into C as it is, we cannot propagate up
 		for(IASTName D : rd.reachingDefinitions(C)) {
 			if(V.equals(D.resolveBinding()) && 
-					tree.isAncestor(K, D) && 
-					!tree.isAncestor(C, D) && 
+					tree.isAncestor(D, K) && 
+					!tree.isAncestor(D, C) && 
 					transfers.get(C).contains(D.resolveBinding())) { 
 				return false;
 			}

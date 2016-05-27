@@ -218,7 +218,7 @@ public abstract class InferDataTransfer {
     		return root;
     	}
  
-    	public boolean isAncestor(IASTStatement ancestor, IASTNode descendant) {
+    	public boolean isAncestor(IASTNode descendant, IASTStatement ancestor) {
     		if(ancestor.equals(root)) {
     			//is an ancestor if descendant is anywhere in the main construct
     			for(IASTStatement statement : construct) {

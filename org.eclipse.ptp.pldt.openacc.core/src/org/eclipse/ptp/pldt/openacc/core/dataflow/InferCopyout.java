@@ -24,7 +24,7 @@ public class InferCopyout extends InferDataTransfer {
 		for(IASTStatement K : topoSorted) {
     		if(tree.isAccAccelRegion(K)) {
     			for(IASTName U : rd.reachedUses(K)) {
-    				if(!tree.isAncestor(K, U)) {
+    				if(!tree.isAncestor(U, K)) {
     					transfers.get(K).add(U.resolveBinding());
     				}
     			}
@@ -48,8 +48,8 @@ public class InferCopyout extends InferDataTransfer {
 	private boolean canPropagateUp(IBinding V, IASTStatement K, IASTStatement C, ReachingDefinitions rd) {
 		for(IASTName U : rd.reachedUses(C)) {
 			if(V.equals(U.resolveBinding()) && 
-					tree.isAncestor(K, U) && 
-					!tree.isAncestor(C, U) && 
+					tree.isAncestor(U, K) && 
+					!tree.isAncestor(U, C) && 
 					transfers.get(C).contains(U.resolveBinding())) { 
 				return false;
 			}
