@@ -2,9 +2,11 @@ package org.eclipse.ptp.pldt.openacc.core.dataflow;
 
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class InferCopyin extends InferDataTransfer {
 
@@ -24,19 +26,25 @@ public class InferCopyin extends InferDataTransfer {
 		for(IASTStatement K : topoSorted) {
     		if(tree.isAccAccelRegion(K)) {
     			for(IASTName D : rd.reachingDefinitions(K)) {
-    				if(!tree.isAncestor(K, D)) {
-    					copies.get(K).add(D.resolveBinding());
+    				if(!tree.isAncestor(D, K)) {
+    					//special case declaration with no initializer - 
+						//assume we want to create (not copy in) if this is the only definition reaching in
+    					//see InferCreate
+    					IASTDeclarator decl = ASTUtil.findNearestAncestor(D, IASTDeclarator.class);
+						if(decl == null || decl.getInitializer() != null) {
+							transfers.get(K).add(D.resolveBinding());
+						}
     				}
     			}
     		}
     		else {
     			for(IASTStatement C : tree.getChildren(K)) {
     				Set<IBinding> copyinC = treeSetIBinding();
-    				copyinC.addAll(copies.get(C));
+    				copyinC.addAll(transfers.get(C));
     				for(IBinding V : copyinC) {
     					if(canPropagateUp(V, K, C, rd)) {
-    						copies.get(C).remove(V);
-    						copies.get(K).add(V);
+    						transfers.get(C).remove(V);
+    						transfers.get(K).add(V);
     					}
     				}
     			}
@@ -48,9 +56,9 @@ public class InferCopyin extends InferDataTransfer {
 		//if a definition of V is inside K, is not inside C, reaches C, and is being copied into C as it is, we cannot propagate up
 		for(IASTName D : rd.reachingDefinitions(C)) {
 			if(V.equals(D.resolveBinding()) && 
-					tree.isAncestor(K, D) && 
-					!tree.isAncestor(C, D) && 
-					copies.get(C).contains(D.resolveBinding())) { 
+					tree.isAncestor(D, K) && 
+					!tree.isAncestor(D, C) && 
+					transfers.get(C).contains(D.resolveBinding())) { 
 				return false;
 			}
 		}

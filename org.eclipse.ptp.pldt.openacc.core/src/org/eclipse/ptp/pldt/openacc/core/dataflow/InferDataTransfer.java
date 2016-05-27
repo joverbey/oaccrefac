@@ -24,7 +24,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryState
 public abstract class InferDataTransfer {
 	
 	/** everything checking to see if a node copies in something should look to this map, not to the actual AST **/
-	protected Map<IASTStatement, Set<IBinding>> copies;
+	protected Map<IASTStatement, Set<IBinding>> transfers;
 	
 	/** should be used for all data construct hierarchy operations **/
 	protected ConstructTree tree;
@@ -49,7 +49,7 @@ public abstract class InferDataTransfer {
 		if(construct.length == 0) {
 			throw new IllegalArgumentException("At least one statement should be in the construct");
 		}
-		copies = new HashMap<IASTStatement, Set<IBinding>>();
+		transfers = new HashMap<IASTStatement, Set<IBinding>>();
     	tree = new ConstructTree(construct);
     	this.construct = construct;
     	this.rd = rd;
@@ -61,7 +61,7 @@ public abstract class InferDataTransfer {
     		@Override
     		public int visit(IASTStatement statement) {
     			if(OpenACCUtil.isAccAccelConstruct(statement) || OpenACCUtil.isAccConstruct(statement, ASTAccDataNode.class)) {
-    				copies.put(statement, treeSetIBinding());
+    				transfers.put(statement, treeSetIBinding());
     				tree.addNode(statement);
     			}
     			return PROCESS_CONTINUE;
@@ -70,13 +70,13 @@ public abstract class InferDataTransfer {
     	for(IASTStatement statement : construct) {
     		statement.accept(new Init());
     	}
-    	copies.put(tree.getRoot(), treeSetIBinding());
+    	transfers.put(tree.getRoot(), treeSetIBinding());
     	
     	topoSorted = topoSortAccConstructs();
 	}
 	
 	public Map<IASTStatement, Set<IBinding>> get() {
-		return copies;
+		return transfers;
 	}
 	
 	/** populates the copies map **/
@@ -111,10 +111,12 @@ public abstract class InferDataTransfer {
 	public static IASTStatement normalizeRoot(InferDataTransfer... sets)  {
     	ArbitraryStatement root = new ArbitraryStatement();
     	for(InferDataTransfer set : sets) {
-    		Map<IASTStatement, Set<IBinding>> copy = new HashMap<IASTStatement, Set<IBinding>>(set.copies);
+    		Map<IASTStatement, Set<IBinding>> copy = new HashMap<IASTStatement, Set<IBinding>>(set.transfers);
     		for(IASTStatement statement : copy.keySet()) {
     			if(statement instanceof ArbitraryStatement) {
-    				set.copies.put(root, set.copies.remove(statement));
+    				set.transfers.put(root, set.transfers.remove(statement));
+    				set.topoSorted.set(set.topoSorted.indexOf(statement), root);
+    				set.tree.replaceRoot(root);
     			}
     		}
     	}
@@ -122,7 +124,7 @@ public abstract class InferDataTransfer {
     }
     
     public IASTStatement getRoot() {
-    	for(IASTStatement statement : copies.keySet()) {
+    	for(IASTStatement statement : transfers.keySet()) {
     		if(statement instanceof ArbitraryStatement) {
     			return statement;
     		}
@@ -145,7 +147,7 @@ public abstract class InferDataTransfer {
     		else
     			sb.append("l" + statement.getFileLocation().getStartingLineNumber());
     		sb.append(" : ");
-    		sb.append(copies.get(statement));
+    		sb.append(transfers.get(statement));
     		sb.append("\n");
     	}
     	return sb.toString();
@@ -177,6 +179,11 @@ public abstract class InferDataTransfer {
     	public boolean addNode(IASTStatement construct) {
     		nodes.add(construct);
     		return true;
+    	}
+    	
+    	private void replaceRoot(ArbitraryStatement newRoot) {
+    		nodes.set(nodes.indexOf(root), newRoot);
+    		this.root = newRoot;
     	}
     	
     	public IASTStatement getParent(IASTStatement construct) {
@@ -211,7 +218,7 @@ public abstract class InferDataTransfer {
     		return root;
     	}
  
-    	public boolean isAncestor(IASTStatement ancestor, IASTNode descendant) {
+    	public boolean isAncestor(IASTNode descendant, IASTStatement ancestor) {
     		if(ancestor.equals(root)) {
     			//is an ancestor if descendant is anywhere in the main construct
     			for(IASTStatement statement : construct) {
@@ -233,6 +240,24 @@ public abstract class InferDataTransfer {
 			else {
 				return OpenACCUtil.isAccAccelConstruct(statement);
 			}
+    	}
+    	
+    	@Override
+    	public String toString() {
+    		StringBuilder sb = new StringBuilder();
+    		toString(root, sb, 0);
+    		return sb.toString();
+    	}
+    	
+    	private void toString(IASTStatement node, StringBuilder sb, int depth) {
+    		for(int i = 0; i < depth; i++) {
+    			sb.append("\t");
+    		}
+    		sb.append("-" + node.getClass().getSimpleName() + "@" + node.hashCode());
+    		sb.append("\n");
+    		for(IASTStatement child : getChildren(node)) {
+    			toString(child, sb, depth + 1);
+    		}
     	}
     	
     }
