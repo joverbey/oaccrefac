@@ -115,6 +115,7 @@ public abstract class InferDataTransfer {
     		for(IASTStatement statement : copy.keySet()) {
     			if(statement instanceof ArbitraryStatement) {
     				set.transfers.put(root, set.transfers.remove(statement));
+    				set.topoSorted.set(set.topoSorted.indexOf(statement), root);
     			}
     		}
     	}
@@ -179,6 +180,11 @@ public abstract class InferDataTransfer {
     		return true;
     	}
     	
+    	private void replaceRoot(ArbitraryStatement newRoot) {
+    		nodes.set(nodes.indexOf(root), newRoot);
+    		this.root = newRoot;
+    	}
+    	
     	public IASTStatement getParent(IASTStatement construct) {
     		if(construct.equals(root)) {
     			return null;
@@ -233,6 +239,24 @@ public abstract class InferDataTransfer {
 			else {
 				return OpenACCUtil.isAccAccelConstruct(statement);
 			}
+    	}
+    	
+    	@Override
+    	public String toString() {
+    		StringBuilder sb = new StringBuilder();
+    		toString(root, sb, 0);
+    		return sb.toString();
+    	}
+    	
+    	private void toString(IASTStatement node, StringBuilder sb, int depth) {
+    		for(int i = 0; i < depth; i++) {
+    			sb.append("\t");
+    		}
+    		sb.append("-" + node.getClass().getSimpleName() + "@" + node.hashCode());
+    		sb.append("\n");
+    		for(IASTStatement child : getChildren(node)) {
+    			toString(child, sb, depth + 1);
+    		}
     	}
     	
     }
