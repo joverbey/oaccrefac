@@ -24,9 +24,9 @@ import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
-public class IntroduceDataConstructCheck extends SourceStatementsCheck<RefactoringParams> {
+public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringParams> {
 
-    public IntroduceDataConstructCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
+    public IntroDataConstructCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
         super(statements, statementsAndComments);
     }
 

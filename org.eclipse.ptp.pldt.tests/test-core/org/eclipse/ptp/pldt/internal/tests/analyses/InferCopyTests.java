@@ -448,7 +448,6 @@ public class InferCopyTests extends TestCase {
 		return false;
 	}
 	
-
 	private IASTCompoundStatement getFirstChildCompound(IASTStatement statement) {
 		if(!(statement instanceof IASTCompoundStatement)) {
 			throw new IllegalArgumentException();
