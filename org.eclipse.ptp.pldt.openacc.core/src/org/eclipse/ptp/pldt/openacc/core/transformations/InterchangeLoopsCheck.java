@@ -22,7 +22,6 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
 
@@ -34,13 +33,13 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
         // passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
         super(outer);
         this.outer = outer;
-        this.inq = InquisitorFactory.getInquisitor(outer);
+        this.inq = ForStatementInquisitor.getInquisitor(outer);
     }
     
     @Override
     protected void doParameterCheck(RefactoringStatus status, InterchangeLoopParams params) {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (params.getDepth() < 0 || params.getDepth() >= headers.size()) {
             status.addFatalError("There is no for-loop at perfect loop nest depth " + params.getDepth() + ".");
             return;
@@ -51,9 +50,9 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(outer);
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(outer);
 
-        if (!(inq.getPerfectLoopNestHeaders().contains(inner))) {
+        if (!(inq.getPerfectlyNestedLoops().contains(inner))) {
             status.addFatalError("Only perfectly nested loops can be interchanged.");
             return;
         }
@@ -97,7 +96,7 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     @Override
     protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
 
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         int second_depth = headers.indexOf(inner);
         if (second_depth > 0) {
             int numEnclosingLoops = countEnclosingLoops(outer);

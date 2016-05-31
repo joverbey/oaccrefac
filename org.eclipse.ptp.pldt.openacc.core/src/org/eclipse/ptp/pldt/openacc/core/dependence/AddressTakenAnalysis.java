@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.dependence;
 
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;

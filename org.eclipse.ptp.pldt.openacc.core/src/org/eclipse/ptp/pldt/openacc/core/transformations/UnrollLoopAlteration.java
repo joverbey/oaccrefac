@@ -38,7 +38,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.Activator;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
+import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 /**
  * UnrollLoopAlteration defines a loop unrolling refactoring algorithm. Loop unrolling
@@ -97,7 +97,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.loop = this.getLoopToChange();
 
-        Long lower = InquisitorFactory.getInquisitor(loop).getLowerBound();
+        Long lower = ForStatementInquisitor.getInquisitor(loop).getLowerBound();
         Long upper = check.getUpperBound();
         
         //should have made this check from the UnrollLoopsCheck object already
@@ -123,7 +123,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.condOffset = condOffset;
 
-        this.oldIndexVariable = InquisitorFactory.getInquisitor(loop).getIndexVariable();
+        this.oldIndexVariable = ForStatementInquisitor.getInquisitor(loop).getIndexVariable();
         if (shouldMoveDeclAboveLoop()) {
             try {
                 this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
@@ -163,7 +163,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.replace(loop, forLoop(getInitializer(), getCondition(condOffset), getIterationExpression(), createBody()));
 
-        List<IASTPreprocessorPragmaStatement> prags = InquisitorFactory.getInquisitor(loop).getLeadingPragmas();
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
         int insertPoint = prags.size() > 0 ? prags.get(0).getFileLocation().getNodeOffset()
                 : loop.getFileLocation().getNodeOffset();
         this.insert(insertPoint, createLeadingDeclaration());

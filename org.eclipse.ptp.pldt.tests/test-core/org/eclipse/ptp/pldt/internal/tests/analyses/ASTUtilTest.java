@@ -14,7 +14,10 @@ package org.eclipse.ptp.pldt.internal.tests.analyses;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.core.runtime.CoreException;
@@ -57,5 +60,84 @@ public class ASTUtilTest {
         List<IASTUnaryExpression> results = ASTUtil.find(translationUnit, IASTUnaryExpression.class);
         // sum++ on line 3
         Assert.assertEquals(1, results.size());
+    }
+
+    @Test
+    public void testGetLeadingPragmasNone() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "int x;\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
+        Assert.assertTrue(prags.size() == 0);
+    }
+    
+    @Test
+    public void testGetLeadingPragmasOne() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
+    }
+    
+    @Test
+    public void testGetLeadingPragmasTwo() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "#pragma two\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
+        Assert.assertTrue(prags.size() == 2);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
+        Assert.assertTrue(prags.get(1).getRawSignature().equals("#pragma two"));
+    }
+   
+    @Test
+    public void testGetLeadingPragmasSplit() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "int x;\n"
+                + "#pragma two\n"
+                + "for(i=0;i<10;i++);\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma two"));
+    }
+    
+    @Test
+    public void testGetLeadingPragmasNested() throws CoreException {
+        IASTNode tu = ASTUtil.translationUnitForString(""
+                + "void main() {\n"
+                + "#pragma one\n"
+                + "for(i=0;i<10;i++) {\n"
+                + "  #pragma two\n"
+                + "  int x;\n"
+                + "  #pragma three\n"
+                + "  for(j=0;j<10;j++) {\n"
+                + "  }\n"
+                + "}\n"
+                + "}\n");
+        IASTForStatement loop = ASTUtil.findFirst(tu, IASTForStatement.class);
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma one"));
+        loop = ASTUtil.findFirst(loop.getBody(), IASTForStatement.class);
+        prags = ASTUtil.getPragmaNodes(loop);
+        Assert.assertTrue(prags.size() == 1);
+        Assert.assertTrue(prags.get(0).getRawSignature().equals("#pragma three"));
+        
     }
 }

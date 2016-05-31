@@ -28,7 +28,6 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
 import org.eclipse.ptp.pldt.openacc.core.dependence.FusionDependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ASTMatcher;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
@@ -83,7 +82,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     @Override
     public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
         
-        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(first);
+        ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(first);
         FusionDependenceAnalysis dep;
         
         try {
@@ -138,22 +137,18 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     }
     
     private void checkPragma(RefactoringStatus status) {
-        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
-        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
-        if(comparePragma() && (loop1.getPragmas().length != 0 && loop2.getPragmas().length != 0 || loop1.getPragmas().length != loop2.getPragmas().length)) {
-                    status.addFatalError("When a loop has a pragma associated with it, it cannot be fused unless both loops have identical pragmas.");
+        int pragmasOnFirst = ASTUtil.getPragmaNodes(first).size();
+        int pragmasOnSecond = ASTUtil.getPragmaNodes(second).size();
+        boolean empty = (pragmasOnFirst == 0 && pragmasOnSecond == 0);
+        if (!empty && pragmasDiffer()) {
+            status.addFatalError("When a loop has a pragma associated with it, it cannot be fused unless both loops have identical pragmas.");
         }
     }
     
-    //if both pragmas are not identical returns true
-    private boolean comparePragma(){
-        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
-        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
-        String loop1String;
-        String loop2String;
-        loop1String = Arrays.toString(loop1.getPragmas());
-        loop2String = Arrays.toString(loop2.getPragmas());
-        boolean loopBool = !loop1String.equals(loop2String); 
-        return loopBool;
+    private boolean pragmasDiffer(){
+    	// FIXME: Why are we comparing strings?
+        String loop1String = Arrays.toString(ASTUtil.getPragmaStrings(first));
+        String loop2String = Arrays.toString(ASTUtil.getPragmaStrings(second));
+        return !loop1String.equals(loop2String); 
     }
 }

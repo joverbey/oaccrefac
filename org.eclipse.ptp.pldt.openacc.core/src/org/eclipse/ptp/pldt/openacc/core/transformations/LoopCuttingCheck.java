@@ -17,7 +17,6 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public class LoopCuttingCheck extends AbstractStripMineCheck {
 
@@ -34,7 +33,7 @@ public class LoopCuttingCheck extends AbstractStripMineCheck {
     	// If this is the case, then cut sections of the iterations will also 
     	// be independent, meaning they are still parellelizable.
     	
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.loop);
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.loop);
     
         // Check strip factor validity...
         if (params.getNumFactor() <= 0) {

@@ -12,15 +12,13 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
@@ -34,8 +32,6 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
@@ -48,9 +44,33 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryState
 
 public class ForStatementInquisitor {
 
-    public static ForStatementInquisitor getInquisitor(IASTForStatement statement) {
-        return new ForStatementInquisitor(statement);
-    }
+	public static ForStatementInquisitor getInquisitor(IASTForStatement loop) {
+		return InquisitorFactory.getInquisitor(loop);
+	}
+
+	private static class InquisitorFactory {
+		private static final WeakHashMap<IASTForStatement, ForStatementInquisitor> refs = new WeakHashMap<>();
+
+		/**
+		 * Factory method. Creates a {@link ForStatementInquisitor} (or returns a cached copy) for an {@link IASTForStatement}.
+		 * <p>
+		 * <code>forStmt</code> may be <code>null</code>.
+		 * 
+		 * @param forStmt
+		 *            statement for which to create an inquisitor
+		 * @return {@link ForStatementInquisitor} (non-<code>null</code>)
+		 */
+		public static ForStatementInquisitor getInquisitor(IASTForStatement forStmt) {
+			// Is there a cached ForStatementInquisitor for this loop?
+			if (refs.containsKey(forStmt) && refs.get(forStmt) != null)
+				return refs.get(forStmt);
+
+			// Otherwise we need to create a new one
+			ForStatementInquisitor value = new ForStatementInquisitor(forStmt);
+			refs.put(forStmt, value);
+			return value;
+		}
+	}
 
     private final IASTForStatement statement;
 
@@ -81,9 +101,11 @@ public class ForStatementInquisitor {
 
     private ForStatementInquisitor(IASTForStatement statement) {
         this.statement = statement;
+        this.counted = determineIfLoopIsCounted(statement); // cache this for performance
+    }
 
-        // cache whether or not the loop is counted for performance
-        class LiteralReplacer extends ASTVisitor {
+	private static boolean determineIfLoopIsCounted(IASTForStatement statement) {
+		class LiteralReplacer extends ASTVisitor {
             public LiteralReplacer() {
                 shouldVisitExpressions = true;
             }
@@ -101,18 +123,18 @@ public class ForStatementInquisitor {
                 return PROCESS_CONTINUE;
             }
         }
-        counted = false;
+
         for (String pattern : patterns) {
             IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
             patternAST.accept(new LiteralReplacer());
             patternAST.setBody(new ArbitraryStatement());
             if (ASTMatcher.unify(patternAST, statement) != null) {
-                counted = true;
-                break;
+                return true;
             }
         }
-    }
+        return false;
+	}
 
     /**
      * Method matches the parameter with all of the patterns defined in the pattern string array above. It parses each
@@ -276,21 +298,21 @@ public class ForStatementInquisitor {
         return false;
     }
 
-    public List<IASTForStatement> getPerfectLoopNestHeaders() {
-        return getPerfectLoopNestHeaders(statement);
+    public List<IASTForStatement> getPerfectlyNestedLoops() {
+        return getPerfectlyNestedLoops(statement);
     }
 
-    private static List<IASTForStatement> getPerfectLoopNestHeaders(IASTForStatement outerLoop) {
+    private static List<IASTForStatement> getPerfectlyNestedLoops(IASTForStatement outerLoop) {
         List<IASTForStatement> result = new LinkedList<IASTForStatement>();
         result.add(outerLoop);
 
         if (outerLoop.getBody() instanceof IASTCompoundStatement) {
             IASTNode[] children = outerLoop.getBody().getChildren();
             if (children.length == 1 && children[0] instanceof IASTForStatement) {
-                result.addAll(getPerfectLoopNestHeaders((IASTForStatement) children[0]));
+                result.addAll(getPerfectlyNestedLoops((IASTForStatement) children[0]));
             }
         } else if (outerLoop.getBody() instanceof IASTForStatement) {
-            result.addAll(getPerfectLoopNestHeaders((IASTForStatement) outerLoop.getBody()));
+            result.addAll(getPerfectlyNestedLoops((IASTForStatement) outerLoop.getBody()));
         }
         return result;
     }
@@ -382,70 +404,4 @@ public class ForStatementInquisitor {
     public int getIterationFactor() {
         return getIterationFactor(0);
     }
-
-    public List<IASTPreprocessorPragmaStatement> getLeadingPragmas() {
-        int loopLoc = statement.getFileLocation().getNodeOffset();
-        int precedingStmtOffset = getNearestPrecedingStatementOffset(statement);
-        List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
-        for (IASTPreprocessorStatement pre : statement.getTranslationUnit().getAllPreprocessorStatements()) {
-            if (pre instanceof IASTPreprocessorPragmaStatement
-                    && ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < loopLoc
-                    && ((IASTPreprocessorPragmaStatement) pre).getFileLocation()
-                            .getNodeOffset() > precedingStmtOffset) {
-                pragmas.add((IASTPreprocessorPragmaStatement) pre);
-            }
-        }
-        Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
-        return pragmas;
-    }
-
-    private int getNearestPrecedingStatementOffset(IASTStatement stmt) {
-
-        class OffsetFinder extends ASTVisitor {
-
-            // the offset of the nearest lexical predecessor of the given node
-            int finalOffset;
-            int thisOffset;
-
-            public OffsetFinder(int offset) {
-                shouldVisitStatements = true;
-                shouldVisitDeclarations = true;
-                this.thisOffset = offset;
-            }
-
-            @Override
-            public int visit(IASTStatement stmt) {
-                int foundOffset = stmt.getFileLocation().getNodeOffset();
-                if (thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
-                    this.finalOffset = foundOffset;
-                }
-                return PROCESS_CONTINUE;
-            }
-
-            @Override
-            public int visit(IASTDeclaration dec) {
-                int foundOffset = dec.getFileLocation().getNodeOffset();
-                if (thisOffset - foundOffset < thisOffset - finalOffset && foundOffset < thisOffset) {
-                    this.finalOffset = foundOffset;
-                }
-                return PROCESS_CONTINUE;
-            }
-
-        }
-
-        OffsetFinder finder = new OffsetFinder(stmt.getFileLocation().getNodeOffset());
-        IASTFunctionDefinition containingFunc = ASTUtil.findNearestAncestor(stmt, IASTFunctionDefinition.class);
-        containingFunc.accept(finder);
-        return finder.finalOffset;
-    }
-
-    public String[] getPragmas() {
-        List<IASTPreprocessorPragmaStatement> p = getLeadingPragmas();
-        String[] pragCode = new String[p.size()];
-        for (int i = 0; i < pragCode.length; i++) {
-            pragCode[i] = p.get(i).getRawSignature();
-        }
-        return pragCode;
-    }
-
 }

@@ -21,8 +21,7 @@ import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
-import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
 public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
@@ -47,7 +46,7 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 	protected void doLoopFormCheck(RefactoringStatus status) {
 		if (kernels) {
 			checkParallel(status);
-	    	if (ForStatementInquisitor.getInquisitor(loop).getPragmas().length > 0) {
+	    	if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
 	            status.addError("This loop contains an ACC pragma.");
 	        }
 		} else {
@@ -66,8 +65,7 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 	}
 
 	private void checkPragma(RefactoringStatus status) {
-		ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(loop);
-		if (loop1.getPragmas().length != 0) {
+		if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
 			status.addFatalError("When a loop has a pragma associated with it, it cannot have another pragma added to it.");
 		}
 	}

@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.DirectionHierarchyTester;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.VariableAccess;
 
@@ -97,7 +96,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
                         int[] lowerBounds = fillArray(commonLoops.size(), Integer.MIN_VALUE + 1);
                         int[] upperBounds = fillArray(commonLoops.size(), Integer.MAX_VALUE - 1);
                         for (int i = 0; i < commonLoops.size(); i++) {
-                            ForStatementInquisitor thisLoop = InquisitorFactory.getInquisitor(commonLoops.get(i));
+                            ForStatementInquisitor thisLoop = ForStatementInquisitor.getInquisitor(commonLoops.get(i));
                             Long lb = thisLoop.getLowerBound();
                             Long ub = thisLoop.getInclusiveUpperBound();
                             if (lb != null && Integer.MIN_VALUE + 1 <= lb.longValue()
@@ -150,7 +149,7 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
 	private static List<IBinding> getLoopIndexVariables(List<IASTForStatement> loops) {
 	    List<IBinding> result = new ArrayList<IBinding>(loops.size());
 	    for (IASTForStatement forStmt : loops) {
-	        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(forStmt);
+	        ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(forStmt);
 	        IBinding variable = loop.getIndexVariable();
 	        if (variable != null) {
 	            result.add(variable);

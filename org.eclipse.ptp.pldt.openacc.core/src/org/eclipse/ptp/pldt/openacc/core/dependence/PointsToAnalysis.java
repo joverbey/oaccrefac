@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.dependence;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
