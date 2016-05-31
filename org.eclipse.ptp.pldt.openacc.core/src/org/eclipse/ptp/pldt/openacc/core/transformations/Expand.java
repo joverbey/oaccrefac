@@ -1,20 +1,11 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
-import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
@@ -26,8 +17,6 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	
 	@Override
 	public void doChange() {
-		ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
-
 		int maxup = getMaxInDirection(getStatement(), true);
 		int maxdown = getMaxInDirection(getStatement(), false);
 		int osize = ASTUtil.getStatementsIfCompound(getStatement()).length;
@@ -37,7 +26,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			for (int j = 0; j <= maxdown; j++) {
 				IASTStatement[] expStmts = getExpansionStatements(i, j, getStatement());
 				// be sure we don't add a declaration to this inner scope if it is used in the outer scope
-				if (!expansionAddsDeclarationIllegally(expStmts, getStatement(), rd))
+				if (ASTUtil.doesConstructContainAllReferencesToVariablesItDeclares(expStmts))
 					expansions.add(new Expansion(expStmts, osize + i + j));
 			}
 		}
@@ -75,48 +64,6 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		finalizeChanges();
 	}
 	
-
-	private boolean expansionAddsDeclarationIllegally(IASTStatement[] expStmts, IASTStatement origStmt,
-			ReachingDefinitions rd) {
-		// get all variable declarations in the expansion but not in the original construct
-		Set<IASTDeclarationStatement> decls = new HashSet<IASTDeclarationStatement>();
-		for (IASTStatement stmt : expStmts) {
-			if (!stmt.equals(origStmt)) {
-				decls.addAll(ASTUtil.find(stmt, IASTDeclarationStatement.class));
-			}
-		}
-
-		Set<IBinding> declaredVars = new HashSet<IBinding>();
-		for (IASTDeclarationStatement declStmt : decls) {
-			if(declStmt.getDeclaration() instanceof IASTSimpleDeclaration) {
-				for(IASTDeclarator decl : ((IASTSimpleDeclaration) declStmt.getDeclaration()).getDeclarators()) {
-					declaredVars.add(decl.getName().resolveBinding());
-				}
-			}
-		}
-		
-		IASTFunctionDefinition func = ASTUtil.findNearestAncestor(origStmt, IASTFunctionDefinition.class);
-		Set<IASTName> namesInConstruct = new HashSet<IASTName>();
-		Set<IASTName> namesInFuncButNotConstruct = new HashSet<IASTName>();
-		for(IASTStatement stmt : expStmts) {
-			namesInConstruct.addAll(ASTUtil.find(stmt, IASTName.class));
-		}
-		namesInFuncButNotConstruct.addAll(ASTUtil.find(func, IASTName.class));
-		namesInFuncButNotConstruct.removeAll(namesInConstruct);
-		
-		//if we are pulling in a declaration of a var that is used outside the construct, that declaration
-		//is no longer in the scope or parent scope of any references outside the construct
-		for(IBinding var : declaredVars) {
-			for(IASTName outsideReference : namesInFuncButNotConstruct) {
-				if(outsideReference.resolveBinding().equals(var)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	private int getMaxInDirection(IASTStatement statement, boolean up) {
 		int i = 0;
 		IASTNode next = statement;
