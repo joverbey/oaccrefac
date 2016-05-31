@@ -22,6 +22,8 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
+import org.eclipse.cdt.core.dom.ast.IASTCaseStatement;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -45,10 +47,8 @@ import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
-import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
-import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
-import org.eclipse.cdt.core.dom.ast.IASTCaseStatement;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,7 +58,6 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.BindingComparator;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 import org.eclipse.ptp.pldt.openacc.internal.core.Pair;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.FunctionWhitelist;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.LinearExpression;
@@ -182,7 +181,7 @@ public abstract class AbstractDependenceAnalysis {
     }
 
     private void collectAccessesFrom(IASTForStatement stmt) throws DependenceTestFailure {
-        ForStatementInquisitor forLoop = InquisitorFactory.getInquisitor(stmt);
+        ForStatementInquisitor forLoop = ForStatementInquisitor.getInquisitor(stmt);
         if (!forLoop.isCountedLoop()) {
             throw unsupported(stmt);
         }

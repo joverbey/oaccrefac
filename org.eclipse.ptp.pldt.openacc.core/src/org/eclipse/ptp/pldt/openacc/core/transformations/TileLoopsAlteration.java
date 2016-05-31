@@ -29,7 +29,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 /**
  * TileLoopsAlteration defines a loop tiling refactoring algorithm. Loop tiling takes
@@ -79,8 +78,8 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
 
     @Override
     protected void doChange() {
-        ForStatementInquisitor innerInq = InquisitorFactory.getInquisitor(inner);
-        ForStatementInquisitor outerInq = InquisitorFactory.getInquisitor(outer);
+        ForStatementInquisitor innerInq = ForStatementInquisitor.getInquisitor(inner);
+        ForStatementInquisitor outerInq = ForStatementInquisitor.getInquisitor(outer);
         String innerIndexVar = innerInq.getIndexVariable().toString();
         String outerIndexVar = outerInq.getIndexVariable().toString();
         String innerUb = ((IASTBinaryExpression) inner.getConditionExpression()).getOperand2().getRawSignature();

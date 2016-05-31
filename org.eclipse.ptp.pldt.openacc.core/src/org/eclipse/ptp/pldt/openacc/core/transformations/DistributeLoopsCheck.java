@@ -18,8 +18,7 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceType;
 import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
-import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
@@ -57,8 +56,7 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 	}
 
 	private void checkPragma(RefactoringStatus status) {
-		ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(loop);
-		if (loop1.getPragmas().length != 0) {
+		if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
 			status.addFatalError("Can't distribute loop with pragmas.");
 		}
 	}
