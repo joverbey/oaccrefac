@@ -3,9 +3,21 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyoutClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCreateClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataItemNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTVisitor;
+import org.eclipse.ptp.pldt.openacc.core.parser.IASTListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
@@ -17,6 +29,42 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	
 	@Override
 	public void doChange() {
+		Expansion largestexp = determineLargestExpansion();
+
+		String newConstruct = "";
+		for (IASTStatement statement : largestexp.getStatements()) {
+			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
+				if (!pragma.equals(getPragma()))
+					newConstruct += pragma.getRawSignature() + System.lineSeparator();
+			}
+			if (statement.equals(getStatement())) {
+				newConstruct += decompound(statement.getRawSignature()) + System.lineSeparator();
+			} else {
+				newConstruct += statement.getRawSignature() + System.lineSeparator();
+			}
+		}
+
+		newConstruct = getPragma().getRawSignature() + System.lineSeparator() + compound(newConstruct);
+
+		this.remove(getPragma());
+
+		IASTStatement[] exparr = largestexp.getStatements();
+		if(getStatement() instanceof IASTCompoundStatement) {
+			int stmtOffset = getStatement().getFileLocation().getNodeOffset();
+			String comp = getStatement().getRawSignature();
+			this.remove(stmtOffset + comp.indexOf('{'), 1);
+			this.remove(stmtOffset + comp.lastIndexOf('}'), 1);
+		}
+		
+		this.insertBefore(exparr[0], "{" + NL);
+		
+		insertNewPragma(exparr);
+		
+		this.insertAfter(exparr[exparr.length - 1], NL + "}");
+		finalizeChanges();
+	}
+
+	private Expansion determineLargestExpansion() {
 		int maxup = getMaxInDirection(getStatement(), true);
 		int maxdown = getMaxInDirection(getStatement(), false);
 		int osize = ASTUtil.getStatementsIfCompound(getStatement()).length;
@@ -37,31 +85,122 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 				largestexp = exp;
 			}
 		}
+		return largestexp;
+	}
+	
+	private void insertNewPragma(IASTStatement[] exparr) {
+		/**
+		 * TODO: in here, deal with #28 ExpandDataConstruct expands around declarations 
+		 * but keeps declared variables in existing copy sets
+		 * Find all IASTDeclarators in the construct that have IASTSimpleDeclaration parents, 
+		 * check all data/kernels/parallel/etc clause lists for that same variable
+		 * remove that variable from the clause list
+		 * use IASTNode#printOn() with a ByteArrayOutputStream to get text to insert (better way?)
+		 */
+		class DeclaratorRemover extends ASTVisitor {
 
-		String newConstruct = "";
-		for (IASTStatement statement : largestexp.getStatements()) {
-			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
-				if (!pragma.equals(getPragma()))
-					newConstruct += pragma.getRawSignature() + System.lineSeparator();
+			private String declarator;
+
+			public DeclaratorRemover(IASTDeclarator declarator) {
+				this.declarator = declarator.getName().toString();
 			}
-			if (statement.equals(getStatement())) {
-				newConstruct += decompound(statement.getRawSignature()) + System.lineSeparator();
-			} else {
-				newConstruct += statement.getRawSignature() + System.lineSeparator();
+
+			private boolean empty(IASTListNode<ASTAccDataItemNode> items) {
+				for(ASTAccDataItemNode item : items) {
+					if(item != null) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			@Override
+			public void visitASTAccCopyinClauseNode(ASTAccCopyinClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+
+			@Override
+			public void visitASTAccCopyoutClauseNode(ASTAccCopyoutClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+
+			@Override
+			public void visitASTAccCopyClauseNode(ASTAccCopyClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+
+			@Override
+			public void visitASTAccCreateClauseNode(ASTAccCreateClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
 			}
 		}
 
-		newConstruct = getPragma().getRawSignature() + System.lineSeparator() + compound(newConstruct);
+		// all variable declarators that occur in the construct
+		List<IASTDeclarator> declarators = new ArrayList<IASTDeclarator>();
+		for (IASTStatement stmt : exparr) {
+			for (IASTDeclarator decl : ASTUtil.find(stmt, IASTDeclarator.class)) {
+				if (ASTUtil.findNearestAncestor(decl, IASTSimpleDeclaration.class) != null) {
+					declarators.add(decl);
+				}
+			}
+		}
+		
+		IAccConstruct construct;
+		try {
+			construct = new OpenACCParser().parse(getPragma().getRawSignature());
+		} catch (Exception e) {
+			System.err.println("Failed to parse data construct");
+			e.printStackTrace();
+			this.insertBefore(exparr[0], getPragma().getRawSignature() + NL);
+			return;
+		}
 
-		this.remove(getPragma());
-
-		IASTStatement[] exparr = largestexp.getStatements();
-		int start = exparr[0].getFileLocation().getNodeOffset();
-		int end = exparr[exparr.length - 1].getFileLocation().getNodeOffset()
-				+ exparr[exparr.length - 1].getFileLocation().getNodeLength();
-		int len = end - start;
-		this.replace(start, len, newConstruct);
-		finalizeChanges();
+		for(IASTDeclarator declarator : declarators) {
+			construct.accept(new DeclaratorRemover(declarator));
+		}
+		
+		this.insertBefore(exparr[0], construct.toString() + NL);
+		
 	}
 	
 	private int getMaxInDirection(IASTStatement statement, boolean up) {
