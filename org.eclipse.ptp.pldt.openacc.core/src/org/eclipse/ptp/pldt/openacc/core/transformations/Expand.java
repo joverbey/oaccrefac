@@ -89,14 +89,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	}
 	
 	private void insertNewPragma(IASTStatement[] exparr) {
-		/**
-		 * TODO: in here, deal with #28 ExpandDataConstruct expands around declarations 
-		 * but keeps declared variables in existing copy sets
-		 * Find all IASTDeclarators in the construct that have IASTSimpleDeclaration parents, 
-		 * check all data/kernels/parallel/etc clause lists for that same variable
-		 * remove that variable from the clause list
-		 * use IASTNode#printOn() with a ByteArrayOutputStream to get text to insert (better way?)
-		 */
+
 		class DeclaratorRemover extends ASTVisitor {
 
 			private String declarator;
@@ -175,7 +168,6 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			}
 		}
 
-		// all variable declarators that occur in the construct
 		List<IASTDeclarator> declarators = new ArrayList<IASTDeclarator>();
 		for (IASTStatement stmt : exparr) {
 			for (IASTDeclarator decl : ASTUtil.find(stmt, IASTDeclarator.class)) {
