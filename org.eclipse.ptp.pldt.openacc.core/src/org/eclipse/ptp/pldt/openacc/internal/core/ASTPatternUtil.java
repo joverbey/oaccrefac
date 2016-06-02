@@ -2,13 +2,18 @@ package org.eclipse.ptp.pldt.openacc.internal.core;
 
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.LinearExpression;
 
@@ -16,7 +21,7 @@ public class ASTPatternUtil {
 
 	private ASTPatternUtil() {
 	}
-
+	
 	public static IASTFunctionCallExpression getFuncExpression(IASTExpression expr) {
 		if (!(expr instanceof IASTFunctionCallExpression))
 			return null;
@@ -149,6 +154,92 @@ public class ASTPatternUtil {
 			return null;
 		else
 			return new Pair<IASTName, IASTName>(owner, field);
+	}
+
+	public static boolean isDefinition(IASTName name) {
+		IASTStatement defStmt = ASTUtil.findNearestAncestor(name, IASTStatement.class);
+		IASTUnaryExpression defUnaryExpr = ASTUtil.findNearestAncestor(name, IASTUnaryExpression.class);
+		IASTBinaryExpression defBinaryExpr = ASTUtil.findNearestAncestor(name, IASTBinaryExpression.class);
+		if (defStmt instanceof IASTDeclarationStatement) {
+			if (((IASTDeclarationStatement) defStmt).getDeclaration() instanceof IASTSimpleDeclaration) {
+				IASTSimpleDeclaration simpleDec = (IASTSimpleDeclaration) (((IASTDeclarationStatement) defStmt)
+						.getDeclaration());
+				// int x; int x, y; int x = 1;
+				for (IASTDeclarator decl : simpleDec.getDeclarators()) {
+					if (decl.getName().equals(name)) {
+						return true;
+					}
+				}
+			}
+		} else {
+			if ((defStmt instanceof IASTExpressionStatement
+					&& ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)
+					|| defUnaryExpr != null) {
+				// x++; x--; ++x; --x;
+				IASTUnaryExpression unary;
+				if ((defStmt instanceof IASTExpressionStatement
+						&& ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
+					unary = (IASTUnaryExpression) (((IASTExpressionStatement) defStmt).getExpression());
+				} else {
+					unary = defUnaryExpr;
+				}
+				if (unary.getOperator() == IASTUnaryExpression.op_postFixIncr
+						|| unary.getOperator() == IASTUnaryExpression.op_prefixIncr
+						|| unary.getOperator() == IASTUnaryExpression.op_postFixDecr
+						|| unary.getOperator() == IASTUnaryExpression.op_prefixIncr) {
+					if (unary.getOperand() instanceof IASTIdExpression) {
+						if (((IASTIdExpression) unary.getOperand()).getName().equals(name)) {
+							return true;
+						}
+					} else if (unary.getOperand() instanceof IASTArraySubscriptExpression) {
+						IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) unary.getOperand();
+						if (arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
+							if (((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+	
+			if ((defStmt instanceof IASTExpressionStatement
+					&& ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTBinaryExpression)
+					|| defBinaryExpr != null) {
+				// x = 1; x += 1; ...
+				IASTBinaryExpression binary;
+				if ((defStmt instanceof IASTExpressionStatement
+						&& ((IASTExpressionStatement) defStmt).getExpression() instanceof IASTUnaryExpression)) {
+					binary = (IASTBinaryExpression) (((IASTExpressionStatement) defStmt).getExpression());
+				} else {
+					binary = defBinaryExpr;
+				}
+				if (binary.getOperator() == IASTBinaryExpression.op_assign
+						|| binary.getOperator() == IASTBinaryExpression.op_binaryAndAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_binaryOrAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_binaryXorAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_divideAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_minusAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_moduloAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_multiplyAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_plusAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_shiftLeftAssign
+						|| binary.getOperator() == IASTBinaryExpression.op_shiftRightAssign) {
+					if (binary.getOperand1() instanceof IASTIdExpression) {
+						if (((IASTIdExpression) binary.getOperand1()).getName().equals(name)) {
+							return true;
+						}
+					} else if (binary.getOperand1() instanceof IASTArraySubscriptExpression) {
+						IASTArraySubscriptExpression arrSubExpr = (IASTArraySubscriptExpression) binary.getOperand1();
+						if (arrSubExpr.getArrayExpression() instanceof IASTIdExpression) {
+							if (((IASTIdExpression) arrSubExpr.getArrayExpression()).getName().equals(name)) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }

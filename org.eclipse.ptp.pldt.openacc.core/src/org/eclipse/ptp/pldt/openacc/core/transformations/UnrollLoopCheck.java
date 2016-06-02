@@ -23,6 +23,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
@@ -83,7 +84,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 			}
             @Override
             public int visit(IASTName name) {
-            	if (ASTUtil.isDefinition(name)) {
+            	if (ASTPatternUtil.isDefinition(name)) {
             		if (name.getBinding() != null && name.getBinding().equals(indexBinding)) {
                 		this.isDefinition = true;
             		}
