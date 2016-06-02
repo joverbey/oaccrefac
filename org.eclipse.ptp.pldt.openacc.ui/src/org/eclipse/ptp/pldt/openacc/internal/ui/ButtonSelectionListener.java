@@ -11,31 +11,38 @@
 
 package org.eclipse.ptp.pldt.openacc.internal.ui;
 
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.AbstractInputComposite.ValueChangedListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.ForLoopRefactoring;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 
-public class ButtonSelectionListener implements SelectionListener {
+public class ButtonSelectionListener implements SelectionListener, ValueChangedListener {
 	
-	private StripMineLoopRefactoring refac;
+	private ForLoopRefactoring refac;
 	private Button listenButton;
 	private NumberInputComposite stringToChange;
+	private String label1, label2;
 	
-	public ButtonSelectionListener(StripMineLoopRefactoring refac, Button listenButton) {
+	public ButtonSelectionListener(ForLoopRefactoring refac, String label1, String label2) {
 		this.refac = refac;
+		this.label1 = label1;
+		this.label2 = label2;
+	}
+	
+	public void setButton(Button listenButton) {
 		this.listenButton = listenButton;
 	}
 	
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		if (listenButton.getSelection()) {
-			refac.setCut(false);
-			stringToChange.setLabelText("Strip Size");
+			refac.setSecondOption(false);
+			stringToChange.setLabelText(label1);
 		}
 		else {
-			refac.setCut(true);
-			stringToChange.setLabelText("Cut Size");
+			refac.setSecondOption(true);
+			stringToChange.setLabelText(label2);
 		}
 	}
 	

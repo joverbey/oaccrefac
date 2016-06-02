@@ -15,8 +15,6 @@ import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
-import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, DistributeLoopsAlteration defines a refactoring to distribute loops. Loop distribution takes
@@ -64,7 +62,6 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         String init = this.getLoopToChange().getInitializerStatement().getRawSignature();
         String cond = this.getLoopToChange().getConditionExpression().getRawSignature();
         String incr = this.getLoopToChange().getIterationExpression().getRawSignature();
-        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(getLoopToChange());
         // Remove the old loop from the statement list
         this.remove(getLoopToChange());
 
@@ -76,7 +73,7 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         int offset = this.getLoopToChange().getFileLocation().getNodeOffset();
         
         for (int i = stmts.length - 1; i >= 0; i--) {
-            if(loop.getPragmas().length != 0){
+            if(ASTUtil.getPragmaNodes(getLoopToChange()).size() != 0){
                 this.insert(offset, pragma("acc parallel loop"));
             }
             String newBody = "";

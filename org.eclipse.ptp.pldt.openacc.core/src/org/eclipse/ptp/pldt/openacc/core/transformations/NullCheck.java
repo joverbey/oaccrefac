@@ -27,7 +27,6 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public class NullCheck extends ForLoopCheck<NullParams> {
 
@@ -39,7 +38,7 @@ public class NullCheck extends ForLoopCheck<NullParams> {
 
     @Override
     protected void doLoopFormCheck(RefactoringStatus status) {
-        ForStatementInquisitor inquisitor = InquisitorFactory.getInquisitor(loop);
+        ForStatementInquisitor inquisitor = ForStatementInquisitor.getInquisitor(loop);
 
         // If the loop is not a counted loop, fail
         if (!inquisitor.isCountedLoop()) {

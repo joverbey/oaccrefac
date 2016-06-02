@@ -21,34 +21,8 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 /**
  * IntroduceDefaultNone performs the introduce default none refactoring.
  */
-public class IntroduceDefaultNone extends StatementMain<RefactoringParams, IntroDefaultNoneCheck, IntroDefaultNoneAlteration> {
-    
-    /**
-     * main begins refactoring execution.
-     * 
-     * @param args Arguments to the refactoring.
-     */
-    public static void main(String[] args) {
-        new IntroduceDefaultNone().run(args);
-    }
+public class IntroduceDefaultNone extends CLIRefactoring<RefactoringParams, IntroDefaultNoneCheck> {
 
-    @Override
-    protected boolean checkArgs(String[] args) {
-        if (!((args.length == 3 && args[1].equals("-ln")) || (args.length == 1 ))) {
-            printUsage();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * printUsage prints the usage of the refactoring.
-     */
-    private void printUsage() {
-        System.err.println("Usage: IntroduceDefaultNone <filename.c>");
-        System.err.println("Usage2: IntroduceDefaultNone <filename.c> -ln <loopname>");
-    }
-    
     @Override
     protected IntroDefaultNoneCheck createCheck(IASTStatement statement) {
         int pragmaPosition = statement.getFileLocation().getStartingLineNumber() - 1;
@@ -63,13 +37,8 @@ public class IntroduceDefaultNone extends StatementMain<RefactoringParams, Intro
     }
 
     @Override
-    protected RefactoringParams createParams(IASTStatement statement) {
-        // RefactoringParams is abstract
-        return null;
-    }
-
-    @Override
-    protected IntroDefaultNoneAlteration createAlteration(IASTRewrite rewriter, IntroDefaultNoneCheck check) throws CoreException {
+    public IntroDefaultNoneAlteration createAlteration(IASTRewrite rewriter, IntroDefaultNoneCheck check)
+    		throws CoreException {
         return new IntroDefaultNoneAlteration(rewriter, check);
     }
     

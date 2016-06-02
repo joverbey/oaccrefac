@@ -13,12 +13,15 @@
 package org.eclipse.ptp.pldt.openacc.internal.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.ToolFactory;
@@ -517,6 +520,29 @@ public class ASTUtil {
 		return new IASTStatement[] { statement };
 	}
 
+	public static boolean doesConstructContainAllReferencesToVariablesItDeclares(IASTStatement... construct) {
+		IASTFunctionDefinition func = ASTUtil.findNearestAncestor(construct[0], IASTFunctionDefinition.class);
+    	List<IASTName> varOccurrences = ASTUtil.find(func, IASTName.class);
+    	Set<IASTDeclarator> declaratorsInConstruct = new HashSet<IASTDeclarator>();
+    	for(IASTStatement stmt : construct) {
+    		for(IASTSimpleDeclaration declaration : ASTUtil.find(stmt, IASTSimpleDeclaration.class)) {
+    			//if declarator.getName().resolveBinding() occurs outside the construct
+    			declaratorsInConstruct.addAll(Arrays.asList(declaration.getDeclarators()));
+        	}
+    	}
+    	for(IASTDeclarator declarator : declaratorsInConstruct) {
+    		for(IASTName occurrence : varOccurrences) {
+    			//if a variable is declared in the construct and this is some reference to it
+    			if(declarator.getName().resolveBinding().equals(occurrence.resolveBinding())) {
+    				if(!ASTUtil.isAncestor(occurrence, construct)) {
+    					return false;
+    				}
+    			}
+    		}
+    	}
+    	return true;
+	}
+	
 	private ASTUtil() {
 	}
 }

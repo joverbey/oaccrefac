@@ -34,7 +34,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fusion refactoring algorithm. Loop fusion takes the
@@ -116,9 +115,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
 
         body = compound(body);
         // remove second pragma if loops are matching
-        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
-        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
-        if(loop1.getPragmas() == loop2.getPragmas()){
+        if(ASTUtil.getPragmaNodes(first).equals(ASTUtil.getPragmaNodes(second))){
             removePragma(second);
         }
         
@@ -129,8 +126,8 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
     }
 
     private Map<IASTName, String> getNameModifications(IASTForStatement loop1, IASTForStatement loop2) {
-        IASTStatement[] body1 = getBodyStatements(loop1);
-        IASTStatement[] body2 = getBodyStatements(loop2);
+        IASTStatement[] body1 = ASTUtil.getStatementsIfCompound(loop1.getBody());
+        IASTStatement[] body2 = ASTUtil.getStatementsIfCompound(loop2.getBody());
         Map<IASTName, String> map = new HashMap<IASTName, String>();
         for (IASTStatement stmt1 : body1) {
             for (IASTStatement stmt2 : body2) {
@@ -150,18 +147,10 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         return map;
     }
 
-    private IASTStatement[] getBodyStatements(IASTForStatement loop) {
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            return ((IASTCompoundStatement) loop.getBody()).getStatements();
-        } else {
-            return new IASTStatement[] { loop.getBody() };
-        }
-    }
-
     // gets statements AND comments from a loop body in forward order
     private IASTNode[] getBodyObjects(IASTForStatement loop) {
         List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
@@ -267,7 +256,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         return refsToMod.toArray(new IASTName[refsToMod.size()]);
     }
     private void removePragma(IASTForStatement loopIn){
-        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loopIn);
+        ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(loopIn);
         remove(loop.getStatement().getFileLocation().getNodeOffset() - 1, loop.getStatement().getFileLocation().getNodeLength());
     }
 

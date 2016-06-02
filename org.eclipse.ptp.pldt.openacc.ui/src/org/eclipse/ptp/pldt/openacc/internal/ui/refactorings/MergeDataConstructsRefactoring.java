@@ -19,20 +19,20 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceDataConstructAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroduceDataConstructCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.MergeDataConstructsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.MergeDataConstructsCheck;
 
 @SuppressWarnings("restriction")
-public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
+public class MergeDataConstructsRefactoring extends PragmaDirectiveRefactoring {
 
-    private IntroduceDataConstructCheck check;
+
+    private MergeDataConstructsCheck check;
     
-    public IntroduceDataConstructRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public MergeDataConstructsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
         
-        if (selection == null || tu.getResource() == null || project == null) {
+        if (selection == null || tu.getResource() == null || project == null)
             initStatus.addFatalError("Invalid selection");
-        }
     }
 
     @Override
@@ -42,13 +42,14 @@ public class IntroduceDataConstructRefactoring extends StatementsRefactoring {
     
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroduceDataConstructCheck(getStatements(), getAllEnclosedNodes());
+        check = new MergeDataConstructsCheck(getPragma(), getStatement());
         check.performChecks(initStatus, pm, null);
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new IntroduceDataConstructAlteration(rewriter, check).change();
+        new MergeDataConstructsAlteration(rewriter, check).change();
     }
+
 
 }

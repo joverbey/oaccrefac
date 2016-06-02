@@ -18,7 +18,6 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -31,7 +30,6 @@ import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public abstract class AbstractStripMineAlteration 
 	extends ForLoopAlteration<AbstractStripMineCheck> {
@@ -49,7 +47,7 @@ public abstract class AbstractStripMineAlteration
     @Override
     public void doChange() {
         IASTForStatement loop = getLoopToChange();
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(loop);
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
         String indexVar = inq.getIndexVariable().toString();
         if (newName.equals("")) {
         	try {
@@ -137,14 +135,6 @@ public abstract class AbstractStripMineAlteration
         }
     }
     
-    private IASTStatement[] getBodyStatements(IASTForStatement loop) {
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            return ((IASTCompoundStatement) loop.getBody()).getStatements();
-        } else {
-            return new IASTStatement[] { loop.getBody() };
-        }
-    }
-    
     private IASTComment[] getBodyComments(IASTForStatement loop) {
         List<IASTComment> comments = new ArrayList<IASTComment>();
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
@@ -155,7 +145,7 @@ public abstract class AbstractStripMineAlteration
                     && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
                             + loop.getBody().getFileLocation().getNodeLength()) {
             	boolean inner = false;
-                for(IASTStatement stmt : getBodyStatements(loop)) {
+                for(IASTStatement stmt : ASTUtil.getStatementsIfCompound(loop.getBody())) {
                     if(ASTUtil.doesNodeLexicallyContain(stmt, comment)) {
                         inner = true;
                         break;
@@ -174,7 +164,7 @@ public abstract class AbstractStripMineAlteration
     // gets statements AND comments from a loop body in forward order
     private IASTNode[] getBodyObjects(IASTForStatement loop) {
         List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements(loop)));
+        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
         objects.addAll(Arrays.asList(getBodyComments(loop)));
         Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
         return objects.toArray(new IASTNode[objects.size()]);

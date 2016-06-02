@@ -21,7 +21,6 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
@@ -39,7 +38,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.Activator;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
+import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 /**
  * UnrollLoopAlteration defines a loop unrolling refactoring algorithm. Loop unrolling
@@ -98,7 +97,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.loop = this.getLoopToChange();
 
-        Long lower = InquisitorFactory.getInquisitor(loop).getLowerBound();
+        Long lower = ForStatementInquisitor.getInquisitor(loop).getLowerBound();
         Long upper = check.getUpperBound();
         
         //should have made this check from the UnrollLoopsCheck object already
@@ -124,7 +123,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.condOffset = condOffset;
 
-        this.oldIndexVariable = InquisitorFactory.getInquisitor(loop).getIndexVariable();
+        this.oldIndexVariable = ForStatementInquisitor.getInquisitor(loop).getIndexVariable();
         if (shouldMoveDeclAboveLoop()) {
             try {
                 this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
@@ -164,7 +163,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
         this.replace(loop, forLoop(getInitializer(), getCondition(condOffset), getIterationExpression(), createBody()));
 
-        List<IASTPreprocessorPragmaStatement> prags = InquisitorFactory.getInquisitor(loop).getLeadingPragmas();
+        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(loop);
         int insertPoint = prags.size() > 0 ? prags.get(0).getFileLocation().getNodeOffset()
                 : loop.getFileLocation().getNodeOffset();
         this.insert(insertPoint, createLeadingDeclaration());
@@ -251,14 +250,6 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         return newIndexVariable + "++";
     }
 
-    private IASTStatement[] getBodyStatements() {
-        if (loop.getBody() instanceof IASTCompoundStatement) {
-            return ((IASTCompoundStatement) loop.getBody()).getStatements();
-        } else {
-            return new IASTStatement[] { loop.getBody() };
-        }
-    }
-
     private IASTNode[] getBodyObjects() {
         return getBodyObjects(false);
     }
@@ -266,7 +257,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
     // gets statements AND comments from a loop body in forward order
     private IASTNode[] getBodyObjects(boolean reverse) {
         List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(getBodyStatements()));
+        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
         for (IASTComment comment : loop.getTranslationUnit().getComments()) {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
