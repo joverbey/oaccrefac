@@ -20,7 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
-public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
+public class TileLoopsCheck extends AbstractTileLoopsCheck {
 
     private IASTForStatement outer;
     private IASTForStatement inner;
@@ -31,14 +31,14 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, TileLoopsParams params) {
+    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
         
-        if(params.getHeight() < 1) {
+        if(((TileLoopsParams) params).getHeight() < 1) {
             status.addFatalError("Height must be at least 1");
             return;
         }
         
-        if(params.getWidth() < 1) {
+        if(((TileLoopsParams) params).getWidth() < 1) {
             status.addFatalError("Width must be at least 1");
             return;
         }

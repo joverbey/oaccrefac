@@ -31,21 +31,21 @@ import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
-public abstract class AbstractStripMineAlteration 
-	extends ForLoopAlteration<AbstractStripMineCheck> {
+public abstract class AbstractTileLoopsAlteration 
+	extends ForLoopAlteration<AbstractTileLoopsCheck> {
 	
 	private int numFactor;
 	private String newName;
 	
-	public AbstractStripMineAlteration(IASTRewrite rewriter, int numValue, 
-			String newName, AbstractStripMineCheck check) {
+	public AbstractTileLoopsAlteration(IASTRewrite rewriter, int numValue, 
+			String newName, AbstractTileLoopsCheck check) {
         super(rewriter, check);
         this.numFactor = numValue;
         this.newName = newName;
     }
 	
     @Override
-    public void doChange() {
+    protected void doChange() {
         IASTForStatement loop = getLoopToChange();
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
         String indexVar = inq.getIndexVariable().toString();

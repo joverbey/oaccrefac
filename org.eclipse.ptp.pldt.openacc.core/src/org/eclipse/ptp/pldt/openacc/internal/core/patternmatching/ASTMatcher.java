@@ -11,6 +11,7 @@
 package org.eclipse.ptp.pldt.openacc.internal.core.patternmatching;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -50,13 +51,16 @@ import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTypeIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
+import org.eclipse.cdt.core.dom.ast.IType;
 
 /**
  * Matches a subtree of an abstract syntax tree against a pattern.
  */
 public final class ASTMatcher {
 
-    private Map<String, String> nameMapping = new TreeMap<String, String>();
+    private Map<String, String> nameMapping = new TreeMap<>();
+    private Map<String, IASTExpression> expressionMapping = new HashMap<>();
+    private Map<String, IType> expressionTypes = new HashMap<>();
 
     /**
      * Receives an AST representing a pattern for a C statement or expressions, and matches the given tree against that
@@ -82,6 +86,23 @@ public final class ASTMatcher {
         else
             return null;
     }
+    
+    public static ASTMatcher unifyWithMatcher(IASTNode pattern, IASTNode tree) {
+    	ASTMatcher matcher = new ASTMatcher();
+    	if (matcher.genericMatch(pattern, tree)) {
+    		return matcher;
+    	} else {
+    		return null;
+    	}
+    }
+    
+    public Map<String, String> getNameMapping() {
+    	return nameMapping;
+    }
+    
+    public Map<String, IType> getArbitraryTypeBindings() {
+    	return expressionTypes;
+    }
 
     private boolean genericMatch(IASTNode pattern, IASTNode node) {
         if (pattern == null && node == null)
@@ -89,6 +110,9 @@ public final class ASTMatcher {
         else if (pattern == null || node == null)
             return false;
 
+        // Must check if this is an ArbitraryLValue before checking if it's an ArbitraryExpression
+        if (pattern instanceof ArbitraryLValue && node instanceof IASTExpression)
+        	return match((ArbitraryLValue) pattern, (IASTExpression) node);
         if (pattern instanceof ArbitraryIntegerConstant && node instanceof IASTLiteralExpression)
             return ((IASTLiteralExpression) node).getKind() == IASTLiteralExpression.lk_integer_constant;
         if (pattern instanceof ArbitraryExpression && node instanceof IASTExpression)
@@ -319,7 +343,8 @@ public final class ASTMatcher {
     }
 
     private boolean match(IASTArraySubscriptExpression pattern, IASTArraySubscriptExpression node) {
-        return unsupported(pattern);
+    	return genericMatch(pattern.getArrayExpression(), node.getArrayExpression()) 
+    			&& genericMatch(pattern.getArgument(), node.getArgument());
     }
 
     private boolean match(IASTFunctionCallExpression pattern, IASTFunctionCallExpression node) {
@@ -332,6 +357,40 @@ public final class ASTMatcher {
 
     private boolean match(IASTTypeIdExpression pattern, IASTTypeIdExpression node) {
         return unsupported(pattern);
+    }
+    
+    private boolean match(ArbitraryLValue pattern, IASTExpression node) {
+    	if (node.isLValue()) {
+    		String id = ((ArbitraryLValue) pattern).getId();
+    		if (expressionMapping.containsKey(id)) {
+    			Map<String, String> names = ASTMatcher.unify(expressionMapping.get(id), node);
+    			if (names == null) {
+    				return false;
+    			}
+    			for (String name : names.keySet()) {
+    				if (!name.equals(names.get(name))) {
+    					return false;
+    				}
+    			}
+    			nameMapping.putAll(names);
+    			return true;
+    		} else {
+    			IASTNode[] children = node.getChildren();
+    			if (children.length > 0) {
+    				if (children[0] instanceof IASTIdExpression) {
+	    				IASTIdExpression idExp = (IASTIdExpression) children[0];
+	    				nameMapping.put(id, idExp.getName().toString());
+    				} else if (children[0] instanceof IASTName) {
+    					IASTName name = (IASTName) children[0];
+    					nameMapping.put(id, name.toString());
+    				}
+    			}
+    			expressionMapping.put(id, node);
+    			expressionTypes.put(id, node.getExpressionType());
+    			return true;
+    		}
+    	}
+		return false;
     }
 
     private ASTMatcher() {

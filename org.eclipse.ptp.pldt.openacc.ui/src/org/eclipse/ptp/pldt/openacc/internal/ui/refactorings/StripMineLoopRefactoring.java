@@ -18,9 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
@@ -30,8 +27,6 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     private int numFactor = -1;
     private String newName = "";
     private StripMineCheck stripCheck;
-    private LoopCuttingCheck loopCheck;
-    private boolean cut = false;
 
     public StripMineLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -46,30 +41,13 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     }
     
     @Override
-    public void setSecondOption(boolean cut) {
-    	this.cut = cut;
-    }
-
-    @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-    	if (cut) {
-    		loopCheck = new LoopCuttingCheck(getLoop());
-    		loopCheck.performChecks(status, pm, new LoopCuttingParams(numFactor, newName));
-    	}
-    	else {
-    		stripCheck = new StripMineCheck(getLoop());
-            stripCheck.performChecks(status, pm, new StripMineParams(numFactor, newName));
-    	}
+		stripCheck = new StripMineCheck(getLoop());
+        stripCheck.performChecks(status, pm, new StripMineParams(numFactor, newName));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-    	if (cut) {
-    		new LoopCuttingAlteration(rewriter, numFactor, newName, loopCheck).change();
-    	}
-    	else {
-            new StripMineAlteration(rewriter, numFactor, newName, stripCheck).change();
-
-    	}
+        new StripMineAlteration(rewriter, numFactor, newName, stripCheck).change();
     }
 }

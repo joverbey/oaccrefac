@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
@@ -327,6 +328,30 @@ public class ASTUtil {
 		Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
 		return pragmas;
 	}
+
+    public static Map<IASTPreprocessorPragmaStatement, IASTNode> getEnclosingPragmas(IASTStatement statement) {
+        Map<IASTPreprocessorPragmaStatement, IASTNode> pragmas = new TreeMap<>(ASTUtil.FORWARD_COMPARATOR);
+
+        IASTPreprocessorStatement[] preprocessorStatements = statement.getTranslationUnit().getAllPreprocessorStatements();
+        
+        for (IASTNode node = statement; node != null; node = node.getParent()) {
+            int location = node.getFileLocation().getNodeOffset();
+            
+            if (node instanceof IASTStatement) {
+	            int precedingStmtOffset = getNearestPrecedingStatementOffset((IASTStatement) node);
+	            
+	            for (IASTPreprocessorStatement pre : preprocessorStatements) {
+	                if (pre instanceof IASTPreprocessorPragmaStatement
+	                        && ((IASTPreprocessorPragmaStatement) pre).getFileLocation().getNodeOffset() < location
+	                        && ((IASTPreprocessorPragmaStatement) pre).getFileLocation()
+	                                .getNodeOffset() > precedingStmtOffset) {
+	                    pragmas.put((IASTPreprocessorPragmaStatement) pre, node);
+	                }
+	            }
+            }
+        }
+        return pragmas;
+    }
 
 	private static int getNearestPrecedingStatementOffset(IASTStatement stmt) {
 

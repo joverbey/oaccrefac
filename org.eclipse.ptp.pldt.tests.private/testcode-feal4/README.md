@@ -17,10 +17,10 @@ completed in 2 seconds.
 # Installation
 
 The project includes several source files:
-- `feal4\_initial.c`: The initial source code.
-- `feal4\_restructured.c`: The source restructured for parallelizatoin.
-- `feal4\_final.c`: The parallelized source code.
-- `feal4\_demo.c`: The source code with a fixed seed.
+- `feal4_initial.c`: The initial source code.
+- `feal4_restructured.c`: The source restructured for parallelizatoin.
+- `feal4_final.c`: The parallelized source code.
+- `feal4_demo.c`: The source code with a fixed seed.
 
 To compile any of these files, run `make <FILE_NAME>` without the `.c`.
 To run them, type `./feal4`. `make clean` removes the feal4 file and `make`
