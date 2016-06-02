@@ -29,46 +29,31 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
  */
 public class StripMineLoop extends CLILoopRefactoring<AbstractTileLoopsParams, AbstractTileLoopsCheck> {
 
-	private final boolean cut;
-
     /**
      * stripFactor is the factor to use in strip mining the loop
      */
     private final int numFactor;
     private final String newName;
     
-    public StripMineLoop(int numFactor, String newName, boolean cut) {
+    public StripMineLoop(int numFactor, String newName) {
     	this.numFactor = numFactor;
     	this.newName = newName;
-    	this.cut = cut;
     }
 
     @Override
     public AbstractTileLoopsCheck createCheck(IASTStatement loop) {
-    	if (cut) {
-    		return new LoopCuttingCheck((IASTForStatement) loop);
-    	} else {
-    		return new StripMineCheck((IASTForStatement) loop);
-    	}
+		 return new StripMineCheck((IASTForStatement) loop);
     }
 
     @Override
     protected AbstractTileLoopsParams createParams(IASTStatement forLoop) {
-    	if (cut) {
-    		return new LoopCuttingParams(numFactor, newName);
-    	} else {
-            return new StripMineParams(numFactor, newName);
-    	}
+        return new StripMineParams(numFactor, newName);
     }
 
     @Override
 	public AbstractTileLoopsAlteration createAlteration(IASTRewrite rewriter, 
     		AbstractTileLoopsCheck check) throws CoreException {
-    	if (cut) {
-    		return new LoopCuttingAlteration(rewriter, numFactor, newName, check);
-    	} else {
-            return new StripMineAlteration(rewriter, numFactor, newName, check);
-    	}
+        return new StripMineAlteration(rewriter, numFactor, newName, check);
     }
 
 }
