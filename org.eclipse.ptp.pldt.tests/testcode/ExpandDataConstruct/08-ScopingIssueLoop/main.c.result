@@ -13,9 +13,11 @@ int main() {
 		/*<<<<< 13,0,14,0,pass*/
 #pragma acc data copyin(i)
 		{
+
 #pragma acc parallel loop
 			for (; i < 10; i++)
 				a = i;
+
 		}
 
 #pragma acc parallel loop

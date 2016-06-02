@@ -32,9 +32,9 @@ import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-public class IntroduceDataConstructAlteration extends SourceStatementsAlteration<IntroduceDataConstructCheck> {
+public class IntroDataConstructAlteration extends SourceStatementsAlteration<IntroDataConstructCheck> {
 
-    public IntroduceDataConstructAlteration(IASTRewrite rewriter, IntroduceDataConstructCheck check) {
+    public IntroDataConstructAlteration(IASTRewrite rewriter, IntroDataConstructCheck check) {
         super(rewriter, check);
     }
 

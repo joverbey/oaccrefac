@@ -18,14 +18,14 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroduceDataConstructRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroDataConstructRefactoring;
 
 @SuppressWarnings("restriction")
 public class IntroOpenACCDataConstructDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new IntroduceDataConstructRefactoring(wc, selection, project);
+        return new IntroDataConstructRefactoring(wc, selection, project);
     }
 
     @Override

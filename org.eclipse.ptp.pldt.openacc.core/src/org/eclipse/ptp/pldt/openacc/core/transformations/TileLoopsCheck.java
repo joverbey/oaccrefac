@@ -55,7 +55,7 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
         // created by tiling. Some dependencies that are allowed with tiling
         // are not allowed by pragmas.
         
-        if (inq.getPragmas().length > 0) {
+        if (!ASTUtil.getPragmaNodes(this.getLoop()).isEmpty()) {
             status.addError("This loop contains an ACC pragma.");
         }
 
@@ -64,7 +64,7 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
             return;
         }
         
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (headers.size() < 2) {
             status.addFatalError("There must be two nested loops to perform loop tiling.");
             return;
