@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     Alexander Calvert (Auburn) - initial API and implementation
+ *     William Hester (Auburn) - Decouple SourceStatementsCheck and
+ *     			IntroduceDataConstructCheck
  *******************************************************************************/
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
@@ -14,6 +16,7 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -57,6 +60,12 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     }
     
     @Override
+    public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
+        doReachingDefinitionsCheck(status,
+                new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
+        return status;
+    }
+
     protected void doReachingDefinitionsCheck(RefactoringStatus status, ReachingDefinitions rd) {
     	Map<IASTStatement, Set<IBinding>> copyin = new InferCopyin(rd, getStatements()).get();
     	Map<IASTStatement, Set<IBinding>> copyout = new InferCopyout(rd, getStatements()).get();
@@ -88,5 +97,4 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     	formCheck(status);
     	return status;
     }
-
 }
