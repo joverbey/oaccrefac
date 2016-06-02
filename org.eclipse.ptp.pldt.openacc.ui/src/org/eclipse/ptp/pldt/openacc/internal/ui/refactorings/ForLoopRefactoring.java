@@ -24,6 +24,7 @@ import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndexManager;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.cdt.internal.ui.refactoring.ModificationCollector;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -142,6 +143,28 @@ public abstract class ForLoopRefactoring extends CRefactoring {
 
         pm.subTask("Done checking initial conditions");
         return initStatus;
+    }
+    
+    @Override
+    protected IASTTranslationUnit getAST(ITranslationUnit tu, IProgressMonitor pm) throws OperationCanceledException, CoreException {
+        IASTTranslationUnit ast = null;
+    	// HACK to avoid some concurrency issue that only appears when using the JUnit test runner
+        boolean failed = false;
+        int attempts = 0;
+        do {
+        	try {
+        		ast = super.getAST(tu, pm);
+        		failed = false;
+        	} catch (NullPointerException e) {
+        		failed = true;
+        		attempts++;
+        		try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
+				}
+        	}
+        } while (failed && attempts < 5);
+        return ast;
     }
     
     public void setSecondOption(boolean option) {
