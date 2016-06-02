@@ -33,6 +33,8 @@ public abstract class InferDataTransfer {
 	protected ReachingDefinitions rd;
 	protected List<IASTStatement> topoSorted;
 	
+	private static Map<IASTStatement[], ArbitraryStatement> roots = new HashMap<IASTStatement[], ArbitraryStatement>(); 
+	
 	protected InferDataTransfer() {
 		
 	}
@@ -49,8 +51,18 @@ public abstract class InferDataTransfer {
 		if(construct.length == 0) {
 			throw new IllegalArgumentException("At least one statement should be in the construct");
 		}
+		
+		ArbitraryStatement root;
+		if(roots.containsKey(construct)) {
+			root = roots.get(construct);
+		}
+		else {
+			root = new ArbitraryStatement();
+			roots.put(construct, root);
+		}
+		
 		transfers = new HashMap<IASTStatement, Set<IBinding>>();
-    	tree = new ConstructTree(construct);
+    	tree = new ConstructTree(root, construct);
     	this.construct = construct;
     	this.rd = rd;
     	
@@ -70,7 +82,7 @@ public abstract class InferDataTransfer {
     	for(IASTStatement statement : construct) {
     		statement.accept(new Init());
     	}
-    	transfers.put(tree.getRoot(), treeSetIBinding());
+    	transfers.put(root, treeSetIBinding());
     	
     	topoSorted = topoSortAccConstructs();
 	}
@@ -105,22 +117,6 @@ public abstract class InferDataTransfer {
     		topovisit(child, sorted);
     	}
     	sorted.add((IASTStatement) root);
-    }
-    
-    @SafeVarargs
-	public static IASTStatement normalizeRoot(InferDataTransfer... sets)  {
-    	ArbitraryStatement root = new ArbitraryStatement();
-    	for(InferDataTransfer set : sets) {
-    		Map<IASTStatement, Set<IBinding>> copy = new HashMap<IASTStatement, Set<IBinding>>(set.transfers);
-    		for(IASTStatement statement : copy.keySet()) {
-    			if(statement instanceof ArbitraryStatement) {
-    				set.transfers.put(root, set.transfers.remove(statement));
-    				set.topoSorted.set(set.topoSorted.indexOf(statement), root);
-    				set.tree.replaceRoot(root);
-    			}
-    		}
-    	}
-    	return root;
     }
     
     public IASTStatement getRoot() {
@@ -169,9 +165,9 @@ public abstract class InferDataTransfer {
     	private IASTStatement[] construct;
     	private ArbitraryStatement root;
     	
-    	public ConstructTree(IASTStatement... construct) {
+    	public ConstructTree(ArbitraryStatement root, IASTStatement... construct) {
     		this.nodes = new ArrayList<IASTStatement>();
-    		root = new ArbitraryStatement();
+    		this.root = root;
     		nodes.add(root);
     		this.construct = construct;
     	}
@@ -179,11 +175,6 @@ public abstract class InferDataTransfer {
     	public boolean addNode(IASTStatement construct) {
     		nodes.add(construct);
     		return true;
-    	}
-    	
-    	private void replaceRoot(ArbitraryStatement newRoot) {
-    		nodes.set(nodes.indexOf(root), newRoot);
-    		this.root = newRoot;
     	}
     	
     	public IASTStatement getParent(IASTStatement construct) {

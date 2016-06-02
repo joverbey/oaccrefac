@@ -21,7 +21,6 @@ import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferDataTransfer;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
@@ -57,7 +56,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	InferCopyout inferCopyout = new InferCopyout(rd, statements);
     	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
     	InferCreate inferCreate = new InferCreate(rd, statements);
-    	InferDataTransfer.normalizeRoot(inferCopyin, inferCopyout, inferCopy, inferCreate);
     	
     	remove(getSecondPragma());
     	removeCurlyBraces(getFirstStatement());
