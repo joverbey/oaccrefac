@@ -18,14 +18,14 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
-public class LoopCuttingCheck extends AbstractStripMineCheck {
+public class LoopCuttingCheck extends AbstractTileLoopsCheck {
 
     public LoopCuttingCheck(IASTForStatement loop) {
         super(loop);
     }
     
     @Override
-    protected void doParameterCheck(RefactoringStatus status, AbstractStripMineParams params) {
+    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
     	
     	// Presence of a openacc pragma doesn't influence whether or not loop 
     	// cutting can be performed. This is because for loop cutting to be 

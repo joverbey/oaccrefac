@@ -40,6 +40,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         Composite c = new Composite(parent, SWT.NONE);
         c.setLayout(new GridLayout());
         ButtonComposite buttons = null;
+        ButtonSelectionListener firstListener = null;
         boolean hasButtons = false;
                 
         for (int i = 0; i < controlListeners.size(); i++) {
@@ -48,7 +49,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         				(NumberValueChangedListener) controlListeners.get(i));
         		nic.setLabelText(controlLabels.get(i));
         		if (hasButtons) {
-        			buttons.addLabelChange(nic);
+        			firstListener.addLabelChange(nic);
         		}
         	}
         	else if (controlListeners.get(i) instanceof StringValueChangedListener) {
@@ -61,13 +62,19 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         			hasButtons = true;
         			buttons = new ButtonComposite(c, SWT.NONE, "Regular", controlLabels.get(i), 
         					(ButtonSelectionListener) controlListeners.get(i));
+        			firstListener = (ButtonSelectionListener) controlListeners.get(i);
         		}
         	}
         }
-
+        
+        if (hasButtons) {
+        	buttons.setFirst();
+        }
         setControl(c);
         setTitle(getName());
         setPageComplete(true);
     }
+    
+    
 
 }

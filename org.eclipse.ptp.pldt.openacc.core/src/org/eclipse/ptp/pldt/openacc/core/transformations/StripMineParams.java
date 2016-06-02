@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class StripMineParams extends AbstractStripMineParams {
+public class StripMineParams extends AbstractTileLoopsParams {
 
     public StripMineParams(int stripFactor, String newName) {
         super(stripFactor, newName);
