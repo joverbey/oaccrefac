@@ -11,11 +11,12 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class TileLoopsParams extends RefactoringParams {
+public class TileLoopsParams extends AbstractTileLoopsParams {
     private int width;
     private int height;    
     
     public TileLoopsParams(int width, int height) {
+    	super(0, "");
         this.width = width;
         this.height = height;
     }

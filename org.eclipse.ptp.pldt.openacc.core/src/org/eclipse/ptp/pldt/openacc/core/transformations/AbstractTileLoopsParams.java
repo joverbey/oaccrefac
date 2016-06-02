@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public abstract class AbstractStripMineParams extends RefactoringParams {
+public abstract class AbstractTileLoopsParams extends RefactoringParams {
     protected int numFactor;
     private String newName;
     
-    public AbstractStripMineParams(int numValue, String newName) {
+    public AbstractTileLoopsParams(int numValue, String newName) {
         this.numFactor = numValue;
         this.newName = newName;
     }

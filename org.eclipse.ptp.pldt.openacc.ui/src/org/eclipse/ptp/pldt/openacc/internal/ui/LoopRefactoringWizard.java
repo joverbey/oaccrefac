@@ -15,14 +15,15 @@ package org.eclipse.ptp.pldt.openacc.internal.ui;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.TileLoopsRefactoring;
 
 public class LoopRefactoringWizard extends RefactoringWizard {
 
-    private final LoopRefactoringWizardPage inputPage;
+    private LoopRefactoringWizardPage inputPage;
 
     public LoopRefactoringWizard(Refactoring refactoring, String title) {
         super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-
+        
         setDefaultPageTitle(title);
         setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
 
@@ -36,5 +37,10 @@ public class LoopRefactoringWizard extends RefactoringWizard {
 
     public LoopRefactoringWizardPage getInputPage() {
         return inputPage;
+    }
+    
+    public ColumnedLoopRefactoringWizardPage getColumnPage() {
+    	inputPage = new ColumnedLoopRefactoringWizardPage(getDefaultPageTitle(), (TileLoopsRefactoring) getRefactoring());
+    	return (ColumnedLoopRefactoringWizardPage) inputPage;
     }
 }

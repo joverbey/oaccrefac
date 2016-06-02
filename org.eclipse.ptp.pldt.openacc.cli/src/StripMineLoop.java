@@ -13,9 +13,9 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
@@ -27,7 +27,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 /**
  * StripMine performs the strip mine refactoring.
  */
-public class StripMineLoop extends CLILoopRefactoring<AbstractStripMineParams, AbstractStripMineCheck> {
+public class StripMineLoop extends CLILoopRefactoring<AbstractTileLoopsParams, AbstractTileLoopsCheck> {
 
 	private final boolean cut;
 
@@ -44,7 +44,7 @@ public class StripMineLoop extends CLILoopRefactoring<AbstractStripMineParams, A
     }
 
     @Override
-    public AbstractStripMineCheck createCheck(IASTStatement loop) {
+    public AbstractTileLoopsCheck createCheck(IASTStatement loop) {
     	if (cut) {
     		return new LoopCuttingCheck((IASTForStatement) loop);
     	} else {
@@ -53,7 +53,7 @@ public class StripMineLoop extends CLILoopRefactoring<AbstractStripMineParams, A
     }
 
     @Override
-    protected AbstractStripMineParams createParams(IASTStatement forLoop) {
+    protected AbstractTileLoopsParams createParams(IASTStatement forLoop) {
     	if (cut) {
     		return new LoopCuttingParams(numFactor, newName);
     	} else {
@@ -62,8 +62,8 @@ public class StripMineLoop extends CLILoopRefactoring<AbstractStripMineParams, A
     }
 
     @Override
-	public AbstractStripMineAlteration createAlteration(IASTRewrite rewriter, 
-    		AbstractStripMineCheck check) throws CoreException {
+	public AbstractTileLoopsAlteration createAlteration(IASTRewrite rewriter, 
+    		AbstractTileLoopsCheck check) throws CoreException {
     	if (cut) {
     		return new LoopCuttingAlteration(rewriter, numFactor, newName, check);
     	} else {
