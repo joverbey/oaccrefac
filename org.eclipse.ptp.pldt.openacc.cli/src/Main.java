@@ -273,8 +273,8 @@ public class Main {
                             } else {
                                 if (commentLower.contains("autotune") || commentLower.contains("refactor")){
                                     found = statement;
+                                    return PROCESS_ABORT;
                                 }
-                                return PROCESS_ABORT;
                             }
                         }
                     }

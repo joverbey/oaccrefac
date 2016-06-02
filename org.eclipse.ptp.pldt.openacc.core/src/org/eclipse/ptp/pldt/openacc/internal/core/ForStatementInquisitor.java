@@ -102,6 +102,7 @@ public class ForStatementInquisitor {
             }
         }
         counted = false;
+        try{
         for (String pattern : patterns) {
             IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
@@ -111,6 +112,10 @@ public class ForStatementInquisitor {
                 counted = true;
                 break;
             }
+        }
+        } catch(IllegalStateException e){
+        	e.getMessage();
+        	System.exit(4);
         }
     }
 

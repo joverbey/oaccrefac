@@ -101,7 +101,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         try {
             doChange();
         } catch (Exception e) {
-            Activator.log(e);
+            //Activator.log(e);
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
         }
     }
