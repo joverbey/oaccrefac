@@ -17,9 +17,6 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAltera
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
