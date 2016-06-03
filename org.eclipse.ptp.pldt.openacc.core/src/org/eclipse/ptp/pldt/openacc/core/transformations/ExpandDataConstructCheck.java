@@ -27,7 +27,7 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
     
     @Override
     public void doFormCheck(RefactoringStatus status) {
-        String msg = "The pragma must be a data construct.";
+        String msg = "The pragma must be a data construct";
         try {
             construct = (ASTAccDataNode) (new OpenACCParser().parse(getPragma().getRawSignature()));
         }
