@@ -1,11 +1,13 @@
 package org.eclipse.ptp.pldt.openacc.core.dataflow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
@@ -33,21 +35,42 @@ public abstract class InferDataTransfer {
 	protected ReachingDefinitions rd;
 	protected List<IASTStatement> topoSorted;
 	
-	private static Map<IASTStatement[], ArbitraryStatement> roots = new HashMap<IASTStatement[], ArbitraryStatement>(); 
+	private static Map<IASTStatement[], ArbitraryStatement> roots;
+	
+	static {
+		roots = new TreeMap<IASTStatement[], ArbitraryStatement>(new Comparator<IASTStatement[]>() {
+
+			@Override
+			public int compare(IASTStatement[] o1, IASTStatement[] o2) {
+				if(o1.length != o2.length) return -1;
+				for(int i = 0; i < o1.length; i++) {
+					if(!o1[i].equals(o2[i])) {
+						return 1;
+					}
+				}
+				return 0;
+			}
+			
+		});
+	}
 	
 	protected InferDataTransfer() {
 		
 	}
 	
 	public InferDataTransfer(ReachingDefinitions rd, IASTStatement... construct) {
-		init(rd, construct);
+		init(rd, construct, new IASTStatement[] {});
+	}
+	
+	public InferDataTransfer(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
+		init(rd, construct, accIgnore);
 	}
 	
 	public InferDataTransfer(IASTStatement... construct) {
-		init(new ReachingDefinitions(ASTUtil.findNearestAncestor(construct[0], IASTFunctionDefinition.class)), construct);
+		init(new ReachingDefinitions(ASTUtil.findNearestAncestor(construct[0], IASTFunctionDefinition.class)), construct, new IASTStatement[] {});
 	}
 	
-	private void init(ReachingDefinitions rd, IASTStatement... construct) {
+	private void init(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement[] accIgnore) {
 		if(construct.length == 0) {
 			throw new IllegalArgumentException("At least one statement should be in the construct");
 		}
@@ -63,8 +86,9 @@ public abstract class InferDataTransfer {
 		
 		transfers = new HashMap<IASTStatement, Set<IBinding>>();
     	tree = new ConstructTree(root, construct);
-    	this.construct = construct;
-    	this.rd = rd;
+		this.construct = construct;
+    	
+		this.rd = rd;
     	
     	class Init extends ASTVisitor {
     		Init() {
@@ -72,7 +96,7 @@ public abstract class InferDataTransfer {
     		}
     		@Override
     		public int visit(IASTStatement statement) {
-    			if(OpenACCUtil.isAccAccelConstruct(statement) || OpenACCUtil.isAccConstruct(statement, ASTAccDataNode.class)) {
+    			if(!Arrays.asList(accIgnore).contains(statement) && (OpenACCUtil.isAccAccelConstruct(statement) || OpenACCUtil.isAccConstruct(statement, ASTAccDataNode.class))) {
     				transfers.put(statement, treeSetIBinding());
     				tree.addNode(statement);
     			}
@@ -165,7 +189,7 @@ public abstract class InferDataTransfer {
     	private IASTStatement[] construct;
     	private ArbitraryStatement root;
     	
-    	public ConstructTree(ArbitraryStatement root, IASTStatement... construct) {
+    	public ConstructTree(ArbitraryStatement root, IASTStatement[] construct) {
     		this.nodes = new ArrayList<IASTStatement>();
     		this.root = root;
     		nodes.add(root);

@@ -26,6 +26,13 @@ public class InferCopy extends InferDataTransfer {
 		this.inferCopyout = inferCopyout;
 		infer();
 	}
+	
+	public InferCopy(InferCopyin inferCopyin, InferCopyout inferCopyout, IASTStatement... accIgnore) {
+		super(null, inferCopyin.construct, accIgnore);
+		this.inferCopyin = inferCopyin;
+		this.inferCopyout = inferCopyout;
+		infer();
+	}
 
 	@Override
 	protected void infer() {
@@ -41,7 +48,8 @@ public class InferCopy extends InferDataTransfer {
     						ins.remove(inVar);
     						outs.remove(outVar);
     						//transfers should always contain all constructs in the hierarchy as keys
-    						transfers.get(construct).add(inVar);
+    						Set<IBinding> gets = transfers.get(construct);
+    						gets.add(inVar);
     					}
     				}
     			}

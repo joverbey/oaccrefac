@@ -49,10 +49,10 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	IASTStatement[] statements = concat(ASTUtil.getStatementsIfCompound(getFirstStatement()), ASTUtil.getStatementsIfCompound(getSecondStatement()));
     	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));
     	
-    	InferCopyin inferCopyin = new InferCopyin(rd, statements);
-    	InferCopyout inferCopyout = new InferCopyout(rd, statements);
-    	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
-    	InferCreate inferCreate = new InferCreate(rd, statements);
+    	InferCopyin inferCopyin = new InferCopyin(rd, statements, getFirstStatement(), getSecondStatement());
+    	InferCopyout inferCopyout = new InferCopyout(rd, statements, getFirstStatement(), getSecondStatement());
+    	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout, getFirstStatement(), getSecondStatement());
+    	InferCreate inferCreate = new InferCreate(rd, statements, getFirstStatement(), getSecondStatement());
     	
     	remove(getSecondPragma());
     	removeCurlyBraces(getFirstStatement());
@@ -66,6 +66,7 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	
     	for(IASTStatement con : all) {
     		if(!con.equals(inferCopyin.getRoot())) {
+    			//TODO: this does assume that a statement only has one OpenACC pragma on it - it may have more, even though thats a bad idea
     			for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(con)) {
     				IAccConstruct ast = null;
     				try {
