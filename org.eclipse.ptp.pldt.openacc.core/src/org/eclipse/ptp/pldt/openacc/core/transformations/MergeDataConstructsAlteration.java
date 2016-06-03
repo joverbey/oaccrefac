@@ -11,6 +11,7 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -57,21 +58,14 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	removeCurlyBraces(getFirstStatement());
     	removeCurlyBraces(getSecondStatement());
     	
-    	Set<IASTStatement> all = inferCopyin.get().keySet();
+    	Set<IASTStatement> all = new HashSet<IASTStatement>();
+    	all.addAll(inferCopyin.get().keySet());
     	all.addAll(inferCopyout.get().keySet());
     	all.addAll(inferCopy.get().keySet());
     	all.addAll(inferCreate.get().keySet());
     	
     	for(IASTStatement con : all) {
-    		if(con.equals(inferCopyin.getRoot())) {
-    			String top = pragma("acc data")
-    					+ copyin(inferCopyin.get().get(con))
-    					+ copyout(inferCopyout.get().get(con))
-    					+ copy(inferCopy.get().get(con))
-    					+ create(inferCreate.get().get(con));
-    			replace(getFirstPragma(), top);
-    		}
-    		else {
+    		if(!con.equals(inferCopyin.getRoot())) {
     			for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(con)) {
     				IAccConstruct ast = null;
     				try {
@@ -87,15 +81,33 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
         			else if(ast instanceof ASTAccKernelsNode) newPragma = pragma("acc kernels");
         			else if(ast instanceof ASTAccKernelsLoopNode) newPragma = pragma("acc kernels loop");
         			else throw new IllegalStateException();
-        			newPragma += copyin(inferCopyin.get().get(con))
-        					+ copyout(inferCopyout.get().get(con))
-        					+ copy(inferCopy.get().get(con))
-        					+ create(inferCreate.get().get(con));
+        			if(!inferCopyin.get().get(con).isEmpty())
+        				newPragma += " " + copyin(inferCopyin.get().get(con));
+        			if(!inferCopyout.get().get(con).isEmpty())
+        				newPragma += " " + copyout(inferCopyout.get().get(con));
+        			if(!inferCopy.get().get(con).isEmpty())
+        				newPragma += " " + copy(inferCopy.get().get(con));
+        			if(!inferCreate.get().get(con).isEmpty())
+        				newPragma += " " + create(inferCreate.get().get(con));
+        			newPragma += NL;
         			replace(pragma, newPragma);
     			}
     		}
     	}
-    	
+    	IASTStatement con = inferCopyin.getRoot();
+    	String top = pragma("acc data");
+    	if(!inferCopyin.get().get(con).isEmpty())
+    		top += " " + copyin(inferCopyin.get().get(con));
+    	if(!inferCopyout.get().get(con).isEmpty())
+    		top += " " + copyout(inferCopyout.get().get(con));
+    	if(!inferCopy.get().get(con).isEmpty())
+    		top += " " + copy(inferCopy.get().get(con));
+    	if(!inferCreate.get().get(con).isEmpty())
+    		top += " " + create(inferCreate.get().get(con));
+		replace(getFirstPragma(), top);
+		insertBefore(getFirstStatement(), LCURLY);
+		insertAfter(getSecondStatement(), RCURLY);
+    	finalizeChanges();
     }
 
     private void removeCurlyBraces(IASTStatement statement) {
