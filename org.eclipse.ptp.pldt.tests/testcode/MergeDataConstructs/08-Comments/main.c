@@ -6,12 +6,13 @@ int main() {
 	{
 #pragma acc data
 		{
-#pragma acc parallel loop
+#pragma acc parallel loop //this comment should be by the first parallel loop
 			for (int i = 0; i < 3; i++) {
 				a[i] = b[0];
 				b[i] = c[1];
 				c[i] = a[2];
 			}
+			//this comment should be after the first parallel region
 			for (int i = 0; i < 3; i++) {
 				printf("%d", b[i]);
 			}
@@ -30,6 +31,7 @@ int main() {
 		for (int i = 0; i < 3; i++) {
 			printf("%d", d[i]);
 		}
+		//this comment should be at the end of the second data region
 	}
 	for (int i = 0; i < 3; i++) {
 		printf("%d", a[i]);

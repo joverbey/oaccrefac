@@ -90,7 +90,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
         				newPragma += " " + copy(inferCopy.get().get(con));
         			if(!inferCreate.get().get(con).isEmpty())
         				newPragma += " " + create(inferCreate.get().get(con));
-        			newPragma += NL;
         			replace(pragma, newPragma);
     			}
     		}
@@ -113,18 +112,22 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
 
     private void removeCurlyBraces(IASTStatement statement) {
 		if(statement instanceof IASTCompoundStatement) {
-			IASTCompoundStatement comp = (IASTCompoundStatement) statement;
-			if(comp.getStatements().length != 0) {
-				IASTStatement first = comp.getStatements()[0];
-				IASTStatement last = comp.getStatements()[comp.getStatements().length - 1];
-				int start = comp.getFileLocation().getNodeOffset();
-				int end = first.getFileLocation().getNodeOffset();
-				remove(start, end - start);
-				
-				start = last.getFileLocation().getNodeOffset() + last.getFileLocation().getNodeLength();
-				end = comp.getFileLocation().getNodeOffset() + comp.getFileLocation().getNodeLength();
-				remove(start, end - start);
-			}
+//			IASTCompoundStatement comp = (IASTCompoundStatement) statement;
+//			if(comp.getStatements().length != 0) {
+//				IASTStatement first = comp.getStatements()[0];
+//				IASTStatement last = comp.getStatements()[comp.getStatements().length - 1];
+//				int start = comp.getFileLocation().getNodeOffset();
+//				int end = first.getFileLocation().getNodeOffset();
+//				remove(start, end - start);
+//				
+//				start = last.getFileLocation().getNodeOffset() + last.getFileLocation().getNodeLength();
+//				end = comp.getFileLocation().getNodeOffset() + comp.getFileLocation().getNodeLength();
+//				remove(start, end - start);
+//			}
+			int stmtOffset = statement.getFileLocation().getNodeOffset();
+			String comp = statement.getRawSignature();
+			this.remove(stmtOffset + comp.indexOf('{'), 1);
+			this.remove(stmtOffset + comp.lastIndexOf('}'), 1);
 		}
 	}
 
