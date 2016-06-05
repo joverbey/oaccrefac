@@ -375,6 +375,8 @@ public abstract class SourceAlteration<T extends Check<?>> {
             }
             
             TextEditGroup teg = new TextEditGroup("teg");
+            String str = src.toString();
+            str = ASTUtil.format(src.toString());
             teg.addTextEdit(new ReplaceEdit(this.startOffset, this.endOffset - this.startOffset, ASTUtil.format(src.toString())));
             rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
         }
