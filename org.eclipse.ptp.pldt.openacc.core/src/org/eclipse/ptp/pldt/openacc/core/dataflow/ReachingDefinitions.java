@@ -35,6 +35,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 @SuppressWarnings("restriction")
@@ -64,7 +65,7 @@ public class ReachingDefinitions {
     public Set<IASTName> reachingDefinitions(IASTName varUse) {
         
         //if this occurrence of the var is a definition of var, treat it as if nothing reaches it
-        if(ASTUtil.isDefinition(varUse)) {
+        if(ASTPatternUtil.isDefinition(varUse)) {
             return new HashSet<IASTName>();
         }
         
@@ -96,7 +97,7 @@ public class ReachingDefinitions {
         for(IASTNode def : reachingDefs) {
             for(IASTName name : ASTUtil.find(def, IASTName.class)) {
                 //if a name found under the definition node is a definition and refers to the right variable
-                if(ASTUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
+                if(ASTPatternUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
                     reachingDefNames.add(name);
                 }
             }
@@ -114,7 +115,7 @@ public class ReachingDefinitions {
      */
     public Set<IASTName> reachedUses(IASTName def) {
         
-        if(!ASTUtil.isDefinition(def)) {
+        if(!ASTPatternUtil.isDefinition(def)) {
             return new HashSet<IASTName>();
         }
         
@@ -124,7 +125,7 @@ public class ReachingDefinitions {
             Object data = ((ICfgData) bb).getData();
             if(data != null && data instanceof IASTNode) {
                 for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
-                    if(!ASTUtil.isDefinition(use)) {
+                    if(!ASTPatternUtil.isDefinition(use)) {
                         if(reachingDefinitions(use).contains(def)) {
                             reachedUses.add(use);
                         }

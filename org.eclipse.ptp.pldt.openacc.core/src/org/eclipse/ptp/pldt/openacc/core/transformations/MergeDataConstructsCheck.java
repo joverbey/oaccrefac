@@ -23,18 +23,18 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
     	OpenACCParser parser = new OpenACCParser();
     	try {
            if(!(parser.parse(getPragma().getRawSignature()) instanceof ASTAccDataNode)) {
-        	   status.addFatalError("The pragma must be a data construct.");
+        	   status.addFatalError("The pragma must be a data construct");
                return;
            }
         }
         catch(Exception e) {
-            status.addFatalError("The pragma must be a data construct.");
+            status.addFatalError("The pragma must be a data construct");
             return;
         }
         
         IASTNode next = ASTUtil.getNextSibling(getStatement());
         if(next == null || !(next instanceof IASTStatement)) {
-        	status.addFatalError("The data construct must be immediately followed by another data construct.");
+        	status.addFatalError("The data construct must be immediately followed by another data construct");
         	return;
         }
         
@@ -56,7 +56,7 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
         }
         
         if(second == null) {
-        	status.addFatalError("The data construct must be immediately followed by another data construct.");
+        	status.addFatalError("The data construct must be immediately followed by another data construct");
         	return;
         }
         
