@@ -59,21 +59,21 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
 
     @Override
     protected void doChange() {
-        String init = this.getLoopToChange().getInitializerStatement().getRawSignature();
-        String cond = this.getLoopToChange().getConditionExpression().getRawSignature();
-        String incr = this.getLoopToChange().getIterationExpression().getRawSignature();
+        String init = this.getLoop().getInitializerStatement().getRawSignature();
+        String cond = this.getLoop().getConditionExpression().getRawSignature();
+        String incr = this.getLoop().getIterationExpression().getRawSignature();
         // Remove the old loop from the statement list
-        this.remove(getLoopToChange());
+        this.remove(getLoop());
 
         // Precondition guarantees that body is a compound statement
-        IASTCompoundStatement body = (IASTCompoundStatement) this.getLoopToChange().getBody();
+        IASTCompoundStatement body = (IASTCompoundStatement) this.getLoop().getBody();
 
         // For each child, create new for loop with same header and child as body
         IASTStatement[] stmts = body.getStatements();
-        int offset = this.getLoopToChange().getFileLocation().getNodeOffset();
+        int offset = this.getLoop().getFileLocation().getNodeOffset();
         
         for (int i = stmts.length - 1; i >= 0; i--) {
-            if(ASTUtil.getPragmaNodes(getLoopToChange()).size() != 0){
+            if(ASTUtil.getPragmaNodes(getLoop()).size() != 0){
                 this.insert(offset, pragma("acc parallel loop"));
             }
             String newBody = "";

@@ -28,7 +28,7 @@ public class NullAlteration extends ForLoopAlteration<NullCheck> {
      */
     public NullAlteration(IASTRewrite rewriter, NullCheck check) {
         super(rewriter, check);
-        if (this.getLoopToChange() == null) throw new IllegalStateException("loop is null");
+        if (this.getLoop() == null) throw new IllegalStateException("loop is null");
     }
 
     @Override

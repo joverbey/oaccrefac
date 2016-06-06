@@ -14,24 +14,26 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 public class IntroOpenACCLoopAlteration extends ForLoopAlteration<IntroOpenACCLoopCheck> {
 
 	private boolean kernels;
+	private boolean inParallelRegion;
 	
     public IntroOpenACCLoopAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check, boolean kernels) {
         super(rewriter, check);
         this.kernels = kernels;
+        this.inParallelRegion = check.isInParallelRegion();
     }
 
     @Override
     protected void doChange() {
-    	if(check.getParentPragma()){
-    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
+    	if(inParallelRegion){
+    		int offset = getLoop().getFileLocation().getNodeOffset();
     		this.insert(offset, pragma("acc loop") + System.lineSeparator());
     		finalizeChanges();
     	} else if (kernels) {
-    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
+    		int offset = getLoop().getFileLocation().getNodeOffset();
             this.insert(offset, pragma("acc kernels loop"));
             finalizeChanges();
     	} else {
-    		int offset = getLoopToChange().getFileLocation().getNodeOffset();
+    		int offset = getLoop().getFileLocation().getNodeOffset();
     		this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
     		finalizeChanges();
     	}

@@ -95,11 +95,12 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         super(rewriter, check);
         this.unrollFactor = unrollFactor;
 
-        this.loop = this.getLoopToChange();
+        this.loop = this.getLoop();
 
         Long lower = ForStatementInquisitor.getInquisitor(loop).getLowerBound();
         Long upper = check.getUpperBound();
         
+        //TODO: other alteration just assume the check has passed; this is inconsistent
         //should have made this check from the UnrollLoopsCheck object already
         if(lower == null || upper == null) {
             throw new IllegalStateException();

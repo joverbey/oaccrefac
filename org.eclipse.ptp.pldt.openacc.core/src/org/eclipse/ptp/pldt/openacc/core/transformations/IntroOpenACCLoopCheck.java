@@ -26,7 +26,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
 public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 
-	protected boolean parentPragma = false;
+	protected boolean inParallelRegion = false;
 	private boolean kernels;
 
 	public IntroOpenACCLoopCheck(final IASTForStatement loop, boolean kernels) {
@@ -34,12 +34,8 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 		this.kernels = kernels;
 	}
 
-	public boolean getParentPragma() {
-		return parentPragma;
-	}
-
-	private void setParentPragma(boolean in) {
-		parentPragma = in;
+	public boolean isInParallelRegion() {
+		return inParallelRegion;
 	}
 
 	@Override
@@ -77,7 +73,7 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
 				IASTStatement stat = (IASTStatement) node;
 				if (OpenACCUtil.isAccConstruct(stat, ASTAccParallelNode.class)
 						|| OpenACCUtil.isAccConstruct(stat, ASTAccParallelLoopNode.class)) {
-					setParentPragma(true);
+					inParallelRegion = true;
 					status.addError("When a loop has a parent with a parallel pragma associated with it, it cannot parallelized.");
 					break;
 				} else {
