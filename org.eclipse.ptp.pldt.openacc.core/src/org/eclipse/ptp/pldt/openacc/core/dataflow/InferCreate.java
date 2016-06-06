@@ -8,6 +8,7 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class InferCreate extends InferDataTransfer {
@@ -117,7 +118,7 @@ public class InferCreate extends InferDataTransfer {
 			for(IASTName name : ASTUtil.find(K, IASTName.class)) {
 				if(name.resolveBinding().equals(V)
 						&& ASTUtil.findNearestAncestor(name, IASTDeclarationStatement.class) != null 
-						&& ASTUtil.isDefinition(name)) {
+						&& ASTPatternUtil.isDefinition(name)) {
 					return true;
 				}
 			}

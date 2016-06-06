@@ -1,20 +1,23 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyoutClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCreateClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataItemNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTVisitor;
+import org.eclipse.ptp.pldt.openacc.core.parser.IASTListNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
@@ -26,28 +29,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	
 	@Override
 	public void doChange() {
-		ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
-
-		int maxup = getMaxInDirection(getStatement(), true);
-		int maxdown = getMaxInDirection(getStatement(), false);
-		int osize = ASTUtil.getStatementsIfCompound(getStatement()).length;
-		List<Expansion> expansions = new ArrayList<Expansion>();
-
-		for (int i = 0; i <= maxup; i++) {
-			for (int j = 0; j <= maxdown; j++) {
-				IASTStatement[] expStmts = getExpansionStatements(i, j, getStatement());
-				// be sure we don't add a declaration to this inner scope if it is used in the outer scope
-				if (!expansionAddsDeclarationIllegally(expStmts, getStatement(), rd))
-					expansions.add(new Expansion(expStmts, osize + i + j));
-			}
-		}
-
-		Expansion largestexp = null;
-		for (Expansion exp : expansions) {
-			if (largestexp == null || exp.getSize() >= largestexp.getSize()) {
-				largestexp = exp;
-			}
-		}
+		Expansion largestexp = determineLargestExpansion();
 
 		String newConstruct = "";
 		for (IASTStatement statement : largestexp.getStatements()) {
@@ -67,56 +49,152 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		this.remove(getPragma());
 
 		IASTStatement[] exparr = largestexp.getStatements();
-		int start = exparr[0].getFileLocation().getNodeOffset();
-		int end = exparr[exparr.length - 1].getFileLocation().getNodeOffset()
-				+ exparr[exparr.length - 1].getFileLocation().getNodeLength();
-		int len = end - start;
-		this.replace(start, len, newConstruct);
+		if(getStatement() instanceof IASTCompoundStatement) {
+			int stmtOffset = getStatement().getFileLocation().getNodeOffset();
+			String comp = getStatement().getRawSignature();
+			this.remove(stmtOffset + comp.indexOf('{'), 1);
+			this.remove(stmtOffset + comp.lastIndexOf('}'), 1);
+		}
+		
+		this.insertBefore(exparr[0], "{" + NL);
+		
+		insertNewPragma(exparr);
+		
+		this.insertAfter(exparr[exparr.length - 1], NL + "}");
 		finalizeChanges();
 	}
-	
 
-	private boolean expansionAddsDeclarationIllegally(IASTStatement[] expStmts, IASTStatement origStmt,
-			ReachingDefinitions rd) {
-		// get all variable declarations in the expansion but not in the original construct
-		Set<IASTDeclarationStatement> decls = new HashSet<IASTDeclarationStatement>();
-		for (IASTStatement stmt : expStmts) {
-			if (!stmt.equals(origStmt)) {
-				decls.addAll(ASTUtil.find(stmt, IASTDeclarationStatement.class));
+	private Expansion determineLargestExpansion() {
+		int maxup = getMaxInDirection(getStatement(), true);
+		int maxdown = getMaxInDirection(getStatement(), false);
+		int osize = ASTUtil.getStatementsIfCompound(getStatement()).length;
+		List<Expansion> expansions = new ArrayList<Expansion>();
+
+		for (int i = 0; i <= maxup; i++) {
+			for (int j = 0; j <= maxdown; j++) {
+				IASTStatement[] expStmts = getExpansionStatements(i, j, getStatement());
+				// be sure we don't add a declaration to this inner scope if it is used in the outer scope
+				if (ASTUtil.doesConstructContainAllReferencesToVariablesItDeclares(expStmts))
+					expansions.add(new Expansion(expStmts, osize + i + j));
 			}
 		}
 
-		Set<IBinding> declaredVars = new HashSet<IBinding>();
-		for (IASTDeclarationStatement declStmt : decls) {
-			if(declStmt.getDeclaration() instanceof IASTSimpleDeclaration) {
-				for(IASTDeclarator decl : ((IASTSimpleDeclaration) declStmt.getDeclaration()).getDeclarators()) {
-					declaredVars.add(decl.getName().resolveBinding());
-				}
+		Expansion largestexp = null;
+		for (Expansion exp : expansions) {
+			if (largestexp == null || exp.getSize() >= largestexp.getSize()) {
+				largestexp = exp;
 			}
 		}
-		
-		IASTFunctionDefinition func = ASTUtil.findNearestAncestor(origStmt, IASTFunctionDefinition.class);
-		Set<IASTName> namesInConstruct = new HashSet<IASTName>();
-		Set<IASTName> namesInFuncButNotConstruct = new HashSet<IASTName>();
-		for(IASTStatement stmt : expStmts) {
-			namesInConstruct.addAll(ASTUtil.find(stmt, IASTName.class));
-		}
-		namesInFuncButNotConstruct.addAll(ASTUtil.find(func, IASTName.class));
-		namesInFuncButNotConstruct.removeAll(namesInConstruct);
-		
-		//if we are pulling in a declaration of a var that is used outside the construct, that declaration
-		//is no longer in the scope or parent scope of any references outside the construct
-		for(IBinding var : declaredVars) {
-			for(IASTName outsideReference : namesInFuncButNotConstruct) {
-				if(outsideReference.resolveBinding().equals(var)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return largestexp;
 	}
+	
+	private void insertNewPragma(IASTStatement[] exparr) {
 
+		class DeclaratorRemover extends ASTVisitor {
+
+			private String declarator;
+
+			public DeclaratorRemover(IASTDeclarator declarator) {
+				this.declarator = declarator.getName().toString();
+			}
+
+			private boolean empty(IASTListNode<ASTAccDataItemNode> items) {
+				for(ASTAccDataItemNode item : items) {
+					if(item != null) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			@Override
+			public void visitASTAccCopyinClauseNode(ASTAccCopyinClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+
+			@Override
+			public void visitASTAccCopyoutClauseNode(ASTAccCopyoutClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+
+			@Override
+			public void visitASTAccCopyClauseNode(ASTAccCopyClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+
+			@Override
+			public void visitASTAccCreateClauseNode(ASTAccCreateClauseNode node) {
+				IASTListNode<ASTAccDataItemNode> list = node.getAccDataList();
+				for (int i = 0; i < list.size(); i++) {
+					ASTAccDataItemNode item = list.get(i);
+					if(item != null) {
+						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
+							list.remove(i);
+						}
+					}
+				}
+				if(empty(node.getAccDataList())) node.removeFromTree();
+				traverseChildren(node);
+			}
+		}
+
+		List<IASTDeclarator> declarators = new ArrayList<IASTDeclarator>();
+		for (IASTStatement stmt : exparr) {
+			for (IASTDeclarator decl : ASTUtil.find(stmt, IASTDeclarator.class)) {
+				if (ASTUtil.findNearestAncestor(decl, IASTSimpleDeclaration.class) != null) {
+					declarators.add(decl);
+				}
+			}
+		}
+		
+		IAccConstruct construct;
+		try {
+			construct = new OpenACCParser().parse(getPragma().getRawSignature());
+		} catch (Exception e) {
+			System.err.println("Failed to parse data construct");
+			e.printStackTrace();
+			this.insertBefore(exparr[0], getPragma().getRawSignature() + NL);
+			return;
+		}
+
+		for(IASTDeclarator declarator : declarators) {
+			construct.accept(new DeclaratorRemover(declarator));
+		}
+		
+		this.insertBefore(exparr[0], construct.toString() + NL);
+		
+	}
+	
 	private int getMaxInDirection(IASTStatement statement, boolean up) {
 		int i = 0;
 		IASTNode next = statement;

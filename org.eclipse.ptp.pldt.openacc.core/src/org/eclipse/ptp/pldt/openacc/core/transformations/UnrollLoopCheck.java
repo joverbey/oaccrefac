@@ -23,9 +23,9 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
@@ -48,7 +48,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 			return;
 		}
 
-		ForStatementInquisitor loopInquisitor = InquisitorFactory.getInquisitor(loop);
+		ForStatementInquisitor loopInquisitor = ForStatementInquisitor.getInquisitor(loop);
 		
 		// If the loop is not a counted loop, fail
 		if (!loopInquisitor.isCountedLoop()) {
@@ -84,7 +84,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 			}
             @Override
             public int visit(IASTName name) {
-            	if (ASTUtil.isDefinition(name)) {
+            	if (ASTPatternUtil.isDefinition(name)) {
             		if (name.getBinding() != null && name.getBinding().equals(indexBinding)) {
                 		this.isDefinition = true;
             		}
@@ -116,7 +116,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
 		// If we are unrolling more than the number of times the loop will
 		// run (upper bound - lower bound), we can't do the refactoring.
-		long loopRunTimes = upperBound.longValue() - InquisitorFactory.getInquisitor(loop).getLowerBound().longValue();
+		long loopRunTimes = upperBound.longValue() - ForStatementInquisitor.getInquisitor(loop).getLowerBound().longValue();
 		if (params.getUnrollFactor() > loopRunTimes) {
 			status.addFatalError("Can't unroll loop more times than the loop runs");
 			return;

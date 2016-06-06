@@ -20,7 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
-public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
+public class TileLoopsCheck extends AbstractTileLoopsCheck {
 
     private IASTForStatement outer;
     private IASTForStatement inner;
@@ -31,14 +31,14 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, TileLoopsParams params) {
+    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
         
-        if(params.getHeight() < 1) {
+        if(((TileLoopsParams) params).getHeight() < 1) {
             status.addFatalError("Height must be at least 1");
             return;
         }
         
-        if(params.getWidth() < 1) {
+        if(((TileLoopsParams) params).getWidth() < 1) {
             status.addFatalError("Width must be at least 1");
             return;
         }
@@ -55,7 +55,7 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
         // created by tiling. Some dependencies that are allowed with tiling
         // are not allowed by pragmas.
         
-        if (inq.getPragmas().length > 0) {
+        if (!ASTUtil.getPragmaNodes(this.getLoop()).isEmpty()) {
             status.addError("This loop contains an ACC pragma.");
         }
 
@@ -64,7 +64,7 @@ public class TileLoopsCheck extends ForLoopCheck<TileLoopsParams> {
             return;
         }
         
-        List<IASTForStatement> headers = inq.getPerfectLoopNestHeaders();
+        List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (headers.size() < 2) {
             status.addFatalError("There must be two nested loops to perform loop tiling.");
             return;

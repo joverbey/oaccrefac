@@ -16,16 +16,15 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
-public class StripMineCheck extends AbstractStripMineCheck {
+public class StripMineCheck extends AbstractTileLoopsCheck {
 
     public StripMineCheck(IASTForStatement loop) {
         super(loop);
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, AbstractStripMineParams params) {
+    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
     	
     	// Presence of a openacc pragma doesn't influence whether or not strip 
     	// mining can be performed. This is because for strip mining to be 
@@ -33,7 +32,7 @@ public class StripMineCheck extends AbstractStripMineCheck {
     	// If this is the case, then sections of the iterations will also be 
     	// independent, meaning they are still parellelizable.
     	
-        ForStatementInquisitor inq = InquisitorFactory.getInquisitor(this.loop);
+        ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.loop);
         
         // Check strip factor validity...
         if (params.getNumFactor() <= 0) {

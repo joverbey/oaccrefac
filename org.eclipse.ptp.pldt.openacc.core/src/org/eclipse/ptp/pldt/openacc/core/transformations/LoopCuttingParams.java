@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class LoopCuttingParams extends AbstractStripMineParams {
+public class LoopCuttingParams extends AbstractTileLoopsParams {
     
     public LoopCuttingParams(int cutFactor, String newName) {
         super(cutFactor, newName);

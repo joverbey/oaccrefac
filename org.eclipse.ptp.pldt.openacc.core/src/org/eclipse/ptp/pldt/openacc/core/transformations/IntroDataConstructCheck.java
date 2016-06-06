@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     Alexander Calvert (Auburn) - initial API and implementation
+ *     William Hester (Auburn) - Decouple SourceStatementsCheck and
+ *     			IntroduceDataConstructCheck
  *******************************************************************************/
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
@@ -14,6 +16,7 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -24,6 +27,7 @@ import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
 public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringParams> {
@@ -36,6 +40,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     	IASTStatement[] stmts = getStatements();
     	if(stmts.length < 1) {
     		status.addWarning("Data construct will not surround any statements");
+    		return;
     	}
     	else {
     		for(IASTStatement stmt : stmts) {
@@ -43,14 +48,24 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     			if(parent instanceof IASTIfStatement) {
     				IASTIfStatement ifStmt = (IASTIfStatement) parent; 
     				if (ifStmt.getThenClause().equals(stmt) || ifStmt.getElseClause().equals(stmt)) {
-    					status.addFatalError("Data construct must either be inside the conditional statement or surround both the if statement and its else clause");
+    					status.addError("Data construct must either be inside the conditional statement or surround both the if statement and its else clause");
     				}
     			}
     		}
     	}
+    	
+    	if(!ASTUtil.doesConstructContainAllReferencesToVariablesItDeclares(stmts)) {
+    		status.addError("Construct would surround variable declaration and cause scope errors");
+    	}
     }
     
     @Override
+    public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
+        doReachingDefinitionsCheck(status,
+                new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
+        return status;
+    }
+
     protected void doReachingDefinitionsCheck(RefactoringStatus status, ReachingDefinitions rd) {
     	Map<IASTStatement, Set<IBinding>> copyin = new InferCopyin(rd, getStatements()).get();
     	Map<IASTStatement, Set<IBinding>> copyout = new InferCopyout(rd, getStatements()).get();
@@ -72,7 +87,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     		}
     	}
     	if(allRootsEmpty) {
-    		status.addError("Resulting data construct cannot do any data transfer");
+    		status.addWarning("Resulting data construct cannot do any data transfer");
     	}
     }
 
@@ -82,5 +97,4 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     	formCheck(status);
     	return status;
     }
-
 }

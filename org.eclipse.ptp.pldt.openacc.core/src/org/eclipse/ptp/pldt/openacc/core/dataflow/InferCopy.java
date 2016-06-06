@@ -29,7 +29,6 @@ public class InferCopy extends InferDataTransfer {
 
 	@Override
 	protected void infer() {
-		InferDataTransfer.normalizeRoot(inferCopyin, inferCopyout, this);
 		Map<IASTStatement, Set<IBinding>> copyin = inferCopyin.get();
 		Map<IASTStatement, Set<IBinding>> copyout = inferCopyout.get();
 		for(IASTStatement construct : copyin.keySet()) {

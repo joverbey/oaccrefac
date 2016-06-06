@@ -43,11 +43,38 @@ public class Main {
 			switch (args[0]) {
 			// 2 args
 			case "-tile":
-				refactoring = new TileLoops(parseInt(args[argIndex++]), parseInt(args[argIndex++]));
+				boolean cut = false;
+				String name1 = "", name2 = "";
+				int width = 0, height = 0;
+				for (int i = argIndex; i < args.length; i++) {
+					if (args[i].equals("-cut") || args[i].equals("-c")) {
+						cut = true;
+						argIndex++;
+					}
+				}
+				if (cut) {
+					width = parseInt(args[argIndex++]);
+					for (int i = argIndex; i < args.length; i++) {
+						if (args[i].equals("-name") || args[i].equals("-n")) {
+							name1 = args[++i];
+							argIndex += 2;
+						}
+					}
+				} else {
+					width = parseInt(args[argIndex++]);
+					height = parseInt(args[argIndex++]);
+					for (int i = argIndex; i < args.length; i++) {
+						if (args[i].equals("-name") || args[i].equals("-n")) {
+							name1 = args[++i];
+							name2 = args[++i];
+							argIndex += 3;
+						}
+					}
+				}
+				refactoring = new TileLoops(width, height, name1, name2, cut);
 				break;
 			case "-strip-mine":
 				String name = "";
-				boolean cut = false;
 				int factor = parseInt(args[argIndex++]);
 				loop:
 				for (int i = argIndex; i < args.length; i++) {
@@ -56,15 +83,11 @@ public class Main {
 						name = args[++i];
 						argIndex += 2;
 						break;
-					case "-cut":
-						cut = true;
-						argIndex++;
-						break;
 					default:
 						break loop;
 					}
 				}
-				refactoring = new StripMineLoop(factor, name, cut);
+				refactoring = new StripMineLoop(factor, name);
 				break;
 			// 1 arg
 			case "-interchange":
@@ -179,14 +202,17 @@ public class Main {
 				.append("    IntroduceACCLoop [-kernels]\n")
 				.append("                               - change loop to acc parallel loop\n")
 				.append("                      -kernels:  (optional) change loop to acc kernels loop\n")
-				.append("    StripMine <strip_factor> [-name <new_name>] [-cut]\n")
+				.append("    StripMine <strip_factor> [-name <new_name>] \n")
 				.append("                               - insert loop with strip_factor iterations\n")
 				.append("                <strip_factor>:  the number of times to strip the loop iterations\n")
 				.append("              -name <new_name>:  (optional) the new variable name\n")
-				.append("                          -cut:  (optional) specifies that a loop cut intead of a strip mine\n")
-				.append("    TileLoops <width> <height> - break up loop into tiles of width by height\n")
-				.append("                       <width>:  the width of the tiles\n")
-				.append("                      <height>:  the height of the tiles\n")
+				.append("    TileLoops [-cut] <width> <height> [-name <new_name>] - break up loop into tiles of width by height\n")
+				.append("                          -cut:  (optional) specifies that a loop cut intead of a tile\n")
+				.append("                                 must be placed at beginning\n")
+				.append("                       <width>:  the width of the tiles, or cut factor if cut\n")
+				.append("                      <height>:  the height of the tiles, omit for cut\n")
+				.append("              -name <new_name>:  (optional) the new variable name(s)\n")
+				.append("                                 one for cut, two otherwise\n")
 				.append("    Unroll <factor>            - unroll loop by factor\n")
 				.append("                      <factor>:  the number of loop iterations to unroll\n")
 				.append("  Options:\n")

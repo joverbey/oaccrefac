@@ -21,7 +21,6 @@ import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferDataTransfer;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
@@ -47,7 +46,6 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
         InferCopyout inferCopyout = new InferCopyout(rd, getStatements());
         InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
         InferCreate inferCreate = new InferCreate(rd, getStatements());
-        InferDataTransfer.normalizeRoot(inferCopyin, inferCopyout, inferCopy, inferCreate);
         
         StringBuilder newOuterPragma = new StringBuilder(pragma("acc data"));
         if(!inferCopyin.get().get(inferCopyin.getRoot()).isEmpty()) {

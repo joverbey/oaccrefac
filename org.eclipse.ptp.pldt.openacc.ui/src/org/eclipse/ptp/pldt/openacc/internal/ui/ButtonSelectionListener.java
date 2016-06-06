@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Button;
 public class ButtonSelectionListener implements SelectionListener, ValueChangedListener {
 	
 	private ForLoopRefactoring refac;
-	private Button listenButton;
+	protected Button listenButton;
 	private NumberInputComposite stringToChange;
 	private String label1, label2;
 	
@@ -28,6 +28,10 @@ public class ButtonSelectionListener implements SelectionListener, ValueChangedL
 		this.refac = refac;
 		this.label1 = label1;
 		this.label2 = label2;
+	}
+	
+	public ButtonSelectionListener() {
+		
 	}
 	
 	public void setButton(Button listenButton) {

@@ -29,7 +29,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 /**
  * TileLoopsAlteration defines a loop tiling refactoring algorithm. Loop tiling takes
@@ -62,40 +61,51 @@ import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
  * @author Jeff Overbey
  * @author Adam Eichelkraut
  */
-public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
+public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 
     private int width;
     private int height;
+    private String innerNewName;
+    private String outerNewName;
     private IASTForStatement outer;
     private IASTForStatement inner;
 
-    public TileLoopsAlteration(IASTRewrite rewriter, int width, int height, TileLoopsCheck check) {
-        super(rewriter, check);
+    public TileLoopsAlteration(IASTRewrite rewriter, int width, int height, String innerNewName,
+    		String outerNewName, TileLoopsCheck check) {
+        super(rewriter, 0, "", check);
         this.width = width;
         this.height = height;
+        this.innerNewName = innerNewName;
+        this.outerNewName = outerNewName;
         this.inner = check.getInner();
         this.outer = check.getOuter();
     }
 
     @Override
     protected void doChange() {
-        ForStatementInquisitor innerInq = InquisitorFactory.getInquisitor(inner);
-        ForStatementInquisitor outerInq = InquisitorFactory.getInquisitor(outer);
+        ForStatementInquisitor innerInq = ForStatementInquisitor.getInquisitor(inner);
+        ForStatementInquisitor outerInq = ForStatementInquisitor.getInquisitor(outer);
         String innerIndexVar = innerInq.getIndexVariable().toString();
         String outerIndexVar = outerInq.getIndexVariable().toString();
         String innerUb = ((IASTBinaryExpression) inner.getConditionExpression()).getOperand2().getRawSignature();
         String outerUb = ((IASTBinaryExpression) outer.getConditionExpression()).getOperand2().getRawSignature();
         IASTComment[] outerComments = getBodyComments(outer);
         // inner comments will fall into the body of loop4
-        String innerNewName, outerNewName;
-        try {
-            innerNewName = createNewName(innerIndexVar, inner.getScope().getParent());
-            do {
-                outerNewName = createNewName(outerIndexVar, outer.getScope().getParent());
-            } while (innerNewName.equals(outerNewName));
-        } catch (DOMException e) {
-            e.printStackTrace();
-            return;
+        if (innerNewName.equals("")) {
+        	try {
+        		innerNewName = createNewName(innerIndexVar, inner.getScope().getParent());
+        	} catch (DOMException e) {
+        		e.printStackTrace();
+        		return;
+        	}
+        }
+        if (outerNewName.equals("")) {
+        	try {
+        		outerNewName = createNewName(outerIndexVar, outer.getScope().getParent());
+        	} catch (DOMException e) {
+        		e.printStackTrace();
+        		return;
+        	}
         }
 
         // --------loop4----------------------------
@@ -222,5 +232,25 @@ public class TileLoopsAlteration extends ForLoopAlteration<TileLoopsCheck> {
         return objects.toArray(new IASTNode[objects.size()]);
 
     }
+
+	@Override
+	protected String getOuterCond(String newName, String compOp, String ub, int numValue) {
+		return null;
+	}
+
+	@Override
+	protected String getOuterIter(String newName, int numFactor) {
+		return null;
+	}
+
+	@Override
+	protected String getInnerCond(String indexVar, String newName, int numFactor, String compOp, String ub) {
+		return null;
+	}
+
+	@Override
+	protected String getInnerIter(IASTForStatement loop, String indexVar, String ub, int NumValue) {
+		return null;
+	}
 
 }

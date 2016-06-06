@@ -13,13 +13,10 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractStripMineParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
@@ -27,9 +24,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 /**
  * StripMine performs the strip mine refactoring.
  */
-public class StripMineLoop extends CLILoopRefactoring<AbstractStripMineParams, AbstractStripMineCheck> {
-
-	private final boolean cut;
+public class StripMineLoop extends CLILoopRefactoring<AbstractTileLoopsParams, AbstractTileLoopsCheck> {
 
     /**
      * stripFactor is the factor to use in strip mining the loop
@@ -37,38 +32,25 @@ public class StripMineLoop extends CLILoopRefactoring<AbstractStripMineParams, A
     private final int numFactor;
     private final String newName;
     
-    public StripMineLoop(int numFactor, String newName, boolean cut) {
+    public StripMineLoop(int numFactor, String newName) {
     	this.numFactor = numFactor;
     	this.newName = newName;
-    	this.cut = cut;
     }
 
     @Override
-    public AbstractStripMineCheck createCheck(IASTStatement loop) {
-    	if (cut) {
-    		return new LoopCuttingCheck((IASTForStatement) loop);
-    	} else {
-    		return new StripMineCheck((IASTForStatement) loop);
-    	}
+    public AbstractTileLoopsCheck createCheck(IASTStatement loop) {
+		 return new StripMineCheck((IASTForStatement) loop);
     }
 
     @Override
-    protected AbstractStripMineParams createParams(IASTStatement forLoop) {
-    	if (cut) {
-    		return new LoopCuttingParams(numFactor, newName);
-    	} else {
-            return new StripMineParams(numFactor, newName);
-    	}
+    protected AbstractTileLoopsParams createParams(IASTStatement forLoop) {
+        return new StripMineParams(numFactor, newName);
     }
 
     @Override
-	public AbstractStripMineAlteration createAlteration(IASTRewrite rewriter, 
-    		AbstractStripMineCheck check) throws CoreException {
-    	if (cut) {
-    		return new LoopCuttingAlteration(rewriter, numFactor, newName, check);
-    	} else {
-            return new StripMineAlteration(rewriter, numFactor, newName, check);
-    	}
+	public AbstractTileLoopsAlteration createAlteration(IASTRewrite rewriter, 
+    		AbstractTileLoopsCheck check) throws CoreException {
+        return new StripMineAlteration(rewriter, numFactor, newName, check);
     }
 
 }

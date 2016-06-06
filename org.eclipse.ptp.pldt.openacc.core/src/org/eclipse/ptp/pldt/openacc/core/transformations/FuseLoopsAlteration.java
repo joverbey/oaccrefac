@@ -34,7 +34,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
-import org.eclipse.ptp.pldt.openacc.internal.core.InquisitorFactory;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fusion refactoring algorithm. Loop fusion takes the
@@ -116,9 +115,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
 
         body = compound(body);
         // remove second pragma if loops are matching
-        ForStatementInquisitor loop1 = InquisitorFactory.getInquisitor(first);
-        ForStatementInquisitor loop2 = InquisitorFactory.getInquisitor(second);
-        if(loop1.getPragmas() == loop2.getPragmas()){
+        if(ASTUtil.getPragmaNodes(first).equals(ASTUtil.getPragmaNodes(second))){
             removePragma(second);
         }
         
@@ -259,7 +256,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         return refsToMod.toArray(new IASTName[refsToMod.size()]);
     }
     private void removePragma(IASTForStatement loopIn){
-        ForStatementInquisitor loop = InquisitorFactory.getInquisitor(loopIn);
+        ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(loopIn);
         remove(loop.getStatement().getFileLocation().getNodeOffset() - 1, loop.getStatement().getFileLocation().getNodeLength());
     }
 

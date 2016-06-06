@@ -18,27 +18,24 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ButtonComposite extends Composite {
 	
-	private ButtonSelectionListener regListener;
-
+	Button regButton;
+	
 	public ButtonComposite(Composite parent, int style, String label1, String label2, 
 			ButtonSelectionListener regListener) {
 		super(parent, style);
 		
 		setLayout(new GridLayout(2, false));
 		
-		Button regButton = new Button(this, SWT.RADIO);
+		regButton = new Button(this, SWT.RADIO);
 		regButton.setText(label1);
-		this.regListener = regListener;
 		regListener.setButton(regButton);
 		regButton.addSelectionListener(regListener);
-        regButton.setSelection(true);
         
         Button cutButton = new Button(this, SWT.RADIO);
         cutButton.setText(label2);
-        
 	}
 	
-	public void addLabelChange(NumberInputComposite nic) {
-		regListener.addLabelChange(nic);
+	public void setFirst() {
+        regButton.setSelection(true);
 	}
 }

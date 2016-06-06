@@ -16,7 +16,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
@@ -30,9 +34,14 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
  */
 public class TileLoopsRefactoring extends ForLoopRefactoring {
 
+	private boolean cut = false;
     private int width = 0;
     private int height = 0;
-    private TileLoopsCheck check;
+    private int cutFactor = 0;
+    private String newName = "";
+    private String innerNewName = "";
+    private String outerNewName = "";
+    private AbstractTileLoopsCheck check;
 
     public TileLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
@@ -45,15 +54,45 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     public void setHeight(int height) {
         this.height = height;
     }
+    
+    public void setNewName(String newName) {
+    	this.newName = newName;
+    }
+    
+    public void setInnerNewName(String innerNewName) {
+    	this.innerNewName = innerNewName;
+    }
+    
+    public void setOuterNewName(String outerNewName) {
+    	this.outerNewName = outerNewName;
+    }
+    
+    public void setCutFactor(int cutFactor) {
+    	this.cutFactor = cutFactor;
+    }
+    
+    public void setCut(boolean cut) {
+    	this.cut = cut;
+    }
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new TileLoopsCheck(getLoop());
-        check.performChecks(status, pm, new TileLoopsParams(width, height));
+    	if (cut) {
+    		check = new LoopCuttingCheck(getLoop());
+    		check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
+    	} else {
+	        check = new TileLoopsCheck(getLoop());
+	        check.performChecks(status, pm, new TileLoopsParams(width, height));
+    	}
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new TileLoopsAlteration(rewriter, width, height, check).change();
+    	if (cut) {
+    		new LoopCuttingAlteration(rewriter, cutFactor, newName, check).change();
+    	} else {
+    		new TileLoopsAlteration(rewriter, width, height, innerNewName,
+    				outerNewName, (TileLoopsCheck) check).change();
+    	}
     }
 }

@@ -12,9 +12,9 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 
-public abstract class AbstractStripMineCheck extends ForLoopCheck<AbstractStripMineParams> {
+public abstract class AbstractTileLoopsCheck extends ForLoopCheck<AbstractTileLoopsParams> {
 	
-	public AbstractStripMineCheck(IASTForStatement loop) {
+	public AbstractTileLoopsCheck(IASTForStatement loop) {
         super(loop);
     }
 	

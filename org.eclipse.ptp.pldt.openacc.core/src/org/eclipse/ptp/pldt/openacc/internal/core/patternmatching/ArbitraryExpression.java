@@ -20,12 +20,11 @@ import org.eclipse.cdt.internal.core.dom.parser.ProblemType;
 /**
  * This class represents an arbitrary integer literal in an AST pattern.
  * 
+ * @author William Hester - Allow extension, remove unnecessary constructor
  * @see ASTMatcher
  */
 @SuppressWarnings("restriction")
-public final class ArbitraryExpression extends ASTNode implements IASTExpression {
-    public ArbitraryExpression() {
-    }
+public class ArbitraryExpression extends ASTNode implements IASTExpression {
 
     @Override
     public ArbitraryExpression copy() {

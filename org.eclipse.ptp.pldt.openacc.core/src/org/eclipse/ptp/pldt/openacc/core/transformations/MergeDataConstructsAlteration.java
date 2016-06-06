@@ -21,7 +21,6 @@ import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferDataTransfer;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
@@ -45,10 +44,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
 
     @Override
     protected void doChange() throws Exception {
-    	//merge constructs around both statements
-    	//use reaching definitions to determine new copy sets
-    	//be sure to handle create, copyin, copyout, copy 
-    	//	(copy as per discussion where pgi compiler handle copyin(a)+copyout(a) weird)
 
     	IASTStatement[] statements = concat(ASTUtil.getStatementsIfCompound(getFirstStatement()), ASTUtil.getStatementsIfCompound(getSecondStatement()));
     	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));
@@ -57,7 +52,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	InferCopyout inferCopyout = new InferCopyout(rd, statements);
     	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
     	InferCreate inferCreate = new InferCreate(rd, statements);
-    	InferDataTransfer.normalizeRoot(inferCopyin, inferCopyout, inferCopy, inferCreate);
     	
     	remove(getSecondPragma());
     	removeCurlyBraces(getFirstStatement());
@@ -69,7 +63,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	all.addAll(inferCreate.get().keySet());
     	
     	for(IASTStatement con : all) {
-    		//inferCopyin.get()/inferCopyout.get()/inferCreate.get() all share a root
     		if(con.equals(inferCopyin.getRoot())) {
     			String top = pragma("acc data")
     					+ copyin(inferCopyin.get().get(con))
@@ -103,21 +96,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     		}
     	}
     	
-    	/*
-    	 * remove the two data pragmas
-    	 * remove the curly braces at the start and end of each statement
-    	 * 	(getFirst up to its first child, and getFirst after its last child?)
-    	 * for each statement, 
-    	 * 	   if its the root, 
-    	 * 	       add data pragma at the start with copies
-    	 *     else
-    	 *         determine the type of the construct on it to get new pragma header
-    	 * 	       generate string for it w/ header and copies
-    	 * 	       replace old pragma with new one
-    	 *     
-    	 */
-
-
     }
 
     private void removeCurlyBraces(IASTStatement statement) {

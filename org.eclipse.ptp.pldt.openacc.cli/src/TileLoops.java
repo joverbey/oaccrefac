@@ -8,12 +8,19 @@
  *
  * Contributors:
  *     John William O'Rourke (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
@@ -21,7 +28,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
 /**
  * TileLoops performs the tile loops refactoring.
  */
-public class TileLoops extends CLILoopRefactoring<TileLoopsParams, TileLoopsCheck> {
+public class TileLoops extends CLILoopRefactoring<AbstractTileLoopsParams, AbstractTileLoopsCheck> {
 
     /**
      * width represents the width of the tiles.
@@ -33,24 +40,49 @@ public class TileLoops extends CLILoopRefactoring<TileLoopsParams, TileLoopsChec
      */
     private final int height;
     
-    public TileLoops(int width, int height) {
+    /**
+     * names for the index variables created
+     */
+    private final String name1, name2;
+    
+    /**
+     * whether to cut instead of tile
+     */
+    private final boolean cut;
+    
+    public TileLoops(int width, int height, String name1, String name2, boolean cut) {
     	this.width = width;
     	this.height = height;
+    	this.name1 = name1;
+    	this.name2 = name2;
+    	this.cut = cut;
     }
 
     @Override
-    protected TileLoopsCheck createCheck(IASTStatement loop) {
-        return new TileLoopsCheck((IASTForStatement) loop);
+    protected AbstractTileLoopsCheck createCheck(IASTStatement loop) {
+    	if (cut) {
+    		return new LoopCuttingCheck((IASTForStatement) loop);
+    	} else {
+    		return new TileLoopsCheck((IASTForStatement) loop);
+    	}
     }
 
     @Override
-    protected TileLoopsParams createParams(IASTStatement forLoop) {
-        return new TileLoopsParams(width, height);
+    protected AbstractTileLoopsParams createParams(IASTStatement forLoop) {
+    	if (cut) {
+    		return new LoopCuttingParams(width, name1);
+    	} else {
+            return new TileLoopsParams(width, height);
+    	}
     }
 
     @Override
-    public TileLoopsAlteration createAlteration(IASTRewrite rewriter, TileLoopsCheck check) throws CoreException {
-        return new TileLoopsAlteration(rewriter, width, height, check);
+    public AbstractTileLoopsAlteration createAlteration(IASTRewrite rewriter, 
+    		AbstractTileLoopsCheck check) throws CoreException {
+    	if (cut) {
+    		return new LoopCuttingAlteration(rewriter, width, name1, check);
+    	} else {
+    		return new TileLoopsAlteration(rewriter, width, height, name1, name2, (TileLoopsCheck) check);
+    	}
     }
-
 }
