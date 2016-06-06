@@ -58,8 +58,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
     
-    protected T check;
-    
     //string to insert in the final replacement
     private StringBuilder src;
     //length of the section to replace 
@@ -76,7 +74,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
         this.src = null;
         this.startOffset = -1;
         this.endOffset = -1;
-        this.check = check;
         this.repls = new ArrayList<Repl>();
         this.numRepls = 0;
 
@@ -242,7 +239,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final String decompound(String code) {
-        if (code.trim().startsWith(LCURLY.trim()) && code.trim().endsWith(RCURLY.trim())) {
+        if (code.trim().startsWith(LCURLY) && code.trim().endsWith(RCURLY)) {
             return code.trim().substring(1, code.trim().length() - 1).trim();
         } else {
             return code;
@@ -378,10 +375,6 @@ public abstract class SourceAlteration<T extends Check<?>> {
             teg.addTextEdit(new ReplaceEdit(this.startOffset, this.endOffset - this.startOffset, ASTUtil.format(src.toString())));
             rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
         }
-    }
-    
-    public IASTTranslationUnit getTranslationUnit() {
-        return tu;
     }
     
     @Override
