@@ -64,11 +64,11 @@ public class DependenceAnalysis extends AbstractDependenceAnalysis {
         SubMonitor progress = SubMonitor.convert(pm, getVariableAccesses().size() * getVariableAccesses().size());
 
         for (VariableAccess v1 : getVariableAccesses()) {
-            progress.subTask(String.format("Analyzing line %d - %s",
-                    v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
+			progress.subTask(String.format("Analyzing line %d - %s",
+					v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
             if (writesToIndex(v1)) {
             	throw new DependenceTestFailure(String.format("Loop cannot be analyzed.  Loop index variable is changed on line %d.",
-                    v1.getVariableName().getFileLocation().getStartingLineNumber()));
+            		v1.getVariableName().getFileLocation().getStartingLineNumber()));
             }
             for (VariableAccess v2 : getVariableAccesses()) {
                 if (v1.refersToSameVariableAs(v2) && (v1.isWrite() || v2.isWrite()) && feasibleControlFlow(v1, v2)

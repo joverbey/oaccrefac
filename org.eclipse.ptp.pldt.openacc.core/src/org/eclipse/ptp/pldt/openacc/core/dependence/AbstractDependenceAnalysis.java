@@ -93,6 +93,16 @@ public abstract class AbstractDependenceAnalysis {
     public List<VariableAccess> getVariableAccesses() {
         return this.variableAccesses;
     }
+    
+    public int carryDependenceCount() {
+  	int count = 0;
+    	for (DataDependence dependence : dependences) {
+    		if (dependence.isLoopCarried()) {
+    			count += 1;
+    		}
+    	}
+    	return count;
+    }
 
     protected void addDependence(DataDependence dataDependence) {
         this.dependences.add(dataDependence);
