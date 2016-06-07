@@ -1,8 +1,15 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.Arrays;
+
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
@@ -30,8 +37,19 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
         	return;
         }
         
+        if(!(getStatement() instanceof IASTCompoundStatement) || !(next instanceof IASTCompoundStatement)) {
+        	status.addFatalError("Both data regions should be compound statement to perform the merge");
+        	return;
+        }
+        
         secondStmt = (IASTStatement) next;
         secondPrag = getDataPragma(secondStmt);
+        
+        IASTName conflict = getNameConflict(getFirstStatement(), getSecondStatement());
+        if(conflict != null) {
+        	status.addError(String.format("A definition of \"%s\" in the first construct may shadow \"%s\" used in the second construct", conflict.getRawSignature(), conflict.getRawSignature()));
+            return;
+        }
         
     }
     
@@ -48,7 +66,34 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
     	return true;
     }
     
-    private IASTPreprocessorPragmaStatement getDataPragma(IASTStatement statement) {
+    private IASTName getNameConflict(IASTCompoundStatement first, IASTCompoundStatement second) {
+    	for(IASTDeclarator decl : ASTUtil.find(first, IASTDeclarator.class)) {
+    		for(IASTName name : ASTUtil.find(second, IASTName.class)) {
+    			if(decl.getName().getRawSignature().equals(name.getRawSignature())
+    					&& varWillShadow(name.resolveBinding(), second)) {
+    				return decl.getName();
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
+    private boolean varWillShadow(IBinding var, IASTCompoundStatement second) {
+    	for(IASTDeclarator decl : ASTUtil.find(second, IASTDeclarator.class)) {
+    		IASTDeclarationStatement declStmt = ASTUtil.findNearestAncestor(decl, IASTDeclarationStatement.class);
+    		if(decl.getName().resolveBinding().equals(var)) {
+    			if(Arrays.asList(second.getStatements()).contains(declStmt)) {
+    				return true;
+    			}
+    			else {
+    				return false;
+    			}
+    		}
+    	}
+		return true;
+	}
+    
+	private IASTPreprocessorPragmaStatement getDataPragma(IASTStatement statement) {
     	for(IASTPreprocessorPragmaStatement prag : ASTUtil.getPragmaNodes((IASTStatement) statement)) {
     		if(isDataPragma(prag)) {
     			return prag;
@@ -65,12 +110,12 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
     	return secondPrag;
     }
     
-    public IASTStatement getFirstStatement() {
-    	return getStatement();
+    public IASTCompoundStatement getFirstStatement() {
+    	return (IASTCompoundStatement) getStatement();
     }
     
-    public IASTStatement getSecondStatement() {
-    	return secondStmt;
+    public IASTCompoundStatement getSecondStatement() {
+    	return (IASTCompoundStatement) secondStmt;
     }
 
 }

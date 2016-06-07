@@ -35,7 +35,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<MergeDataConstructsCheck> {
 
 	private IASTPreprocessorPragmaStatement secondPrag;
-	private IASTStatement secondStmt;
+	private IASTCompoundStatement secondStmt;
 	
     public MergeDataConstructsAlteration(IASTRewrite rewriter, MergeDataConstructsCheck check) {
         super(rewriter, check);
@@ -104,26 +104,15 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     		top += " " + copy(inferCopy.get().get(con));
     	if(!inferCreate.get().get(con).isEmpty())
     		top += " " + create(inferCreate.get().get(con));
-		replace(getFirstPragma(), top);
+    	replace(getFirstPragma(), top);
 		insertBefore(getFirstStatement(), LCURLY);
 		insertAfter(getSecondStatement(), RCURLY);
+
     	finalizeChanges();
     }
 
     private void removeCurlyBraces(IASTStatement statement) {
 		if(statement instanceof IASTCompoundStatement) {
-//			IASTCompoundStatement comp = (IASTCompoundStatement) statement;
-//			if(comp.getStatements().length != 0) {
-//				IASTStatement first = comp.getStatements()[0];
-//				IASTStatement last = comp.getStatements()[comp.getStatements().length - 1];
-//				int start = comp.getFileLocation().getNodeOffset();
-//				int end = first.getFileLocation().getNodeOffset();
-//				remove(start, end - start);
-//				
-//				start = last.getFileLocation().getNodeOffset() + last.getFileLocation().getNodeLength();
-//				end = comp.getFileLocation().getNodeOffset() + comp.getFileLocation().getNodeLength();
-//				remove(start, end - start);
-//			}
 			int stmtOffset = statement.getFileLocation().getNodeOffset();
 			String comp = statement.getRawSignature();
 			this.remove(stmtOffset + comp.indexOf('{'), 1);
@@ -146,12 +135,12 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	return secondPrag;
     }
     
-    public IASTStatement getFirstStatement() {
-    	return getStatement();
+    public IASTCompoundStatement getFirstStatement() {
+    	return (IASTCompoundStatement) getStatement();
     }
     
-    public IASTStatement getSecondStatement() {
-    	return secondStmt;
+    public IASTCompoundStatement getSecondStatement() {
+    	return (IASTCompoundStatement) secondStmt;
     }
 
 }

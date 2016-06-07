@@ -16,9 +16,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
@@ -72,14 +76,51 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     @Override
     public void doLoopFormCheck(RefactoringStatus status) {
         if (second == null) {
-            status.addFatalError("There is no for loop for fusion to be possible.");
+            status.addFatalError("There is there must be two for loops fusion to be possible.");
             return;
         }
+        
+        IASTName conflict = getNameConflict(first, second);
+        if(conflict != null) {
+        	status.addError(String.format("A definition of \"%s\" in the first loop may shadow \"%s\" used in the second loop", conflict.getRawSignature(), conflict.getRawSignature()));
+            return;
+        }
+        
         //breaks test 02 because only one loop
         checkPragma(status);
     }
-  
-    @Override
+    
+    private IASTName getNameConflict(IASTForStatement first, IASTForStatement second) {
+    	for(IASTDeclarator decl : ASTUtil.find(first.getBody(), IASTDeclarator.class)) {
+    		for(IASTName name : ASTUtil.find(second.getBody(), IASTName.class)) {
+    			if(decl.getName().getRawSignature().equals(name.getRawSignature())
+    					&& varWillShadow(name.resolveBinding(), second)) {
+    				return decl.getName();
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
+    private boolean varWillShadow(IBinding var, IASTForStatement second) {
+    	IASTStatement body = second.getBody();
+    	for(IASTDeclarator decl : ASTUtil.find(second.getBody(), IASTDeclarator.class)) {
+    		IASTDeclarationStatement declStmt = ASTUtil.findNearestAncestor(decl, IASTDeclarationStatement.class);
+    		if(decl.getName().resolveBinding().equals(var)) {
+    			if(body.equals(declStmt) || 
+        				(body instanceof IASTCompoundStatement 
+            					&& Arrays.asList(((IASTCompoundStatement) body).getStatements()).contains(declStmt))) {
+    				return true;
+    			}
+    			else {
+    				return false;
+    			}
+    		}
+    	}
+		return true;
+	}
+    
+	@Override
     public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
         
         ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(first);
