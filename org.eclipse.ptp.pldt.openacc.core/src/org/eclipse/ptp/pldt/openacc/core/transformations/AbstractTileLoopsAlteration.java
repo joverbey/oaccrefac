@@ -46,7 +46,7 @@ public abstract class AbstractTileLoopsAlteration
 	
     @Override
     protected void doChange() {
-        IASTForStatement loop = getLoopToChange();
+        IASTForStatement loop = getLoop();
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
         String indexVar = inq.getIndexVariable().toString();
         if (newName.equals("")) {

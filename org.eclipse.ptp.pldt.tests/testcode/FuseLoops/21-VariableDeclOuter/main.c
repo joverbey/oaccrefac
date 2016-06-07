@@ -1,9 +1,7 @@
 int main() {
-    int a, b;
-    float d;
-    int c_0 = 12;
+    int a, b, c, d;
 
-    for (int i = 0; i < 100; i++) { /*<<<<< 6,1,11,1,fail*/
+    for (int i = 0; i < 100; i++) { /*<<<<< 4,1,9,1,fail*/
         a = 5;
         int c = 5;
         d = c;
@@ -11,7 +9,7 @@ int main() {
 
     for (int i = 0; i < 100; i++) {
         b = 7;
-        float c = 10.2;
+        c = 10;
         d = c + 5;
     }
 }
