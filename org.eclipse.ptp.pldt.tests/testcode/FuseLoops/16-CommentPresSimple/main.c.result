@@ -6,5 +6,4 @@ int main() {
 		//test2
 		c = 7;
 	}
-
 }
