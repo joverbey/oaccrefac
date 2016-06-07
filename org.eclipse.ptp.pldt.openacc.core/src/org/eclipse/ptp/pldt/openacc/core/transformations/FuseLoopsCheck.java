@@ -12,9 +12,7 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -77,7 +75,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     @Override
     public void doLoopFormCheck(RefactoringStatus status) {
         if (second == null) {
-            status.addFatalError("There is there must be two for loops fusion to be possible.");
+            status.addFatalError("There is there must be two loops for fusion to be possible.");
             return;
         }
         
@@ -175,33 +173,6 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
 		doDependenceCheck(status, dependenceAnalysis);
 		return status;
-    }
-    
-    private IASTStatement[] getStatementsFromLoopBodies(IASTForStatement l1, IASTForStatement l2) {
-        List<IASTStatement> stmts = new ArrayList<IASTStatement>();
-        
-        if(l1.getBody() instanceof IASTCompoundStatement) {
-            IASTStatement[] bodyStmts = ((IASTCompoundStatement) l1.getBody()).getStatements();
-            stmts.addAll(Arrays.asList(bodyStmts));
-        }
-        else {
-            stmts.add(l1.getBody());
-        }
-        
-        if(l2.getBody() instanceof IASTCompoundStatement) {
-            IASTStatement[] bodyStmts = ((IASTCompoundStatement) l2.getBody()).getStatements();
-            stmts.addAll(Arrays.asList(bodyStmts));
-        }
-        else {
-            stmts.add(l2.getBody());
-        }
-        
-        return stmts.toArray(new IASTStatement[stmts.size()]);
-    }
-    
-    private static boolean statementsComeFromDifferentLoops(IASTForStatement l1, IASTForStatement l2, IASTStatement s1, IASTStatement s2) {
-        return (ASTUtil.isAncestor(s1, l1) && ASTUtil.isAncestor(s2, l2)) || 
-                (ASTUtil.isAncestor(s1, l2) && ASTUtil.isAncestor(s2, l1));
     }
     
     private void checkPragma(RefactoringStatus status) {
