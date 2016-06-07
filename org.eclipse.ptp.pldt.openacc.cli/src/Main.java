@@ -119,9 +119,6 @@ public class Main {
 			case "-fuse":
 				refactoring = new FuseLoops();
 				break;
-			case "-introduce-default-none":
-				refactoring = new IntroduceDefaultNone();
-				break;
 			default:
 				throw new IllegalArgumentException("Specified refactoring is invalid");
 			}
@@ -198,7 +195,6 @@ public class Main {
 				.append("    DistributeLoops            - Break up one loop with independent statements to many loops\n")
 				.append("    FuseLoops                  - Join loops with independent statements into one loo\n")
 				.append("    InterchangeLoops           - Swap nested loops\n")
-				.append("    IntroduceDefaultNone       - add default(none) to pragma\n")
 				.append("    IntroduceACCLoop [-kernels]\n")
 				.append("                               - change loop to acc parallel loop\n")
 				.append("                      -kernels:  (optional) change loop to acc kernels loop\n")
