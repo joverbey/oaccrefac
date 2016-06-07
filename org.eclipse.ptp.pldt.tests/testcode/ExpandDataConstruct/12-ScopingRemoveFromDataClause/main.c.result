@@ -8,11 +8,9 @@ int main() {
 			printf("test");
 	}
 
-#pragma acc data copyin( i)
+#pragma acc data copyin( i) /*<<<<< 13,0,14,0,pass*/
 	{
 		int a, b = 7;
-
-		/*<<<<< 13,0,14,0,pass*/
 
 #pragma acc parallel loop
 		for (; i < 10; i++)

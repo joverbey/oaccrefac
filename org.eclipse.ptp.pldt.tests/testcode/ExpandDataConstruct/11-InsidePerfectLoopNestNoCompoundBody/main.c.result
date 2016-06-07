@@ -7,11 +7,10 @@ int main() {
 	int i, j, b, a;
 
 	for (i = 0; i < 10; i++)
-#pragma acc data copyin(i)
+#pragma acc data copyin(i) /*<<<<< 12,0,13,0,pass*/
 			{
 		for (j = 0; j < 10; j++)
 
-		/*<<<<< 12,0,13,0,pass*/
 		{
 #pragma acc parallel loop
 			for (i = 0; i < 10; i++)
