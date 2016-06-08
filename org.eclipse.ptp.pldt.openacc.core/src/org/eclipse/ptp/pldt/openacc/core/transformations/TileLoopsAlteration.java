@@ -20,6 +20,8 @@ import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IType;
+import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 /**
@@ -102,10 +104,22 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 
         // --------loop4----------------------------
 
-        String init4, cond4, iter4, body4, loop4;
+        String init4, cond4, iter4, body4, loop4, innerType;
         if (inner.getInitializerStatement() instanceof IASTDeclarationStatement) {
-            init4 = String.format("int %s = %s", innerIndexVar, innerNewName);
+        	IASTDeclarationStatement ds = (IASTDeclarationStatement) inner.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            innerType = dec.getDeclSpecifier().getRawSignature();
+            init4 = String.format("%s %s = %s", innerType, innerIndexVar, innerNewName);
         } else {
+        	IASTExpressionStatement es = (IASTExpressionStatement) inner.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+        	IType type = e.getOperand1().getExpressionType();
+            if (type instanceof ITypedef) {
+            	innerType = ((ITypedef) type).getType().toString();
+            }
+            else {
+            	innerType = type.toString();
+            }
             init4 = String.format("%s = %s", innerIndexVar, innerNewName);
         }
         cond4 = parenth(
@@ -120,10 +134,22 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 
         // --------loop3----------------------------
 
-        String init3, cond3, iter3, loop3;
+        String init3, cond3, iter3, loop3, outerType;
         if (outer.getInitializerStatement() instanceof IASTDeclarationStatement) {
-            init3 = String.format("int %s = %s", outerIndexVar, outerNewName);
+        	IASTDeclarationStatement ds = (IASTDeclarationStatement) outer.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            outerType = dec.getDeclSpecifier().getRawSignature();
+            init3 = String.format("%s %s = %s", outerType, outerIndexVar, outerNewName);
         } else {
+        	IASTExpressionStatement es = (IASTExpressionStatement) outer.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+        	IType type = e.getOperand1().getExpressionType();
+            if (type instanceof ITypedef) {
+            	outerType = ((ITypedef) type).getType().toString();
+            }
+            else {
+            	outerType = type.toString();
+            }
             init3 = String.format("%s = %s", outerIndexVar, outerNewName);
         }
         cond3 = parenth(
@@ -149,7 +175,7 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             innerInitRhs = init.getInitializerClause().getRawSignature();
         }
-        init2 = String.format("int %s = %s", innerNewName, innerInitRhs);
+        init2 = String.format("%s %s = %s", innerType, innerNewName, innerInitRhs);
         cond2 = String.format("%s < %s", innerNewName, innerUb);
         iter2 = String.format("%s += %d", innerNewName, width);
         loop2 = forLoop(init2, cond2, iter2, compound(loop3));
@@ -169,7 +195,7 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             outerInitRhs = init.getInitializerClause().getRawSignature();
         }
-        init1 = String.format("int %s = %s", outerNewName, outerInitRhs);
+        init1 = String.format("%s %s = %s", outerType, outerNewName, outerInitRhs);
         cond1 = String.format("%s < %s", outerNewName, outerUb);
         iter1 = String.format("%s += %d", outerNewName, height);
         loop1 = forLoop(init1, cond1, iter1, compound(loop2));
