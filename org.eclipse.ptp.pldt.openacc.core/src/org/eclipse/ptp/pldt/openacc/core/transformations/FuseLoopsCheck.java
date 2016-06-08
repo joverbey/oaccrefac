@@ -171,7 +171,6 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
 			status.addError("These loops cannot be fused because doing so creates a dependence.");
 		}
 
-		doDependenceCheck(status, dependenceAnalysis);
 		return status;
     }
     
