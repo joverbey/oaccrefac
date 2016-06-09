@@ -39,7 +39,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
 	}
 
 	@Override
-	protected void doChange() throws Exception {
+	protected void doChange() {
 		/**
 		 * This works because we're delegating all action to a single alteration.
 		 * If we were to do work in each of multiple alterations, each alteration

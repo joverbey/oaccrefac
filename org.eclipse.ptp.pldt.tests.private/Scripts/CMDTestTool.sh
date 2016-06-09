@@ -13,7 +13,7 @@ fi
 printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParallelLoop\nLoopCutting\nStripMineLoop\nTileLoops\nUnroll\nExpandDataConstruct\n"
 
 read refactoring
-if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "StripMineLoop" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ] && [ "$refactoring" != "ExpandDataConstruct" ]; then
+if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "StripMineLoop" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ] && [ "$refactoring" != "ExpandDataConstruct" ] && [ "$refactoring" != "LoopCutting" ]; then
 	echo "That is not a recognized refactoring, please enter as shown above next time"
 	exit
 fi
@@ -51,6 +51,11 @@ if [ "$refactoring" == "TileLoops" ]; then
 	read param1
 	echo "Enter number of y tiles"
 	read param2
+fi
+if [ "$refactoring" == "LoopCutting" ]; then
+	refactoring="-tile -cut"
+	echo "Enter number of cuts"
+	read param1
 fi
 
 fileToRefactor=""
@@ -109,9 +114,11 @@ for i in "${nameArray[@]}"
 do
 	echo $i >> ./Scripts/errorlog.txt
 	if [ "$refactoring" == "-interchange" ] || [ "$refactoring" == "-strip-mine" ] || [ "$refactoring" == "-unroll" ]; then
-		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "-ln" "$i" $inputtemp > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "-tile" ]; then
 		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "$param2" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+	elif [ "$refactoring" == "-tile -cut" ]; then	
+		java -cp $PLDT_CLASSPATH Main "-tile" "-cut" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	else
 		java -cp $PLDT_CLASSPATH Main "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi

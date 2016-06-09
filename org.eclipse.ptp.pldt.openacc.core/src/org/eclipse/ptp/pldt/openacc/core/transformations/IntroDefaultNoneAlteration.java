@@ -18,7 +18,7 @@ public class IntroDefaultNoneAlteration extends PragmaDirectiveAlteration<IntroD
     }
 
     @Override
-    protected void doChange() throws Exception {
+    protected void doChange() {
         this.replace(getPragma(), getPragma().getRawSignature().trim() + " " + "default(none)");
         finalizeChanges();
     }

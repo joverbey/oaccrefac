@@ -10,7 +10,7 @@ public class IntroAtomicsAlteration extends SourceStatementsAlteration<IntroAtom
     }
 
     @Override
-    protected void doChange() throws Exception {
+    protected void doChange() {
         int offset = getStatements()[0].getFileLocation().getNodeOffset();
         String pragma = "#pragma acc atomic ";
         switch (type) {
