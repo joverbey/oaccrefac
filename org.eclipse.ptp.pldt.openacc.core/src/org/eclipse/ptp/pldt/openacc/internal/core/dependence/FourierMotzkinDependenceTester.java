@@ -73,8 +73,8 @@ public class FourierMotzkinDependenceTester {
         // dependence; otherwise, there is no dependence
         // TODO: This is obviously a workaround. See the fixme in FMEliminator.
         try {
-            return el.eliminateForIntegerSolutions(m);
-        	//return el.eliminateForRealSolutions(m);
+            //return el.eliminateForIntegerSolutions(m);
+        	return el.eliminateForRealSolutions(m);
         } catch (IndexOutOfBoundsException e) {
             System.err.print("FourierMotzkinEliminator#eliminateForIntegerSolutions ");
             System.err.println("threw an IndexOutOfBoundsException.");
