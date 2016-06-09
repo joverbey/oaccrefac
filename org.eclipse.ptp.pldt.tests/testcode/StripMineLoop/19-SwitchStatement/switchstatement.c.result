@@ -3,7 +3,7 @@ int main() {
 	int N = 100;
 	int a[N];
 	for (int i_0 = 0; i_0 < N; i_0 += 2) {
-		for (int i = i_0; (i < i_0 + 2 && i < N); i++) {/*<<<<< 5,1,15,3,2,pass*/
+		for (int i = i_0; (i < i_0 + 2 && i < N); i++) { /*<<<<< 5,1,15,3,2,pass*/
 			switch (i) {
 			case (1):
 				a[i] = 77;

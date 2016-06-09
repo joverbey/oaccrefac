@@ -18,7 +18,6 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.ITypedef;
@@ -87,8 +86,6 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 		String outerUb = outerConditionExpression.getOperand2().getRawSignature();
 		String innerComparisonOperator = getOperatorAsString(innerConditionExpression);
 		String outerComparisonOperator = getOperatorAsString(outerConditionExpression);
-        IASTComment[] outerComments = getBodyComments(outer);
-        // inner comments will fall into the body of loop4
         if (innerNewName.equals("")) {
         	try {
         		innerNewName = createNewName(innerIndexVar, inner.getScope().getParent());
@@ -130,12 +127,8 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
                 String.format("%s <  %s + %d && %s %s %s", innerIndexVar, innerNewName, width, innerIndexVar, 
                 		innerComparisonOperator, innerUb));
         iter4 = inner.getIterationExpression().getRawSignature();
-        body4 = "";
-        IASTNode[] innerBodyObjects = getBodyObjects(inner);
-        for (IASTNode bodyObject : innerBodyObjects) {
-            body4 += bodyObject.getRawSignature() + System.lineSeparator();
-        }
-        loop4 = forLoop(init4, cond4, iter4, compound(body4));
+        body4 = inner.getBody().getRawSignature();
+        loop4 = forLoop(init4, cond4, iter4, body4);
 
         // --------loop3----------------------------
 
@@ -161,8 +154,9 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
                 String.format("%s <  %s + %d && %s %s %s", outerIndexVar, outerNewName, height, outerIndexVar, 
                 		outerComparisonOperator, outerUb));
         iter3 = outer.getIterationExpression().getRawSignature();
-        for (int i = outerComments.length - 1; i >= 0; i--) {
-            loop4 = outerComments[i].getRawSignature() + System.lineSeparator() + loop4;
+        IASTComment[] outerComments = getBodyComments(outer);
+        for (IASTComment comment : outerComments) {
+        	loop4 = comment.getRawSignature() + loop4;
         }
         loop3 = forLoop(init3, cond3, iter3, compound(loop4));
 

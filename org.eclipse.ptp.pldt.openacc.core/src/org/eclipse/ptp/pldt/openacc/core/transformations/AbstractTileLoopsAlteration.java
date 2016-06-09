@@ -12,11 +12,12 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTComment;
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.ITypedef;
@@ -61,12 +62,15 @@ public abstract class AbstractTileLoopsAlteration
         }
         innerCond = getInnerCond(indexVar, newName, numFactor, compOp, ub);
         innerIter = getInnerIter(loop, indexVar, ub, numFactor);
-        innerBody = "";
-        IASTNode[] innerBodyObjects = getBodyObjects(loop);
-        for(IASTNode bodyObject : innerBodyObjects) {
-            innerBody += bodyObject.getRawSignature() + System.lineSeparator();
+        innerBody = loop.getBody().getRawSignature();
+        if (!(loop.getBody() instanceof IASTCompoundStatement)) {
+	        IASTComment[] outerComments = getBodyComments(loop);
+	        for (IASTComment comment : outerComments) {
+	        	innerBody = comment.getRawSignature() + "\n" + innerBody;
+	        }
+	        innerBody = compound(innerBody);
         }
-        inner = forLoop(innerInit, innerCond, innerIter, compound(innerBody));
+        inner = forLoop(innerInit, innerCond, innerIter, innerBody);
 
         String initRhs;
         String initType;

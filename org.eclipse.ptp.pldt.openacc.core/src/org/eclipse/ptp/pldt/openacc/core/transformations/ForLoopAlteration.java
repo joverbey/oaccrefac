@@ -13,13 +13,11 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
@@ -68,16 +66,6 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
                 return newName;
             }
         }
-    }
-    
- // gets statements AND comments from a loop body in forward order
-    protected IASTNode[] getBodyObjects(IASTForStatement loop) {
-        List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
-        objects.addAll(Arrays.asList(getBodyComments(loop)));
-        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
-        return objects.toArray(new IASTNode[objects.size()]);
-
     }
     
     protected IASTComment[] getBodyComments(IASTForStatement loop) {

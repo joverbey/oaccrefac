@@ -9,7 +9,7 @@ int main() {
 	int N = i_1;
 	int a[N];
 	for (int i_2 = 0; i_2 < i_0; i_2 += 2) {
-		for (int i = i_2; (i < i_2 + 2 && i < i_0); i++) {/*<<<<< 11,1,15,1,2,pass*/
+		for (int i = i_2; (i < i_2 + 2 && i < i_0); i++) { /*<<<<< 11,1,15,1,2,pass*/
 			a[i] = 0;
 		}
 	}
