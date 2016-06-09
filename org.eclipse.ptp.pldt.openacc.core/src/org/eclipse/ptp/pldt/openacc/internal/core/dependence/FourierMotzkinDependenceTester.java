@@ -74,6 +74,7 @@ public class FourierMotzkinDependenceTester {
         // TODO: This is obviously a workaround. See the fixme in FMEliminator.
         try {
             return el.eliminateForIntegerSolutions(m);
+        	//return el.eliminateForRealSolutions(m);
         } catch (IndexOutOfBoundsException e) {
             System.err.print("FourierMotzkinEliminator#eliminateForIntegerSolutions ");
             System.err.println("threw an IndexOutOfBoundsException.");
@@ -82,7 +83,6 @@ public class FourierMotzkinDependenceTester {
         }
     }
 
-    // why this method isnt in the java library already, i dont know.
     private double[] listToPrimitiveArray(List<Double> list) {
         double[] arr = new double[list.size()];
         for (int i = 0; i < list.size(); i++) {
@@ -91,9 +91,6 @@ public class FourierMotzkinDependenceTester {
         return arr;
     }
 
-    // negate all values in an array
-    // useful for putting equals relations in a <= matrix
-    // ie, (x == 1) iff (x <= 1) && (-x <= -1)
     private double[] negate(double[] arr) {
         double[] ret = new double[arr.length];
         for (int i = 0; i < arr.length; i++) {
@@ -137,14 +134,6 @@ public class FourierMotzkinDependenceTester {
             double[] row2 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
             double[] row3 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
             double[] row4 = new double[writeCoefficients[0].length + readCoefficients[0].length - numScalars - 1];
-//            row1[2 * i] = -1;
-//            row1[row1.length - 1] = -lowerBounds[i];
-//            row2[2 * i] = 1;
-//            row2[row2.length - 1] = upperBounds[i];
-//            row3[2 * i + 1] = -1;
-//            row3[row3.length - 1] = -lowerBounds[i];
-//            row4[2 * i + 1] = 1;
-//            row4[row4.length - 1] = upperBounds[i];
             row1[i] = -1;
             row1[row1.length - 1] = -lowerBounds[i];
             row2[i] = 1;

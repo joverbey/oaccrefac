@@ -30,6 +30,8 @@ import java.util.List;
 public class FourierMotzkinEliminator
 {
 
+	static double EPSILON = 0.0000001; 
+	
     /**
      * The Fourier-Motzkin Elimination algorithm
      * @param matrixIn system of linear inequalities on which to find whether a real solution exists
@@ -177,8 +179,8 @@ public class FourierMotzkinEliminator
                 // for all rows left, if the last column is less than 0
                 // there cannot be a solution since the matrix is in the form
                 // Ax <= b ... b must be 0 or greater
-                if (matrixIn.getValueAtMatrixIndex(i, numColumns) < 0 && matrixIn
-                    .getValueAtMatrixIndex(i, eliminatedVar - 1) == 0.0) { return false; }
+                if (matrixIn.getValueAtMatrixIndex(i, numColumns) < 0 && 
+                	matrixIn.getValueAtMatrixIndex(i, eliminatedVar - 1) < EPSILON) { return false; }
             }
         }
 
@@ -186,7 +188,7 @@ public class FourierMotzkinEliminator
         if (isSolutionSetEmpty(matrixIn, eliminatedVar - 1)) return false;
 
         // dark shadow is nonempty so an integer solution exists
-        if (darkEmpty == false)
+        if (!darkEmpty)
             return true;
         else
             return false;
@@ -668,9 +670,9 @@ public class FourierMotzkinEliminator
         for (int i = 0; i < multArray.length; i++)
         {
             multArray[i] = multArray[i] * multiplier;
-            if (multArray[i] == Double.POSITIVE_INFINITY || multArray[i] == Double.NEGATIVE_INFINITY
-                || multArray[i] == Double.NaN) { throw new ArithmeticException(
-                    "multiplyArrayByNumber - overflow or NaN result"); } //$NON-NLS-1$
+            if (Double.isInfinite(multArray[i]) || Double.isNaN(multArray[i])) {
+            	throw new ArithmeticException("multiplyArrayByNumber - overflow or NaN result"); 
+            }
         }
         return multArray;
     }
@@ -807,20 +809,17 @@ public class FourierMotzkinEliminator
         // divide row A_i by divisor (won't get last column)
         for (int i = 0; i < lastColIndex; i++)
         {
-            if (matrixIn.getRow(rowIndex)[i] != 0 && (matrixIn.getRow(rowIndex)[i]
-                / divisor) == 0.0) { throw new ArithmeticException(
-                    "divideRowForIntegerProjection - underflow"); } //$NON-NLS-1$
+            if(matrixIn.getRow(rowIndex)[i] != 0.0 && matrixIn.getRow(rowIndex)[i] / divisor == 0.0) {
+            	throw new ArithmeticException("divideRowForIntegerProjection - underflow");
+            }
             matrixIn.getRow(rowIndex)[i] = matrixIn.getRow(rowIndex)[i] / divisor;
-            if (matrixIn.getRow(rowIndex)[i] == Double.POSITIVE_INFINITY
-                || matrixIn.getRow(rowIndex)[i] == Double.NEGATIVE_INFINITY
-                || matrixIn
-                    .getRow(rowIndex)[i] == Double.NaN) { throw new ArithmeticException(
-                        "divideRowForIntegerProjection - overflow or NaN result"); } //$NON-NLS-1$
+            if (Double.isInfinite(matrixIn.getRow(rowIndex)[i]) || Double.isNaN(matrixIn.getRow(rowIndex)[i])) {
+            	throw new ArithmeticException("divideRowForIntegerProjection - overflow or NaN result");
+            }
         }
 
         // let b_i = floor( b_i / divisor )
-        matrixIn.getRow(rowIndex)[lastColIndex] = Math
-            .floor(matrixIn.getRow(rowIndex)[lastColIndex] / divisor);
+        matrixIn.getRow(rowIndex)[lastColIndex] = Math.floor(matrixIn.getRow(rowIndex)[lastColIndex] / divisor);
 
         return matrixIn;
     }
@@ -842,18 +841,21 @@ public class FourierMotzkinEliminator
             akj);
         double[] aijAk = multiplyArrayByNumber(matrixIn.getRow(upperBoundSetVal).clone(),
             aij);
+        
         double akjbi = akj * matrixIn.getRow(lowerBoundSetVal)[matrixIn.getNumColumns() - 1];
-        if (akjbi == Double.POSITIVE_INFINITY || akjbi == Double.NEGATIVE_INFINITY
-            || akjbi == Double.NaN) { throw new ArithmeticException(
-                "calculateDarkShadow - overflow or NaN result for akjbi"); } //$NON-NLS-1$
+        if (Double.isInfinite(akjbi) || Double.isNaN(akjbi)) {
+        	throw new ArithmeticException("calculateDarkShadow - overflow or NaN result for akjbi");
+        }
+        
         double aijbk = aij * matrixIn.getRow(upperBoundSetVal)[matrixIn.getNumColumns() - 1];
-        if (aijbk == Double.POSITIVE_INFINITY || aijbk == Double.NEGATIVE_INFINITY
-            || aijbk == Double.NaN) { throw new ArithmeticException(
-                "calculateDarkShadow - overflow or NaN result for aijbk"); } //$NON-NLS-1$
+        if (Double.isInfinite(aijbk) || Double.isNaN(aijbk)) {
+        	throw new ArithmeticException("calculateDarkShadow - overflow or NaN result for aijbk");
+        }
+        
         double akjaij = akj * aij;
-        if (akjaij == Double.POSITIVE_INFINITY || akjaij == Double.NEGATIVE_INFINITY
-            || akjaij == Double.NaN) { throw new ArithmeticException(
-                "calculateDarkShadow - overflow or NaN result for akjaij"); } //$NON-NLS-1$
+        if (Double.isInfinite(akjaij) || Double.isNaN(akjaij)) {
+        	throw new ArithmeticException("calculateDarkShadow - overflow or NaN result for akjaij");
+        }
 
         double newB = akjbi - aijbk + akjaij + akj - aij - 1;
         double[] newRow = arraySubtraction(akjAi, aijAk);
