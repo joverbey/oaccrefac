@@ -68,19 +68,10 @@ public class FourierMotzkinDependenceTester {
         Matrix m = generateDependenceMatrix(lowerBounds, upperBounds, writeCoefficients, readCoefficients, numScalars,
                 direction);
         
-
-        // if there is an integer solution to the matrix, there is (possibly) a
-        // dependence; otherwise, there is no dependence
-        // TODO: This is obviously a workaround. See the fixme in FMEliminator.
-        try {
-            //return el.eliminateForIntegerSolutions(m);
-        	return el.eliminateForRealSolutions(m);
-        } catch (IndexOutOfBoundsException e) {
-            System.err.print("FourierMotzkinEliminator#eliminateForIntegerSolutions ");
-            System.err.println("threw an IndexOutOfBoundsException.");
-            System.err.println("Conservatively assuming a dependence exists...");
-            return true;
-        }
+        //if there is a solution to the matrix, there is (possibly) a
+        //dependence; otherwise, there is no dependence
+        //realistically, finding the existence of and integer solution may be more precise
+    	return el.eliminateForRealSolutions(m);
     }
 
     private double[] listToPrimitiveArray(List<Double> list) {
