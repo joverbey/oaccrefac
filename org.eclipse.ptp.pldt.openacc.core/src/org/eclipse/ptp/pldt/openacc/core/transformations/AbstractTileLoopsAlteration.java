@@ -98,7 +98,7 @@ public abstract class AbstractTileLoopsAlteration
         finalizeChanges();
     }
 	
-	private String getOperatorAsString(IASTBinaryExpression condExpr) {
+	protected String getOperatorAsString(IASTBinaryExpression condExpr) {
 		String compOp;
 		switch (condExpr.getOperator()) {
 		case IASTBinaryExpression.op_lessEqual:
