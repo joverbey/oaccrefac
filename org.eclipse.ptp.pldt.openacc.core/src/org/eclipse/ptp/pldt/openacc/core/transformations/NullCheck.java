@@ -11,6 +11,10 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
@@ -69,7 +73,16 @@ public class NullCheck extends ForLoopCheck<NullParams> {
             return;
         }
 
-        for (DataDependence d : dep.getDependences()) {
+        List<DataDependence> deps = new ArrayList<DataDependence>(dep.getDependences());
+        deps.sort(new Comparator<DataDependence>() {
+
+			@Override
+			public int compare(DataDependence o1, DataDependence o2) {
+				return o1.toString().compareTo(o2.toString());
+			}
+        	
+        });
+        for (DataDependence d : deps) {
             status.addInfo(d.toString(), getLocation(d.getAccess1().getVariableName(), d.getAccess2().getVariableName()));
         }
     }
