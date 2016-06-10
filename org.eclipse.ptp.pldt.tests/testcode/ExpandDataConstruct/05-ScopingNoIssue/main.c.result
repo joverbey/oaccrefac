@@ -1,12 +1,10 @@
 int main() {
 
-#pragma acc data
+#pragma acc data /*<<<<< 7,0,8,0,pass*/
 	{
 		printf("test");
 
 		int a, b, i;
-
-		/*<<<<< 7,0,8,0,pass*/
 
 #pragma acc parallel loop
 		for (; i < 10; i++)

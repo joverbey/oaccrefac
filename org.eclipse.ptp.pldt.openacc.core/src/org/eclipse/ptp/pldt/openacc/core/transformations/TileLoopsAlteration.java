@@ -11,11 +11,6 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
@@ -23,11 +18,9 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IScope;
-import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.cdt.core.dom.ast.IType;
+import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 /**
@@ -87,10 +80,12 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
         ForStatementInquisitor outerInq = ForStatementInquisitor.getInquisitor(outer);
         String innerIndexVar = innerInq.getIndexVariable().toString();
         String outerIndexVar = outerInq.getIndexVariable().toString();
-        String innerUb = ((IASTBinaryExpression) inner.getConditionExpression()).getOperand2().getRawSignature();
-        String outerUb = ((IASTBinaryExpression) outer.getConditionExpression()).getOperand2().getRawSignature();
-        IASTComment[] outerComments = getBodyComments(outer);
-        // inner comments will fall into the body of loop4
+        IASTBinaryExpression innerConditionExpression = (IASTBinaryExpression) inner.getConditionExpression();
+        IASTBinaryExpression outerConditionExpression = (IASTBinaryExpression) outer.getConditionExpression();
+		String innerUb = innerConditionExpression.getOperand2().getRawSignature();
+		String outerUb = outerConditionExpression.getOperand2().getRawSignature();
+		String innerComparisonOperator = getOperatorAsString(innerConditionExpression);
+		String outerComparisonOperator = getOperatorAsString(outerConditionExpression);
         if (innerNewName.equals("")) {
         	try {
         		innerNewName = createNewName(innerIndexVar, inner.getScope().getParent());
@@ -110,35 +105,58 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 
         // --------loop4----------------------------
 
-        String init4, cond4, iter4, body4, loop4;
+        String init4, cond4, iter4, body4, loop4, innerType;
         if (inner.getInitializerStatement() instanceof IASTDeclarationStatement) {
-            init4 = String.format("int %s = %s", innerIndexVar, innerNewName);
+        	IASTDeclarationStatement ds = (IASTDeclarationStatement) inner.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            innerType = dec.getDeclSpecifier().getRawSignature();
+            init4 = String.format("%s %s = %s", innerType, innerIndexVar, innerNewName);
         } else {
+        	IASTExpressionStatement es = (IASTExpressionStatement) inner.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+        	IType type = e.getOperand1().getExpressionType();
+            if (type instanceof ITypedef) {
+            	innerType = ((ITypedef) type).getType().toString();
+            }
+            else {
+            	innerType = type.toString();
+            }
             init4 = String.format("%s = %s", innerIndexVar, innerNewName);
         }
         cond4 = parenth(
-                String.format("%s <  %s + %d && %s < %s", innerIndexVar, innerNewName, width, innerIndexVar, innerUb));
+                String.format("%s <  %s + %d && %s %s %s", innerIndexVar, innerNewName, width, innerIndexVar, 
+                		innerComparisonOperator, innerUb));
         iter4 = inner.getIterationExpression().getRawSignature();
-        body4 = "";
-        IASTNode[] innerBodyObjects = getBodyObjects(inner);
-        for (IASTNode bodyObject : innerBodyObjects) {
-            body4 += bodyObject.getRawSignature() + System.lineSeparator();
-        }
-        loop4 = forLoop(init4, cond4, iter4, compound(body4));
+        body4 = inner.getBody().getRawSignature();
+        loop4 = forLoop(init4, cond4, iter4, body4);
 
         // --------loop3----------------------------
 
-        String init3, cond3, iter3, loop3;
+        String init3, cond3, iter3, loop3, outerType;
         if (outer.getInitializerStatement() instanceof IASTDeclarationStatement) {
-            init3 = String.format("int %s = %s", outerIndexVar, outerNewName);
+        	IASTDeclarationStatement ds = (IASTDeclarationStatement) outer.getInitializerStatement();
+            IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
+            outerType = dec.getDeclSpecifier().getRawSignature();
+            init3 = String.format("%s %s = %s", outerType, outerIndexVar, outerNewName);
         } else {
+        	IASTExpressionStatement es = (IASTExpressionStatement) outer.getInitializerStatement();
+            IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
+        	IType type = e.getOperand1().getExpressionType();
+            if (type instanceof ITypedef) {
+            	outerType = ((ITypedef) type).getType().toString();
+            }
+            else {
+            	outerType = type.toString();
+            }
             init3 = String.format("%s = %s", outerIndexVar, outerNewName);
         }
         cond3 = parenth(
-                String.format("%s <  %s + %d && %s < %s", outerIndexVar, outerNewName, height, outerIndexVar, outerUb));
+                String.format("%s <  %s + %d && %s %s %s", outerIndexVar, outerNewName, height, outerIndexVar, 
+                		outerComparisonOperator, outerUb));
         iter3 = outer.getIterationExpression().getRawSignature();
-        for (int i = outerComments.length - 1; i >= 0; i--) {
-            loop4 = outerComments[i].getRawSignature() + System.lineSeparator() + loop4;
+        IASTComment[] outerComments = getBodyComments(outer);
+        for (IASTComment comment : outerComments) {
+        	loop4 = comment.getRawSignature() + loop4;
         }
         loop3 = forLoop(init3, cond3, iter3, compound(loop4));
 
@@ -157,8 +175,8 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             innerInitRhs = init.getInitializerClause().getRawSignature();
         }
-        init2 = String.format("int %s = %s", innerNewName, innerInitRhs);
-        cond2 = String.format("%s < %s", innerNewName, innerUb);
+        init2 = String.format("%s %s = %s", innerType, innerNewName, innerInitRhs);
+        cond2 = String.format("%s %s %s", innerNewName, innerComparisonOperator, innerUb);
         iter2 = String.format("%s += %d", innerNewName, width);
         loop2 = forLoop(init2, cond2, iter2, compound(loop3));
 
@@ -177,8 +195,8 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             outerInitRhs = init.getInitializerClause().getRawSignature();
         }
-        init1 = String.format("int %s = %s", outerNewName, outerInitRhs);
-        cond1 = String.format("%s < %s", outerNewName, outerUb);
+        init1 = String.format("%s %s = %s", outerType, outerNewName, outerInitRhs);
+        cond1 = String.format("%s %s %s", outerNewName, outerComparisonOperator, outerUb);
         iter1 = String.format("%s += %d", outerNewName, height);
         loop1 = forLoop(init1, cond1, iter1, compound(loop2));
 
@@ -186,50 +204,6 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 
         this.replace(outer, loop1);
         finalizeChanges();
-
-    }
-
-    /**
-     * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
-     *         name_2, etc.) that is not in scope
-     */
-    private String createNewName(String name, IScope scope) {
-        for (int i = 0; true; i++) {
-            String newName = name + "_" + i;
-            if (!ASTUtil.isNameInScope(newName, scope)) {
-                return newName;
-            }
-        }
-    }
-
-    private IASTComment[] getBodyComments(IASTForStatement loop) {
-        List<IASTComment> comments = new ArrayList<IASTComment>();
-        for (IASTComment comment : loop.getTranslationUnit().getComments()) {
-            // if the comment's offset is in between the end of the loop header and the end of the loop body
-            if (comment.getFileLocation()
-                    .getNodeOffset() > loop.getIterationExpression().getFileLocation().getNodeOffset()
-                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
-                    && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
-                            + loop.getBody().getFileLocation().getNodeLength()) {
-                for(IASTStatement stmt : ASTUtil.getStatementsIfCompound(loop.getBody())) {
-                    if(!ASTUtil.doesNodeLexicallyContain(stmt, comment)) {
-                        comments.add(comment);      
-                    }
-                }
-            }
-        }
-        Collections.sort(comments, ASTUtil.FORWARD_COMPARATOR);
-
-        return comments.toArray(new IASTComment[comments.size()]);
-    }
-
-    // gets statements AND comments from a loop body in forward order
-    private IASTNode[] getBodyObjects(IASTForStatement loop) {
-        List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
-        objects.addAll(Arrays.asList(getBodyComments(loop)));
-        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
-        return objects.toArray(new IASTNode[objects.size()]);
 
     }
 

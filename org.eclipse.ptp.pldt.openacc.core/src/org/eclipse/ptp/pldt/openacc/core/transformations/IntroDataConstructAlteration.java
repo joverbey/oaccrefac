@@ -113,18 +113,5 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
 				} 
 			}
     	}
-    	/*
-    	for(IASTStatement statement : allStatements) {
-    		prag = get data/par/ker/parloop/kerloop pragma from statement
-    		stringbuilder sb = header for pragma type
-    		if prag has clauses other than copyin/out/create
-    			sb.append those clauses
-    		sb.append copyin(copyin.get statement)
-    		sb.append copyout(copyout.get statement)
-    		sb.append create(create.get statement)
-    		replace prag with sb
-    	}
-    	*/
-    	
     }
 }

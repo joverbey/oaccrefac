@@ -32,7 +32,6 @@ import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -127,7 +126,11 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         this.oldIndexVariable = ForStatementInquisitor.getInquisitor(loop).getIndexVariable();
         if (shouldMoveDeclAboveLoop()) {
             try {
-                this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
+            	if (ASTUtil.isNameInScope(this.oldIndexVariable.getName(), loop.getScope().getParent())) {
+            		this.newIndexVariable = createNewName(this.oldIndexVariable.getName(), loop.getScope().getParent());
+            	} else {
+            		this.newIndexVariable = this.oldIndexVariable.getName();
+            	}
             } catch (DOMException e) {
                 Activator.log(e);
                 throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
@@ -139,23 +142,6 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
 
     private boolean shouldMoveDeclAboveLoop() {
         return loop.getInitializerStatement() instanceof IASTDeclarationStatement && extras != 0;
-    }
-
-    /**
-     * @return name, if it is not already used in the given scope, and otherwise some variation on name (name_0, name_1,
-     *         name_2, etc.) that is not in scope
-     */
-    private String createNewName(String name, IScope scope) {
-        if (ASTUtil.isNameInScope(name, scope)) {
-            for (int i = 0; true; i++) {
-                String newName = name + "_" + i;
-                if (!ASTUtil.isNameInScope(newName, scope)) {
-                    return newName;
-                }
-            }
-        } else {
-            return name;
-        }
     }
 
     @Override

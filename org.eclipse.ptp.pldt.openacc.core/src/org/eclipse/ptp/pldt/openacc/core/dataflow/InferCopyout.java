@@ -13,6 +13,11 @@ public class InferCopyout extends InferDataTransfer {
 		infer();
 	}
 	
+	public InferCopyout(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
+		super(rd, construct, accIgnore);
+		infer();
+	}
+	
 	public InferCopyout(IASTStatement... construct) {
 		super(construct);
 		infer();

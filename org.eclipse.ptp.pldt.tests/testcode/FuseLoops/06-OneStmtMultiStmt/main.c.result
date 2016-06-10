@@ -8,7 +8,5 @@ int main() {
 		c = 20;
 	}
 
-
-
 	return 0;
 }

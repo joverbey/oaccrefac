@@ -11,6 +11,7 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
@@ -34,7 +35,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<MergeDataConstructsCheck> {
 
 	private IASTPreprocessorPragmaStatement secondPrag;
-	private IASTStatement secondStmt;
+	private IASTCompoundStatement secondStmt;
 	
     public MergeDataConstructsAlteration(IASTRewrite rewriter, MergeDataConstructsCheck check) {
         super(rewriter, check);
@@ -48,30 +49,24 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	IASTStatement[] statements = concat(ASTUtil.getStatementsIfCompound(getFirstStatement()), ASTUtil.getStatementsIfCompound(getSecondStatement()));
     	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));
     	
-    	InferCopyin inferCopyin = new InferCopyin(rd, statements);
-    	InferCopyout inferCopyout = new InferCopyout(rd, statements);
-    	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
-    	InferCreate inferCreate = new InferCreate(rd, statements);
+    	InferCopyin inferCopyin = new InferCopyin(rd, statements, getFirstStatement(), getSecondStatement());
+    	InferCopyout inferCopyout = new InferCopyout(rd, statements, getFirstStatement(), getSecondStatement());
+    	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout, getFirstStatement(), getSecondStatement());
+    	InferCreate inferCreate = new InferCreate(rd, statements, getFirstStatement(), getSecondStatement());
     	
     	remove(getSecondPragma());
     	removeCurlyBraces(getFirstStatement());
     	removeCurlyBraces(getSecondStatement());
     	
-    	Set<IASTStatement> all = inferCopyin.get().keySet();
+    	Set<IASTStatement> all = new HashSet<IASTStatement>();
+    	all.addAll(inferCopyin.get().keySet());
     	all.addAll(inferCopyout.get().keySet());
     	all.addAll(inferCopy.get().keySet());
     	all.addAll(inferCreate.get().keySet());
     	
     	for(IASTStatement con : all) {
-    		if(con.equals(inferCopyin.getRoot())) {
-    			String top = pragma("acc data")
-    					+ copyin(inferCopyin.get().get(con))
-    					+ copyout(inferCopyout.get().get(con))
-    					+ copy(inferCopy.get().get(con))
-    					+ create(inferCreate.get().get(con));
-    			replace(getFirstPragma(), top);
-    		}
-    		else {
+    		if(!con.equals(inferCopyin.getRoot())) {
+    			//TODO: this does assume that a statement only has one OpenACC pragma on it - it may have more, even though thats a bad idea
     			for(IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(con)) {
     				IAccConstruct ast = null;
     				try {
@@ -87,31 +82,41 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
         			else if(ast instanceof ASTAccKernelsNode) newPragma = pragma("acc kernels");
         			else if(ast instanceof ASTAccKernelsLoopNode) newPragma = pragma("acc kernels loop");
         			else throw new IllegalStateException();
-        			newPragma += copyin(inferCopyin.get().get(con))
-        					+ copyout(inferCopyout.get().get(con))
-        					+ copy(inferCopy.get().get(con))
-        					+ create(inferCreate.get().get(con));
+        			if(!inferCopyin.get().get(con).isEmpty())
+        				newPragma += " " + copyin(inferCopyin.get().get(con));
+        			if(!inferCopyout.get().get(con).isEmpty())
+        				newPragma += " " + copyout(inferCopyout.get().get(con));
+        			if(!inferCopy.get().get(con).isEmpty())
+        				newPragma += " " + copy(inferCopy.get().get(con));
+        			if(!inferCreate.get().get(con).isEmpty())
+        				newPragma += " " + create(inferCreate.get().get(con));
         			replace(pragma, newPragma);
     			}
     		}
     	}
-    	
+    	IASTStatement con = inferCopyin.getRoot();
+    	String top = pragma("acc data");
+    	if(!inferCopyin.get().get(con).isEmpty())
+    		top += " " + copyin(inferCopyin.get().get(con));
+    	if(!inferCopyout.get().get(con).isEmpty())
+    		top += " " + copyout(inferCopyout.get().get(con));
+    	if(!inferCopy.get().get(con).isEmpty())
+    		top += " " + copy(inferCopy.get().get(con));
+    	if(!inferCreate.get().get(con).isEmpty())
+    		top += " " + create(inferCreate.get().get(con));
+    	replace(getFirstPragma(), top);
+		insertBefore(getFirstStatement(), LCURLY);
+		insertAfter(getSecondStatement(), RCURLY);
+
+    	finalizeChanges();
     }
 
     private void removeCurlyBraces(IASTStatement statement) {
 		if(statement instanceof IASTCompoundStatement) {
-			IASTCompoundStatement comp = (IASTCompoundStatement) statement;
-			if(comp.getStatements().length != 0) {
-				IASTStatement first = comp.getStatements()[0];
-				IASTStatement last = comp.getStatements()[comp.getStatements().length - 1];
-				int start = comp.getFileLocation().getNodeOffset();
-				int end = first.getFileLocation().getNodeOffset();
-				remove(start, end - start);
-				
-				start = last.getFileLocation().getNodeOffset() + last.getFileLocation().getNodeLength();
-				end = comp.getFileLocation().getNodeOffset() + comp.getFileLocation().getNodeLength();
-				remove(start, end - start);
-			}
+			int stmtOffset = statement.getFileLocation().getNodeOffset();
+			String comp = statement.getRawSignature();
+			this.remove(stmtOffset + comp.indexOf('{'), 1);
+			this.remove(stmtOffset + comp.lastIndexOf('}'), 1);
 		}
 	}
 
@@ -130,12 +135,12 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     	return secondPrag;
     }
     
-    public IASTStatement getFirstStatement() {
-    	return getStatement();
+    public IASTCompoundStatement getFirstStatement() {
+    	return (IASTCompoundStatement) getStatement();
     }
     
-    public IASTStatement getSecondStatement() {
-    	return secondStmt;
+    public IASTCompoundStatement getSecondStatement() {
+    	return (IASTCompoundStatement) secondStmt;
     }
 
 }

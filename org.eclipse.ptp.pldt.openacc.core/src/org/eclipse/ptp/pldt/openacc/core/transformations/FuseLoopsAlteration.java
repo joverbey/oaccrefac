@@ -11,29 +11,10 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.cdt.core.dom.ast.ASTNodeFactoryFactory;
-import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
-import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
-import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 /**
  * Inheriting from {@link ForLoopAlteration}, this class defines a loop fusion refactoring algorithm. Loop fusion takes the
@@ -87,177 +68,62 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         second = check.getLoop2();
     }
 
-    // FIXME figure out what to do with pragmas on each loop
     @Override
     protected void doChange() {
-        remove(second.getFileLocation().getNodeOffset(), second.getFileLocation().getNodeLength());
-        List<IASTPreprocessorPragmaStatement> prags = ASTUtil.getPragmaNodes(second);
-        Collections.reverse(prags);
-        for (IASTPreprocessorPragmaStatement prag : prags) {
-            remove(prag.getFileLocation().getNodeOffset(),
-                    prag.getFileLocation().getNodeLength() + System.lineSeparator().length());
-        }
-        String body = "";
-
-        for (int i = getBodyObjects(first).length - 1; i >= 0; i--) {
-            IASTNode bodyObject = getBodyObjects(first)[i];
-            body = bodyObject.getRawSignature() + System.lineSeparator() + body;
-        }
-        for (IASTNode bodyObject : getBodyObjects(second)) {
-            String stmt;
-            if (bodyObject instanceof IASTStatement) {
-                stmt = getModifiedStatement((IASTStatement) bodyObject, getNameModifications(first, second));
-            } else {
-                stmt = bodyObject.getRawSignature();
-            }
-            body += stmt + System.lineSeparator();
+        for (IASTPreprocessorPragmaStatement prag : ASTUtil.getPragmaNodes(second)) {
+            remove(prag);
         }
 
-        body = compound(body);
-        // remove second pragma if loops are matching
-        if(ASTUtil.getPragmaNodes(first).equals(ASTUtil.getPragmaNodes(second))){
-            removePragma(second);
+        //FIXME this is a workaround. see issue #48 
+        insertBefore(first, "");
+        
+        replace(getLastBodyIndex(first), getFirstBodyIndex(second) - getLastBodyIndex(first), NL);
+        
+        if(!(first.getBody() instanceof IASTCompoundStatement)) {
+        	insert(getFirstBodyIndex(first), LCURLY);
+        }
+        if(!(second.getBody() instanceof IASTCompoundStatement)) {
+        	insert(getLastBodyIndex(second), RCURLY);
         }
         
-        this.replace(first, forLoop(first.getInitializerStatement(), first.getConditionExpression(), first.getIterationExpression(), body));
-
         finalizeChanges();
 
     }
 
-    private Map<IASTName, String> getNameModifications(IASTForStatement loop1, IASTForStatement loop2) {
-        IASTStatement[] body1 = ASTUtil.getStatementsIfCompound(loop1.getBody());
-        IASTStatement[] body2 = ASTUtil.getStatementsIfCompound(loop2.getBody());
-        Map<IASTName, String> map = new HashMap<IASTName, String>();
-        for (IASTStatement stmt1 : body1) {
-            for (IASTStatement stmt2 : body2) {
-                if (stmt1 instanceof IASTDeclarationStatement && stmt2 instanceof IASTDeclarationStatement
-                        && ((IASTDeclarationStatement) stmt1).getDeclaration() instanceof IASTSimpleDeclaration
-                        && ((IASTDeclarationStatement) stmt2).getDeclaration() instanceof IASTSimpleDeclaration) {
-                    IASTSimpleDeclaration decl1 = (IASTSimpleDeclaration) ((IASTDeclarationStatement) stmt1)
-                            .getDeclaration();
-                    IASTSimpleDeclaration decl2 = (IASTSimpleDeclaration) ((IASTDeclarationStatement) stmt2)
-                            .getDeclaration();
-
-                    mapNewNamesToIdenticalDeclarators(decl1, decl2, loop1, loop2, map);
-
-                }
-            }
-        }
-        return map;
+    
+    
+    //FIXME?: could use getSyntax() with ITokens instead?
+    private int getFirstBodyIndex(IASTForStatement loop) {
+    	if(loop.getBody() instanceof IASTCompoundStatement) {
+    		String rawSignature = loop.getBody().getRawSignature();
+			int afterFirstCurly = rawSignature.indexOf(LCURLY) + 1;
+    		int beforeLastCurly = rawSignature.lastIndexOf(RCURLY);
+    		String body = rawSignature.substring(afterFirstCurly, beforeLastCurly).trim();
+    		return rawSignature.indexOf(body) + loop.getBody().getFileLocation().getNodeOffset();
+    	}
+    	else {
+    		//FIXME?: if there is an rparen in a comment right after the iter expr, this may break
+    		String rawSignature = loop.getRawSignature();
+			int iterEnd = loop.getIterationExpression().getFileLocation().getNodeOffset()
+					+ loop.getIterationExpression().getFileLocation().getNodeLength()
+					- loop.getFileLocation().getNodeOffset();
+			String sub = rawSignature.substring(iterEnd);
+			int headerEnd = sub.indexOf(RPAREN) + 1;
+			sub = sub.substring(headerEnd).trim();
+			return rawSignature.indexOf(sub) + loop.getFileLocation().getNodeOffset();
+    	}
     }
-
-    // gets statements AND comments from a loop body in forward order
-    private IASTNode[] getBodyObjects(IASTForStatement loop) {
-        List<IASTNode> objects = new ArrayList<IASTNode>();
-        objects.addAll(Arrays.asList(ASTUtil.getStatementsIfCompound(loop.getBody())));
-        for (IASTComment comment : loop.getTranslationUnit().getComments()) {
-            // if the comment's offset is in between the end of the loop header and the end of the loop body
-            if (comment.getFileLocation()
-                    .getNodeOffset() > loop.getIterationExpression().getFileLocation().getNodeOffset()
-                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
-                    && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
-                            + loop.getBody().getFileLocation().getNodeLength()) {
-                objects.add(comment);
-            }
-        }
-        Collections.sort(objects, ASTUtil.FORWARD_COMPARATOR);
-        
-        return objects.toArray(new IASTNode[objects.size()]);
-
+    
+    private int getLastBodyIndex(IASTForStatement loop) {
+    	String rawSignature = loop.getBody().getRawSignature();
+    	if(loop.getBody() instanceof IASTCompoundStatement) {
+			int afterFirstCurly = rawSignature.indexOf(LCURLY) + 1;
+    		int beforeLastCurly = rawSignature.lastIndexOf(RCURLY);
+    		String body = rawSignature.substring(afterFirstCurly, beforeLastCurly).trim();
+    		return rawSignature.indexOf(body) + loop.getBody().getFileLocation().getNodeOffset() + body.length();
+    	}
+    	else {
+    		return rawSignature.indexOf(rawSignature.trim()) + loop.getBody().getFileLocation().getNodeOffset() + rawSignature.trim().length();
+    	}
     }
-
-    private String newName(String name, IScope scope1, IScope scope2) {
-        for (int i = 0; true; i++) {
-            String newNameStr = name + "_" + i;
-            IASTName newName = ASTNodeFactoryFactory.getDefaultCNodeFactory().newName(newNameStr.toCharArray());
-            if (!ASTUtil.isNameInScope(newName, scope1) && !ASTUtil.isNameInScope(newName, scope2)) {
-                return newNameStr;
-            }
-        }
-    }
-
-    private void mapNewNamesToIdenticalDeclarators(IASTSimpleDeclaration decl1, IASTSimpleDeclaration decl2,
-            IASTForStatement loop1, IASTForStatement loop2, Map<IASTName, String> map) {
-        for (IASTDeclarator d1 : decl1.getDeclarators()) {
-            for (IASTDeclarator d2 : decl2.getDeclarators()) {
-                if (d1.getName().getRawSignature().equals(d2.getName().getRawSignature())) {
-
-                    String newName = newName(d2.getName().getRawSignature(),
-                            ((IASTCompoundStatement) loop1.getBody()).getScope(),
-                            ((IASTCompoundStatement) loop2.getBody()).getScope());
-                    List<IASTName> uses = getUses(d2, loop2);
-
-                    for (IASTName use : uses) {
-                        map.put(use, newName);
-                    }
-
-                }
-            }
-        }
-    }
-
-    private List<IASTName> getUses(IASTDeclarator decl, IASTForStatement loop) {
-
-        class VariableUseFinder extends ASTVisitor {
-
-            private IASTName decl;
-            public List<IASTName> uses;
-
-            public VariableUseFinder(IASTName decl) {
-                this.decl = decl;
-                this.uses = new ArrayList<IASTName>();
-                shouldVisitNames = true;
-            }
-
-            @Override
-            public int visit(IASTName name) {
-                if (name.resolveBinding().equals(decl.resolveBinding())) {
-                    uses.add(name);
-                }
-                return PROCESS_CONTINUE;
-            }
-
-        }
-
-        VariableUseFinder finder = new VariableUseFinder(decl.getName());
-        loop.accept(finder);
-        return finder.uses;
-
-    }
-
-    private String getModifiedStatement(IASTStatement original, Map<IASTName, String> map) {
-
-        StringBuilder sb = new StringBuilder(original.getRawSignature());
-
-        // references in reverse order of file location
-        IASTName[] references = getReferencesToModify(original, map.keySet());
-
-        for (IASTName reference : references) {
-            int offsetIntoStatement = reference.getFileLocation().getNodeOffset()
-                    - original.getFileLocation().getNodeOffset();
-            sb.replace(offsetIntoStatement, offsetIntoStatement + reference.getFileLocation().getNodeLength(),
-                    map.get(reference));
-        }
-
-        return sb.toString();
-    }
-
-    // returns in reverse order of file location
-    private IASTName[] getReferencesToModify(IASTStatement original, Set<IASTName> allRefs) {
-        List<IASTName> refsToMod = new ArrayList<IASTName>();
-        for (IASTName ref : allRefs) {
-            if (ASTUtil.isAncestor(ref, original)) {
-                refsToMod.add(ref);
-            }
-        }
-        Collections.sort(refsToMod, ASTUtil.REVERSE_COMPARATOR);
-
-        return refsToMod.toArray(new IASTName[refsToMod.size()]);
-    }
-    private void removePragma(IASTForStatement loopIn){
-        ForStatementInquisitor loop = ForStatementInquisitor.getInquisitor(loopIn);
-        remove(loop.getStatement().getFileLocation().getNodeOffset() - 1, loop.getStatement().getFileLocation().getNodeLength());
-    }
-
 }

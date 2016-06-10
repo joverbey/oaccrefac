@@ -3,10 +3,10 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyClauseNode;
@@ -31,21 +31,6 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	public void doChange() {
 		Expansion largestexp = determineLargestExpansion();
 
-		String newConstruct = "";
-		for (IASTStatement statement : largestexp.getStatements()) {
-			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(statement)) {
-				if (!pragma.equals(getPragma()))
-					newConstruct += pragma.getRawSignature() + System.lineSeparator();
-			}
-			if (statement.equals(getStatement())) {
-				newConstruct += decompound(statement.getRawSignature()) + System.lineSeparator();
-			} else {
-				newConstruct += statement.getRawSignature() + System.lineSeparator();
-			}
-		}
-
-		newConstruct = getPragma().getRawSignature() + System.lineSeparator() + compound(newConstruct);
-
 		this.remove(getPragma());
 
 		IASTStatement[] exparr = largestexp.getStatements();
@@ -58,9 +43,17 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		
 		this.insertBefore(exparr[0], "{" + NL);
 		
-		insertNewPragma(exparr);
+		List<IASTComment> commentsWithPragma = new ArrayList<IASTComment>();
+		for(IASTComment comment : getStatement().getTranslationUnit().getComments()) {
+			if(comment.getFileLocation().getStartingLineNumber() == getPragma().getFileLocation().getStartingLineNumber()) {
+				commentsWithPragma.add(comment);
+				this.remove(comment);
+			}
+		}
+		insertNewPragma(exparr, commentsWithPragma);
 		
 		this.insertAfter(exparr[exparr.length - 1], NL + "}");
+		
 		finalizeChanges();
 	}
 
@@ -88,7 +81,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		return largestexp;
 	}
 	
-	private void insertNewPragma(IASTStatement[] exparr) {
+	private void insertNewPragma(IASTStatement[] exparr,List<IASTComment> comments) {
 
 		class DeclaratorRemover extends ASTVisitor {
 
@@ -183,7 +176,11 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		} catch (Exception e) {
 			System.err.println("Failed to parse data construct");
 			e.printStackTrace();
-			this.insertBefore(exparr[0], getPragma().getRawSignature() + NL);
+			String pragma = getPragma().getRawSignature();
+			for(IASTComment comment : comments) {
+				pragma += " " + comment.getRawSignature();
+			}
+			this.insertBefore(exparr[0], pragma + NL);
 			return;
 		}
 
@@ -191,7 +188,11 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			construct.accept(new DeclaratorRemover(declarator));
 		}
 		
-		this.insertBefore(exparr[0], construct.toString() + NL);
+		String pragma = construct.toString();
+		for(IASTComment comment : comments) {
+			pragma += " " + comment.getRawSignature();
+		}
+		this.insertBefore(exparr[0], pragma + NL);
 		
 	}
 	

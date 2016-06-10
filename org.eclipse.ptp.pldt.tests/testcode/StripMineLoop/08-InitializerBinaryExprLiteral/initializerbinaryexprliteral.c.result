@@ -6,7 +6,7 @@ int main() {
 	int a[N];
 	int i;
 	for (int i_0 = 1; i_0 < N; i_0 += 6) {
-		for (i = i_0; (i < i_0 + 6 && i < N); i += 3) {/*<<<<< 8,1,12,1,6,pass*/
+		for (i = i_0; (i < i_0 + 6 && i < N); i += 3) { /*<<<<< 8,1,12,1,6,pass*/
 			a[i] = 0;
 		}
 	}

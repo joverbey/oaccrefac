@@ -18,6 +18,11 @@ public class InferCreate extends InferDataTransfer {
 		infer();
 	}
 	
+	public InferCreate(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
+		super(rd, construct, accIgnore);
+		infer();
+	}
+	
 	public InferCreate(IASTStatement... construct) {
 		super(construct);
 		infer();

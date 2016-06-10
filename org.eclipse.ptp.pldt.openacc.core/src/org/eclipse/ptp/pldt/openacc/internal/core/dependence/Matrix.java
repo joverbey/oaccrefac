@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.core.dependence;
 
+import static org.eclipse.ptp.pldt.openacc.internal.core.dependence.FourierMotzkinEliminator.EPSILON;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -245,7 +247,7 @@ public final class Matrix {
      */
     public void divideRowByColIndex(int rowIndex, int colIndex) {
         double value = Math.abs(getValueAtMatrixIndex(rowIndex, colIndex));
-        if (value == 0)
+        if (value < EPSILON)
             return;
         for (int i = 0; i < getRow(rowIndex).length; i++) {
             getRow(rowIndex)[i] = getRow(rowIndex)[i] / value;

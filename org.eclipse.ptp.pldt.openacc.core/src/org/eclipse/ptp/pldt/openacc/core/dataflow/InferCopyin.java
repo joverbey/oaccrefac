@@ -15,6 +15,11 @@ public class InferCopyin extends InferDataTransfer {
 		infer();
 	}
 	
+	public InferCopyin(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
+		super(rd, construct, accIgnore);
+		infer();
+	}
+	
 	public InferCopyin(IASTStatement... construct) {
 		super(construct);
 		infer();

@@ -1,7 +1,7 @@
 int main() {
     int a, b, d;
 
-    for (int i = 0; i < 100; i++) { /*<<<<< 4,1,9,1,pass*/
+    for (int i = 0; i < 100; i++) { /*<<<<< 4,1,9,1,fail*/
         a = 5;
         int c = 5;
         d = c;
