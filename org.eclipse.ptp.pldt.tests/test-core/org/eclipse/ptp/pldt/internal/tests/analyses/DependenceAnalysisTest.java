@@ -60,6 +60,21 @@ public class DependenceAnalysisTest extends TestCase {
                 "ANTI 4 -> 4 [*]" };
         assertDependencesEqual(expected, stmt);
     }
+    
+    public void testScalarAssignmentsDeclaredInLoop() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  for (int i = 0; i < 10; i++) {\n" +
+                /* 3 */ "    int v = 1;\n" +
+                /* 4 */ "    v = v + 1;\n" +
+                /* 5 */ "  }\n" +
+                /* 6 */ "}");
+        String[] expected = new String[] { //
+                "FLOW 3 -> 4 [=]", //
+                "OUTPUT 3 -> 4 [=]", //
+                "FLOW 4 -> 4 [=]", //
+                "ANTI 4 -> 4 [=]" };
+        assertDependencesEqual(expected, stmt);
+    }
 
     public void testArrayAssignments() throws Exception {
         IASTStatement stmt = ASTUtil.parseStatement("{\n" +
@@ -92,20 +107,63 @@ public class DependenceAnalysisTest extends TestCase {
                 /* 3 */ "  for (int i = 0; i < 10; i++) {\n" +
                 /* 4 */ "    array[i] = scalar;\n" +
                 /* 5 */ "    array[i] = array[i] + 1;\n" +
-                /* 6 */ "}");
+                /* 6 */ "  }\n" +
+                /* 7 */ "}");
         String[] expected = new String[] { //
                 "FLOW 2 -> 4 []", //
                 "FLOW 2 -> 5 []", //
                 "OUTPUT 2 -> 4 []", //
                 "OUTPUT 2 -> 5 []", //
                 "FLOW 4 -> 5 [=]", //
-                "OUTPUT 4 -> 4 [=]", //
                 "OUTPUT 4 -> 5 [=]", //
                 "FLOW 5 -> 5 [=]", //
                 "OUTPUT 5 -> 4 [=]", //
-                "OUTPUT 5 -> 5 [=]", //
                 "ANTI 5 -> 4 [=]", //
                 "ANTI 5 -> 5 [=]", //
+                };
+        assertDependencesEqual(expected, stmt);
+    }
+    
+    public void testArrayAssignmentsDeclaredInLoop() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int scalar = 1;\n" +
+                /* 3 */ "  for (int i = 0; i < 10; i++) {\n" +
+                /* 4 */ "    int array[10];\n" +
+                /* 5 */ "    array[i] = scalar;\n" +
+                /* 6 */ "    array[i + 1] = array[i] + 1;\n" +
+                /* 7 */ "  }\n" +
+                /* 8 */ "}");
+        String[] expected = new String[] { //
+                "FLOW 2 -> 5 []", //
+                "OUTPUT 4 -> 5 [=]", //
+                "OUTPUT 4 -> 6 [=]", //
+                "FLOW 4 -> 6 [=]", //
+                "FLOW 5 -> 6 [=]", //
+                "ANTI 6 -> 5 [=]", //
+                };
+        assertDependencesEqual(expected, stmt);
+    }
+    
+    public void testArrayAssignmentsDeclaredInOuterLoop() throws Exception {
+        IASTStatement stmt = ASTUtil.parseStatement("{\n" +
+                /* 2 */ "  int scalar = 1;\n" +
+                /* 3 */ "  for (int i = 0; i < 10; i++) {\n" +
+                /* 4 */ "      int array[10][10][10];\n" +
+                /* 5 */ "      for (int j = 0; j < 10; j++) {\n" +
+                /* 6 */ "          for (int k = 0; k < 10; k++) {\n" +
+                /* 7 */ "              array[i][j][k] = scalar;\n" +
+                /* 8 */ "          }\n" +
+                /* 9 */ "          array[i + 1][j][2] = array[i][j][2] + 1;\n" +
+                /* 0 */ "      }\n" +
+                /* 1 */ "  }\n" +
+                /* 2 */ "}");
+        String[] expected = new String[] { //
+                "FLOW 2 -> 7 []", //
+                "OUTPUT 4 -> 7 [=]", //
+                "OUTPUT 4 -> 9 [=]", //
+                "FLOW 4 -> 9 [=]", //
+                "FLOW 7 -> 9 [=, =]", //
+                "ANTI 9 -> 7 [=, =]", //
                 };
         assertDependencesEqual(expected, stmt);
     }
