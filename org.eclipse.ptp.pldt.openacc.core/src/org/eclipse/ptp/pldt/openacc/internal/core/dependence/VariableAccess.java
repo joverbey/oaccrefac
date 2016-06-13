@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -23,6 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceType;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class VariableAccess implements Comparable<VariableAccess> {
     private final IASTNode variable;
@@ -53,6 +55,10 @@ public class VariableAccess implements Comparable<VariableAccess> {
         return this.binding.equals(that.binding);
     }
 
+    public IBinding getBinding() {
+    	return binding;
+    }
+    
     public IASTNode getVariableName() {
         return variable;
     }
@@ -94,8 +100,22 @@ public class VariableAccess implements Comparable<VariableAccess> {
         }
         return commonLoops;
     }
-
-    private List<IASTForStatement> getEnclosingLoops() {
+    
+    public boolean isDeclaredInEnclosingLoop() {
+    	List<IASTForStatement> loops = getEnclosingLoops();
+    	for(IASTForStatement loop : loops) {
+    		for(IASTDeclarator decl : ASTUtil.find(loop, IASTDeclarator.class)) {
+				if (decl.getName().resolveBinding().equals(binding)
+						&& ASTUtil.findNearestAncestor(decl, IASTForStatement.class)
+								.equals(ASTUtil.findNearestAncestor(variable, IASTForStatement.class))) {
+					return true;
+				}
+    		}
+    	}
+    	return false;
+    }
+    
+    public List<IASTForStatement> getEnclosingLoops() {
         List<IASTForStatement> enclosingLoops = new LinkedList<IASTForStatement>();
         for (IASTNode node = variable.getParent(); node != null; node = node.getParent()) {
             if (node instanceof IASTForStatement) {
@@ -160,6 +180,8 @@ public class VariableAccess implements Comparable<VariableAccess> {
                 sb.append("]");
             }
         }
+        sb.append(" at ");
+        sb.append(getEnclosingStatement().getRawSignature());
         return sb.toString();
     }
 
