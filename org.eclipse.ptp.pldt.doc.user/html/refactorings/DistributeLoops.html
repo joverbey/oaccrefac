@@ -13,13 +13,13 @@ DistributeLoops
 <li>2. The resulting Loop.</li>
 <img src="../images/refactorings/DistributeLoops/DistributeLoops2.png">
 </ul>
-<p><b>Use:</b></p>
+<p><b>Use: Distribution can be used to break down loops to achieve a better utilization of locality reference.</b></p>
 
 <p><b>Restrictions:</b></p>
 <ul>
 <li>1. Loop body must contatin two statements.<li/>
 <li>2.Loop-carried anti-dependence in the less-than direction can cause refactored code to produce different results.<li/>
-<li>3.As of now, loop cannot have any pragma statements on it.<li/>
+<li>3.As of now, loop cannot have any pragma statements attached to it.<li/>
 </ul>
 
 </html>

@@ -4,7 +4,7 @@
 TileLoops
 </title>
 
-<p><b>Description:</b> Executes a Strip Mine and Interchange on a two-dimensional iteration to then iterate in smaller rectangles or tiles.</p>
+<p><b>Description:</b> Executes a Strip Mine and Interchange on a two-dimensional iteration to then iterate in in blocks.</p>
 
 <p><b>Example:</b>
 <ul>
@@ -15,12 +15,13 @@ TileLoops
 <li>3. The resulting for loop.</li>
 <img src="../images/refactorings/Tiling/Tiling3.png">
 </ul>
-<p><b>Use:</b></p>
+<p><b>Use:</b> Ensures that data used in a loop is kept in the cache until it needs to be reused and eliminates cache size requirements.</p>
 
 <p><b>Restrictions:</b></p>
 <ul>
 <li>1. Must be a two-dimensional perfectly nested loop structure<li/>
 <li>2. Loop may not have a pragma attached to it.<li/>
-<li>3. In restricting it to two-dimensional perfect loop nests, it shares the weird interchange loops dependence condition.
+<li>3. The selected loop cannot carry dependence in the less than direction and be in the greater than direction after interchange as occurred.
+<li>4. The selected loop cannot carry dependence in the greater than direction and be in the less than direction after interchange as occurred.
 </ul>
 </html>

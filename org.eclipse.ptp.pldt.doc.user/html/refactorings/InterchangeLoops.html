@@ -15,11 +15,12 @@ InterchangeLoops
 <li>3. The resulting for loop.</li>
 <img src="../images/refactorings/InterchangeLoops/LoopInterchange3.png">
 </ul>
-<p><b>Use:</b></p>
+<p><b>Use:</b> Interchange can improve memory access time by accessing the same block of memory all at the same time instead of coming back to it over and over and having to reaccess the memory block.</p>
 
 <p><b>Restrictions:</b></p>
 <ul>
 <li>1. The selected loops must be perfectly nested.<li/>
-<li>2. WEIRD THING.
+<li>2. The selected loop cannot carry dependence in the less than direction and be in the greater than direction after interchange as occurred.
+<li>3. The selected loop cannot carry dependence in the greater than direction and be in the less than direction after interchange as occurred.
 </ul>
 </html>
