@@ -147,22 +147,22 @@
          </menu>
          <!-- Refactorings to introduce new OpenACC directives -->
          <action
+               class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroAtomicDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceOpenACCAtomic"
+               label="Introduce OpenACC &amp;Atomic"
+               menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccIntroGroup"
+               tooltip="Introduces an OpenACC atomic construct">
+         </action>
+         <action
                class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroOpenACCDataConstructDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceDataConstructDelegate"
-               label="Intro &amp;Data Construct"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceOpenACCDataConstruct"
+               label="Introduce OpenACC &amp;Data Construct"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccIntroGroup"
                tooltip="Introduces an OpenACC data construct">
          </action>
          <action
-               class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroOpenACCDefaultNoneDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.IntroDefaultNoneDelegate"
-               label="Intro Default None"
-               menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccIntroGroup"
-               tooltip="Introduces a default(none) clause to an OpenACC pragma directive">
-         </action>
-         <action
                class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroOpenACCLoopDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCLoopDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceOpenACCLoop"
                label="Introduce OpenACC &amp;Loop"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccIntroGroup"
                tooltip="Adds an OpenACC parallel pragma before a for-loop">
@@ -170,14 +170,14 @@
          <!-- Refactorings to modify existing OpenACC directives -->
          <action
                class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.MergeDataConstructsDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.MergeDataConstructsDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.MergeDataConstructs"
                label="&amp;Merge Data Constructs"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccModifyGroup"
                tooltip="Merges two adjacent data constructs">
          </action>
          <action
                class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.ExpandDataConstructDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.ExpandDataConstructDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.ExpandDataConstruct"
                label="&amp;Expand Data Construct"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccModifyGroup"
                tooltip="Expands a data construct as much as possible">
@@ -232,13 +232,6 @@
                label="&amp;Analyze Loop"
                menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccDebugGroup"
                tooltip="Performs a dependence analysis on a loop">
-         </action>
-         <action
-               class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroAtomicsDelegate"
-               id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceAtomicsDelegate"
-               label="&amp;Introduce OpenACC Atomics"
-               menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccGroup"
-               tooltip="Makes a variable atomic">
          </action>
       </actionSet>
    </extension>

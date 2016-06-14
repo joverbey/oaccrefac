@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -120,6 +120,17 @@ public class ASTUtil {
 		}
 		return null;
 	}
+	
+//	public static IASTNode findNearestAncestor(IASTNode startingNode, Class<?>... clazzes) {
+//		for (IASTNode node = startingNode.getParent(); node != null; node = node.getParent()) {
+//			for(Class<?> clazz : clazzes) {
+//				if (clazz.isInstance(node)) {
+//					return node;
+//				}
+//			}
+//		}
+//		return null;
+//	}
 
 	/**
 	 * returns <code>true</code> if <code>ancestor</code> is an ancestor of or is the the same node as

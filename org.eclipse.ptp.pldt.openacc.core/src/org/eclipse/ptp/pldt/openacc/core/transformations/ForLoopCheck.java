@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
     	if (containsUnsupportedOp(loop)) {
             status.addFatalError(
-                    "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
+                    "Cannot refactor loops containing break, continue, or goto");
         }
     	doLoopFormCheck(status);
         return status;
@@ -93,12 +93,13 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         return loop.getTranslationUnit();
     }
     
-    private boolean containsUnsupportedOp(IASTForStatement forStmt) {
+    protected boolean containsUnsupportedOp(IASTForStatement forStmt) {
+    	if (!ASTUtil.find(forStmt, IASTGotoStatement.class).isEmpty()) {
+    		return true;
+    	}
     	List<IASTStatement> ctlFlowStmts = new ArrayList<>();
     	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTBreakStatement.class));
     	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTContinueStatement.class));
-    	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTGotoStatement.class));
-    	
     	for (IASTStatement statement : ctlFlowStmts) {
     		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
     			if (!insideInnerWhile(statement) && !insideInnerSwitch(statement)) {

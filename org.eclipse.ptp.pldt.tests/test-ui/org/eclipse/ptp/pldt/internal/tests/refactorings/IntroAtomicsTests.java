@@ -15,13 +15,13 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroAtomicsRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroAtomicRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class IntroAtomicsTests extends RefactoringTest<IntroAtomicsRefactoring> {
+public class IntroAtomicsTests extends RefactoringTest<IntroAtomicRefactoring> {
     
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
@@ -30,11 +30,11 @@ public class IntroAtomicsTests extends RefactoringTest<IntroAtomicsRefactoring> 
 
     public IntroAtomicsTests(String description, File fileContainingMarker, int markerOffset, String markerText)
             throws Exception {
-        super(IntroAtomicsRefactoring.class, fileContainingMarker, markerOffset, markerText);
+        super(IntroAtomicRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(IntroAtomicsRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroAtomicRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
     }
     

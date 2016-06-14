@@ -21,13 +21,9 @@ public class ButtonSelectionListener implements SelectionListener, ValueChangedL
 	
 	private ForLoopRefactoring refac;
 	protected Button listenButton;
-	private NumberInputComposite stringToChange;
-	private String label1, label2;
 	
-	public ButtonSelectionListener(ForLoopRefactoring refac, String label1, String label2) {
+	public ButtonSelectionListener(ForLoopRefactoring refac) {
 		this.refac = refac;
-		this.label1 = label1;
-		this.label2 = label2;
 	}
 	
 	public ButtonSelectionListener() {
@@ -42,16 +38,10 @@ public class ButtonSelectionListener implements SelectionListener, ValueChangedL
 	public void widgetSelected(SelectionEvent e) {
 		if (listenButton.getSelection()) {
 			refac.setSecondOption(false);
-			stringToChange.setLabelText(label1);
 		}
 		else {
 			refac.setSecondOption(true);
-			stringToChange.setLabelText(label2);
 		}
-	}
-	
-	public void addLabelChange(NumberInputComposite stringToChange) {
-		this.stringToChange = stringToChange;
 	}
 	
 	@Override

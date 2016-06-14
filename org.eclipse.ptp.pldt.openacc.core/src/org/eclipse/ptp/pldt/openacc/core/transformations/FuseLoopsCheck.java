@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,7 +81,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
         
         IASTName conflict = getNameConflict(first, second);
         if(conflict != null) {
-        	status.addError(String.format("A definition of \"%s\" in the first loop may shadow \"%s\" used in the second loop", conflict.getRawSignature(), conflict.getRawSignature()));
+        	status.addError(String.format("A definition of \"%s\" in the first loop may conflict with \"%s\" used in the second loop", conflict.getRawSignature(), conflict.getRawSignature()));
             return;
         }
         

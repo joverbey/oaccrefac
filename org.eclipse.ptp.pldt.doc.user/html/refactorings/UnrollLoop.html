@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>
+UnrollLoop
+</title>
+
+<h3>Description:</h3>
+<p>Duplicates the body of a loop inside the loop and reduces the number of iterations by the amount of duplications.</p>
+
+<h3>Example:</h3>
+<p>
+<ol>
+<li>Select the desired for loop to be changed and choose Unrolling under the Refactoring menu.</li>
+<img src="../images/refactorings/LoopCutting/LoopCutting1.png">
+<li>Next you will be prompted .</li>
+<img src="../images/refactorings/LoopCutting/LoopCutting2.png">
+<li>The resulting for loop.</li>
+<img src="../images/refactorings/LoopCutting/LoopCutting3.png">
+</ol>
+</p>
+
+<h3>Use:</h3>
+<p>Loop unrolling can decrease performance time regardless of parallelization.  The execution of a for loop is an expensive process that is almost always far more expensive than the loop bodies cost.  Because of this duplicating the for loop body and decreasing number of for loop iterations will have an overall decrease in cost.</p>
+
+<h3>Restrictions:</h3>
+<p>
+<ul>
+<li>Must have constant upper and lower bounds.</li>
+<li>Index variable may not be altered in the loop body.</li>
+<li>Loop body cannot be empty.</li>
+<li>Loop must be a counted loop</li>
+</ul>
+</p>
+</html>

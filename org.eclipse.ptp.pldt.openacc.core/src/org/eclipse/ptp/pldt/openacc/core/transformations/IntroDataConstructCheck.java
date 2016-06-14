@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,13 +13,21 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDoStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -57,9 +65,12 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     	if(!ASTUtil.doesConstructContainAllReferencesToVariablesItDeclares(stmts)) {
     		status.addError("Construct would surround variable declaration and cause scope errors");
     	}
+    	
+    	checkControlFlow(status, getStatements());
+    	
     }
     
-    @Override
+	@Override
     public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
         doReachingDefinitionsCheck(status,
                 new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
@@ -97,4 +108,50 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     	formCheck(status);
     	return status;
     }
+
+	private void checkControlFlow(RefactoringStatus status, IASTStatement... statements) {
+		/*
+		 * if there is a control flow statement, it:
+		 * must not be labeled
+		 * must be within a while/for or must be a break within a switch
+		 */
+		Set<IASTStatement> ctlFlowStmts = new HashSet<IASTStatement>();
+		for (IASTStatement statement : statements) {
+			ctlFlowStmts.addAll(ASTUtil.find(statement, IASTBreakStatement.class));
+			ctlFlowStmts.addAll(ASTUtil.find(statement, IASTContinueStatement.class));
+			ctlFlowStmts.addAll(ASTUtil.find(statement, IASTGotoStatement.class));
+		}
+
+		for (IASTStatement ctlFlow : ctlFlowStmts) {
+			if (ctlFlow instanceof IASTGotoStatement) {
+				status.addError(String.format(
+						"Construct will contain goto statement (line %d) that may cause control flow to leave the construct prematurely",
+						ctlFlow.getFileLocation().getStartingLineNumber()));
+			}
+			IASTForStatement f = ASTUtil.findNearestAncestor(ctlFlow, IASTForStatement.class);
+			IASTWhileStatement w = ASTUtil.findNearestAncestor(ctlFlow, IASTWhileStatement.class);
+			IASTDoStatement d = ASTUtil.findNearestAncestor(ctlFlow, IASTDoStatement.class);
+			if (ctlFlow instanceof IASTContinueStatement) {
+				if ((f == null || !ASTUtil.isAncestor(f, statements))
+						&& (w == null || !ASTUtil.isAncestor(w, statements))
+						&& (d == null || !ASTUtil.isAncestor(d, statements))) {
+					status.addError(String.format(
+							"Construct will contain continue statement (line %d) that may cause control flow to leave the construct prematurely",
+							ctlFlow.getFileLocation().getStartingLineNumber()));
+				}
+			} else if (ctlFlow instanceof IASTBreakStatement) {
+				IASTSwitchStatement s = ASTUtil.findNearestAncestor(ctlFlow, IASTSwitchStatement.class);
+				if ((f == null || !ASTUtil.isAncestor(f, statements))
+						&& (w == null || !ASTUtil.isAncestor(w, statements))
+						&& (d == null || !ASTUtil.isAncestor(d, statements))
+						&& (s == null || !ASTUtil.isAncestor(s, statements))) {
+					status.addError(String.format(
+							"Construct will contain break statement (line %d) that may cause control flow to leave the construct prematurely",
+							ctlFlow.getFileLocation().getStartingLineNumber()));
+				}
+			}
+
+		}
+	}
+
 }

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2016 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Auburn University - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.ptp.pldt.internal.tests.analyses;
 
 import java.util.Map;
@@ -524,6 +534,48 @@ public class InferCreateTests extends TestCase {
 					case 18:
 						assertTrue(containsBinding(creates, stmt, "d"));
 						assertTrue(creates.get(stmt).size() == 1);
+						break;
+					default:
+						//we should be covering every possible case
+						assertTrue(false);
+						break;
+				}
+			}
+		}
+	}
+	
+	public void testVariousNameUses() throws CoreException {
+		IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "#include <stdio.h>                            \n" //1
+                + "#include <stdlib.h>                           \n" //2
+                + "typedef int integer;                          \n" //3
+                + "typedef struct { int x, y; } point_t;         \n" //4
+                + "int main(void) {                              \n" //5
+                + "    int a[10];                                \n" //6
+                + "    {                                         \n" //7
+                + "        #pragma acc parallel loop             \n" //8
+                + "        for (int i = 0; i < 10; i++) {        \n" //9
+                + "            point_t pt;                       \n" //10
+                + "done:                                         \n"
+                + "            a[i] = pt.x = pt.y = (integer)sqrt(1.0);\n"
+                + "        }                                     \n"
+                + "    }                                         \n"
+                + "    return EXIT_SUCCESS;\n"
+                + "}");
+		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
+		IASTStatement[] stmts = outer.getStatements();
+		InferCreate infer = new InferCreate(stmts);
+		Map<IASTStatement, Set<IBinding>> creates = infer.get(); 
+		for(IASTStatement stmt : creates.keySet()) {
+			if(stmt instanceof ArbitraryStatement) {
+				assertTrue(containsBinding(creates, stmt, "a"));
+				assertTrue(creates.get(stmt).size() == 1);
+			}
+			else {
+				switch(stmt.getFileLocation().getStartingLineNumber()) {
+					case 9:
+						assertTrue(creates.get(stmt).isEmpty());
 						break;
 					default:
 						//we should be covering every possible case

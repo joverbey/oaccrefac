@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Auburn University and others.
+ * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,7 +78,7 @@ public class ForStatementInquisitor {
         return statement;
     }
 
-    private static boolean counted;
+    private boolean counted;
 
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
@@ -124,7 +124,6 @@ public class ForStatementInquisitor {
             }
         }
 
-        counted = false;
         try{
         for (String pattern : patterns) {
             IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
