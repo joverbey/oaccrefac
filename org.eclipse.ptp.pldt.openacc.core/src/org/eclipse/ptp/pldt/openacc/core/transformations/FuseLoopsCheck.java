@@ -81,7 +81,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
         
         IASTName conflict = getNameConflict(first, second);
         if(conflict != null) {
-        	status.addError(String.format("A definition of \"%s\" in the first loop may shadow \"%s\" used in the second loop", conflict.getRawSignature(), conflict.getRawSignature()));
+        	status.addError(String.format("A definition of \"%s\" in the first loop may conflict with \"%s\" used in the second loop", conflict.getRawSignature(), conflict.getRawSignature()));
             return;
         }
         
