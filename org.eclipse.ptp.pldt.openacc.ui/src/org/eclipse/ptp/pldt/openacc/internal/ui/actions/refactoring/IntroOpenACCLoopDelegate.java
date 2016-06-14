@@ -42,7 +42,7 @@ public class IntroOpenACCLoopDelegate extends RefactoringActionDelegate {
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, 
         		"Introduce OpenACC Parallel Loop");
         LoopRefactoringWizardPage page = wizard.getInputPage();
-        page.addInputControl("Kernels", new ButtonSelectionListener(refac, null, null));
+        page.addInputControl("Kernels", new ButtonSelectionListener(refac));
         return wizard;
     }
 
