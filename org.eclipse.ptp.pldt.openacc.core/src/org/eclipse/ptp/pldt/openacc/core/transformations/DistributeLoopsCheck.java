@@ -12,6 +12,7 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
@@ -38,6 +39,10 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 			status.addFatalError("Loop distribution can only be applied if there is more than one statement in the loop body.");
 			return;
 		}
+		
+		if (!ASTUtil.find(loop.getBody(), IASTDeclarationStatement.class).isEmpty()) {
+    		status.addError("Loop distribution isolates declaration statement.");
+    	}
 		checkPragma(status);
 	}
 
@@ -60,5 +65,7 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 			status.addFatalError("Can't distribute loop with pragmas.");
 		}
 	}
+	
+	
 
 }
