@@ -93,7 +93,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         return loop.getTranslationUnit();
     }
     
-    private boolean containsUnsupportedOp(IASTForStatement forStmt) {
+    protected boolean containsUnsupportedOp(IASTForStatement forStmt) {
     	List<IASTStatement> ctlFlowStmts = new ArrayList<>();
     	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTBreakStatement.class));
     	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTContinueStatement.class));
