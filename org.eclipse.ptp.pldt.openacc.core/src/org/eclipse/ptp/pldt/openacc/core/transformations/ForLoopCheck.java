@@ -45,7 +45,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
 
     public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
     	if (containsUnsupportedOp(loop)) {
-            status.addFatalError(
+            status.addError(
                     "Cannot refactor loops containing break, continue, or goto");
         }
     	doLoopFormCheck(status);
