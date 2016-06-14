@@ -10,35 +10,52 @@ then
 	exit
 fi
 
-printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParallelLoop\nLoopCutting\nStripMine\nTileLoops\nUnroll\nExpandDataConstruct\n"
+printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParallelLoop\nLoopCutting\nStripMineLoop\nTileLoops\nUnroll\nExpandDataConstruct\n"
 
 read refactoring
-if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "LoopCutting" ] && [ "$refactoring" != "StripMine" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ] && [ "$refactoring" != "ExpandDataConstruct" ]; then
+if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "StripMineLoop" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ] && [ "$refactoring" != "ExpandDataConstruct" ] && [ "$refactoring" != "LoopCutting" ]; then
 	echo "That is not a recognized refactoring, please enter as shown above next time"
 	exit
 fi
 
+if [ "$refactoring" == "DistributeLoops" ]; then
+	refactoring="-distribute"
+fi
+if [ "$refactoring" == "FuseLoops" ]; then
+	refactoring="-fuse"
+fi
+if [ "$refactoring" == "IntroduceKernelsLoop" ]; then
+	refactoring="-kernels"
+fi
+if [ "$refactoring" == "IntroduceParallelLoop" ]; then
+	refactoring="-introduce-loop"
+fi
 if [ "$refactoring" == "InterchangeLoops" ]; then
+	refactoring="-interchange"
 	echo "Enter depth of loop to exchange"
 	read param1
 fi
-if [ "$refactoring" == "LoopCutting" ]; then
-	echo "Enter number cuts"
-	read param1
-fi
-if [ "$refactoring" == "StripMine" ]; then
+if [ "$refactoring" == "StripMineLoop" ]; then
+	refactoring="-strip-mine"
 	echo "Enter number of strips"
 	read param1
 fi
 if [ "$refactoring" == "Unroll" ]; then
+	refactoring="-unroll"
 	echo "Enter number of rolls"
 	read param1
 fi	
 if [ "$refactoring" == "TileLoops" ]; then
+	refactoring="-tile"
 	echo "Enter number of x tiles"
 	read param1
 	echo "Enter number of y tiles"
 	read param2
+fi
+if [ "$refactoring" == "LoopCutting" ]; then
+	refactoring="-tile -cut"
+	echo "Enter number of cuts"
+	read param1
 fi
 
 fileToRefactor=""
@@ -96,10 +113,12 @@ thing=0
 for i in "${nameArray[@]}"
 do
 	echo $i >> ./Scripts/errorlog.txt
-	if [ "$refactoring" == "InterchangeLoops" ] || [ "$refactoring" == "LoopCutting" ]  || [ "$refactoring" == "StripMine" ] || [ "$refactoring" == "Unroll" ]; then
-		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
-	elif [ "$refactoring" == "TileLoops" ]; then
+	if [ "$refactoring" == "-interchange" ] || [ "$refactoring" == "-strip-mine" ] || [ "$refactoring" == "-unroll" ]; then
+		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+	elif [ "$refactoring" == "-tile" ]; then
 		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "$param2" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+	elif [ "$refactoring" == "-tile -cut" ]; then	
+		java -cp $PLDT_CLASSPATH Main "-tile" "-cut" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	else
 		java -cp $PLDT_CLASSPATH Main "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi

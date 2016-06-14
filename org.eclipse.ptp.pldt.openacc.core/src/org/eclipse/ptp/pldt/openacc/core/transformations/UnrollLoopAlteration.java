@@ -145,7 +145,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
     }
 
     @Override
-    protected void doChange() throws DOMException {
+    protected void doChange() {
         this.insertAfter(loop.getBody(), createTrailer(extras));
 
         this.replace(loop, forLoop(getInitializer(), getCondition(condOffset), getIterationExpression(), createBody()));
@@ -162,7 +162,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
      * @return leftover ("extra") iterations inserted after the loop (when the number of iterations is not divisible by
      *         the unrolling factor)
      */
-    private String createTrailer(int extras) throws DOMException {
+    private String createTrailer(int extras) {
         StringBuilder trailer = new StringBuilder();
         for (int i = 0; i < extras; i++) {
             appendModifiedOrigBody(trailer);
@@ -171,7 +171,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         return trailer.toString();
     }
 
-    private void appendModifiedOrigBody(StringBuilder sb) throws DOMException {
+    private void appendModifiedOrigBody(StringBuilder sb) {
         IASTNode[] bodyObjects = getBodyObjects();
         for (IASTNode bodyObject : bodyObjects) {
             if (bodyObject instanceof IASTStatement) {
@@ -182,7 +182,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         }
     }
 
-    private String createBody() throws DOMException {
+    private String createBody() {
         StringBuilder body = new StringBuilder();
         for (int i = 0; i < unrollFactor; i++) {
             appendModifiedOrigBody(body);
@@ -193,7 +193,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         return compound(body.toString());
     }
 
-    private String createLeadingDeclaration() throws DOMException {
+    private String createLeadingDeclaration() {
         // if the init statement is a declaration, move the declaration
         // to outer scope if possible and continue
         if (shouldMoveDeclAboveLoop()) {
@@ -219,7 +219,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         }
     }
 
-    private String getCondition(int condOffset) throws DOMException {
+    private String getCondition(int condOffset) {
         StringBuilder cond = new StringBuilder();
         cond.append(newIndexVariable);
         cond.append(" < ");
@@ -233,7 +233,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         return cond.toString();
     }
 
-    private String getIterationExpression() throws DOMException {
+    private String getIterationExpression() {
         return newIndexVariable + "++";
     }
 

@@ -22,13 +22,9 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
-import org.eclipse.ptp.pldt.openacc.internal.core.Activator;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
@@ -87,20 +83,15 @@ public abstract class SourceAlteration<T extends Check<?>> {
      * happen by using the rewriter being sent from the base class on the AST received by the inherited class'
      * constructor.
      */
-    protected abstract void doChange() throws Exception;
+    protected abstract void doChange();
 
     /**
      * Base change method for all inherited classes. This method does some initialization before calling the inherited
      * class' implemented {@link #doChange(IASTRewrite)} method.
      */
-    public final void change() throws CoreException {
+    public final void change() {
         // FIXME: Eliminate doChange -- subclasses can override change() instead???
-        try {
             doChange();
-        } catch (Exception e) {
-            Activator.log(e);
-            throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
-        }
     }
 
     /**

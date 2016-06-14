@@ -38,7 +38,7 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
     }
 
     @Override
-    protected void doChange() throws Exception {
+    protected void doChange() {
         IASTStatement[] stmts = getStatements();
         ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
         

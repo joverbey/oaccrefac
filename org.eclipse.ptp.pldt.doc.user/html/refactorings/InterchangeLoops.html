@@ -4,22 +4,30 @@
 InterchangeLoops
 </title>
 
-<p><b>Description:</b> When two loops are nested, swaps the loops headers.</p>
+<h3>Description:</h3>
+<p>When two loops are nested, swaps the loops headers.</p>
 
-<p><b>Example:</b>
-<ul>
-<li>1. Select the desired for loop to be changed and choose Interchange under the Refactoring menu.</li>
+<h3>Example:</h3>
+<p>
+<ol>
+<li>Select the desired for loop to be changed and choose Interchange under the Refactoring menu.</li>
 <img src="../images/refactorings/InterchangeLoops/LoopInterchange1.png">
-<li>2. Next you will be prompted for the depth of the loop to be switched.</li>
+<li>Next you will be prompted for the depth of the loop to be switched.</li>
 <img src="../images/refactorings/InterchangeLoops/LoopsInterchange2.png">
-<li>3. The resulting for loop.</li>
+<li>The resulting for loop.</li>
 <img src="../images/refactorings/InterchangeLoops/LoopInterchange3.png">
-</ul>
-<p><b>Use:</b></p>
+</ol>
+</p>
 
-<p><b>Restrictions:</b></p>
+<h3>Use:</h3>
+<p>Interchange can improve memory access time by accessing the same block of memory all at the same time instead of coming back to it over and over and having to reaccess the memory block.</p>
+
+<h3>Restrictions:</h3>
+<p>
 <ul>
-<li>1. The selected loops must be perfectly nested.<li/>
-<li>2. WEIRD THING.
+<li>The selected loops must be perfectly nested.</li>
+<li>The selected loop cannot carry dependence in the less than direction and be in the greater than direction after interchange as occurred.</li>
+<li>The selected loop cannot carry dependence in the greater than direction and be in the less than direction after interchange as occurred.</li>
 </ul>
+</p>
 </html>

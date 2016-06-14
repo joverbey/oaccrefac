@@ -140,6 +140,7 @@ public class Main {
 			}
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 			printUsage();
+			System.err.println(e);
 			System.exit(1);
 		}
 
@@ -182,6 +183,7 @@ public class Main {
         }
         
         String error = refactoring.performAlteration(rw);
+    	//System.err.print(error);
         if (error != null) {
             System.err.printf("Internal error creating change: %s\n", error);
             System.exit(5);
@@ -295,8 +297,8 @@ public class Main {
                             } else {
                                 if (commentLower.contains("autotune") || commentLower.contains("refactor")){
                                     found = statement;
+                                    return PROCESS_ABORT;
                                 }
-                                return PROCESS_ABORT;
                             }
                         }
                     }

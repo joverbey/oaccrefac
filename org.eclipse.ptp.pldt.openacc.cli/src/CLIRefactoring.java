@@ -47,7 +47,7 @@ public abstract class CLIRefactoring<P extends RefactoringParams, C extends Chec
             SourceAlteration<?> xform = createAlteration(rw, check);
             xform.change();
             xform.rewriteAST().perform(new NullProgressMonitor());
-        } catch (CoreException e) {
+        } catch (Exception e) {
             return e.getMessage();
         }
     	return null;

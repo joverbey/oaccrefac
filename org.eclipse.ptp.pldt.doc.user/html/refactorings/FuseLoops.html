@@ -4,21 +4,28 @@
 FuseLoops
 </title>
 
-<p><b>Description:</b>Combines two adjacent loops into one.</p>
+<h3>Description:</h3>
+<p>Combines two adjacent loops into one.</p>
 
-<p><b>Example:</b>
-<ul>
-<li>1. Select the desired for loop to be changed and choose Fusion under the Refactoring menu.</li>
+<h3>Example:</h3>
+</p>
+<ol>
+<li>Select the desired for loop to be changed and choose Fusion under the Refactoring menu.</li>
 <img src="../images/refactorings/Fuse/FuseLoops1.png">
-<li>2. The resulting Loop.</li>
+<li>The resulting Loop.</li>
 <img src="../images/refactorings/Fuse/FuseLoops2.png">
-</ul>
-<p><b>Use:</b></p>
+</ol>
+</p>
 
-<p><b>Restrictions:</b></p>
-</ul></p>
-<li>1. The selected loop must have a for loop directly following it.<li/>
-<li>2. The loop headers must be identical.<li/>
-<li>3. Loops that have a pragma may not be Fused unless both loops have identical pragmas.<li/>
-<ul/>
+<h3>Use:</h3>
+<p>Fusion can be used to combine loops to achieve a better utilization of locality reference.</p>
+
+<h3>Restrictions:</h3>
+<p>
+<ul>
+<li>The selected loop must have a for loop directly following it.</li>
+<li>The loop headers must be identical.</li>
+<li>Loops that have a pragma may not be Fused unless both loops have identical pragmas.</li>
+</ul>
+</p>
 </html>

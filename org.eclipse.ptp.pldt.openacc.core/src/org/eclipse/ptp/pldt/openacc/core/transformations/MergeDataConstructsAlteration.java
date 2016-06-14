@@ -44,7 +44,7 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     }
 
     @Override
-    protected void doChange() throws Exception {
+    protected void doChange() {
 
     	IASTStatement[] statements = concat(ASTUtil.getStatementsIfCompound(getFirstStatement()), ASTUtil.getStatementsIfCompound(getSecondStatement()));
     	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));

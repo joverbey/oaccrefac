@@ -134,10 +134,19 @@ public class DependenceAnalysis {
                         //if the sink is a declaration of the same variable, there is no dependence
                         && !(v2.getEnclosingStatement() instanceof IASTDeclarationStatement)) {
                     DependenceType dependenceType = v1.getDependenceTypeTo(v2);
+                    VariableAccess decl = declaratorInLoopNestFor(v1); //same for v2
                     if (v1.isScalarAccess() || v2.isScalarAccess()) {
                         Direction[] directionVector = new Direction[v1.numEnclosingLoops()];
                         Arrays.fill(directionVector, Direction.ANY);
-                        addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
+                        if(decl == null) {
+                          addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
+                        }
+                        else if(!v1.equals(v2) || decl.getEnclosingLoops().size() != v1.getEnclosingLoops().size()) {
+                        	int v1Decl = v1.getCommonEnclosingLoops(decl).size();
+                        	int v2Decl = v2.getCommonEnclosingLoops(decl).size();
+                        	Arrays.fill(directionVector, 0, Math.min(v1Decl, v2Decl), Direction.EQ);
+                        	addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
+                        }
                     } else {
                         List<IASTForStatement> commonLoops = v1.getCommonEnclosingLoops(v2);
                         List<IBinding> indexVars = DependenceAnalysis.getLoopIndexVariables(commonLoops);
@@ -172,7 +181,10 @@ public class DependenceAnalysis {
                                 writeCoefficients, readCoefficients, otherVars.size());
                         Set<Direction[]> dvs = dht.getPossibleDependenceDirections();
                         for (Direction[] directionVector : dvs) {
-                            addDependence(new DataDependence(v1, v2, directionVector, dependenceType));
+                        	DataDependence dep = new DataDependence(v1, v2, directionVector, dependenceType);
+                            if(!(v1.equals(v2) && dep.isLoopIndependent()) && !carriedByLoopContainingDeclaration(directionVector, decl)) {
+                            	addDependence(dep);
+                            }
                         }
                     }
                 }
@@ -185,20 +197,36 @@ public class DependenceAnalysis {
         }
     }
     
-    /**
-     * Checks if a statement reaches another.
-     * 
-     * @param write Write statement.
-     * @param read Read statement.
-     * @return false if the statements are not a read and a write, respectively.
-     */
-    public boolean reaches(VariableAccess write, VariableAccess read) {
-        for(DataDependence dep : getDependences()) {
-            if(dep.getAccess1().equals(write) && dep.getAccess2().equals(read) && dep.getType() == DependenceType.FLOW) {
-                return true;
-            }
-        }
-        return false;
+    private boolean carriedByLoopContainingDeclaration(Direction[] directionVector, VariableAccess decl) {
+    	if(decl == null) {
+    		return false;
+    	}
+    	List<IASTForStatement> declLoops = decl.getEnclosingLoops();
+    	for(int i = 0; i < declLoops.size(); i++) {
+    		if(directionVector[i] != Direction.EQ) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
+	private VariableAccess declaratorInLoopNestFor(VariableAccess use) {
+    	List<IASTForStatement> loops = use.getEnclosingLoops();
+    	for(IASTForStatement loop : loops) {
+    		for(IASTDeclarator decl : ASTUtil.find(loop, IASTDeclarator.class)) {
+				if (decl.getName().resolveBinding().equals(use.getBinding())) {
+					for(VariableAccess v : variableAccesses) {
+						if(v.bindsTo(use.getBinding())) {
+							return v;
+						}
+						else {
+							return new VariableAccess(true, decl.getName());
+						}
+					}
+				}
+    		}
+    	}
+    	return null;
     }
     
     private boolean writesToIndex(VariableAccess write) {
