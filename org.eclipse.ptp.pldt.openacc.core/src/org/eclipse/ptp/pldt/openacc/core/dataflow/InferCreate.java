@@ -18,6 +18,8 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IField;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
@@ -144,7 +146,10 @@ public class InferCreate extends InferDataTransfer {
 	private Set<IBinding> varsInConstruct(IASTStatement statement) {
 		Set<IBinding> vars = new HashSet<IBinding>();
 		for(IASTName name : ASTUtil.find(statement, IASTName.class)) {
-			vars.add(name.resolveBinding());
+			IBinding binding = name.resolveBinding();
+			if(binding instanceof IVariable && !(binding instanceof IField)) {
+				vars.add(name.resolveBinding());
+			}
 		}
 		return vars;
 	}
