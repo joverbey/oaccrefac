@@ -1,23 +1,23 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 
 public abstract class SourceFileAlteration<T extends SourceFileCheck<?>> extends SourceAlteration<T> {
     
-    private List<IASTPreprocessorPragmaStatement> statements;
-    private int offset;
-    private int length;
+    private Map<IASTPreprocessorPragmaStatement, List<IASTForStatement>> pragmas;
     
     public SourceFileAlteration(IASTRewrite rewriter, T check) {
         super(rewriter, check);
-        this.statements = check.getStatements();
+        this.pragmas = check.getPragmas();
         
     }
     
-    public List<IASTPreprocessorPragmaStatement> getStatements() {
-        return statements;
+    public Map<IASTPreprocessorPragmaStatement, List<IASTForStatement>> getPragmas() {
+        return pragmas;
     }
 
 }

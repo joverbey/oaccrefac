@@ -294,6 +294,29 @@ public class ForStatementInquisitor {
         }
         return result;
     }
+    
+    public List<IASTForStatement> getLoopHeaders() {
+    	return getLoopHeaders(statement);
+    }
+    
+    private static List<IASTForStatement> getLoopHeaders(IASTForStatement outerLoop) {
+    	List<IASTForStatement> result = new LinkedList<IASTForStatement>();
+    	result.add(outerLoop);
+    	
+    	if (outerLoop.getBody() instanceof IASTCompoundStatement) {
+    		IASTNode[] children = outerLoop.getBody().getChildren();
+    		for (IASTNode node : children) {
+    			if (node instanceof IASTForStatement) {
+    				result.addAll(getLoopHeaders((IASTForStatement)node));
+    			}
+    		}
+    	}
+    	else if (outerLoop.getBody() instanceof IASTForStatement) {
+    		result.addAll(getLoopHeaders((IASTForStatement)outerLoop.getBody()));
+    	}
+    	
+    	return result;
+    }
 
     /**
      * Returns whether or not the loop and all of its subloops are perfectly nested 

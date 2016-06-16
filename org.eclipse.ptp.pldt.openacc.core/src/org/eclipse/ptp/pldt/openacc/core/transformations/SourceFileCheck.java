@@ -1,17 +1,19 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 
 public abstract class SourceFileCheck<T extends RefactoringParams> extends Check<T> {
-    private final List<IASTPreprocessorPragmaStatement> statements;
+    private final Map<IASTPreprocessorPragmaStatement, List<IASTForStatement>> pragmas;
     
-    protected SourceFileCheck(List<IASTPreprocessorPragmaStatement> statements) {
-        this.statements = statements;
+    protected SourceFileCheck(Map<IASTPreprocessorPragmaStatement, List<IASTForStatement>> pragmas) {
+        this.pragmas = pragmas;
     }
     
     protected void doPragmaFormCheck(RefactoringStatus status) { }
@@ -35,7 +37,7 @@ public abstract class SourceFileCheck<T extends RefactoringParams> extends Check
         return status;
     } 
     
-    public List<IASTPreprocessorPragmaStatement> getStatements() {
-        return statements;
+    public Map<IASTPreprocessorPragmaStatement, List<IASTForStatement>> getPragmas() {
+        return pragmas;
     }
 }

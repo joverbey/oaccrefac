@@ -17,7 +17,7 @@ import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.OpenACCToOpenMPLoopDirectiveRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.ConvertToOpenMPPragmaRefactoring;
 
 
 /**
@@ -27,11 +27,11 @@ import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.OpenACCToOpenMPLoop
  * @see IWorkbenchWindowActionDelegate
  */
 @SuppressWarnings("restriction")
-public class OpenACCToOpenMPDirectiveDelegate extends RefactoringActionDelegate{
+public class ConvertToOpenMPPragmaDelegate extends RefactoringActionDelegate{
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new OpenACCToOpenMPLoopDirectiveRefactoring(wc, selection, project);
+        return new ConvertToOpenMPPragmaRefactoring(wc, selection, project);
     }
 
     @Override
