@@ -60,12 +60,12 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
     private int height;
     private String innerNewName;
     private String outerNewName;
-    private IASTForStatement outer;
     private IASTForStatement inner;
+    private IASTForStatement outer;
 
     public TileLoopsAlteration(IASTRewrite rewriter, int width, int height, String innerNewName,
     		String outerNewName, TileLoopsCheck check) {
-        super(rewriter, 0, "", check);
+        super(rewriter, check);
         this.width = width;
         this.height = height;
         this.innerNewName = innerNewName;
@@ -206,25 +206,5 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
         finalizeChanges();
 
     }
-
-	@Override
-	protected String getOuterCond(String newName, String compOp, String ub, int numValue) {
-		return null;
-	}
-
-	@Override
-	protected String getOuterIter(String newName, int numFactor) {
-		return null;
-	}
-
-	@Override
-	protected String getInnerCond(String indexVar, String newName, int numFactor, String compOp, String ub) {
-		return null;
-	}
-
-	@Override
-	protected String getInnerIter(IASTForStatement loop, String indexVar, String ub, int NumValue) {
-		return null;
-	}
 
 }

@@ -24,7 +24,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 
 public class StripMineLoopRefactoring extends ForLoopRefactoring {
 
-    private int numFactor = -1;
+    private int stripFactor = -1;
     private String newName = "";
     private StripMineCheck stripCheck;
 
@@ -33,7 +33,7 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     }
 
     public void setStripFactor(int factor) {
-        numFactor = factor;
+        stripFactor = factor;
     }
     
     public void setNewName(String name) {
@@ -43,11 +43,11 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
 		stripCheck = new StripMineCheck(getLoop());
-        stripCheck.performChecks(status, pm, new StripMineParams(numFactor, newName));
+        stripCheck.performChecks(status, pm, new StripMineParams(stripFactor, false, false, newName, null));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, numFactor, newName, stripCheck).change();
+        new StripMineAlteration(rewriter, stripFactor, false, false, newName, null, stripCheck).change();
     }
 }
