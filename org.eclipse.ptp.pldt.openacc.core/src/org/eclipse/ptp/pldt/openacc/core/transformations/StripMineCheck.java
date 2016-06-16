@@ -49,7 +49,7 @@ public class StripMineCheck extends AbstractTileLoopsCheck {
         // strip mine because the refactoring will change behavior
         int iterator = inq.getIterationFactor();
         if (params.getNumFactor() % iterator != 0 || params.getNumFactor() <= iterator) {
-            status.addFatalError("Strip mine factor must be greater than and "
+            status.addError("Strip mine factor must be greater than and "
                     + "divisible by the intended loop's iteration factor.");
             return;
         }

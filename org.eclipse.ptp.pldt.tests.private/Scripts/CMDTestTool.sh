@@ -25,7 +25,7 @@ if [ "$refactoring" == "FuseLoops" ]; then
 	refactoring="-fuse"
 fi
 if [ "$refactoring" == "IntroduceKernelsLoop" ]; then
-	refactoring="-kernels"
+	refactoring="-introduce-loop -kernels"
 fi
 if [ "$refactoring" == "IntroduceParallelLoop" ]; then
 	refactoring="-introduce-loop"
@@ -119,6 +119,8 @@ do
 		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "$param2" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "-tile -cut" ]; then	
 		java -cp $PLDT_CLASSPATH Main "-tile" "-cut" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+	elif [ "$refactoring" == "-introduce-loop -kernels" ]; then	
+		java -cp $PLDT_CLASSPATH Main $refactoring $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	else
 		java -cp $PLDT_CLASSPATH Main "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi

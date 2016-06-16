@@ -124,7 +124,6 @@ public class ForStatementInquisitor {
             }
         }
 
-        try{
         for (String pattern : patterns) {
             IASTForStatement orig = (IASTForStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTForStatement patternAST = orig.copy(CopyStyle.withoutLocations);
@@ -133,12 +132,7 @@ public class ForStatementInquisitor {
             if (ASTMatcher.unify(patternAST, statement) != null) {
                 return true;
             }
-        }
-
-        } catch(IllegalStateException e){
-        	e.getMessage();
-        	System.exit(4);
-        }
+        }    
         return false;
 	}
 
