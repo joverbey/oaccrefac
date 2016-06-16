@@ -110,13 +110,20 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 		}
 
 		if (upperBound == null) {
-			status.addFatalError("Can't determine loop upper bound.");
+			status.addFatalError("Can't determine loop upper bound");
 			return;
 		}
 
 		// If we are unrolling more than the number of times the loop will
 		// run (upper bound - lower bound), we can't do the refactoring.
-		long loopRunTimes = upperBound.longValue() - ForStatementInquisitor.getInquisitor(loop).getLowerBound().longValue();
+		ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
+		Long lbo = inq.getLowerBound();
+		if(lbo == null){
+			status.addFatalError("Can't determine loop lower bound");
+			return;
+		}
+		long lb = lbo.longValue();
+		long loopRunTimes = upperBound.longValue() - lb;
 		if (params.getUnrollFactor() > loopRunTimes) {
 			status.addFatalError("Can't unroll loop more times than the loop runs");
 			return;
