@@ -43,11 +43,11 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
 		stripCheck = new StripMineCheck(getLoop());
-        stripCheck.performChecks(status, pm, new StripMineParams(stripFactor, false, false, newName, null));
+        stripCheck.performChecks(status, pm, new StripMineParams(stripFactor, false, true, newName, null));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, stripFactor, false, false, newName, null, stripCheck).change();
+        new StripMineAlteration(rewriter, stripFactor, false, true, newName, null, stripCheck).change();
     }
 }
