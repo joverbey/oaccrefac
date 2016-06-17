@@ -99,10 +99,7 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 				}
 
 				for (IASTPreprocessorPragmaStatement p : pragmasInLoop) {
-					loopPragma.append(handleParallelRegion(p));
-					
 					loopPragma.append(handleGangAndVectorLoop(p, nestingDepth, isOutermostLoop));
-				
 					loopPragma.append(handleDataClause(p));
 					String parallel = handleParallelClause(p, loop, nestingDepth, isOutermostLoop);
 					if (parallel != null) {
@@ -124,6 +121,34 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 						}
 
 						this.replace(p, pragma(loopPragma.toString()));
+					}
+					else {
+						if (p.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE) && nestingDepth ==1 && !isOutermostLoop) {
+							IASTForStatement vectorLoop = null;
+							
+							for (int i = loops.size() - 2; i > 0; i--) {
+								IASTForStatement outerFor = loops.get(loops.size() - (nestingDepth + 1));
+								ForStatementInquisitor outerInq = ForStatementInquisitor.getInquisitor(outerFor);
+								List<IASTPreprocessorPragmaStatement> pragmasInOuterLoop = outerInq.getLeadingPragmas();
+								if (pragmasInOuterLoop.isEmpty()) {
+									vectorLoop = outerFor;
+									continue;
+								}
+								else if (!pragmasInOuterLoop.isEmpty() && pragmasInOuterLoop.get(0).getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
+									continue;
+								}
+								else if (!pragmasInOuterLoop.isEmpty() && !pragmasInOuterLoop.get(0).getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
+									break;
+								}
+							}
+							if (vectorLoop != null) {
+								StringBuilder innerPragma = new StringBuilder();
+								innerPragma.append(OPENMP_DIRECTIVE + " " + PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE);
+
+								this.insertBefore(vectorLoop, pragma(innerPragma.toString()) + NL);
+							}
+							
+						}	
 					}
 
 					loopPragma = new StringBuilder();
@@ -151,28 +176,55 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 		if (pragma.getRawSignature().contains(PARALLEL_DIRECTIVE))
 			newPragma.append(OPENMP_TARGET_DIRECTIVE + " " + OPENMP_TEAMS_DIRECTIVE + " ");
 
-		else if (pragma.getRawSignature().contains(OPENACC_LOOP_DIRECTIVE))
-			newPragma.append(PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
-
 		return newPragma.toString();
 	}
 
 	private String handleGangAndVectorLoop(IASTPreprocessorPragmaStatement pragma, int depth, boolean isOuter) {
 		StringBuilder newPragma = new StringBuilder();
-		
+		boolean isAllSequential = false;
+		if (isOuter && depth > 1) {
+			isAllSequential = checkInnerSequentialLoop(pragma);
+		}
+	
+		if (pragma.getRawSignature().contains(PARALLEL_DIRECTIVE)) {
+			newPragma.append(OPENMP_TARGET_DIRECTIVE + " " + OPENMP_TEAMS_DIRECTIVE + " ");	
+		}
+			
 		if (pragma.getRawSignature().contains("gang vector"))
 			newPragma.append(OPENMP_DISTRIBUTE_DIRECTIVE + " " + PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
 
 		else if (pragma.getRawSignature().contains("gang"))
 			newPragma.append(OPENMP_DISTRIBUTE_DIRECTIVE + " ");
 
-		else if (depth == 1 && isOuter)
+		else if (depth == 1 && isOuter) //gang vector
 			newPragma.append(OPENMP_DISTRIBUTE_DIRECTIVE + " " + PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
 		
-		else if (depth > 1 && isOuter)
+		else if (depth > 1 && isOuter && isAllSequential) //gang vector
+			newPragma.append(OPENMP_DISTRIBUTE_DIRECTIVE + " " + PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
+		
+		else if (depth > 1 && isOuter) //gang
 			newPragma.append(OPENMP_DISTRIBUTE_DIRECTIVE + " ");
-
+		
+		if (pragma.getRawSignature().contains(OPENACC_LOOP_DIRECTIVE) && !isOuter) //vector
+			newPragma.append(PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
+		
 		return newPragma.toString();
+	}
+	
+	private boolean checkInnerSequentialLoop(IASTPreprocessorPragmaStatement pragma) {
+		List<IASTForStatement> loops = pragmas.get(pragma);
+		for (int i = 1; i < loops.size(); i++) {
+			ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loops.get(i));
+			List<IASTPreprocessorPragmaStatement> pragmasInLoop = inq.getLeadingPragmas();
+			if (!pragmasInLoop.isEmpty()) {
+				if (!pragmasInLoop.get(0).getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
+					return false;
+				}
+			}
+			else
+				return false;
+		}
+		return true;
 	}
 
 	private String handleParallelClause(IASTPreprocessorPragmaStatement pragma, IASTForStatement loop, int depth, boolean isOutermostLoop) {
