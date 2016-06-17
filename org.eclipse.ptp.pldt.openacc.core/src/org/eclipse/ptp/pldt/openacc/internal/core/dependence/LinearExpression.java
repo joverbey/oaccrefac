@@ -20,7 +20,6 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
@@ -64,7 +63,7 @@ public class LinearExpression {
 		} else if (expr instanceof IASTIdExpression) {
 			return translate((IASTIdExpression) expr);
 		} else {
-			throw unsupported(expr);
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -89,7 +88,7 @@ public class LinearExpression {
 		}
 
 		default:
-			throw unsupported(expr);
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -103,7 +102,7 @@ public class LinearExpression {
 			return translateExpression(expr.getOperand()).times(-1);
 
 		default:
-			throw unsupported(expr);
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -112,15 +111,11 @@ public class LinearExpression {
 		if (value != null)
 			return new LinearExpression(value.intValue());
 		else
-			throw unsupported(expr);
+			throw new UnsupportedOperationException();
 	}
 
 	private static LinearExpression translate(IASTIdExpression expr) {
 		return new LinearExpression(expr.getName().resolveBinding());
-	}
-
-	private static UnsupportedOperationException unsupported(IASTNode node) {
-		return new UnsupportedOperationException();
 	}
 
 	private final Map<IBinding, Integer> coefficients;
@@ -184,6 +179,14 @@ public class LinearExpression {
 			throw new UnsupportedOperationException();
 	}
 
+	private LinearExpression times(int multiplier) {
+		Map<IBinding, Integer> result = new HashMap<IBinding, Integer>(coefficients.size());
+		for (IBinding var : coefficients.keySet()) {
+			result.put(var, coefficients.get(var) * multiplier);
+		}
+		return new LinearExpression(result, this.constantCoefficient * multiplier);
+	}
+
 	private boolean isConstant() {
 		for (IBinding var : coefficients.keySet()) {
 			if (coefficients.get(var) != 0) {
@@ -191,14 +194,6 @@ public class LinearExpression {
 			}
 		}
 		return true;
-	}
-
-	private LinearExpression times(int multiplier) {
-		Map<IBinding, Integer> result = new HashMap<IBinding, Integer>(coefficients.size());
-		for (IBinding var : coefficients.keySet()) {
-			result.put(var, coefficients.get(var) * multiplier);
-		}
-		return new LinearExpression(result, this.constantCoefficient * multiplier);
 	}
 
 	@Override
