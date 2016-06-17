@@ -253,7 +253,7 @@ public class DependenceAnalysis {
         Set<IBinding> vars = new TreeSet<IBinding>(new BindingComparator());
         for (LinearExpression[] array : exprs) {
             for (LinearExpression e : array) {
-                vars.addAll(e.getCoefficients().keySet());
+                vars.addAll(e.getVariables());
             }
         }
         return vars;
