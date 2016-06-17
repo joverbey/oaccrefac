@@ -214,21 +214,24 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 	private String handlePrivate(IASTPreprocessorPragmaStatement accPragma, IASTForStatement loop) {
 		StringBuilder newPragma = new StringBuilder();
 		String privateVariable = getValue(accPragma, PRIVATE_DIRECTIVE);
-
-		List<IASTExpression> expressions = ASTUtil.find(loop, IASTExpression.class);
-		for (IASTExpression expression : expressions) {
-			if (expression instanceof IASTBinaryExpression) {
-				IASTBinaryExpression expr = (IASTBinaryExpression) expression;
-				if (expr.getOperand1() instanceof IASTIdExpression) {
-					IASTIdExpression name = (IASTIdExpression) expr.getOperand1();
-					if (name.getName().getRawSignature().equals(privateVariable)) {
-						String s = expr.getExpressionType().toString() + " " + privateVariable + ";";
-						this.insertBefore(expr, s);
-						break;
+		String[] privateVariableList = privateVariable.split(",");
+		for (String var : privateVariableList) {
+			List<IASTExpression> expressions = ASTUtil.find(loop, IASTExpression.class);
+			for (IASTExpression expression : expressions) {
+				if (expression instanceof IASTBinaryExpression) {
+					IASTBinaryExpression expr = (IASTBinaryExpression) expression;
+					if (expr.getOperand1() instanceof IASTIdExpression) {
+						IASTIdExpression name = (IASTIdExpression) expr.getOperand1();
+						if (name.getName().getRawSignature().equals(var.trim())) {
+							String s = expr.getExpressionType().toString() + " " + var + ";";
+							this.insertBefore(expr, s);
+							break;
+						}
 					}
 				}
 			}
 		}
+		
 		return newPragma.toString();
 	}
 
