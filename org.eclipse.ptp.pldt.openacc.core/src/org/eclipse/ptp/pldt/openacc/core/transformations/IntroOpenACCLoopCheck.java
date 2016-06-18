@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
@@ -77,6 +78,11 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
     public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
         if (dep != null && dep.hasLevel1CarriedDependence()) {
             status.addError("This loop cannot be parallelized because it carries a dependence.");
+            for (DataDependence d : dep.getDependences()) {
+                if (d.isLoopCarried()) {
+                    status.addError("    " + d.toStringForErrorMessage(), createStatusContextForDependence(d));
+                }
+            }
         }
     }
 
