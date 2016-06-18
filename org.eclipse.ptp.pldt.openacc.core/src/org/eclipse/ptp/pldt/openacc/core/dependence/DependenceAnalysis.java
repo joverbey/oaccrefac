@@ -27,6 +27,7 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTCaseStatement;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTConditionalExpression;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
@@ -38,7 +39,6 @@ import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
@@ -293,8 +293,6 @@ public class DependenceAnalysis {
                 collectAccessesFrom((IASTBreakStatement) stmt);
             } else if (stmt instanceof IASTContinueStatement) {
                 collectAccessesFrom((IASTContinueStatement) stmt);
-            } else if (stmt instanceof IASTGotoStatement) {
-                collectAccessesFrom((IASTGotoStatement) stmt);
             } else if (stmt instanceof IASTWhileStatement) {
                 collectAccessesFrom((IASTWhileStatement) stmt);
             } else {
@@ -314,12 +312,8 @@ public class DependenceAnalysis {
     private void collectAccessesFrom(IASTContinueStatement stmt) {
         // Nothing to do; see ForLoopCheck#containsUnsupportedOp
     }
-    
-    private void collectAccessesFrom(IASTGotoStatement stmt) throws DependenceTestFailure {
-        throw unsupported(stmt); // goto statements might break out of the loop completely, even if inner
-    }
-    
-    private void collectAccessesFrom(IASTCaseStatement stmt) throws DependenceTestFailure {
+
+	private void collectAccessesFrom(IASTCaseStatement stmt) throws DependenceTestFailure {
         collectAccessesFromExpression(stmt.getExpression());
     }
     
@@ -451,8 +445,10 @@ public class DependenceAnalysis {
     }
 
     private void collectAccessesFromExpression(IASTExpression expr) throws DependenceTestFailure {
-        if (expr instanceof IASTBinaryExpression) {
-            collectAccessesFrom((IASTBinaryExpression) expr);
+        if (expr instanceof IASTConditionalExpression) {
+            collectAccessesFrom((IASTConditionalExpression) expr);
+        } else if (expr instanceof IASTBinaryExpression) {
+                collectAccessesFrom((IASTBinaryExpression) expr);
         } else if (expr instanceof IASTUnaryExpression) {
             collectAccessesFrom((IASTUnaryExpression) expr);
         } else if (expr instanceof IASTLiteralExpression) {
@@ -468,6 +464,12 @@ public class DependenceAnalysis {
         } else {
             throw unsupported(expr);
         }
+    }
+
+    private void collectAccessesFrom(IASTConditionalExpression expr) throws DependenceTestFailure {
+        collectAccessesFromExpression(expr.getLogicalConditionExpression());
+        collectAccessesFromExpression(expr.getPositiveResultExpression());
+        collectAccessesFromExpression(expr.getNegativeResultExpression());
     }
 
     private void collectAccessesFrom(IASTBinaryExpression expr) throws DependenceTestFailure {
@@ -488,6 +490,10 @@ public class DependenceAnalysis {
         case IASTBinaryExpression.op_lessEqual:
         case IASTBinaryExpression.op_equals:
         case IASTBinaryExpression.op_notequals:
+        case IASTBinaryExpression.op_logicalAnd:
+        case IASTBinaryExpression.op_logicalOr:
+        case IASTBinaryExpression.op_min:
+        case IASTBinaryExpression.op_max:
             collectAccessesFromExpression(expr.getOperand1());
             collectAccessesFromExpression(expr.getOperand2());
             break;

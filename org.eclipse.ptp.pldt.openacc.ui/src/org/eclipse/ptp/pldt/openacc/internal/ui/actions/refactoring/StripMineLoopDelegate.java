@@ -34,7 +34,7 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final StripMineLoopRefactoring refac = (StripMineLoopRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Strip Mine Loop");
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Strip Mine Loop", true);
         LoopRefactoringWizardPage page = wizard.getInputPage();
         page.addInputControl("Strip Size", new NumberValueChangedListener() {
             @Override

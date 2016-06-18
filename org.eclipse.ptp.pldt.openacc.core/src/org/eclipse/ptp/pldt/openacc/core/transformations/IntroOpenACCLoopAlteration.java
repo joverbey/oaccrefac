@@ -8,35 +8,36 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
+ *     Jacob Neeley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 public class IntroOpenACCLoopAlteration extends ForLoopAlteration<IntroOpenACCLoopCheck> {
+    private final boolean kernels;
+    private final boolean inParallelRegion;
+    private final boolean inKernelsRegion;
 
-	private boolean kernels;
-	private boolean inParallelRegion;
-	
     public IntroOpenACCLoopAlteration(IASTRewrite rewriter, IntroOpenACCLoopCheck check, boolean kernels) {
         super(rewriter, check);
         this.kernels = kernels;
         this.inParallelRegion = check.isInParallelRegion();
+        this.inKernelsRegion = check.isInKernelsRegion();
     }
 
     @Override
     protected void doChange() {
-    	if(inParallelRegion){
-    		int offset = getLoop().getFileLocation().getNodeOffset();
-    		this.insert(offset, pragma("acc loop") + System.lineSeparator());
-    		finalizeChanges();
-    	} else if (kernels) {
-    		int offset = getLoop().getFileLocation().getNodeOffset();
+        if (inParallelRegion || inKernelsRegion){
+            int offset = getLoop().getFileLocation().getNodeOffset();
+            this.insert(offset, pragma("acc loop") + System.lineSeparator());
+            finalizeChanges();
+        } else if (kernels) {
+            int offset = getLoop().getFileLocation().getNodeOffset();
             this.insert(offset, pragma("acc kernels loop"));
             finalizeChanges();
-    	} else {
-    		int offset = getLoop().getFileLocation().getNodeOffset();
-    		this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
-    		finalizeChanges();
-    	}
+        } else {
+            int offset = getLoop().getFileLocation().getNodeOffset();
+            this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
+            finalizeChanges();
+        }
     }
-
 }

@@ -30,7 +30,7 @@ public class InterchangeLoopsDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Interchange Loops");
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Interchange Loops", true);
         final InterchangeLoopsRefactoring refac = (InterchangeLoopsRefactoring) refactoring;
         wizard.getInputPage().addInputControl("Interchange Depth: ", new NumberValueChangedListener() {
             @Override
