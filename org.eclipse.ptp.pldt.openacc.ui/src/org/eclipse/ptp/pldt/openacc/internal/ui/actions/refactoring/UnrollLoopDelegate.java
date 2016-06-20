@@ -31,7 +31,7 @@ public class UnrollLoopDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final UnrollLoopRefactoring refac = (UnrollLoopRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Unroll Loop"); 
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Unroll Loop", true); 
         wizard.getInputPage().addInputControl("Unroll Factor", new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {

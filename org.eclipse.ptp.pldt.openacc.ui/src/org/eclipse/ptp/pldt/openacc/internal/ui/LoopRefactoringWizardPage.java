@@ -56,7 +56,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         	else if (controlListeners.get(i) instanceof ButtonSelectionListener) {
         		if (!hasButtons) {
         			hasButtons = true;
-        			buttons = new ButtonComposite(c, SWT.NONE, "Regular", controlLabels.get(i), 
+        			buttons = new ButtonComposite(c, SWT.NONE, "Parallel", controlLabels.get(i), 
         					(ButtonSelectionListener) controlListeners.get(i));
         		}
         	}
