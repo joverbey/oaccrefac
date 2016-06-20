@@ -46,12 +46,18 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 		String compOp = getOperatorAsString(condExpr);
 		String ub = condExpr.getOperand2().getRawSignature();
 		if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
-			innerInit = String.format("int %s = %s", indexVar, newName);
+			IASTSimpleDeclaration s = (IASTSimpleDeclaration) ((IASTDeclarationStatement) loop.getInitializerStatement()).getDeclaration();
+			innerInit = String.format("%s %s = %s", s.getDeclSpecifier().getRawSignature(), indexVar, newName);
 		} else {
 			innerInit = String.format("%s = %s", indexVar, newName);
 		}
-		innerCond = getInnerCond(indexVar, newName, stripFactor, compOp, ub);
-		innerIter = getInnerIter(loop, indexVar, ub, stripFactor);
+		if(handleOverflow) {
+			innerCond = String.format("%s < %s + %d && %s %s %s", indexVar, newName, stripFactor, indexVar, compOp, ub);
+		}
+		else {
+			innerCond = String.format("%s < %s + %d", indexVar, newName, stripFactor);
+		}
+		innerIter = loop.getIterationExpression().getRawSignature();
 		innerBody = loop.getBody().getRawSignature();
 		if (!(loop.getBody() instanceof IASTCompoundStatement)) {
 			IASTComment[] outerComments = getBodyComments(loop);
@@ -83,8 +89,8 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 			initType = dec.getDeclSpecifier().getRawSignature();
 		}
 		outerInit = String.format("%s %s = %s", initType, newName, initRhs);
-		outerCond = getOuterCond(newName, compOp, ub, stripFactor);
-		outerIter = getOuterIter(newName, stripFactor);
+		outerCond = String.format("%s %s %s", newName, compOp, ub);
+		outerIter = String.format("%s += %d", newName, stripFactor);
 		outer = forLoop(outerInit, outerCond, outerIter, compound(inner));
 		this.replace(loop, outer);
 		finalizeChanges();
@@ -103,23 +109,6 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 			throw new IllegalStateException();
 		}
 		return compOp;
-	}
-
-	protected String getOuterCond(String newName, String compOp, String ub, int numValue) {
-		return String.format("%s %s %s", newName, compOp, ub);
-	}
-
-	protected String getOuterIter(String newName, int numFactor) {
-		return String.format("%s += %d", newName, numFactor);
-	}
-
-	protected String getInnerCond(String indexVar, String newName, int numFactor,
-			String compOp, String ub) {
-		return parenth(String.format("%s <  %s + %d && %s %s %s", indexVar, newName, numFactor, indexVar, compOp, ub));
-	}
-
-	protected String getInnerIter(IASTForStatement loop, String indexVar, String ub, int numValue) {
-		return loop.getIterationExpression().getRawSignature();
 	}
 	
 }

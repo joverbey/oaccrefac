@@ -45,7 +45,7 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
         page.addInputControl("Index Variable Name", new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
-                refac.setNewName(value);
+                refac.setNewNameOuter(value);
             }
         });
         return wizard;

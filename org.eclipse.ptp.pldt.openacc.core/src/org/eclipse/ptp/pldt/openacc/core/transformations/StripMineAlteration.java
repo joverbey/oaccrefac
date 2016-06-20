@@ -44,14 +44,8 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 	private ForLoopAlteration<StripMineCheck> alteration;
 
 	/**
-	 * Constructor. Takes parameters for strip factor and strip depth to tell the refactoring which perfectly nested
-	 * loop to strip mine.
-	 * 
-	 * @author Adam Eichelkraut
-	 * @param rewriter
-	 *            -- rewriter associated with the for loop
-	 * @param stripFactor
-	 *            -- factor for how large strips are
+	 * @param rewriter rewriter associated with the for loop
+	 * @param stripFactor strip size
 	 */
 	public StripMineAlteration(IASTRewrite rewriter, int stripFactor, boolean zeroBased, boolean handleOverflow,
 			String newNameOuter, String newNameInner, StripMineCheck check) {

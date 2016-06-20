@@ -44,7 +44,7 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
         	status.addWarning("Outer index variable name already exists in scope");
         }
         
-        if (params.getNewNameInner() != null && ASTUtil.isNameInScope(params.getNewNameInner(), loop.getScope())) {
+        if (params.shouldBeZeroBased() && ASTUtil.isNameInScope(params.getNewNameInner(), loop.getScope())) {
         	status.addWarning("Inner index variable name already exists in scope");
         }
 

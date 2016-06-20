@@ -13,6 +13,7 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,10 +60,10 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
     /**
      * @return name that doesn't exist in the given scope
      */
-    protected String createNewName(String name, IScope scope) {
+    protected String createNewName(String name, IScope scope, String... blacklist) {
         for (int i = 0; true; i++) {
             String newName = name + "_" + i;
-            if (!ASTUtil.isNameInScope(newName, scope)) {
+            if (!ASTUtil.isNameInScope(newName, scope) && !Arrays.asList(blacklist).contains(newName)) {
                 return newName;
             }
         }
