@@ -254,11 +254,15 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 		if (pragma.getRawSignature().contains(REDUCTION_DIRECTIVE)) {
 			newPragma.append(REDUCTION_DIRECTIVE + "(" + getValue(pragma, REDUCTION_DIRECTIVE) + ") ");
 		}
-
-		if (pragma.getRawSignature().contains(PRIVATE_DIRECTIVE)) {
-			newPragma.append(PRIVATE_DIRECTIVE + "(" + getValue(pragma, PRIVATE_DIRECTIVE) + ") ");
+		
+		if (pragma.getRawSignature().contains("firstprivate")) {
+			newPragma.append("firstprivate" + "(" + getValue(pragma, "firstprivate") + ") ");
 		}
 
+		else if (pragma.getRawSignature().contains(PRIVATE_DIRECTIVE)) {
+			newPragma.append(PRIVATE_DIRECTIVE + "(" + getValue(pragma, PRIVATE_DIRECTIVE) + ") ");
+		}
+		
 		return newPragma.toString();
 	}
 
