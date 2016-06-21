@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Auburn University and others.
+tat * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -339,6 +339,17 @@ public class ASTUtil {
 		Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
 		return pragmas;
 	}
+	
+	public static List<IASTPreprocessorPragmaStatement> getInternalPragmaNodes(IASTStatement statement) {
+		List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
+		for (IASTPreprocessorStatement pre : statement.getTranslationUnit().getAllPreprocessorStatements()) {
+			if (pre instanceof IASTPreprocessorPragmaStatement && doesNodeLexicallyContain(statement, pre)) {
+				pragmas.add((IASTPreprocessorPragmaStatement) pre);
+			}
+		}
+		return pragmas;
+	}
+
 
     public static Map<IASTPreprocessorPragmaStatement, IASTNode> getEnclosingPragmas(IASTStatement statement) {
         Map<IASTPreprocessorPragmaStatement, IASTNode> pragmas = new TreeMap<>(ASTUtil.FORWARD_COMPARATOR);

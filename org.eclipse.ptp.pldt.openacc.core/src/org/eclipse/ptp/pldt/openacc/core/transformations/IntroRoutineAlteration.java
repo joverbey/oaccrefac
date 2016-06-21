@@ -11,7 +11,7 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class IntroRoutineAlteration extends ForLoopAlteration<IntroRoutineCheck> {
+public class IntroRoutineAlteration extends SourceStatementsAlteration<IntroRoutineCheck> {
 
 	public IntroRoutineAlteration(IASTRewrite rewriter, IntroRoutineCheck check) {
 		super(rewriter, check);

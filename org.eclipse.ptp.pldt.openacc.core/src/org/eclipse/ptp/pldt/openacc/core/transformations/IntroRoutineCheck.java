@@ -11,12 +11,38 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import java.util.ArrayList;
+import java.util.List;
 
-public class IntroRoutineCheck extends ForLoopCheck<RefactoringParams> {
+import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.FunctionNode;
 
-	protected IntroRoutineCheck(final IASTForStatement loop) {
-		super(loop);
+public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> {
+
+	public IntroRoutineCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
+		super(statements, statementsAndComments);
 	}
-
+	
+	@Override
+	public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
+		List<IASTFunctionDefinition> definitions = new ArrayList<IASTFunctionDefinition>();
+		for (IASTStatement statement : getStatements()) {
+			for (IASTFunctionCallExpression call : ASTUtil.find(statement, IASTFunctionCallExpression.class)) {
+				IASTFunctionDefinition definition = FunctionNode.findFunctionDefinition(call);
+				if (definition == null) {
+					status.addFatalError("Cannot find function definition.");
+				}
+				definitions.add(definition);
+			}
+		}
+		FunctionNode tree = new FunctionNode(definitions);
+		return null;
+	}
+	
 }
