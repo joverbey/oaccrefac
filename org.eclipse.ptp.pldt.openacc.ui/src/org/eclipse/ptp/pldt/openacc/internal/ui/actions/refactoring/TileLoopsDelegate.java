@@ -33,7 +33,7 @@ public class TileLoopsDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final TileLoopsRefactoring refac = (TileLoopsRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loops");
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loops", true);
         ColumnedLoopRefactoringWizardPage page = wizard.getColumnPage();
         page.addLeftInputControl("Tile Width: ", new NumberValueChangedListener() {
             @Override

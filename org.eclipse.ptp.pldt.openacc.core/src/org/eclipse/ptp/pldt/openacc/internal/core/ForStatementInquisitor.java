@@ -83,21 +83,135 @@ public class ForStatementInquisitor {
     // Patterns of for loops that are acceptable to refactor...
     private static String[] patterns = {
             // Constant upper bound
-            "for (i = 0; i < 1; i++) ;", "for (int i = 0; i < 1; i++) ;", "for (i = 0; i <= 1; i++) ;",
-            "for (int i = 0; i <= 1; i++) ;", "for (i = 0; i < 1; i+=1) ;", "for (int i = 0; i < 1; i+=1) ;",
-            "for (i = 0; i <= 1; i+=1) ;", "for (int i = 0; i <= 1; i+=1) ;", "for (i = 0; i < 1; i=i+1) ;",
-            "for (int i = 0; i < 1; i=i+1) ;", "for (i = 0; i <= 1; i=i+1) ;", "for (int i = 0; i <= 1; i=i+1) ;",
+            "for (i = 0; i < 1; i++) ;", //
+            "for (i = 0; i <= 1; i++) ;", //
+            "for (i = 0; i < 1; i+=1) ;", //
+            "for (i = 0; i <= 1; i+=1) ;", //
+            "for (i = 0; i < 1; i=i+1) ;", //
+            "for (i = 0; i <= 1; i=i+1) ;", //
+            "for (int i = 0; i < 1; i++) ;", //
+            "for (int i = 0; i <= 1; i++) ;", //
+            "for (int i = 0; i < 1; i+=1) ;", //
+            "for (int i = 0; i <= 1; i+=1) ;", //
+            "for (int i = 0; i < 1; i=i+1) ;", //
+            "for (int i = 0; i <= 1; i=i+1) ;", //
+            "for (int32_t i = 0; i < 1; i++) ;", //
+            "for (int32_t i = 0; i <= 1; i++) ;", //
+            "for (int32_t i = 0; i < 1; i+=1) ;", //
+            "for (int32_t i = 0; i <= 1; i+=1) ;", //
+            "for (int32_t i = 0; i < 1; i=i+1) ;", //
+            "for (int32_t i = 0; i <= 1; i=i+1) ;", //
+            "for (uint32_t i = 0; i < 1; i++) ;", //
+            "for (uint32_t i = 0; i <= 1; i++) ;", //
+            "for (uint32_t i = 0; i < 1; i+=1) ;", //
+            "for (uint32_t i = 0; i <= 1; i+=1) ;", //
+            "for (uint32_t i = 0; i < 1; i=i+1) ;", //
+            "for (uint32_t i = 0; i <= 1; i=i+1) ;", //
+            "for (long i = 0; i < 1; i++) ;", //
+            "for (long i = 0; i <= 1; i++) ;", //
+            "for (long i = 0; i < 1; i+=1) ;", //
+            "for (long i = 0; i <= 1; i+=1) ;", //
+            "for (long i = 0; i < 1; i=i+1) ;", //
+            "for (long i = 0; i <= 1; i=i+1) ;", //
+            "for (int64_t i = 0; i < 1; i++) ;", //
+            "for (int64_t i = 0; i <= 1; i++) ;", //
+            "for (int64_t i = 0; i < 1; i+=1) ;", //
+            "for (int64_t i = 0; i <= 1; i+=1) ;", //
+            "for (int64_t i = 0; i < 1; i=i+1) ;", //
+            "for (int64_t i = 0; i <= 1; i=i+1) ;", //
+            "for (uint64_t i = 0; i < 1; i++) ;", //
+            "for (uint64_t i = 0; i <= 1; i++) ;", //
+            "for (uint64_t i = 0; i < 1; i+=1) ;", //
+            "for (uint64_t i = 0; i <= 1; i+=1) ;", //
+            "for (uint64_t i = 0; i < 1; i=i+1) ;", //
+            "for (uint64_t i = 0; i <= 1; i=i+1) ;", //
             // Variable upper bound
-            "for (i = 0; i < j; i++) ;", "for (int i = 0; i < j; i++) ;", "for (i = 0; i <= j; i++) ;",
-            "for (int i = 0; i <= j; i++) ;", "for (i = 0; i < j; i+=1) ;", "for (int i = 0; i < j; i+=1) ;",
-            "for (i = 0; i <= j; i+=1) ;", "for (int i = 0; i <= j; i+=1) ;", "for (i = 0; i < j; i=i+1) ;",
-            "for (int i = 0; i < j; i=i+1) ;", "for (i = 0; i <= j; i=i+1) ;", "for (int i = 0; i <= j; i=i+1) ;",
+            "for (i = 0; i < j; i++) ;", //
+            "for (i = 0; i <= j; i++) ;", //
+            "for (i = 0; i < j; i+=1) ;", //
+            "for (i = 0; i <= j; i+=1) ;", //
+            "for (i = 0; i < j; i=i+1) ;", //
+            "for (i = 0; i <= j; i=i+1) ;", //
+            "for (int i = 0; i < j; i++) ;", //
+            "for (int i = 0; i <= j; i++) ;", //
+            "for (int i = 0; i < j; i+=1) ;", //
+            "for (int i = 0; i <= j; i+=1) ;", //
+            "for (int i = 0; i < j; i=i+1) ;", //
+            "for (int i = 0; i <= j; i=i+1) ;", //
+            "for (int32_t i = 0; i < j; i++) ;", //
+            "for (int32_t i = 0; i <= j; i++) ;", //
+            "for (int32_t i = 0; i < j; i+=1) ;", //
+            "for (int32_t i = 0; i <= j; i+=1) ;", //
+            "for (int32_t i = 0; i < j; i=i+1) ;", //
+            "for (int32_t i = 0; i <= j; i=i+1) ;", //
+            "for (uint32_t i = 0; i < j; i++) ;", //
+            "for (uint32_t i = 0; i <= j; i++) ;", //
+            "for (uint32_t i = 0; i < j; i+=1) ;", //
+            "for (uint32_t i = 0; i <= j; i+=1) ;", //
+            "for (uint32_t i = 0; i < j; i=i+1) ;", //
+            "for (uint32_t i = 0; i <= j; i=i+1) ;", //
+            "for (long i = 0; i < j; i++) ;", //
+            "for (long i = 0; i <= j; i++) ;", //
+            "for (long i = 0; i < j; i+=1) ;", //
+            "for (long i = 0; i <= j; i+=1) ;", //
+            "for (long i = 0; i < j; i=i+1) ;", //
+            "for (long i = 0; i <= j; i=i+1) ;", //
+            "for (int64_t i = 0; i < j; i++) ;", //
+            "for (int64_t i = 0; i <= j; i++) ;", //
+            "for (int64_t i = 0; i < j; i+=1) ;", //
+            "for (int64_t i = 0; i <= j; i+=1) ;", //
+            "for (int64_t i = 0; i < j; i=i+1) ;", //
+            "for (int64_t i = 0; i <= j; i=i+1) ;", //
+            "for (uint64_t i = 0; i < j; i++) ;", //
+            "for (uint64_t i = 0; i <= j; i++) ;", //
+            "for (uint64_t i = 0; i < j; i+=1) ;", //
+            "for (uint64_t i = 0; i <= j; i+=1) ;", //
+            "for (uint64_t i = 0; i < j; i=i+1) ;", //
+            "for (uint64_t i = 0; i <= j; i=i+1) ;", //
             // Simple field reference upper bound (used in Livermore Loops)
-            "for (i = 0; i < j.k; i++) ;", "for (int i = 0; i < j.k; i++) ;", "for (i = 0; i <= j.k; i++) ;",
-            "for (int i = 0; i <= j.k; i++) ;", "for (i = 0; i < j.k; i+=1) ;", "for (int i = 0; i < j.k; i+=1) ;",
-            "for (i = 0; i <= j.k; i+=1) ;", "for (int i = 0; i <= j.k; i+=1) ;", "for (i = 0; i < j.k; i=i+1) ;",
-            "for (int i = 0; i < j.k; i=i+1) ;", "for (i = 0; i <= j.k; i=i+1) ;",
-            "for (int i = 0; i <= j.k; i=i+1) ;", };
+            "for (i = 0; i < j.k; i++) ;", //
+            "for (i = 0; i <= j.k; i++) ;", //
+            "for (i = 0; i < j.k; i+=1) ;", //
+            "for (i = 0; i <= j.k; i+=1) ;", //
+            "for (i = 0; i < j.k; i=i+1) ;", //
+            "for (i = 0; i <= j.k; i=i+1) ;", //
+            "for (int i = 0; i < j.k; i++) ;", //
+            "for (int i = 0; i <= j.k; i++) ;", //
+            "for (int i = 0; i < j.k; i+=1) ;", //
+            "for (int i = 0; i <= j.k; i+=1) ;", //
+            "for (int i = 0; i < j.k; i=i+1) ;", //
+            "for (int i = 0; i <= j.k; i=i+1) ;", //
+            "for (int32_t i = 0; i < j.k; i++) ;", //
+            "for (int32_t i = 0; i <= j.k; i++) ;", //
+            "for (int32_t i = 0; i < j.k; i+=1) ;", //
+            "for (int32_t i = 0; i <= j.k; i+=1) ;", //
+            "for (int32_t i = 0; i < j.k; i=i+1) ;", //
+            "for (int32_t i = 0; i <= j.k; i=i+1) ;", //
+            "for (uint32_t i = 0; i < j.k; i++) ;", //
+            "for (uint32_t i = 0; i <= j.k; i++) ;", //
+            "for (uint32_t i = 0; i < j.k; i+=1) ;", //
+            "for (uint32_t i = 0; i <= j.k; i+=1) ;", //
+            "for (uint32_t i = 0; i < j.k; i=i+1) ;", //
+            "for (uint32_t i = 0; i <= j.k; i=i+1) ;", //
+            "for (long i = 0; i < j.k; i++) ;", //
+            "for (long i = 0; i <= j.k; i++) ;", //
+            "for (long i = 0; i < j.k; i+=1) ;", //
+            "for (long i = 0; i <= j.k; i+=1) ;", //
+            "for (long i = 0; i < j.k; i=i+1) ;", //
+            "for (long i = 0; i <= j.k; i=i+1) ;", //
+            "for (int64_t i = 0; i < j.k; i++) ;", //
+            "for (int64_t i = 0; i <= j.k; i++) ;", //
+            "for (int64_t i = 0; i < j.k; i+=1) ;", //
+            "for (int64_t i = 0; i <= j.k; i+=1) ;", //
+            "for (int64_t i = 0; i < j.k; i=i+1) ;", //
+            "for (int64_t i = 0; i <= j.k; i=i+1) ;", //
+            "for (uint64_t i = 0; i < j.k; i++) ;", //
+            "for (uint64_t i = 0; i <= j.k; i++) ;", //
+            "for (uint64_t i = 0; i < j.k; i+=1) ;", //
+            "for (uint64_t i = 0; i <= j.k; i+=1) ;", //
+            "for (uint64_t i = 0; i < j.k; i=i+1) ;", //
+            "for (uint64_t i = 0; i <= j.k; i=i+1) ;", //
+    };
 
     private ForStatementInquisitor(IASTForStatement statement) {
         this.statement = statement;

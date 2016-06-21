@@ -30,7 +30,7 @@ public class IntroOpenACCDataConstructDelegate extends RefactoringActionDelegate
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopRefactoringWizard(refactoring, "Introduce OpenACC Data Construct");
+        return new LoopRefactoringWizard(refactoring, "Introduce OpenACC Data Construct", false);
     }
 
 }

@@ -94,5 +94,34 @@ public class DataDependence {
         sb.append(']');
         return sb.toString();
     }
+
+    /**
+     * Describes this dependence in language intended to be presented to the end user,
+     * e.g., in an error message.
+     */
+    public String toStringForErrorMessage() {
+        StringBuilder sb = new StringBuilder();
+        String typeString = type.toString().toLowerCase();
+        if (isLoopCarried()) {
+            sb.append("Loop-carried ");
+            sb.append(typeString);
+        } else {
+            sb.append(Character.toUpperCase(typeString.charAt(0)));
+            sb.append(typeString.substring(1));
+        }
+        sb.append(" dependence from line ");
+        sb.append(getStatement1().getFileLocation().getStartingLineNumber());
+        sb.append(" to line ");
+        sb.append(getStatement2().getFileLocation().getStartingLineNumber());
+        sb.append(" ");
+        sb.append('[');
+        for (int i = 0; i < directionVector.length; i++) {
+            if (i > 0)
+                sb.append(", ");
+            sb.append(directionVector[i]);
+        }
+        sb.append(']');
+        return sb.toString();
+    }
     
 }

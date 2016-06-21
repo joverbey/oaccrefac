@@ -19,8 +19,8 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 
 public class InferCopy extends InferDataTransfer {
 	
-	InferCopyin inferCopyin;
-	InferCopyout inferCopyout;
+	private final InferCopyin inferCopyin;
+	private final InferCopyout inferCopyout;
 	
 	public InferCopy(ReachingDefinitions rd, IASTStatement... construct) {
 		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");

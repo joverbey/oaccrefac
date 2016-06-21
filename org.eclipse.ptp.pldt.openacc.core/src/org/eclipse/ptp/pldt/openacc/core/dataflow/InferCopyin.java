@@ -72,8 +72,7 @@ public class InferCopyin extends InferDataTransfer {
 		for(IASTName D : rd.reachingDefinitions(C)) {
 			if(V.equals(D.resolveBinding()) && 
 					tree.isAncestor(D, K) && 
-					!tree.isAncestor(D, C) && 
-					transfers.get(C).contains(D.resolveBinding())) { 
+					!tree.isAncestor(D, C)) { 
 				return false;
 			}
 		}

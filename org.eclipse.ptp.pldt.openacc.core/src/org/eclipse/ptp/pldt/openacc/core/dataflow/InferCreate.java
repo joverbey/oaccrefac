@@ -64,7 +64,7 @@ public class InferCreate extends InferDataTransfer {
     		}
     		else {
     			//can propagate up if all children have it in their create clauses
-    		    //if all children data opt out of data transfer, then there's nothing to make the parent transfer data either
+    		    //if all children opt out of data transfer, then there's nothing to make the parent transfer data either
     			//so propagate the intersection of all child create sets
     			Set<IBinding> all = new HashSet<IBinding>();
     			Set<IBinding> kCreate = new HashSet<IBinding>();

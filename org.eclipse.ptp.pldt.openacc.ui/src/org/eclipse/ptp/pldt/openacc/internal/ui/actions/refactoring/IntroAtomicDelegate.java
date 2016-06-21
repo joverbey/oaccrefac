@@ -29,7 +29,7 @@ public class IntroAtomicDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopRefactoringWizard(refactoring, "Introduce OpenACC Atomic");
+        return new LoopRefactoringWizard(refactoring, "Introduce OpenACC Atomic", false);
     }
 
 }

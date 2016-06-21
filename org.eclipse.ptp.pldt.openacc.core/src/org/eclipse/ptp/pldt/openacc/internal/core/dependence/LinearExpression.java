@@ -14,292 +14,209 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.BindingComparator;
 
+/**
+ * An decomposition of a {@link IASTExpression} as a linear expression.
+ * <p>
+ * A linear expression has the form
+ * <i>c</i><sub>0</sub> + <i>c</i><sub>1</sub><i>x</i><sub>1</sub> + <i>c</i><sub>2</sub><i>x</i><sub>2</sub> + ... + <i>c</i>
+ * <sub><i>n</i></sub><i>x</i><sub><i>n</i></sub>,
+ * where the <i>c</i>'s are constants (the <i>coefficients</i>) and the <i>x</i>'s are variables. The constant <i>c</i>
+ * <sub>0</sub> is called the <i>constant coefficient</i>.
+ * 
+ * @author Jeff Overbey
+ */
 public class LinearExpression {
-    private static interface ILENode {
-        ILENode negated();
+	/**
+	 * Factory method. Determines if the given expression is a linear expression, returning a
+	 * {@link LinearExpression} if it is and <code>null</code> if it is not.
+	 * 
+	 * @param expr
+	 *            expression to analyze
+	 * @return {@link LinearExpression} or <code>null</code>
+	 */
+	public static LinearExpression createFrom(IASTExpression expr) {
+		try {
+			return translateExpression(expr);
+		} catch (UnsupportedOperationException e) {
+			return null;
+		}
+	}
 
-        ILENode add(ILENode rhs);
+	private static LinearExpression translateExpression(IASTExpression expr) throws UnsupportedOperationException {
+		if (expr instanceof IASTBinaryExpression) {
+			return translate((IASTBinaryExpression) expr);
+		} else if (expr instanceof IASTUnaryExpression) {
+			return translate((IASTUnaryExpression) expr);
+		} else if (expr instanceof IASTLiteralExpression) {
+			return translate((IASTLiteralExpression) expr);
+		} else if (expr instanceof IASTIdExpression) {
+			return translate((IASTIdExpression) expr);
+		} else {
+			throw new UnsupportedOperationException();
+		}
+	}
 
-        ILENode multiply(ILENode negated) throws DependenceTestFailure;
-    }
+	private static LinearExpression translate(IASTBinaryExpression expr) throws UnsupportedOperationException {
+		switch (expr.getOperator()) {
+		case IASTBinaryExpression.op_plus: {
+			LinearExpression lhs = translateExpression(expr.getOperand1());
+			LinearExpression rhs = translateExpression(expr.getOperand2());
+			return lhs.plus(rhs);
+		}
 
-    private static interface ILEPrimary extends ILENode {
-        @Override
-        ILEPrimary negated();
+		case IASTBinaryExpression.op_minus: {
+			LinearExpression lhs = translateExpression(expr.getOperand1());
+			LinearExpression rhs = translateExpression(expr.getOperand2());
+			return lhs.plus(rhs.times(-1));
+		}
 
-        @Override
-        ILEPrimary multiply(ILENode negated) throws DependenceTestFailure;
-    }
+		case IASTBinaryExpression.op_multiply: {
+			LinearExpression lhs = translateExpression(expr.getOperand1());
+			LinearExpression rhs = translateExpression(expr.getOperand2());
+			return lhs.times(rhs);
+		}
 
-    private static final class ILEConst implements ILEPrimary {
-        private final int value;
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
 
-        public ILEConst(int value) {
-            this.value = value;
-        }
+	private static LinearExpression translate(IASTUnaryExpression expr) throws UnsupportedOperationException {
+		switch (expr.getOperator()) {
+		case IASTUnaryExpression.op_bracketedPrimary:
+		case IASTUnaryExpression.op_plus:
+			return translateExpression(expr.getOperand());
 
-        @Override
-        public ILEPrimary negated() {
-            return new ILEConst(-value);
-        }
+		case IASTUnaryExpression.op_minus:
+			return translateExpression(expr.getOperand()).times(-1);
 
-        @Override
-        public ILENode add(ILENode that) {
-            if (that instanceof ILEConst) {
-                return new ILEConst(value + ((ILEConst) that).value);
-            } else if (that instanceof ILESum) {
-                return ((ILESum) that).append(this);
-            } else {
-                return new ILESum(this, (ILEPrimary) that);
-            }
-        }
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
 
-        @Override
-        public ILEPrimary multiply(ILENode that) throws DependenceTestFailure {
-            if (that instanceof ILEConst) {
-                return new ILEConst(value * ((ILEConst) that).value);
-            } else if (that instanceof ILEScaledVar) {
-                ILEScaledVar sv = (ILEScaledVar) that;
-                return new ILEScaledVar(value * sv.scale, sv.variable);
-            } else {
-                throw new DependenceTestFailure("Unsupported expression");
-            }
-        }
-    }
+	private static LinearExpression translate(IASTLiteralExpression expr) throws UnsupportedOperationException {
+		Integer value = ASTPatternUtil.getConstantExpression(expr);
+		if (value != null)
+			return new LinearExpression(value.intValue());
+		else
+			throw new UnsupportedOperationException();
+	}
 
-    private static final class ILEScaledVar implements ILEPrimary {
-        private final int scale;
-        private final IBinding variable;
+	private static LinearExpression translate(IASTIdExpression expr) {
+		return new LinearExpression(expr.getName().resolveBinding());
+	}
 
-        public ILEScaledVar(int scale, IBinding variable) {
-            this.scale = scale;
-            this.variable = variable;
-        }
+	private final Map<IBinding, Integer> coefficients;
+	private final int constantCoefficient;
 
-        @Override
-        public ILEPrimary negated() {
-            return new ILEScaledVar(-scale, variable);
-        }
+	private LinearExpression(int constant) {
+		this.coefficients = Collections.emptyMap();
+		this.constantCoefficient = constant;
+	}
 
-        @Override
-        public ILENode add(ILENode that) {
-            if (that instanceof ILESum) {
-                return ((ILESum) that).append(this);
-            } else {
-                return new ILESum(this, (ILEPrimary) that);
-            }
-        }
+	private LinearExpression(IBinding variable) {
+		this.coefficients = Collections.singletonMap(variable, 1);
+		this.constantCoefficient = 0;
+	}
 
-        @Override
-        public ILEPrimary multiply(ILENode that) throws DependenceTestFailure {
-            if (that instanceof ILEConst) {
-                return new ILEScaledVar(scale * ((ILEConst) that).value, variable);
-            } else {
-                throw new DependenceTestFailure("Unsupported expression");
-            }
-        }
-    }
+	private LinearExpression(Map<IBinding, Integer> coefficients, int constantCoefficient) {
+		this.coefficients = Collections.unmodifiableMap(coefficients);
+		this.constantCoefficient = constantCoefficient;
+	}
 
-    private static final class ILESum implements ILENode {
-        private final ILEPrimary[] addends;
+	/**
+	 * @return the set of all variables occurring in this expression
+	 */
+	public Set<IBinding> getVariables() {
+		return Collections.unmodifiableSet(coefficients.keySet());
+	}
 
-        public ILESum(ILEPrimary... addends) {
-            this.addends = addends;
-        }
+	/**
+	 * @return the coefficient of the given variable in this expression (0 if the variable does not occur in this expression)
+	 */
+	public int getCoefficient(IBinding variable) {
+		if (!coefficients.containsKey(variable))
+			return 0;
+		return coefficients.get(variable);
+	}
 
-        @Override
-        public ILESum negated() {
-            ILEPrimary[] newAddends = new ILEPrimary[addends.length];
-            for (int i = 0; i < addends.length; i++) {
-                newAddends[i] = addends[i].negated();
-            }
-            return new ILESum(newAddends);
-        }
+	/**
+	 * @return the constant coefficient for this linear expression
+	 */
+	public int getConstantCoefficient() {
+		return constantCoefficient;
+	}
 
-        @Override
-        public ILENode add(ILENode that) {
-            if (that instanceof ILESum) {
-                ILESum sum2 = (ILESum) that;
-                ILEPrimary[] newAddends = new ILEPrimary[addends.length + sum2.addends.length];
-                System.arraycopy(addends, 0, newAddends, 0, addends.length);
-                System.arraycopy(sum2.addends, 0, newAddends, addends.length, sum2.addends.length);
-                return new ILESum(newAddends);
-            } else {
-                return this.append((ILEPrimary) that);
-            }
-        }
+	private LinearExpression plus(LinearExpression rhs) {
+		Map<IBinding, Integer> result = new HashMap<IBinding, Integer>(coefficients);
+		for (IBinding var : rhs.coefficients.keySet()) {
+			if (!result.containsKey(var)) {
+				result.put(var, 0);
+			}
+			result.put(var, result.get(var) + rhs.coefficients.get(var));
+		}
+		return new LinearExpression(result, this.constantCoefficient + rhs.constantCoefficient);
+	}
 
-        private ILENode append(ILEPrimary that) {
-            ILEPrimary[] newAddends = new ILEPrimary[addends.length + 1];
-            System.arraycopy(addends, 0, newAddends, 0, addends.length);
-            newAddends[addends.length] = that;
-            return new ILESum(newAddends);
-        }
+	private LinearExpression times(LinearExpression rhs) throws UnsupportedOperationException {
+		if (this.isConstant())
+			return rhs.times(this.constantCoefficient);
+		else if (rhs.isConstant())
+			return this.times(rhs.constantCoefficient);
+		else
+			throw new UnsupportedOperationException();
+	}
 
-        @Override
-        public ILENode multiply(ILENode that) throws DependenceTestFailure {
-            throw new DependenceTestFailure("Unsupported expression");
-        }
-    }
+	private LinearExpression times(int multiplier) {
+		Map<IBinding, Integer> result = new HashMap<IBinding, Integer>(coefficients.size());
+		for (IBinding var : coefficients.keySet()) {
+			result.put(var, coefficients.get(var) * multiplier);
+		}
+		return new LinearExpression(result, this.constantCoefficient * multiplier);
+	}
 
-    public static LinearExpression createFrom(IASTExpression expr) {
-        try {
-            return new LinearExpression(expr);
-        } catch (DependenceTestFailure e) {
-            return null;
-        }
-    }
+	private boolean isConstant() {
+		for (IBinding var : coefficients.keySet()) {
+			if (coefficients.get(var) != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    private static void addToCoefficient(IBinding variable, int valueToAdd, Map<IBinding, Integer> coefficients) {
-        int curValue = coefficients.containsKey(variable) ? coefficients.get(variable) : 0;
-        coefficients.put(variable, curValue + valueToAdd);
-    }
+	@Override
+	public String toString() {
+		IBinding[] vars = coefficients.keySet().toArray(new IBinding[coefficients.size()]);
+		Arrays.sort(vars, new BindingComparator());
 
-    private static ILESum getSum(ILENode expr) {
-        if (expr instanceof ILESum) {
-            return (ILESum) expr;
-        } else {
-            return new ILESum((ILEPrimary) expr);
-        }
-    }
+		int[] coeffs = new int[coefficients.size() + 1];
+		coeffs[0] = constantCoefficient;
+		for (int i = 0; i < vars.length; i++) {
+			coeffs[i + 1] = coefficients.get(vars[i]);
+		}
 
-    private static ILENode translateExpression(IASTExpression expr) throws DependenceTestFailure {
-        if (expr instanceof IASTBinaryExpression) {
-            return translate((IASTBinaryExpression) expr);
-        } else if (expr instanceof IASTUnaryExpression) {
-            return translate((IASTUnaryExpression) expr);
-        } else if (expr instanceof IASTLiteralExpression) {
-            return translate((IASTLiteralExpression) expr);
-        } else if (expr instanceof IASTIdExpression) {
-            return translate((IASTIdExpression) expr);
-        } else {
-            throw unsupported(expr);
-        }
-    }
-
-    private static ILENode translate(IASTBinaryExpression expr) throws DependenceTestFailure {
-        switch (expr.getOperator()) {
-        case IASTBinaryExpression.op_plus: {
-            ILENode lhs = translateExpression(expr.getOperand1());
-            ILENode rhs = translateExpression(expr.getOperand2());
-            return lhs.add(rhs);
-        }
-
-        case IASTBinaryExpression.op_minus: {
-            ILENode lhs = translateExpression(expr.getOperand1());
-            ILENode rhs = translateExpression(expr.getOperand2());
-            return lhs.add(rhs.negated());
-        }
-
-        case IASTBinaryExpression.op_multiply: {
-            ILENode lhs = translateExpression(expr.getOperand1());
-            ILENode rhs = translateExpression(expr.getOperand2());
-            return lhs.multiply(rhs);
-        }
-
-        default:
-            throw unsupported(expr);
-        }
-    }
-
-    private static ILENode translate(IASTUnaryExpression expr) throws DependenceTestFailure {
-        switch (expr.getOperator()) {
-        case IASTUnaryExpression.op_bracketedPrimary:
-        case IASTUnaryExpression.op_plus:
-            return translateExpression(expr.getOperand());
-
-        case IASTUnaryExpression.op_minus:
-            return translateExpression(expr.getOperand()).negated();
-
-        default:
-            throw unsupported(expr);
-        }
-    }
-
-    private static ILENode translate(IASTLiteralExpression expr) throws DependenceTestFailure {
-        Integer value = ASTPatternUtil.getConstantExpression(expr);
-        if (value != null)
-            return new ILEConst(value.intValue());
-        else
-            throw unsupported(expr);
-    }
-
-    private static ILENode translate(IASTIdExpression expr) {
-        return new ILEScaledVar(1, expr.getName().resolveBinding());
-    }
-
-    private static DependenceTestFailure unsupported(IASTNode node) {
-        return new DependenceTestFailure(
-                String.format("Unsupported construct on line %d (%s)", node.getFileLocation().getStartingLineNumber(), //
-                        node.getClass().getSimpleName()));
-    }
-
-    // private final IBinding[] vars;
-    // private final int[] coeffs;
-
-    private final Map<IBinding, Integer> coefficients;
-    private final int constantCoefficient;
-
-    private LinearExpression(IASTExpression expr) throws DependenceTestFailure {
-        ILESum sum = getSum(translateExpression(expr));
-
-        Map<IBinding, Integer> coefficients = new HashMap<IBinding, Integer>();
-        int constantCoefficient = 0;
-        for (ILEPrimary p : sum.addends) {
-            if (p instanceof ILEConst) {
-                constantCoefficient += ((ILEConst) p).value;
-            } else if (p instanceof ILEScaledVar) {
-                addToCoefficient(((ILEScaledVar) p).variable, ((ILEScaledVar) p).scale, coefficients);
-            } else {
-                throw new IllegalStateException();
-            }
-        }
-
-        this.coefficients = Collections.unmodifiableMap(coefficients);
-        this.constantCoefficient = constantCoefficient;
-    }
-
-    public Map<IBinding, Integer> getCoefficients() {
-        return coefficients;
-    }
-
-    public int getConstantCoefficient() {
-        return constantCoefficient;
-    }
-
-    @Override
-    public String toString() {
-        IBinding[] vars = coefficients.keySet().toArray(new IBinding[coefficients.size()]);
-        Arrays.sort(vars, new BindingComparator());
-
-        int[] coeffs = new int[coefficients.size() + 1];
-        coeffs[0] = constantCoefficient;
-        for (int i = 0; i < vars.length; i++) {
-            coeffs[i + 1] = coefficients.get(vars[i]);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < coeffs.length; i++) {
-            if (i > 0)
-                sb.append(" + ");
-            sb.append(coeffs[i]);
-            if (i > 0) {
-                sb.append('*');
-                sb.append(vars[i - 1].getName());
-            }
-        }
-        return sb.toString();
-    }
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < coeffs.length; i++) {
+			if (i > 0)
+				sb.append(" + ");
+			sb.append(coeffs[i]);
+			if (i > 0) {
+				sb.append('*');
+				sb.append(vars[i - 1].getName());
+			}
+		}
+		return sb.toString();
+	}
 }

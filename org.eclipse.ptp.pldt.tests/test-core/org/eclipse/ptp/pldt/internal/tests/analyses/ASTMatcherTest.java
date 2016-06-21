@@ -57,6 +57,18 @@ public class ASTMatcherTest {
         checkMatchStmt("{i=ii, n=nn}", pattern, "for (ii = 0; ii < nn; ii++) { f(); g(); break; }");
     }
 
+    @Test
+    public void testForWithDecl() throws CoreException {
+        IASTForStatement forLoop = (IASTForStatement) ASTUtil.parseStatement("for (int i = 0; i < n; i++) ;");
+
+        IASTForStatement pattern = forLoop.copy(CopyStyle.withoutLocations);
+        pattern.setBody(new ArbitraryStatement());
+
+        checkMatchStmt("{i=j, n=k}", pattern, "for (int j = 0; j < k; j++) ;");
+        checkMatchStmt(null, pattern, "for (uint32_t j = 0; j < k; j++) ;");
+        checkMatchStmt(null, pattern, "for (double j = 0; j < k; j++) ;");
+    }
+
     private void checkMatchExpr(String expected, String patternString, String exprString) throws CoreException {
         IASTExpression pattern = ASTUtil.parseExpression(patternString);
         IASTExpression expr = ASTUtil.parseExpression(exprString);

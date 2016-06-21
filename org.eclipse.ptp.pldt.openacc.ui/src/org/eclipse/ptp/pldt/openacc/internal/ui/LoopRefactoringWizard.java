@@ -21,18 +21,20 @@ public class LoopRefactoringWizard extends RefactoringWizard {
 
     private LoopRefactoringWizardPage inputPage;
 
-    public LoopRefactoringWizard(Refactoring refactoring, String title) {
+    public LoopRefactoringWizard(Refactoring refactoring, String title, boolean hasInput) {
         super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
         
         setDefaultPageTitle(title);
         setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
 
-        inputPage = new LoopRefactoringWizardPage(title);
+        inputPage = hasInput ? new LoopRefactoringWizardPage(title) : null;
     }
 
     @Override
     protected void addUserInputPages() {
-        addPage(inputPage);
+        if (inputPage != null) {
+            addPage(inputPage);
+        }
     }
 
     public LoopRefactoringWizardPage getInputPage() {

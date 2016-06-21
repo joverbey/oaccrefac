@@ -30,7 +30,7 @@ public class MergeDataConstructsDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopRefactoringWizard(refactoring, "Merge OpenAcc Data Constructs");
+        return new LoopRefactoringWizard(refactoring, "Merge OpenAcc Data Constructs", false);
     }
 
 }

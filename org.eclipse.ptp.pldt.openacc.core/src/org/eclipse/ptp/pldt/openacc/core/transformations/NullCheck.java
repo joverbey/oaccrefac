@@ -15,17 +15,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.text.Region;
-import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
@@ -75,38 +68,14 @@ public class NullCheck extends ForLoopCheck<NullParams> {
 
         List<DataDependence> deps = new ArrayList<DataDependence>(dep.getDependences());
         deps.sort(new Comparator<DataDependence>() {
-
 			@Override
 			public int compare(DataDependence o1, DataDependence o2) {
 				return o1.toString().compareTo(o2.toString());
 			}
-        	
         });
         for (DataDependence d : deps) {
-            status.addInfo(d.toString(), getLocation(d.getAccess1().getVariableName(), d.getAccess2().getVariableName()));
+            status.addInfo(d.toString(), createStatusContextForDependence(d));
         }
-    }
-
-    private RefactoringStatusContext getLocation(IASTNode node1, IASTNode node2) {
-        if (node1.getTranslationUnit() != node2.getTranslationUnit()) {
-            return null;
-        }
-        
-        String filename = node1.getTranslationUnit().getFileLocation().getFileName();
-        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
-        if (file == null) {
-            return null;
-        }
-
-        IASTFileLocation fileLocation1 = node1.getFileLocation();
-        IASTFileLocation fileLocation2 = node2.getFileLocation();
-        int start1 = fileLocation1.getNodeOffset();
-        int end1 = start1 + fileLocation1.getNodeLength();
-        int start2 = fileLocation2.getNodeOffset();
-        int end2 = start2 + fileLocation2.getNodeLength();
-        int start = Math.min(start1, start2);
-        int end = Math.max(end1, end2);
-        return new FileStatusContext(file, new Region(start, end - start));
     }
 
     @Override
