@@ -107,18 +107,24 @@ public abstract class SourceFileRefactoring extends CRefactoring {
 				IASTPreprocessorPragmaStatement pragma = (IASTPreprocessorPragmaStatement) pps[i];
 				IASTStatement enclosingStmt = findStatementWithPragma(pragma);
 				if (enclosingStmt instanceof IASTForStatement) {
-					IASTForStatement outerLoop = (IASTForStatement) enclosingStmt;
-					ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(outerLoop);
-					List<IASTForStatement> loopHeaders = inq.getLoopHeaders();
-					pragmasInFile.put(pragma, loopHeaders);
-					if (loopHeaders.size() > 1) {
-						for (int j = 1; j < loopHeaders.size(); j++) {
-							inq = ForStatementInquisitor.getInquisitor(loopHeaders.get(j));
-							if (inq.getLeadingPragmas().size() > 0) {
-								i += inq.getLeadingPragmas().size();
+					if (!pragma.getRawSignature().contains("loop")) {
+						pragmasInFile.put(pragma, null);
+					}
+					else {
+						IASTForStatement outerLoop = (IASTForStatement) enclosingStmt;
+						ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(outerLoop);
+						List<IASTForStatement> loopHeaders = inq.getLoopHeaders();
+						pragmasInFile.put(pragma, loopHeaders);
+						if (loopHeaders.size() > 1) {
+							for (int j = 1; j < loopHeaders.size(); j++) {
+								inq = ForStatementInquisitor.getInquisitor(loopHeaders.get(j));
+								if (inq.getLeadingPragmas().size() > 0) {
+									i += inq.getLeadingPragmas().size();
+								}
 							}
 						}
 					}
+					
 				} else {
 					pragmasInFile.put(pragma, null);
 				}
