@@ -11,10 +11,10 @@ int main() {
 			a = i;
 	}
 
-	b = a;
-
 	while (0)
 		;
+
+	b = a;
 
 	return 0;
 

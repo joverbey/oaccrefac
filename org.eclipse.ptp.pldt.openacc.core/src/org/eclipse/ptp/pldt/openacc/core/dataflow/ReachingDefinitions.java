@@ -143,7 +143,6 @@ public class ReachingDefinitions {
      * @param node a tree node that may or may not contain variable uses
      * @return a set of IASTNode definitions reaching the variable uses in the node
      */
-
     public Set<IASTName> reachingDefinitions(IASTNode node) {
         Set<IASTName> defs = new HashSet<IASTName>();
         for(IASTName name : ASTUtil.find(node, IASTName.class)) {

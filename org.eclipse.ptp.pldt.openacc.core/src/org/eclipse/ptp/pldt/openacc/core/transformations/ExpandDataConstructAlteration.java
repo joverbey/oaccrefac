@@ -11,27 +11,15 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
-
 public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<ExpandDataConstructCheck> {
 
 	private PragmaDirectiveAlteration<ExpandDataConstructCheck> alteration;
 	
 	public ExpandDataConstructAlteration(IASTRewrite rewriter, ExpandDataConstructCheck check) {
 		super(rewriter, check);
-		IASTForStatement forParent = null;
-		IASTNode parent = getStatement().getParent();
-		if(parent instanceof IASTForStatement && ((IASTForStatement) parent).getBody().equals(getStatement())) {
-			forParent = (IASTForStatement) parent;
-		} 
-		else if (parent instanceof IASTCompoundStatement && parent.getParent() instanceof IASTForStatement
-				&& ((IASTCompoundStatement) parent).getChildren().length == 1) {
-			forParent = (IASTForStatement) parent.getParent();
-		}
-		if(forParent != null) {
-			alteration = new Bloat(rewriter, check, forParent);
+		
+		if(check.getForParent() != null) {
+			alteration = new Bloat(rewriter, check, check.getForParent());
 		}
 		else {
 			alteration = new Expand(rewriter, check);

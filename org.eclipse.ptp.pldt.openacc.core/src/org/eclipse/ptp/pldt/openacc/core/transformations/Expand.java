@@ -16,9 +16,11 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyoutClauseNode;
@@ -209,9 +211,13 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	private int getMaxInDirection(IASTStatement statement, boolean up) {
 		int i = 0;
 		IASTNode next = statement;
+		ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class));
 		while (true) {
 			next = up ? ASTUtil.getPreviousSibling(next) : ASTUtil.getNextSibling(next);
 			if (next == null || (next instanceof IASTStatement && OpenACCUtil.isAccConstruct((IASTStatement) next))) {
+				break;
+			}
+			if(!ExpandDataConstructCheck.checkCopyinCopyoutReachingDefinitions(rd, next, statement)) {
 				break;
 			}
 			i++;
@@ -219,6 +225,17 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		return i;
 	}
 
+	/*
+	 * if a def in A reaches C and is in the copyin set, dont expand
+	 * if a def in A doesnt reach C and is in the copyin set, can expand
+	 *     - since we're using the inferred sets, this can never happen
+	 * so technically we could just check if a def in A is in the copyin set, but
+	 *     this way is more correct in a sense, and there shouldn't be a big
+	 *     performance hit or anything, since rd would be done anyway for inference
+	 */
+	
+	
+	
 	private IASTStatement[] getExpansionStatements(int stmtsUp, int stmtsDown, IASTStatement original) {
 		List<IASTStatement> statements = new ArrayList<IASTStatement>();
 		statements.add(original);

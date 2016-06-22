@@ -39,5 +39,5 @@ public class Bloat extends PragmaDirectiveAlteration<ExpandDataConstructCheck> {
 		insertAfter(container, RCURLY);
 		finalizeChanges();
 	}
-
+	
 }
