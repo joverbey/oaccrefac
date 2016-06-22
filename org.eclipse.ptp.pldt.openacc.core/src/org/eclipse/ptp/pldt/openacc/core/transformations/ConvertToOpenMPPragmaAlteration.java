@@ -100,6 +100,7 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 			int nestingDepth = loops.size();
 			IASTForStatement vectorLoop = null;
 			boolean noPragma = true;
+			boolean isAllCollapse = false;
 			for (IASTForStatement loop : loops) {
 				ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
 				List<IASTPreprocessorPragmaStatement> pragmasInLoop = inq.getLeadingPragmas();
@@ -132,6 +133,7 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 					}
 					loopPragma.append(handleGangAndVectorLoop(p, nestingDepth, isOutermostLoop, loop));
 					String parallel = handleLoopClause(p, loop, nestingDepth, isOutermostLoop);
+					isAllCollapse = isAllCollapse(isOutermostLoop, p);
 					if (parallel != null) {
 						loopPragma.append(parallel);
 						if (!isOutermostLoop && nestingDepth > 1) {
@@ -196,7 +198,7 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 				this.insertBefore(vectorLoop, pragma(innerPragma.toString()) + NL);
 			}
 
-			if (isPragmaInLoop && loopCountWithNoPragma == loops.size() - 1) {
+			if (isPragmaInLoop && loopCountWithNoPragma == loops.size() - 1 && !isAllCollapse) {
 				StringBuilder innerPragma = new StringBuilder();
 				innerPragma.append(OPENMP_DIRECTIVE + " " + PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE);
 
@@ -240,6 +242,42 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 
 		if (pragma.getRawSignature().contains(OPENACC_LOOP_DIRECTIVE) && !isOuter) // vector
 			newPragma.append(PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
+
+		return newPragma.toString();
+	}
+
+	private String handleLoopClause(IASTPreprocessorPragmaStatement pragma, IASTForStatement loop, int depth,
+			boolean isOutermostLoop) {
+		StringBuilder newPragma = new StringBuilder();
+
+		if (pragma.getRawSignature().contains(PRIVATE_DIRECTIVE) && !(pragma.getRawSignature().contains(PARALLEL_DIRECTIVE))) {
+			handlePrivate(pragma, loop);
+			if ((depth > 1 && !isOutermostLoop) || pragma.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
+				this.remove(pragma);
+				return null;
+			}
+		}
+
+		if (pragma.getRawSignature().contains(REDUCTION_DIRECTIVE) && !(pragma.getRawSignature().contains(PARALLEL_DIRECTIVE))) {
+			if (pragma.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
+				this.remove(pragma);
+				return null;
+			}
+			newPragma.append(REDUCTION_DIRECTIVE + "(" + getValue(pragma, REDUCTION_DIRECTIVE) + ") ");
+		}
+
+		if (pragma.getRawSignature().contains("collapse")) {
+			if (isAllCollapse(isOutermostLoop, pragma)) {
+				newPragma.append(PARALLEL_DIRECTIVE + " " + OPENMP_LOOP_DIRECTIVE + " ");
+				newPragma.append("collapse(" + getValue(pragma, "collapse") + ") ");
+			} else
+				newPragma.append("collapse(" + getValue(pragma, "collapse") + ") ");
+		}
+
+		if (pragma.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
+			this.remove(pragma);
+			return null;
+		}
 
 		return newPragma.toString();
 	}
@@ -290,34 +328,6 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 
 		else if (pragma.getRawSignature().contains(PRIVATE_DIRECTIVE)) {
 			newPragma.append(PRIVATE_DIRECTIVE + "(" + getValue(pragma, PRIVATE_DIRECTIVE) + ") ");
-		}
-
-		return newPragma.toString();
-	}
-
-	private String handleLoopClause(IASTPreprocessorPragmaStatement pragma, IASTForStatement loop, int depth,
-			boolean isOutermostLoop) {
-		StringBuilder newPragma = new StringBuilder();
-
-		if (pragma.getRawSignature().contains(PRIVATE_DIRECTIVE) && !(pragma.getRawSignature().contains(PARALLEL_DIRECTIVE))) {
-			handlePrivate(pragma, loop);
-			if ((depth > 1 && !isOutermostLoop) || pragma.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
-				this.remove(pragma);
-				return null;
-			}
-		}
-
-		if (pragma.getRawSignature().contains(REDUCTION_DIRECTIVE) && !(pragma.getRawSignature().contains(PARALLEL_DIRECTIVE))) {
-			if (pragma.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
-				this.remove(pragma);
-				return null;
-			}
-			newPragma.append(REDUCTION_DIRECTIVE + "(" + getValue(pragma, REDUCTION_DIRECTIVE) + ")");
-		}
-
-		if (pragma.getRawSignature().contains(SEQUENTIAL_LOOP_TYPE)) {
-			this.remove(pragma);
-			return null;
 		}
 
 		return newPragma.toString();
@@ -416,6 +426,16 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 	private boolean hasLoopPragma(List<IASTPreprocessorPragmaStatement> pragmasInLoop) {
 		for (IASTPreprocessorPragmaStatement pragma : pragmasInLoop) {
 			if (pragma.getRawSignature().contains(OPENACC_LOOP_DIRECTIVE)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isAllCollapse(boolean isOutermostLoop, IASTPreprocessorPragmaStatement pragma) {
+		if (isOutermostLoop && pragma.getRawSignature().contains("collapse")) {
+			int collapseCount = Integer.valueOf(getValue(pragma, "collapse"));
+			if (collapseCount == pragmas.get(pragma).size()) {
 				return true;
 			}
 		}
