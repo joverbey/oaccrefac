@@ -19,7 +19,7 @@ public class ExpandDataConstructAlteration extends PragmaDirectiveAlteration<Exp
 		super(rewriter, check);
 		
 		if(check.getForParent() != null) {
-			alteration = new Bloat(rewriter, check, check.getForParent());
+			alteration = new Promote(rewriter, check, check.getForParent());
 		}
 		else {
 			alteration = new Expand(rewriter, check);

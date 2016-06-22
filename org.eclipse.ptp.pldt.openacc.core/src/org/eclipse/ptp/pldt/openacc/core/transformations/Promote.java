@@ -13,11 +13,11 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 
-public class Bloat extends PragmaDirectiveAlteration<ExpandDataConstructCheck> {
+public class Promote extends PragmaDirectiveAlteration<ExpandDataConstructCheck> {
 
 	IASTForStatement container;
 	
-	public Bloat(IASTRewrite rewriter, ExpandDataConstructCheck check, IASTForStatement container) {
+	public Promote(IASTRewrite rewriter, ExpandDataConstructCheck check, IASTForStatement container) {
 		super(rewriter, check);
 		this.container = container;
 	}
