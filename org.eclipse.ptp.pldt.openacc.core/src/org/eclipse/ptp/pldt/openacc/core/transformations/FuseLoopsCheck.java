@@ -39,8 +39,8 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     private IASTForStatement first;
     private IASTForStatement second;
 
-    public FuseLoopsCheck(IASTForStatement first) {
-        super(first);
+    public FuseLoopsCheck(RefactoringStatus status, IASTForStatement first) {
+        super(status, first);
         this.first = this.loop;
         
         // This gets the selected loop to re-factor.
@@ -73,7 +73,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
     }
     
     @Override
-    public void doLoopFormCheck(RefactoringStatus status) {
+    public void doLoopFormCheck() {
         if (second == null) {
             status.addFatalError("There is there must be two loops for fusion to be possible.");
             return;
@@ -86,7 +86,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
         }
         
         //breaks test 02 because only one loop
-        checkPragma(status);
+        checkPragma();
     }
     
     private IASTName getNameConflict(IASTForStatement first, IASTForStatement second) {
@@ -120,7 +120,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
 	}
     
     @Override
-	public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
+	public RefactoringStatus dependenceCheck(IProgressMonitor pm) {
 		IASTForStatement firstCopy = first.copy(CopyStyle.withLocations);
 		IASTForStatement secondCopy = second.copy(CopyStyle.withLocations);
 		firstCopy.setParent(ASTUtil.findNearestAncestor(first, IASTFunctionDefinition.class).getBody());
@@ -174,7 +174,7 @@ public class FuseLoopsCheck extends ForLoopCheck<RefactoringParams> {
 		return status;
     }
     
-    private void checkPragma(RefactoringStatus status) {
+    private void checkPragma() {
         int pragmasOnFirst = ASTUtil.getPragmaNodes(first).size();
         int pragmasOnSecond = ASTUtil.getPragmaNodes(second).size();
         boolean empty = (pragmasOnFirst == 0 && pragmasOnSecond == 0);

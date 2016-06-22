@@ -30,12 +30,12 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
 	private IASTPreprocessorPragmaStatement secondPrag;
 	private IASTStatement secondStmt;
 	
-	public MergeDataConstructsCheck(IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
-		super(pragma, statement);
+	public MergeDataConstructsCheck(RefactoringStatus status, IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
+		super(status, pragma, statement);
 	}
 	
     @Override
-    public void doFormCheck(RefactoringStatus status) {
+    public void doFormCheck() {
     	if(!isDataPragma(getPragma())) {
     		status.addFatalError("The pragma must be a data construct");
     		return;

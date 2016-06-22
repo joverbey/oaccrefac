@@ -21,25 +21,26 @@ public class PragmaDirectiveCheck<T extends RefactoringParams> extends Check<T> 
     private IASTPreprocessorPragmaStatement pragma;
     private IASTStatement statement;
 
-    public PragmaDirectiveCheck(IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
+    public PragmaDirectiveCheck(RefactoringStatus status, IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
+    	super(status);
         this.pragma = pragma;
         this.statement = statement;
     }
     
-    protected void doFormCheck(RefactoringStatus status) { }
+    protected void doFormCheck() { }
     
-    public RefactoringStatus formCheck(RefactoringStatus status, IProgressMonitor pm) {
-        doFormCheck(status);
+    public RefactoringStatus formCheck(IProgressMonitor pm) {
+        doFormCheck();
         return status;
     }
     
     @Override
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
-        super.performChecks(status, pm, params);
+    public RefactoringStatus performChecks(IProgressMonitor pm, T params) {
+        super.performChecks(pm, params);
         if(status.hasFatalError()) {
             return status;
         }
-        formCheck(status, pm);
+        formCheck(pm);
         return status;
     }
     

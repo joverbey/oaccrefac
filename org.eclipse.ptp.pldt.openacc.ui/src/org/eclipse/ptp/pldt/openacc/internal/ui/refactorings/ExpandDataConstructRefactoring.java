@@ -41,8 +41,8 @@ public class ExpandDataConstructRefactoring extends PragmaDirectiveRefactoring {
     
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new ExpandDataConstructCheck(getPragma(), getStatement());
-        check.performChecks(initStatus, pm, null);
+        check = new ExpandDataConstructCheck(status, getPragma(), getStatement());
+        check.performChecks(pm, null);
     }
 
     @Override

@@ -32,8 +32,8 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
     private final boolean inParallelRegion;
     private final boolean inKernelsRegion;
 
-    public IntroOpenACCLoopCheck(final IASTForStatement loop, boolean kernels) {
-        super(loop);
+    public IntroOpenACCLoopCheck(RefactoringStatus status, final IASTForStatement loop, boolean kernels) {
+        super(status, loop);
         this.kernels = kernels;
         this.inParallelRegion = ancestorHasPragma(loop, ASTAccParallelNode.class, ASTAccParallelLoopNode.class);
         this.inKernelsRegion = ancestorHasPragma(loop, ASTAccKernelsNode.class, ASTAccKernelsLoopNode.class);
@@ -65,17 +65,17 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
     }
 
     @Override
-    protected void doLoopFormCheck(RefactoringStatus status) {
+    protected void doLoopFormCheck() {
         if (kernels && inParallelRegion) {
             status.addFatalError("A kernels loop cannot be introduced in a parallel region.");
         } else if (!kernels && inKernelsRegion) {
             status.addFatalError("A parallel loop cannot be introduced in a kernels region.");
         }
-        checkForExistingPragma(status);
+        checkForExistingPragma();
     }
 
     @Override
-    public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    public void doDependenceCheck(DependenceAnalysis dep) {
         if (dep != null && dep.hasLevel1CarriedDependence()) {
             status.addError("This loop cannot be parallelized because it carries a dependence.");
             for (DataDependence d : dep.getDependences()) {
@@ -86,7 +86,7 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
         }
     }
 
-    private void checkForExistingPragma(RefactoringStatus status) {
+    private void checkForExistingPragma() {
         if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
             status.addFatalError("A pragma cannot be added to a loop that already has a pragma on it.");
         }

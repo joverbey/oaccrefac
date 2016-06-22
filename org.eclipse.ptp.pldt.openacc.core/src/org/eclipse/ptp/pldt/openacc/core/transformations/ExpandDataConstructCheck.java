@@ -32,25 +32,9 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
     private ASTAccDataNode construct;
     private IASTForStatement forParent = null;
     
-    public ExpandDataConstructCheck(IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
-        super(pragma, statement);
-    }
-    
-    @Override
-    public void doFormCheck(RefactoringStatus status) {
-        String msg = "The pragma must be a data construct";
-        try {
-            construct = (ASTAccDataNode) (new OpenACCParser().parse(getPragma().getRawSignature()));
-        }
-        catch(Exception e) {
-            //will enter on Exception from parser or ClassCastException if ACC non-data pragma
-            status.addFatalError(msg);
-        }
-        
-    }
-    
-    private void doReachingDefinitionsCheck(RefactoringStatus status) {
-    	IASTNode parent = getStatement().getParent();
+    public ExpandDataConstructCheck(RefactoringStatus status, IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
+        super(status, pragma, statement);
+        IASTNode parent = statement.getParent();
         if(parent instanceof IASTForStatement && ((IASTForStatement) parent).getBody().equals(getStatement())) {
 			forParent = (IASTForStatement) parent;
 		} 
@@ -58,7 +42,22 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
 				&& ((IASTCompoundStatement) parent).getChildren().length == 1) {
 			forParent = (IASTForStatement) parent.getParent();
 		}
-        if(forParent == null) {
+    }
+    
+    @Override
+    public void doFormCheck() {
+        try {
+            construct = (ASTAccDataNode) (new OpenACCParser().parse(getPragma().getRawSignature()));
+        }
+        catch(Exception e) {
+            //will enter on Exception from parser or ClassCastException if ACC non-data pragma
+            status.addFatalError("The pragma must be a data construct");
+        }
+        
+    }
+    
+    private void doReachingDefinitionsCheck() {
+        if(forParent != null) {
         	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
     		if(!checkCopyinCopyoutReachingDefinitions(rd, forParent.getInitializerStatement(), getStatement())
     				|| !checkCopyinCopyoutReachingDefinitions(rd, forParent.getConditionExpression(), getStatement())
@@ -68,7 +67,26 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
         }
     }
     
-    public static boolean checkCopyinCopyoutReachingDefinitions(ReachingDefinitions rd, IASTNode next, IASTStatement original) {
+    @Override
+    public RefactoringStatus performChecks(IProgressMonitor pm, RefactoringParams params) {
+    	super.performChecks(pm, params);
+    	if(status.hasFatalError()) {
+    		return status;
+    	}
+    	doReachingDefinitionsCheck();
+    	return status;
+    }
+    
+   
+    public ASTAccDataNode getConstruct() {
+        return construct;
+    }
+
+	public IASTForStatement getForParent() {
+		return forParent;
+	}
+
+	public static boolean checkCopyinCopyoutReachingDefinitions(ReachingDefinitions rd, IASTNode next, IASTStatement original) {
 		//if a definition in the newly-included statement reaches the construct and defines a variable in the copyin set, stop
 		InferCopyin copyin = new InferCopyin(rd, new IASTStatement[] { original }, original);
 		InferCopyout copyout = new InferCopyout(rd, new IASTStatement[] { original }, original);
@@ -84,23 +102,5 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
 		}
 		return true;
 	}
-    
-    @Override
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, RefactoringParams params) {
-    	super.performChecks(status, pm, params);
-    	if(status.hasFatalError()) {
-    		return status;
-    	}
-    	doReachingDefinitionsCheck(status);
-    	return status;
-    }
-    
-    public ASTAccDataNode getConstruct() {
-        return construct;
-    }
-
-	public IASTForStatement getForParent() {
-		return forParent;
-	}
-
+	
 }

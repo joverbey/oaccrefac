@@ -11,6 +11,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
@@ -24,7 +25,7 @@ public class DistributeLoops
 
     @Override
     protected DistributeLoopsCheck createCheck(IASTStatement loop) {
-        return new DistributeLoopsCheck((IASTForStatement) loop);
+        return new DistributeLoopsCheck(new RefactoringStatus(), (IASTForStatement) loop);
     }
 
     @Override

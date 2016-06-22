@@ -41,8 +41,8 @@ public class IntroAtomicRefactoring extends StatementsRefactoring {
 
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroAtomicCheck(getStatements(), getAllEnclosedNodes());
-        check.performChecks(initStatus, pm, null);
+        check = new IntroAtomicCheck(status, getStatements(), getAllEnclosedNodes());
+        check.performChecks(pm, null);
     }
 
     @Override

@@ -31,8 +31,8 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 
 	private final Long upperBound;
 
-	public UnrollLoopCheck(IASTForStatement loop) {
-		super(loop);
+	public UnrollLoopCheck(RefactoringStatus status, IASTForStatement loop) {
+		super(status, loop);
 		IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
 		ConstantPropagation constantProp = new ConstantPropagation(enclosing);
 		IASTExpression ubExpr = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2();
@@ -40,7 +40,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 	}
 
 	@Override
-	protected void doLoopFormCheck(RefactoringStatus status) {
+	protected void doLoopFormCheck() {
 		IASTStatement body = loop.getBody();
 		// If the body is empty, exit out -- pointless to unroll.
 		if (body == null || body instanceof IASTNullStatement) {
@@ -102,7 +102,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 	}
 
 	@Override
-	protected void doParameterCheck(RefactoringStatus status, UnrollLoopParams params) {
+	protected void doParameterCheck(UnrollLoopParams params) {
 		// Check unroll factor validity...
 		if (params.getUnrollFactor() <= 0) {
 			status.addFatalError("Invalid loop unroll factor! (<= 0)");

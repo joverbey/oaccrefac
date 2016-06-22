@@ -42,8 +42,8 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-		stripCheck = new StripMineCheck(getLoop());
-        stripCheck.performChecks(status, pm, new StripMineParams(numFactor, newName));
+		stripCheck = new StripMineCheck(status, getLoop());
+        stripCheck.performChecks(pm, new StripMineParams(numFactor, newName));
     }
 
     @Override

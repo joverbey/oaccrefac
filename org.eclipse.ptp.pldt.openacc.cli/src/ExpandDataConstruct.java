@@ -10,6 +10,7 @@
  *******************************************************************************/
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.ExpandDataConstructAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.ExpandDataConstructCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
@@ -20,7 +21,7 @@ public class ExpandDataConstruct extends CLIRefactoring<RefactoringParams, Expan
 
     @Override
     protected ExpandDataConstructCheck createCheck(IASTStatement statement) {
-        return new ExpandDataConstructCheck(ASTUtil.getPragmaNodes(statement).get(0), statement);
+        return new ExpandDataConstructCheck(new RefactoringStatus(), ASTUtil.getPragmaNodes(statement).get(0), statement);
     }
 
     @Override

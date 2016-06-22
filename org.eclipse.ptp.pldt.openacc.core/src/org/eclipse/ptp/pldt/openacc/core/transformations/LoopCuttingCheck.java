@@ -20,12 +20,12 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 public class LoopCuttingCheck extends AbstractTileLoopsCheck {
 
-    public LoopCuttingCheck(IASTForStatement loop) {
-        super(loop);
+    public LoopCuttingCheck(RefactoringStatus status, IASTForStatement loop) {
+        super(status, loop);
     }
     
     @Override
-    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
+    protected void doParameterCheck(AbstractTileLoopsParams params) {
     	
     	// Presence of a openacc pragma doesn't influence whether or not loop 
     	// cutting can be performed. This is because for loop cutting to be 
@@ -60,7 +60,7 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
     }
     
     @Override
-	public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+	public void doDependenceCheck(DependenceAnalysis dep) {
 		if (dep != null && dep.hasLevel1CarriedDependence()) {
 			status.addError("This loop cannot be cut because it carries a dependence.");
 		}

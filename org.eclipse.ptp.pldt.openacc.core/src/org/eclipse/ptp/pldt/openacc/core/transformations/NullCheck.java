@@ -27,14 +27,14 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 public class NullCheck extends ForLoopCheck<NullParams> {
 
-    public NullCheck(IASTForStatement loop) {
-        super(loop);
+    public NullCheck(RefactoringStatus status, IASTForStatement loop) {
+        super(status, loop);
         IASTFunctionDefinition enclosing = ASTUtil.findNearestAncestor(loop, IASTFunctionDefinition.class);
         new ConstantPropagation(enclosing);
     }
 
     @Override
-    protected void doLoopFormCheck(RefactoringStatus status) {
+    protected void doLoopFormCheck() {
         ForStatementInquisitor inquisitor = ForStatementInquisitor.getInquisitor(loop);
 
         // If the loop is not a counted loop, fail
@@ -60,7 +60,7 @@ public class NullCheck extends ForLoopCheck<NullParams> {
     }
 
     @Override
-    public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    public void doDependenceCheck(DependenceAnalysis dep) {
         if (dep == null) {
             status.addFatalError("Dependences could not be analyzed");
             return;
@@ -79,6 +79,6 @@ public class NullCheck extends ForLoopCheck<NullParams> {
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, NullParams params) {
+    protected void doParameterCheck(NullParams params) {
     }
 }

@@ -13,6 +13,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
@@ -39,7 +40,7 @@ public class StripMineLoop extends CLILoopRefactoring<AbstractTileLoopsParams, A
 
     @Override
     public AbstractTileLoopsCheck createCheck(IASTStatement loop) {
-		 return new StripMineCheck((IASTForStatement) loop);
+		 return new StripMineCheck(new RefactoringStatus(), (IASTForStatement) loop);
     }
 
     @Override
