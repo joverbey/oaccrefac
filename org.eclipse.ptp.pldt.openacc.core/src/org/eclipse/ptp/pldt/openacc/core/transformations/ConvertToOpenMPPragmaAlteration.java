@@ -372,19 +372,19 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 		String createPattern = "create(";
 		String pragma = accPragma.getRawSignature();
 
-		if (pragma.contains(copyPattern)) {
+		if (pragma.contains(copyPattern) || pragma.contains("present_or_copy") || pragma.contains("pcopy") || pragma.contains("present")) {
 			newPragma.append("map(tofrom:" + getValue(accPragma, copyPattern) + ") ");
 		}
 
-		if (pragma.contains(copyInPattern)) {
+		if (pragma.contains(copyInPattern) || pragma.contains("present_or_copyin") || pragma.contains("pcopyin")) {
 			newPragma.append("map(to:" + getValue(accPragma, copyInPattern) + ") ");
 		}
 
-		if (pragma.contains(copyOutPattern)) {
+		if (pragma.contains(copyOutPattern) || pragma.contains("present_or_copyout") || pragma.contains("pcopyout")) {
 			newPragma.append("map(from:" + getValue(accPragma, copyOutPattern) + ") ");
 		}
 
-		if (pragma.contains(createPattern)) {
+		if (pragma.contains(createPattern) || pragma.contains("present_or_create") || pragma.contains("pcreate")) {
 			newPragma.append("map(alloc:" + getValue(accPragma, createPattern) + ") ");
 		}
 
