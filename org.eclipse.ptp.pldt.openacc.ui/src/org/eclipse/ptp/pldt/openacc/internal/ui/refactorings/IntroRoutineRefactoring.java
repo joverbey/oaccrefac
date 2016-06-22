@@ -43,7 +43,6 @@ public class IntroRoutineRefactoring extends StatementsRefactoring {
 	@Override
 	protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
 		new IntroRoutineAlteration(rewriter, check).change();
-		
 	}
 	
 }

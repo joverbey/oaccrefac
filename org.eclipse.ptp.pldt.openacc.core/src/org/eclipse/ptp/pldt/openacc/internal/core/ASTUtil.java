@@ -33,7 +33,9 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
@@ -324,7 +326,7 @@ public class ASTUtil {
 		return pragCode;
 	}
 
-	public static List<IASTPreprocessorPragmaStatement> getPragmaNodes(IASTStatement statement) {
+	public static List<IASTPreprocessorPragmaStatement> getPragmaNodes(IASTNode statement) {
 		int loopLoc = statement.getFileLocation().getNodeOffset();
 		int precedingStmtOffset = getNearestPrecedingStatementOffset(statement);
 		List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
@@ -375,7 +377,7 @@ public class ASTUtil {
         return pragmas;
     }
 
-	private static int getNearestPrecedingStatementOffset(IASTStatement stmt) {
+	private static int getNearestPrecedingStatementOffset(IASTNode stmt) {
 
 		class OffsetFinder extends ASTVisitor {
 
@@ -410,8 +412,8 @@ public class ASTUtil {
 		}
 
 		OffsetFinder finder = new OffsetFinder(stmt.getFileLocation().getNodeOffset());
-		IASTFunctionDefinition containingFunc = ASTUtil.findNearestAncestor(stmt, IASTFunctionDefinition.class);
-		containingFunc.accept(finder);
+		IASTNode containingNode = ASTUtil.findNearestAncestor(stmt, IASTNode.class);
+		containingNode.accept(finder);
 		return finder.finalOffset;
 	}
 
@@ -474,6 +476,23 @@ public class ASTUtil {
     	return true;
 	}
 	
+
+	public static IASTFunctionDefinition findFunctionDefinition(IASTFunctionCallExpression call) {
+		if (!(call.getFunctionNameExpression() instanceof IASTIdExpression)) {
+			return null;
+		}
+		IASTName callName = ((IASTIdExpression) call.getFunctionNameExpression()).getName();
+		List<IASTFunctionDefinition> functionDefinitions = 
+				find(call.getTranslationUnit(), IASTFunctionDefinition.class);
+		for (IASTFunctionDefinition definition : functionDefinitions) {
+			IASTName definitionName = definition.getDeclarator().getName();
+			if (definitionName.toString().equals(callName.toString())) {
+				return definition;
+			}
+		}
+		return null;
+	}
+
 	private ASTUtil() {
 	}
 }

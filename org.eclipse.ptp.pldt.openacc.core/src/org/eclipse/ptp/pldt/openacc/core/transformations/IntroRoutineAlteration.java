@@ -11,15 +11,39 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
+import java.util.HashSet;
+
+import org.eclipse.ptp.pldt.openacc.internal.core.FunctionNode;
+
 public class IntroRoutineAlteration extends SourceStatementsAlteration<IntroRoutineCheck> {
 
+	FunctionNode tree;
+	
 	public IntroRoutineAlteration(IASTRewrite rewriter, IntroRoutineCheck check) {
 		super(rewriter, check);
+		tree = check.getTree();
 	}
 
 	@Override
 	protected void doChange() {
-		
+		for (FunctionNode node : tree.getChildren()) {
+			changeNode(node, new HashSet<FunctionNode>());
+		}
+		finalizeChanges();
+	}
+	
+	private void changeNode(FunctionNode node, HashSet<FunctionNode> marked) {
+		if (marked.contains(node)) {
+			return;
+		}
+		marked.add(node);
+		int offset = node.getDefinition().getFileLocation().getNodeOffset();
+        String pragma = "#pragma acc routine ";
+        pragma += node.getLevel().toString();
+        insert(offset, pragma + System.lineSeparator());
+        for (FunctionNode child : node.getChildren()) {
+        	changeNode(child, marked);
+        }
 	}
 
 }

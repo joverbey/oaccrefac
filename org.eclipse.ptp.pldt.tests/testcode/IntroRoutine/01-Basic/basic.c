@@ -5,16 +5,17 @@ int main() {
 }
 
 int foo() {
-#pragma acc parallel
-	{
-#pragma acc loop gang
-		for (int i = 0; i < 100; i++) {
 
-		}
-	}
 	return bar();
 }
 
 int bar() {
+#pragma acc parallel vector
+	{
+#pragma acc loop
+		for (int i = 0; i < 100; i++) {
+
+		}
+	}
 	return 1;
 }

@@ -21,10 +21,13 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.FunctionGraphException;
 import org.eclipse.ptp.pldt.openacc.internal.core.FunctionNode;
 
 public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> {
 
+	private FunctionNode tree;
+	
 	public IntroRoutineCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
 		super(statements, statementsAndComments);
 	}
@@ -34,15 +37,25 @@ public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> 
 		List<IASTFunctionDefinition> definitions = new ArrayList<IASTFunctionDefinition>();
 		for (IASTStatement statement : getStatements()) {
 			for (IASTFunctionCallExpression call : ASTUtil.find(statement, IASTFunctionCallExpression.class)) {
-				IASTFunctionDefinition definition = FunctionNode.findFunctionDefinition(call);
+				IASTFunctionDefinition definition = ASTUtil.findFunctionDefinition(call);
 				if (definition == null) {
 					status.addFatalError("Cannot find function definition.");
 				}
 				definitions.add(definition);
 			}
 		}
-		FunctionNode tree = new FunctionNode(definitions);
-		return null;
+		try {
+			tree = new FunctionNode(definitions);
+		} catch (FunctionGraphException e) {
+			status.addFatalError(e.getMessage());
+		}
+		//TODO: Add dependence checks.
+		//TODO: Check whether root level is valid.
+		return status;
+	}
+	
+	public FunctionNode getTree() {
+		return tree;
 	}
 	
 }
