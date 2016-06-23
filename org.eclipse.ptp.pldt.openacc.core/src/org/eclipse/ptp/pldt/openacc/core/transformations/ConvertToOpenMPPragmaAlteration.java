@@ -399,7 +399,7 @@ public class ConvertToOpenMPPragmaAlteration extends SourceFileAlteration<Conver
 		StringBuilder newPragma = new StringBuilder();
 
 		newPragma.append("target update ");
-		if (pragma.getRawSignature().contains("host")) {
+		if (pragma.getRawSignature().contains("host") || pragma.getRawSignature().contains("self")) {
 			newPragma.append("from(" + getValue(pragma, "host") + ") ");
 		}
 
