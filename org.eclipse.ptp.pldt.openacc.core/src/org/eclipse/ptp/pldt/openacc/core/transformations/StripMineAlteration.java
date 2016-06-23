@@ -51,7 +51,7 @@ public class StripMineAlteration extends ForLoopAlteration<StripMineCheck> {
 			String newNameOuter, String newNameInner, StripMineCheck check) {
 		super(rewriter, check);
 		
-		if(zeroBased && (newNameInner == null || newNameInner.equals(""))) {
+		if(zeroBased && (newNameInner == null)) {
 			throw new IllegalStateException();
 		}
 		

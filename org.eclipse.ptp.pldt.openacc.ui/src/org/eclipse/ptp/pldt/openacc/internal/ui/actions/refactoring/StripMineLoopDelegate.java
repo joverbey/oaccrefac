@@ -23,6 +23,8 @@ import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.StringInputComposite.StringValueChangedListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.StripMineLoopRefactoring;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 @SuppressWarnings("restriction")
 public class StripMineLoopDelegate extends RefactoringActionDelegate {
@@ -55,7 +57,7 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
                 refac.setNewNameInner(value);
             }
         });
-        page.addInputControl("Zero Based", new CheckButtonSelectionListener(false) {
+        page.addInputControl("Zero Based", new CheckButtonSelectionListener(false, 2) {
 			
 			@Override
 			protected void toggleButton(boolean selection) {
@@ -65,6 +67,11 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
 				else {
 					refac.setZeroBased(false);
 				}
+			}
+			
+			@Override
+			protected void compAffect(Composite comp, boolean selection) {
+				recursiveSetEnabled(comp, selection);
 			}
 		});
         page.addInputControl("Handle Overflow", new CheckButtonSelectionListener(true) {
@@ -81,5 +88,13 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
 		});
         return wizard;
     }
-
+    
+    private void recursiveSetEnabled(Control comp, boolean enabled) {
+    	comp.setEnabled(enabled);
+    	if (comp instanceof Composite) {
+    		for (Control cont : ((Composite) comp).getChildren()) {
+    			recursiveSetEnabled(cont, enabled);
+    		}
+    	}
+    }
 }

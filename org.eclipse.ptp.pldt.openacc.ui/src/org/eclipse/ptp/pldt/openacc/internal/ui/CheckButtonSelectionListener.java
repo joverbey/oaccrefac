@@ -4,19 +4,31 @@ import org.eclipse.ptp.pldt.openacc.internal.ui.AbstractInputComposite.ValueChan
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 
 public abstract class CheckButtonSelectionListener implements SelectionListener, ValueChangedListener {
 
 	private Button listenButton;
 	private boolean defaultSelected;
+	private int compIndex;
+	private Composite comp;
 
 	public CheckButtonSelectionListener(boolean defaultSelected) {
 		this.defaultSelected = defaultSelected;
+		this.compIndex = -1;
+	}
+	
+	public CheckButtonSelectionListener(boolean defaultSelected, int compositeToAffect) {
+		this.defaultSelected = defaultSelected;
+		this.compIndex = compositeToAffect;
 	}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		toggleButton(listenButton.getSelection());
+		if (compIndex >= 0) {
+			compAffect(comp, listenButton.getSelection());
+		}
 	}
 	
 	public void setButton(Button listenButton) {
@@ -24,6 +36,23 @@ public abstract class CheckButtonSelectionListener implements SelectionListener,
 		if (defaultSelected) {
 			listenButton.setSelection(true);
 		}
+	}
+	
+	public void setCompIndex(int compToAffect) {
+		this.compIndex = compToAffect;
+	}
+	
+	public void setComp(Composite comp) {
+		this.comp = comp;
+		compAffect(comp, listenButton.getSelection());
+	}
+	
+	public int getCompIndex() {
+		return compIndex;
+	}
+	
+	protected void compAffect(Composite comp, boolean selection) {
+		
 	}
 	
 	protected abstract void toggleButton(boolean selection);

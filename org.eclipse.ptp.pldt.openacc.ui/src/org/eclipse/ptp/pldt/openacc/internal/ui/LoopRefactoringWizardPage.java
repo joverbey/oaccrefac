@@ -25,6 +25,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
 
     private final ArrayList<String> controlLabels = new ArrayList<>();
     private final ArrayList<ValueChangedListener> controlListeners = new ArrayList<>();
+    private final ArrayList<Composite> composites = new ArrayList<Composite>();
 
     public LoopRefactoringWizardPage(String name) {
         super(name);
@@ -37,7 +38,9 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
 
     @Override
     public void createControl(Composite parent) {
-        Composite c = new Composite(parent, SWT.NONE);
+    	Composite master = new Composite(parent, SWT.NONE);
+        master.setLayout(new GridLayout());
+        Composite c = new Composite(master, SWT.RIGHT_TO_LEFT);
         c.setLayout(new GridLayout());
         RadioButtonComposite radioButtons = null;
         CheckButtonComposite checkButtons = null;
@@ -45,33 +48,39 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
                 
         for (int i = 0; i < controlListeners.size(); i++) {
         	if (controlListeners.get(i) instanceof NumberValueChangedListener) {
-        		NumberInputComposite nic = new NumberInputComposite(c, SWT.NONE, 
+        		NumberInputComposite nic = new NumberInputComposite(c, SWT.LEFT_TO_RIGHT, 
         				(NumberValueChangedListener) controlListeners.get(i));
         		nic.setLabelText(controlLabels.get(i));
+        		composites.add(nic);
         	}
         	else if (controlListeners.get(i) instanceof StringValueChangedListener) {
-        		StringInputComposite sic = new StringInputComposite(c, SWT.NONE, 
+        		StringInputComposite sic = new StringInputComposite(c, SWT.LEFT_TO_RIGHT, 
         				(StringValueChangedListener) controlListeners.get(i));
             	sic.setLabelText(controlLabels.get(i));
+            	composites.add(sic);
         	}
         	else if (controlListeners.get(i) instanceof RadioButtonSelectionListener) {
         		if (!hasButtons) {
         			hasButtons = true;
-        			radioButtons = new RadioButtonComposite(c, SWT.NONE, "Regular", controlLabels.get(i), 
+        			radioButtons = new RadioButtonComposite(c, SWT.LEFT_TO_RIGHT, "Regular", controlLabels.get(i), 
         					(RadioButtonSelectionListener) controlListeners.get(i));
         		}
         	} else if (controlListeners.get(i) instanceof CheckButtonSelectionListener) {
         		if (checkButtons == null) {
-        			checkButtons = new CheckButtonComposite(c, SWT.NONE);
+        			checkButtons = new CheckButtonComposite(master, SWT.LEFT_TO_RIGHT);
         		}
-        		checkButtons.addButton((CheckButtonSelectionListener) controlListeners.get(i), controlLabels.get(i));
+        		CheckButtonSelectionListener listener = (CheckButtonSelectionListener) controlListeners.get(i);
+				checkButtons.addButton(listener, controlLabels.get(i));
+				if (listener.getCompIndex() >= 0) {
+					listener.setComp(composites.get(listener.getCompIndex()));
+				}
         	}
         }
         
         if (hasButtons) {
         	radioButtons.setFirst();
         }
-        setControl(c);
+        setControl(master);
         setTitle(getName());
         setPageComplete(true);
     }
