@@ -20,6 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.NullAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.NullCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.NullParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 /**
  * NullRefactoring is performs a dependence analysis but makes no changes to the source code. It is intended for
@@ -35,6 +36,10 @@ public class NullRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
+        String msg = String.format("Selected loop (line %d) is: %s", getLoop().getFileLocation().getStartingLineNumber(),
+                ASTUtil.summarize(getLoop()));
+        status.addInfo(msg, getLocation(getLoop()));
+
         check = new NullCheck(getLoop());
         check.performChecks(status, pm, new NullParams());
     }

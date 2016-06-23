@@ -54,10 +54,12 @@ public abstract class StatementsRefactoring extends CRefactoring {
             return initStatus;
         }
 
+        /*
         String msg = String.format("Selected %d stmts (l%d - l%d)", statements.length,
                 statements[0].getFileLocation().getStartingLineNumber(),
                 statements[statements.length - 1].getFileLocation().getEndingLineNumber());
         initStatus.addInfo(msg);
+        */
 
         pm.subTask("Checking initial conditions...");
         doCheckInitialConditions(initStatus, pm);

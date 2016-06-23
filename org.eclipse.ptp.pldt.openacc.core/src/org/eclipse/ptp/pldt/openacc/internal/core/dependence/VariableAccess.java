@@ -13,7 +13,6 @@ package org.eclipse.ptp.pldt.openacc.internal.core.dependence;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
@@ -149,14 +148,8 @@ public class VariableAccess implements Comparable<VariableAccess> {
     private int[] collectCoefficients(List<IBinding> vars, int subscript) {
         int[] result = new int[vars.size() + 1];
         result[0] = arraySubscripts[subscript].getConstantCoefficient();
-        Map<IBinding, Integer> coeffs = arraySubscripts[subscript].getCoefficients();
         for (int i = 0; i < vars.size(); i++) {
-            Integer coeff = coeffs.get(vars.get(i));
-            if (coeff == null) {
-                result[i + 1] = 0;
-            } else {
-                result[i + 1] = coeff.intValue();
-            }
+            result[i + 1] = arraySubscripts[subscript].getCoefficient(vars.get(i));
         }
         return result;
     }

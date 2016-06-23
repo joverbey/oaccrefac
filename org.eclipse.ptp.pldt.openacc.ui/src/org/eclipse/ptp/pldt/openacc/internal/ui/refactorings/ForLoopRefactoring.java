@@ -122,10 +122,6 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             return initStatus;
         }
 
-        String msg = String.format("Selected loop (line %d) is: %s", forLoop.getFileLocation().getStartingLineNumber(),
-                ASTUtil.summarize(forLoop));
-        initStatus.addInfo(msg, getLocation(forLoop));
-
         ForStatementInquisitor forLoopInquisitor = ForStatementInquisitor.getInquisitor(forLoop);
 
         pm.subTask("Checking initial conditions...");
