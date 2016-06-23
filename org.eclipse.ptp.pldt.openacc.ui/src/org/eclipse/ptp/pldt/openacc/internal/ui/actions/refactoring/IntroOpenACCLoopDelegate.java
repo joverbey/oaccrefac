@@ -16,7 +16,7 @@ import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.ButtonSelectionListener;
+import org.eclipse.ptp.pldt.openacc.internal.ui.RadioButtonSelectionListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCLoopRefactoring;
@@ -42,7 +42,7 @@ public class IntroOpenACCLoopDelegate extends RefactoringActionDelegate {
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, 
         		"Introduce OpenACC Parallel Loop");
         LoopRefactoringWizardPage page = wizard.getInputPage();
-        page.addInputControl("Kernels", new ButtonSelectionListener(refac));
+        page.addInputControl("Kernels", new RadioButtonSelectionListener(refac));
         return wizard;
     }
 

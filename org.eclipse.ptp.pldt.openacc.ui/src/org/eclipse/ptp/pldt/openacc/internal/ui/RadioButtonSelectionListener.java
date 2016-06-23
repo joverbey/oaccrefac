@@ -17,16 +17,16 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 
-public class ButtonSelectionListener implements SelectionListener, ValueChangedListener {
+public class RadioButtonSelectionListener implements SelectionListener, ValueChangedListener {
 	
 	private ForLoopRefactoring refac;
 	protected Button listenButton;
 	
-	public ButtonSelectionListener(ForLoopRefactoring refac) {
+	public RadioButtonSelectionListener(ForLoopRefactoring refac) {
 		this.refac = refac;
 	}
 	
-	public ButtonSelectionListener() {
+	public RadioButtonSelectionListener() {
 		
 	}
 	

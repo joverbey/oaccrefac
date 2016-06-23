@@ -17,6 +17,7 @@ import org.eclipse.cdt.internal.ui.refactoring.CRefactoring;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
+import org.eclipse.ptp.pldt.openacc.internal.ui.CheckButtonSelectionListener;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizardPage;
 import org.eclipse.ptp.pldt.openacc.internal.ui.NumberInputComposite.NumberValueChangedListener;
@@ -42,12 +43,42 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
                 refac.setStripFactor(value);
             }
         });
-        page.addInputControl("Index Variable Name", new StringValueChangedListener() {
+        page.addInputControl("Outer Index Variable Name", new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
                 refac.setNewNameOuter(value);
             }
         });
+        page.addInputControl("Inner Index Variable Name", new StringValueChangedListener() {
+            @Override
+            public void stringValueChanged(String value) {
+                refac.setNewNameInner(value);
+            }
+        });
+        page.addInputControl("Zero Based", new CheckButtonSelectionListener(false) {
+			
+			@Override
+			protected void toggleButton(boolean selection) {
+				if (selection) {
+					refac.setZeroBased(true);
+				}
+				else {
+					refac.setZeroBased(false);
+				}
+			}
+		});
+        page.addInputControl("Handle Overflow", new CheckButtonSelectionListener(true) {
+			
+			@Override
+			protected void toggleButton(boolean selection) {
+				if (selection) {
+					refac.setHandleOverflow(true);
+				}
+				else {
+					refac.setHandleOverflow(false);
+				}
+			}
+		});
         return wizard;
     }
 

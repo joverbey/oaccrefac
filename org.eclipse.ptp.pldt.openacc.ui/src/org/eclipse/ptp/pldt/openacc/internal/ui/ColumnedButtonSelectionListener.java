@@ -16,7 +16,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class ColumnedButtonSelectionListener extends ButtonSelectionListener implements SelectionListener {
+public class ColumnedButtonSelectionListener extends RadioButtonSelectionListener implements SelectionListener {
 
 	private Composite left;
 	private Composite right;

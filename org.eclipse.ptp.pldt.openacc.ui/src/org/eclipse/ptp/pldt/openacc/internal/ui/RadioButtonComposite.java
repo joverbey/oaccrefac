@@ -16,12 +16,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-public class ButtonComposite extends Composite {
+public class RadioButtonComposite extends Composite {
 	
 	Button regButton;
 	
-	public ButtonComposite(Composite parent, int style, String label1, String label2, 
-			ButtonSelectionListener regListener) {
+	public RadioButtonComposite(Composite parent, int style, String label1, String label2, 
+			RadioButtonSelectionListener regListener) {
 		super(parent, style);
 		
 		setLayout(new GridLayout(2, false));
