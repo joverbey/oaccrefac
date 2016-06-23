@@ -65,7 +65,7 @@ public class FunctionNode {
 			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
 				setLevelFromPragma(pragma.getRawSignature());
 			}
-			if (level == null) { // Implies the child doesn't have a pragma, and should be modified.
+			if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
 				FunctionNode existingNode = root.findDescendent(functionDefinition, new HashSet<FunctionNode>());
 				if (existingNode != null) {
 					this.children.add(existingNode);
@@ -88,15 +88,16 @@ public class FunctionNode {
 	}
 
 	private void setLevelFromPragma(String rawSignature) {
-		if (rawSignature.contains("seq") && (level == null)) {
+		if (rawSignature.contains("parallel") || rawSignature.contains("kernels")
+				|| rawSignature.contains("gang")) {
+			level = FunctionLevel.GANG;
+		} else if (rawSignature.contains("seq") && (level == null)) {
 			level = FunctionLevel.SEQ;
 		} else if (rawSignature.contains("vector") && (level == null || level == FunctionLevel.SEQ)) {
 			level = FunctionLevel.VECTOR;
 		} else if (rawSignature.contains("worker") && (level == null || level.compareTo(FunctionLevel.WORKER) < 0)) {
 			level = FunctionLevel.WORKER;
-		} else if (rawSignature.contains("gang") && (level == null || level.compareTo(FunctionLevel.GANG) < 0)) {
-			level = FunctionLevel.GANG;
-		}
+		} 
 	}
 	
 	private void findCurrentLevel() throws FunctionGraphException {
@@ -146,7 +147,6 @@ public class FunctionNode {
 		}
 		output += ", Children: ";
 		output += children.size();
-		output += ", Parents: ";
 		return output;
 	}
 }
