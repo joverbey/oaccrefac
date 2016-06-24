@@ -4,10 +4,12 @@ int main() {
     }
 }
 
+#pragma acc routine seq
 int foo() {
 	return bar();
 }
 
+#pragma acc routine seq
 int bar() {
 	for (int i = 0; i < 100; i++) {
 

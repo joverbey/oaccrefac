@@ -9,6 +9,7 @@ int foo() {
 }
 
 int bar() {
+#pragma acc loop vector
 	for (int i = 0; i < 100; i++) {
 
 	}

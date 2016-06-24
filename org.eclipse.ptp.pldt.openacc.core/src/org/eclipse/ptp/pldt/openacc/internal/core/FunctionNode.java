@@ -17,11 +17,15 @@ import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IVariable;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 public class FunctionNode {
 
 	private FunctionNode root;
+	private RefactoringStatus status;
 	private FunctionLevel level = null;
 	private IASTFunctionDefinition definition;
 	private ArrayList<FunctionNode> children = new ArrayList<FunctionNode>();
@@ -29,11 +33,15 @@ public class FunctionNode {
 	
 
 	//Used to create root of the tree, which may contain multiple unrelated definitions as children.
-	public FunctionNode(List<IASTFunctionDefinition> definitions) throws FunctionGraphException {
+	public FunctionNode(List<IASTFunctionDefinition> definitions, RefactoringStatus status) 
+			throws FunctionGraphException {
 		this.definition = null;
 		this.root = this;
+		this.status = status;
 		for (IASTFunctionDefinition definition : definitions) {
-			new FunctionNode(definition, root, this);
+			if (ASTUtil.getPragmaNodes(definition).isEmpty()) {
+				new FunctionNode(definition, root, this);
+			}
 		}
 	}
 	
@@ -42,6 +50,7 @@ public class FunctionNode {
 		this.definition = definition;
 		this.root = root;
 		parent.children.add(this); // Children have to be added in constructor, not after, to avoid infinite loop.
+		this.checkForStatic();
 		this.addChildren();
 		this.findInherentRestriction();
 		this.findCurrentLevel();
@@ -62,20 +71,24 @@ public class FunctionNode {
 	private void addChildren() throws FunctionGraphException {
 		for (IASTFunctionCallExpression call : ASTUtil.find(definition, IASTFunctionCallExpression.class)) {
 			IASTFunctionDefinition functionDefinition = ASTUtil.findFunctionDefinition(call);
-			for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
-				setLevelFromPragma(pragma.getRawSignature());
-			}
-			if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
-				FunctionNode existingNode = root.findDescendent(functionDefinition, new HashSet<FunctionNode>());
-				if (existingNode != null) {
-					this.children.add(existingNode);
-				} else {
-					new FunctionNode(functionDefinition, root, this);
-				}
+			if (functionDefinition == null) {
+				root.status.addError("Cannot find function definition.", ASTUtil.getStatusContext(call, call));
 			} else {
-				level = level.next(); // Routines must be called from one level higher than themselves.
-				if (level == null) {
-					throw new FunctionGraphException("Levels of parallelism in the function call graph are inconsistent."); 
+				for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
+					setLevelFromPragma(pragma.getRawSignature());
+				}
+				if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
+					FunctionNode existingNode = root.findDescendent(functionDefinition, new HashSet<FunctionNode>());
+					if (existingNode != null) {
+						this.children.add(existingNode);
+					} else {
+						new FunctionNode(functionDefinition, root, this);
+					}
+				} else {
+					level = level.next(); // Routines must be called from one level higher than themselves.
+					if (level == null) {
+						throw new FunctionGraphException("Levels of parallelism in the function call graph are inconsistent."); 
+					}
 				}
 			}
 		}
@@ -114,7 +127,8 @@ public class FunctionNode {
 		}
 		HashSet<FunctionNode> visited = new HashSet<FunctionNode>();
 		if (level != FunctionLevel.SEQ && this.findDescendent(definition, visited) != null) {
-			throw new FunctionGraphException("Recursive functions must have sequential parallelization.");
+			root.status.addError("Recursive functions must have sequential parallelization.",
+					ASTUtil.getStatusContext(definition, definition));
 		}
 	}
 	
@@ -131,6 +145,16 @@ public class FunctionNode {
 			}
 		}
 		return null;
+	}
+	
+	private void checkForStatic() {
+		List<IASTName> names = ASTUtil.find(definition, IASTName.class);
+		for (IASTName name : names) {
+			if (name.getBinding() instanceof IVariable && ((IVariable) name.getBinding()).isStatic()) {
+				root.status.addError("OpenACC routines cannot contain static variables.", 
+						ASTUtil.getStatusContext(name, name));
+			}
+		}
 	}
 	
 	@Override

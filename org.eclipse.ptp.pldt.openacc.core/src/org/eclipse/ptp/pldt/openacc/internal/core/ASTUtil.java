@@ -33,6 +33,7 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
@@ -53,11 +54,17 @@ import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Region;
+import org.eclipse.ltk.core.refactoring.FileStatusContext;
+import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
@@ -492,7 +499,31 @@ public class ASTUtil {
 		}
 		return null;
 	}
+	
+	public static RefactoringStatusContext getStatusContext(IASTNode node1, IASTNode node2) {
+	    if (node1.getTranslationUnit() != node2.getTranslationUnit()) {
+	        return null;
+	    }
+	    
+	    String filename = node1.getTranslationUnit().getFileLocation().getFileName();
+	    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
+	    if (file == null) {
+	        return null;
+	    }
+	
+	    IASTFileLocation fileLocation1 = node1.getFileLocation();
+	    IASTFileLocation fileLocation2 = node2.getFileLocation();
+	    int start1 = fileLocation1.getNodeOffset();
+	    int end1 = start1 + fileLocation1.getNodeLength();
+	    int start2 = fileLocation2.getNodeOffset();
+	    int end2 = start2 + fileLocation2.getNodeLength();
+	    int start = Math.min(start1, start2);
+	    int end = Math.max(end1, end2);
+	    return new FileStatusContext(file, new Region(start, end - start));
+	}
 
 	private ASTUtil() {
 	}
+
+	
 }

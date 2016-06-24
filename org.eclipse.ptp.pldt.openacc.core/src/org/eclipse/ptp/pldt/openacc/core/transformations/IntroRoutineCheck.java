@@ -45,9 +45,9 @@ public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> 
 			}
 		}
 		try {
-			tree = new FunctionNode(definitions);
+			tree = new FunctionNode(definitions, status);
 		} catch (FunctionGraphException e) {
-			status.addFatalError(e.getMessage());
+			status.addFatalError(e.getMessage(), e.getContext());
 		}
 		//TODO: Add dependence checks.
 		//TODO: Check whether root level is valid.
