@@ -21,6 +21,10 @@ import java.util.Set;
 import org.eclipse.cdt.codan.core.model.cfg.IBasicBlock;
 import org.eclipse.cdt.codan.core.model.cfg.ICfgData;
 import org.eclipse.cdt.codan.core.model.cfg.IControlFlowGraph;
+import org.eclipse.cdt.codan.core.model.cfg.IExitNode;
+import org.eclipse.cdt.codan.core.model.cfg.IStartNode;
+import org.eclipse.cdt.core.dom.ast.DOMException;
+import org.eclipse.cdt.core.dom.ast.EScopeKind;
 import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
@@ -35,6 +39,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
@@ -42,12 +47,14 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 public class ReachingDefinitions { 
 
     private IControlFlowGraph cfg;
+    private IASTFunctionDefinition func;
     
     private Map<IBasicBlock, RDVarSet> entrySets;
     private Map<IBasicBlock, RDVarSet> exitSets;
     
     public ReachingDefinitions(IASTFunctionDefinition func) {
         this.cfg = new ControlFlowGraphBuilder().build(func);
+        this.func = func;
         
         this.entrySets = new HashMap<IBasicBlock, RDVarSet>();
         this.exitSets = new HashMap<IBasicBlock, RDVarSet>();
@@ -97,7 +104,7 @@ public class ReachingDefinitions {
         for(IASTNode def : reachingDefs) {
             for(IASTName name : ASTUtil.find(def, IASTName.class)) {
                 //if a name found under the definition node is a definition and refers to the right variable
-                if(ASTPatternUtil.isDefinition(name) && name.resolveBinding().equals(varUse.resolveBinding())) {
+                if((name instanceof Global || ASTPatternUtil.isDefinition(name)) && name.resolveBinding().equals(varUse.resolveBinding())) {
                     reachingDefNames.add(name);
                 }
             }
@@ -122,17 +129,43 @@ public class ReachingDefinitions {
         Set<IASTName> reachedUses = new HashSet<IASTName>();
         
         for(IBasicBlock bb : entrySets.keySet()) {
-            Object data = ((ICfgData) bb).getData();
-            if(data != null && data instanceof IASTNode) {
-                for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
-                    if(!ASTPatternUtil.isDefinition(use)) {
-                        if(reachingDefinitions(use).contains(def)) {
-                            reachedUses.add(use);
-                        }
-                    }
-                }
-            }
+        	RDVarSet entry = entrySets.get(bb);
+        	//if this is a definition found in the entry set
+        	if(entry.contains(def)) {
+        		Object data = ((ICfgData) bb).getData();
+        		if(data instanceof IASTNode) {
+        			for(IASTName use : ASTUtil.find(((IASTNode) data), IASTName.class)) {
+        				if(use.resolveBinding().equals(def.resolveBinding()) && !ASTPatternUtil.isDefinition(use)) {
+        					reachedUses.add(use);
+        				}
+        			}
+        		}
+        		if(bb instanceof IExitNode) {
+        			for(IASTNode use : entry.get(def.resolveBinding())) {
+        				if(use instanceof Global) {
+        					reachedUses.add((Global) use);
+        				}
+        			}
+        		}
+        	}
         }
+        
+//        for(IBasicBlock bb : entrySets.keySet()) {
+//            Object data = ((ICfgData) bb).getData();
+//            Set<IASTName> uses = new HashSet<IASTName>();
+//            if(data instanceof IASTNode) {
+//                for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
+//                    if(!ASTPatternUtil.isDefinition(use)) {
+//                        if(reachingDefinitions(use).contains(def)) {
+//                            reachedUses.add(use);
+//                        }
+//                    }
+//                }
+//            }
+//            if(bb instanceof IExitNode) {
+//            	
+//            }
+//        }
         return reachedUses;
         
     }
@@ -143,7 +176,6 @@ public class ReachingDefinitions {
      * @param node a tree node that may or may not contain variable uses
      * @return a set of IASTNode definitions reaching the variable uses in the node
      */
-
     public Set<IASTName> reachingDefinitions(IASTNode node) {
         Set<IASTName> defs = new HashSet<IASTName>();
         for(IASTName name : ASTUtil.find(node, IASTName.class)) {
@@ -177,6 +209,7 @@ public class ReachingDefinitions {
     }
     
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
+//    	addGlobalDefs(cfg.getStartNode());
         boolean changed;
         do {
             changed = false;
@@ -188,6 +221,10 @@ public class ReachingDefinitions {
                 
                 RDVarSet bbEntry = new RDVarSet();
                 RDVarSet bbExit = new RDVarSet();
+                
+                if(bb instanceof IStartNode) {
+                	addGlobalDefs(bb, bbEntry);
+                }
 
                 for(IBasicBlock pred : bb.getIncomingNodes()) {
                     if(exitSets.containsKey(pred)) {
@@ -228,8 +265,23 @@ public class ReachingDefinitions {
         } while (changed);
         return;
     }
-    
-    private List<IASTName> varWritesIn(IBasicBlock bb) {
+
+    private void addGlobalDefs(IBasicBlock startNode, RDVarSet entries) {
+    	for(IASTName ref : ASTUtil.find(func, IASTName.class)) {
+    		IBinding binding = ref.resolveBinding();
+    		try {
+				if(binding instanceof IVariable 
+						&& !binding.getScope().getKind().equals(EScopeKind.eLocal)) {
+					Global fake = Global.newInstance(binding);
+					entries.add(binding, fake);
+				}
+			} catch (DOMException e) {
+				e.printStackTrace();
+			}
+    	}
+	}
+
+	private List<IASTName> varWritesIn(IBasicBlock bb) {
         List<IASTName> writeAccesses = new ArrayList<IASTName>();
         Object data = ((ICfgData) bb).getData();
         if (data == null || !(data instanceof IASTNode))
@@ -331,6 +383,7 @@ public class ReachingDefinitions {
         }
         return true;
     }
+    
     
     @Override
     public String toString() {

@@ -58,7 +58,7 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
         }
         if(!inferCopy.get().get(inferCopy.getRoot()).isEmpty()) {
         	newOuterPragma.append(" ");
-            newOuterPragma.append(copyout(inferCopy.get().get(inferCopy.getRoot())));
+            newOuterPragma.append(copy(inferCopy.get().get(inferCopy.getRoot())));
         }
         if(!inferCreate.get().get(inferCreate.getRoot()).isEmpty()) {
         	newOuterPragma.append(" ");
