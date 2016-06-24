@@ -20,6 +20,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.Global;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
@@ -590,6 +591,51 @@ public class ReachingDefinitionsTest extends TestCase {
         }
     }
     
+    public void testForLoopGlobals() throws Exception {
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "int x;"
+                + "void main() {            \n" //1
+                + "    int a, b;            \n" //2
+                + "    for(int i = 0;       \n" //3
+                + "       i < 10;           \n" //4
+                + "       i++) {            \n" //5
+                + "        b = x;           \n" //6
+                + "        x = i;           \n" //7
+                + "    }                    \n" //8
+                + "    a = x;               \n" //9
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "b = x;":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7, null));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            case "x = i;":
+            	assertTrue(contains(rd, "i", 3, null));
+            	assertTrue(contains(rd, "i", 5, null));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 6, null));
+            	assertTrue(contains(ru, "x", 9, null));
+            	assertTrue(containsGlobal(ru, "x"));
+            	assertTrue(ru.size() == 3);
+            	break;
+            case "a = x;":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7, null));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            }
+        }
+    }
+    
+    
     private List<IASTNode> getStatements(IASTFunctionDefinition func) {
         List<IASTNode> stmts = new ArrayList<IASTNode>();
         stmts.addAll(ASTUtil.find(func, IASTStatement.class));
@@ -603,6 +649,15 @@ public class ReachingDefinitionsTest extends TestCase {
                 return true;
         }
         return false;
+    }
+    
+    private boolean containsGlobal(Set<IASTName> names, String global) {
+    	for(IASTName n : names) {
+    		if(n instanceof Global && n.resolveBinding().getName().equals(global)) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
     
     private boolean checkName(IASTName occurrence, String name, Integer lineNumber, Integer offset) {
