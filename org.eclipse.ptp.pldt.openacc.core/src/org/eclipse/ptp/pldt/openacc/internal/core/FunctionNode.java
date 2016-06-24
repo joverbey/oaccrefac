@@ -40,7 +40,12 @@ public class FunctionNode {
 		this.status = status;
 		for (IASTFunctionDefinition definition : definitions) {
 			if (ASTUtil.getPragmaNodes(definition).isEmpty()) {
-				new FunctionNode(definition, root, this);
+				FunctionNode existingNode = root.findDescendent(definition, new HashSet<FunctionNode>());
+				if (existingNode != null) {
+					this.children.add(existingNode);
+				} else {
+					new FunctionNode(definition, root, this);
+				}
 			}
 		}
 	}
