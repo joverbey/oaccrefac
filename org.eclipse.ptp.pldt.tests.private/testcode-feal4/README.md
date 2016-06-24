@@ -29,6 +29,11 @@ compiles the demo file.
 
 # Refactoring `feal4_initial.c` with our Tool
 
+BE CAREFUL OF CURRENT BUGS IN INTRO DATA
+- copyout sets should mostly be copies for FEAL4; look at new data construct and altered parallel constructs inside as well
+- current bug: parameters are not considered. in crackLastRound(), the parameter is created; should be copied in
+
+
 in `crackLastRound()`:  
 	
 - manually declare a new boolean initialized to `false`  
