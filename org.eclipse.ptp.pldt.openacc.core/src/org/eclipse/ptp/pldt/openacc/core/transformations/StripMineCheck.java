@@ -51,10 +51,13 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
         // If the strip factor is not divisible by the original linear
         // iteration factor, (i.e. loop counts by 4), then we cannot
         // strip mine because the refactoring will change behavior
-        int iterator = inq.getIterationFactor();
-        if (params.getStripFactor() % iterator != 0 || params.getStripFactor() <= iterator) {
+        int iterFactor = inq.getIterationFactor();
+        if (params.getStripFactor() % iterFactor != 0 || params.getStripFactor() <= iterFactor) {
             status.addError("Strip mine factor must be greater than and divisible by the intended loop's iteration factor");
-            return;
+        }
+        
+        if(!params.shouldHandleOverflow() && inq.getInclusiveUpperBound() % params.getStripFactor() != 0) {
+        	status.addWarning("Loop range overflow will not be handled, but the loop upper bound is not divisible by strip factor, so overflow will occur");
         }
         
     }

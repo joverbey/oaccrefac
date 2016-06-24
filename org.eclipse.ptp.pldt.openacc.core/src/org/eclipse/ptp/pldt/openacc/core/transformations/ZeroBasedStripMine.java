@@ -83,7 +83,12 @@ public class ZeroBasedStripMine extends ForLoopAlteration<StripMineCheck> {
 		else {
 			innerCond = String.format("%s < %d", newNameInner, stripFactor);
 		}
-		innerIter = String.format("%s++", newNameInner);
+		if(inq.getIterationFactor() == 1) {
+			innerIter = String.format("%s++", newNameInner);
+		}
+		else {
+			innerIter = String.format("%s += %d", newNameInner, inq.getIterationFactor());
+		}
 		
 		outerInit = String.format("%s %s = 0", initType, newNameOuter);
 		outerCond = String.format("%s < %s", newNameOuter, ub);

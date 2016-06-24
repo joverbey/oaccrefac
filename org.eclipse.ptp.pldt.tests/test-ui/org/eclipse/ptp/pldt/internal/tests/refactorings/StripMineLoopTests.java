@@ -34,7 +34,21 @@ public class StripMineLoopTests extends RefactoringTest<StripMineLoopRefactoring
     @Override
     protected void configureRefactoring(StripMineLoopRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
-         String stripFactor = markerFields.removeFirst();
-         refactoring.setStripFactor(Integer.parseInt(stripFactor));
+    	/*
+    	 * sf
+    	 * sf,zb=true,ho=true[,name1,name2]
+    	 * sf,zb=true,ho=false[,name1,name2]
+    	 */
+         refactoring.setStripFactor(Integer.parseInt(markerFields.removeFirst()));
+         if(markerFields.size() > 1) {
+			refactoring.setZeroBased(Boolean.parseBoolean(markerFields.removeFirst()));
+			refactoring.setHandleOverflow(Boolean.parseBoolean(markerFields.removeFirst()));
+			if (markerFields.size() > 1) {
+				refactoring.setNewNameOuter(markerFields.removeFirst());
+			}
+			if (markerFields.size() > 1) {
+				refactoring.setNewNameInner(markerFields.removeFirst());
+			}
+		}
     }
 }
