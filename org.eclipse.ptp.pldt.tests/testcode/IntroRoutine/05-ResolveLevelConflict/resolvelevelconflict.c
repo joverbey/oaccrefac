@@ -4,12 +4,10 @@ int main() {
     }
 }
 
-#pragma acc routine gang
 int foo() {
 	return bar() + bar2();
 }
 
-#pragma acc routine vector
 int bar() {
 #pragma acc loop vector
 	for (int i = 0; i < 100; i++) {
@@ -18,7 +16,6 @@ int bar() {
 	return 1;
 }
 
-#pragma acc routine worker
 int bar2() {
 #pragma acc loop worker
 	for (int i = 0; i < 100; i++) {
