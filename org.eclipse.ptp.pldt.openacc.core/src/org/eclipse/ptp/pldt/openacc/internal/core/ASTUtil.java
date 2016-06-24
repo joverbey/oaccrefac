@@ -44,6 +44,8 @@ import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
@@ -489,6 +491,12 @@ public class ASTUtil {
 			return null;
 		}
 		IASTName callName = ((IASTIdExpression) call.getFunctionNameExpression()).getName();
+		
+		IBinding binding = callName.resolveBinding();
+		if (!(binding instanceof IFunction)) {
+			return null;
+		}
+		
 		List<IASTFunctionDefinition> functionDefinitions = 
 				find(call.getTranslationUnit(), IASTFunctionDefinition.class);
 		for (IASTFunctionDefinition definition : functionDefinitions) {
