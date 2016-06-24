@@ -41,6 +41,7 @@ in `crackLastRound()`:
 
 in `main()`:  
 	
-- follow a similar sequence of actions using the `guessK0` loop  
+- follow a similar sequence of actions using the `guessK0` loop
+- change the seed to 1461523442  
 
 
