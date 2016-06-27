@@ -132,17 +132,6 @@ public class ASTUtil {
 		return null;
 	}
 	
-//	public static IASTNode findNearestAncestor(IASTNode startingNode, Class<?>... clazzes) {
-//		for (IASTNode node = startingNode.getParent(); node != null; node = node.getParent()) {
-//			for(Class<?> clazz : clazzes) {
-//				if (clazz.isInstance(node)) {
-//					return node;
-//				}
-//			}
-//		}
-//		return null;
-//	}
-
 	/**
 	 * returns <code>true</code> if <code>ancestor</code> is an ancestor of or is the the same node as
 	 * <code>descendant</code>

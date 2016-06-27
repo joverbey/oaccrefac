@@ -29,6 +29,7 @@ import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IPointerType;
 import org.eclipse.cdt.core.dom.ast.IType;
+import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ASTMatcher;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryExpression;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryLValue;
@@ -180,7 +181,12 @@ public final class AtomicStatementInquisitor {
     }
     
     private static boolean isScalarType(IType type) {
-        return type instanceof IBasicType || type instanceof IPointerType;
+    	if(type instanceof ITypedef) {
+    		return ((ITypedef) type).getType() instanceof IBasicType || ((ITypedef) type).getType() instanceof IPointerType;
+    	}
+    	else {
+    		return type instanceof IBasicType || type instanceof IPointerType;
+    	}
     }
     
     public static boolean isDeclaredInNode(String name, IASTNode node) {

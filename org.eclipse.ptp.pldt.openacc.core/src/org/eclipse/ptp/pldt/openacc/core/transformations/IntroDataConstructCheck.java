@@ -50,20 +50,25 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     		status.addWarning("Data construct will not surround any statements");
     		return;
     	}
-    	else {
-    		for(IASTStatement stmt : stmts) {
-    			IASTNode parent = stmt.getParent();
-    			if(parent instanceof IASTIfStatement) {
-    				IASTIfStatement ifStmt = (IASTIfStatement) parent; 
-    				if (ifStmt.getThenClause().equals(stmt) || ifStmt.getElseClause().equals(stmt)) {
-    					status.addError("Data construct must either be inside the conditional statement or surround both the if statement and its else clause");
-    				}
-    			}
-    		}
-    	}
+		for(IASTStatement stmt : stmts) {
+			IASTNode parent = stmt.getParent();
+			if(parent instanceof IASTIfStatement) {
+				IASTIfStatement ifStmt = (IASTIfStatement) parent; 
+				if (ifStmt.getThenClause().equals(stmt) || ifStmt.getElseClause().equals(stmt)) {
+					status.addError("Data construct must either be inside the conditional statement or surround both the if statement and its else clause");
+				}
+			}
+		}
     	
     	if(!ASTUtil.doesConstructContainAllReferencesToVariablesItDeclares(stmts)) {
     		status.addError("Construct would surround variable declaration and cause scope errors");
+    	}
+    	
+    	for(IASTStatement stmt : stmts) {
+    		if(ASTUtil.find(stmt, IASTIfStatement.class).size() > 0) {
+    			status.addWarning("Construct contains a conditional statement; if a variable is conditionally written to and copied out without being copied in, it may result in incorrect values");
+    			break;
+    		}
     	}
     	
     	checkControlFlow(status, getStatements());

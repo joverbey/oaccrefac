@@ -1,0 +1,17 @@
+int main() {
+
+	int N = 100;
+	int a[N];
+	for (int j = 0; j < N; j += 2) {
+		for (int k = 0; k < 2; k++) {
+			int i = j + k;
+			/*<<<<< 5,1,12,3,2,true,false,j,k,pass*/
+			a[i] = 0;
+			for (int j = 0; j < 5; j++) {
+				a[i]++;
+				break;
+			}
+		}
+	}
+
+}

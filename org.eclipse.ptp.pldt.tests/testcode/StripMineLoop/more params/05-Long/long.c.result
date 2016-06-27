@@ -1,0 +1,13 @@
+int main() {
+
+	int N = 100;
+	int a[N];
+	for (long j = 0; j < N; j += 2) {
+		for (long k = 0; k < 2; k++) {
+			long i = j + k;
+			/*<<<<< 5,1,8,3,2,true,false,j,k,pass*/
+			a[i] = 0;
+		}
+	}
+
+}

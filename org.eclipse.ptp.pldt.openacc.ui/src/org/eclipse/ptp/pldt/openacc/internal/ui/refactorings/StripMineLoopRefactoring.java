@@ -24,30 +24,45 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 
 public class StripMineLoopRefactoring extends ForLoopRefactoring {
 
-    private int numFactor = -1;
-    private String newName = "";
+	private int stripFactor = -1;
+	private boolean zeroBased = false;
+	private boolean handleOverflow = true;
+    private String newNameOuter = "";
+    private String newNameInner = "";
     private StripMineCheck stripCheck;
 
     public StripMineLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
-    public void setStripFactor(int factor) {
-        numFactor = factor;
-    }
-    
-    public void setNewName(String name) {
-    	newName = name;
-    }
-    
-    @Override
+    public void setStripFactor(int stripFactor) {
+		this.stripFactor = stripFactor;
+	}
+
+	public void setZeroBased(boolean zeroBased) {
+		this.zeroBased = zeroBased;
+	}
+
+	public void setHandleOverflow(boolean handleOverflow) {
+		this.handleOverflow = handleOverflow;
+	}
+
+	public void setNewNameOuter(String newNameOuter) {
+		this.newNameOuter = newNameOuter;
+	}
+
+	public void setNewNameInner(String newNameInner) {
+		this.newNameInner = newNameInner;
+	}
+
+	@Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
 		stripCheck = new StripMineCheck(getLoop());
-        stripCheck.performChecks(status, pm, new StripMineParams(numFactor, newName));
+        stripCheck.performChecks(status, pm, new StripMineParams(stripFactor, zeroBased, handleOverflow, newNameOuter, newNameInner));
     }
 
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new StripMineAlteration(rewriter, numFactor, newName, stripCheck).change();
+        new StripMineAlteration(rewriter, stripFactor, zeroBased, handleOverflow, newNameOuter, newNameInner, stripCheck).change();
     }
 }

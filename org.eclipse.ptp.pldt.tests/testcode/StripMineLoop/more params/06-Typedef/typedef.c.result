@@ -1,0 +1,14 @@
+#include <stdint.h>
+
+int main() {
+	int N = 100;
+	int a[N];
+	for (uint32_t j = 0; j < N; j += 2) {
+		for (uint32_t k = 0; k < 2; k++) {
+			uint32_t i = j + k;
+			/*<<<<< 6,1,9,3,2,true,false,j,k,pass*/
+			a[i] = 0;
+		}
+	}
+
+}

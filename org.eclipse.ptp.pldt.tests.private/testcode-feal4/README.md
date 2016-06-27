@@ -25,3 +25,28 @@ The project includes several source files:
 To compile any of these files, run `make <FILE_NAME>` without the `.c`.
 To run them, type `./feal4`. `make clean` removes the feal4 file and `make`
 compiles the demo file.
+
+
+# Refactoring `feal4_initial.c` with our Tool
+
+BE CAREFUL OF CURRENT BUGS IN INTRO DATA
+- copyout sets should mostly be copies for FEAL4; look at new data construct and altered parallel constructs inside as well
+- current bug: parameters are not considered. in crackLastRound(), the parameter is created; should be copied in
+
+
+in `crackLastRound()`:  
+	
+- manually declare a new boolean initialized to `false`  
+- manually replace the break in the `score == numplain` if statement with an assignment of `true` to the new variable  
+- with the tool, strip mine the `fakeK` loop with a strip factor of 65535, 0-based loops, and ignoring overflow  
+- manually add a condition to the new outer loop that will cause it to stop iteration if the variable is `true`  
+- with the tool, parallelize the new inner loop  
+- with the tool, make all writes in the above if statement atomic  
+- with the tool, introduce a data construct around the new outer for loop  
+
+in `main()`:  
+	
+- follow a similar sequence of actions using the `guessK0` loop
+- change the seed to 1461523442  
+
+

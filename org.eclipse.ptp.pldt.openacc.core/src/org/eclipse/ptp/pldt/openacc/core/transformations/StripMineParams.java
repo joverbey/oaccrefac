@@ -12,10 +12,42 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class StripMineParams extends AbstractTileLoopsParams {
+public class StripMineParams extends RefactoringParams {
 
-    public StripMineParams(int stripFactor, String newName) {
-        super(stripFactor, newName);
-    }
+	private int stripFactor;
+	private boolean zeroBased;
+	private boolean handleOverflow;
+    private String newNameOuter;
+    private String newNameInner;
+    
+    public StripMineParams(int stripFactor, boolean zeroBased, boolean handleOverflow, String newNameOuter, String newNameInner) {
+		this.stripFactor = stripFactor;
+		this.zeroBased = zeroBased;
+		this.handleOverflow = handleOverflow;
+		this.newNameOuter = newNameOuter;
+		this.newNameInner = newNameInner;
+	}
 
+	public int getStripFactor() {
+		return stripFactor;
+	}
+
+	public boolean shouldBeZeroBased() {
+		return zeroBased;
+	}
+
+	public boolean shouldHandleOverflow() {
+		return handleOverflow;
+	}
+
+	public String getNewNameOuter() {
+		return newNameOuter;
+	}
+
+	public String getNewNameInner() {
+		return newNameInner;
+	}
+
+    
+    
 }

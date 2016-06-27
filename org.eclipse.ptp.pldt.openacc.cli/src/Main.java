@@ -97,7 +97,7 @@ public class Main {
 						break loop;
 					}
 				}
-				refactoring = new StripMineLoop(factor, name);
+				refactoring = new StripMineLoop(factor, false, true, name, null);
 				break;
 			// 1 arg
 			case "-interchange":
