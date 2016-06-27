@@ -91,7 +91,7 @@ public class DependenceAnalysis {
     	this.variableAccesses = new ArrayList<VariableAccess>();
         this.dependences = new HashSet<DataDependence>();
 
-        pm.subTask("Finding variable accesses...");
+        pm.subTask(Messages.DependenceAnalysis_FindingVariableAccesses);
         collectAccessesFromStatements(statements);
         IASTForStatement loop = null;
         if (statements.length != 0) {
@@ -101,7 +101,7 @@ public class DependenceAnalysis {
         
         
         
-        pm.subTask("Analyzing dependences...");
+        pm.subTask(Messages.DependenceAnalysis_AnalyzingDependences);
         computeDependences(pm);
     }
     
@@ -123,10 +123,10 @@ public class DependenceAnalysis {
         SubMonitor progress = SubMonitor.convert(pm, getVariableAccesses().size() * getVariableAccesses().size());
 
         for (VariableAccess v1 : getVariableAccesses()) {
-			progress.subTask(String.format("Analyzing line %d - %s",
+			progress.subTask(String.format(Messages.DependenceAnalysis_AnalyzingLine,
 					v1.getVariableName().getFileLocation().getStartingLineNumber(), v1));
             if (writesToIndex(v1)) {
-            	throw new DependenceTestFailure(String.format("Loop cannot be analyzed.  Loop index variable is changed on line %d.",
+            	throw new DependenceTestFailure(String.format(Messages.DependenceAnalysis_LoopCannotBeAnalyzed,
             		v1.getVariableName().getFileLocation().getStartingLineNumber()));
             }
             for (VariableAccess v2 : getVariableAccesses()) {
@@ -191,7 +191,7 @@ public class DependenceAnalysis {
 
                 progress.worked(1);
                 if (progress.isCanceled()) {
-                    throw new OperationCanceledException("Dependence test cancelled.");
+                    throw new OperationCanceledException(Messages.DependenceAnalysis_DependenceTestCancelled);
                 }
             }
         }
@@ -579,7 +579,7 @@ public class DependenceAnalysis {
     }
 
     private static DependenceTestFailure unsupported(IASTNode node) {
-        return new DependenceTestFailure(String.format("Unsupported construct on line %d (%s) - %s",
+        return new DependenceTestFailure(String.format(Messages.DependenceAnalysis_UnsupportedConstruct,
                 node.getFileLocation().getStartingLineNumber(), //
                 node.getClass().getSimpleName(), ASTUtil.toString(node)));
     }

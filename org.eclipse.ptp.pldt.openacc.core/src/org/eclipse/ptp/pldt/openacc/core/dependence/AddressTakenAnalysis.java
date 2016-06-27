@@ -71,14 +71,14 @@ public class AddressTakenAnalysis {
      */
     private AddressTakenAnalysis(IASTFunctionDefinition function, IProgressMonitor monitor) {
         if (function == null) {
-            throw new IllegalArgumentException("function may not be null.");
+            throw new IllegalArgumentException("function may not be null."); //$NON-NLS-1$
         }
         addressTakenVariables = new HashSet<>();
         variables = new HashSet<>();
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
-        monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
+        monitor.beginTask(Messages.AddressTakenAnalysis_PointsToAnalysis, IProgressMonitor.UNKNOWN);
         try {
             performAnalysis(function, monitor);
         } catch (IllegalArgumentException exception) {
@@ -99,10 +99,10 @@ public class AddressTakenAnalysis {
      */
     public boolean isAddressTaken(IVariable variable) {
         if (variable == null) {
-            throw new IllegalArgumentException("variable may not be null.");
+            throw new IllegalArgumentException("variable may not be null."); //$NON-NLS-1$
         }
         if (!variables.contains(variable)) {
-            throw new IllegalArgumentException("variable, called " + variable.getName() + ", is not a local variable.");
+            throw new IllegalArgumentException("variable, called " + variable.getName() + ", is not a local variable."); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return addressTakenVariables.contains(variable);
     }
@@ -131,7 +131,7 @@ public class AddressTakenAnalysis {
                     findAddressBinding(unary.getOperand(), false);
                 } else {
                     throw new IllegalArgumentException(
-                            "Address of non LValue (" + unary.getRawSignature() + ") taken.");
+                            "Address of non LValue (" + unary.getRawSignature() + ") taken."); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
         }
