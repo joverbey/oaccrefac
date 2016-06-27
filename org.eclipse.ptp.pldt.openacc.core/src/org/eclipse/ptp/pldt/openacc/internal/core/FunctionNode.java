@@ -41,9 +41,9 @@ public class FunctionNode {
 		for (IASTFunctionDefinition definition : definitions) {
 			if (ASTUtil.getPragmaNodes(definition).isEmpty()) {
 				FunctionNode existingNode = root.findDescendent(definition, new HashSet<FunctionNode>());
-				if (existingNode != null) {
+				if (existingNode != null && (!children.contains(existingNode))) {
 					this.children.add(existingNode);
-				} else {
+				} else if (existingNode == null) {
 					new FunctionNode(definition, root, this);
 				}
 			}
