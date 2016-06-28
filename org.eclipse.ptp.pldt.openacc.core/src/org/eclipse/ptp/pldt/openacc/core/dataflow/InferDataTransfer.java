@@ -21,8 +21,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
@@ -151,6 +154,15 @@ public abstract class InferDataTransfer {
     		topovisit(child, sorted);
     	}
     	sorted.add((IASTStatement) root);
+    }
+    
+    protected boolean isUninitializedDeclaration(IASTName name) {
+    	IASTDeclarator decl = ASTUtil.findNearestAncestor(name, IASTDeclarator.class);
+		IASTSimpleDeclaration simple = ASTUtil.findNearestAncestor(name, IASTSimpleDeclaration.class);
+		if(simple == null || decl == null || decl.getInitializer() != null) {
+			return false;
+		}
+		return true;
     }
     
     public IASTStatement getRoot() {

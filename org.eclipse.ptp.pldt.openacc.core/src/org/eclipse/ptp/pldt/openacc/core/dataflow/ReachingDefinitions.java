@@ -31,15 +31,19 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStandardFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
+import org.eclipse.cdt.core.dom.ast.gnu.c.ICASTKnRFunctionDeclarator;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
@@ -104,7 +108,7 @@ public class ReachingDefinitions {
         for(IASTNode def : reachingDefs) {
             for(IASTName name : ASTUtil.find(def, IASTName.class)) {
                 //if a name found under the definition node is a definition and refers to the right variable
-                if((name instanceof Global || ASTPatternUtil.isDefinition(name)) && name.resolveBinding().equals(varUse.resolveBinding())) {
+                if((name instanceof Global || isParam(name) || ASTPatternUtil.isDefinition(name)) && name.resolveBinding().equals(varUse.resolveBinding())) {
                     reachingDefNames.add(name);
                 }
             }
@@ -113,7 +117,7 @@ public class ReachingDefinitions {
         
     }
     
-    /**
+	/**
      * Given a name which is used as a definition, returns a set of every use of the same variable
      * that the definition reaches. 
      * 
@@ -209,7 +213,7 @@ public class ReachingDefinitions {
     }
     
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
-//    	addGlobalDefs(cfg.getStartNode());
+
         boolean changed;
         do {
             changed = false;
@@ -224,6 +228,7 @@ public class ReachingDefinitions {
                 
                 if(bb instanceof IStartNode) {
                 	addGlobalDefs(bb, bbEntry);
+                	addParams(bb, bbEntry);
                 }
 
                 for(IBasicBlock pred : bb.getIncomingNodes()) {
@@ -279,6 +284,23 @@ public class ReachingDefinitions {
 				e.printStackTrace();
 			}
     	}
+	}
+    
+    private void addParams(IBasicBlock startNode, RDVarSet entries) {
+    	if(func.getDeclarator() instanceof IASTStandardFunctionDeclarator) {
+    		for(IASTParameterDeclaration d : ((IASTStandardFunctionDeclarator) func.getDeclarator()).getParameters()) {
+    			entries.add(d.getDeclarator().getName().resolveBinding(), d);
+    		}
+    	}
+    	else if(func.getDeclarator() instanceof ICASTKnRFunctionDeclarator) {
+    		for(IASTName n : ((ICASTKnRFunctionDeclarator) func.getDeclarator()).getParameterNames()) {
+    			entries.add(n.resolveBinding(), n);
+    		}
+    	}
+	}
+    
+    private boolean isParam(IASTName name) {
+		return name.resolveBinding() instanceof IVariable && ASTUtil.findNearestAncestor(name, IASTFunctionDeclarator.class) != null;
 	}
 
 	private List<IASTName> varWritesIn(IBasicBlock bb) {

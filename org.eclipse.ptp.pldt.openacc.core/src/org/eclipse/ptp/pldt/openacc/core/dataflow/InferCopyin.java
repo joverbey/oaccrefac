@@ -12,11 +12,9 @@ package org.eclipse.ptp.pldt.openacc.core.dataflow;
 
 import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class InferCopyin extends InferDataTransfer {
 
@@ -45,10 +43,9 @@ public class InferCopyin extends InferDataTransfer {
     					//special case declaration with no initializer - 
 						//assume we want to create (not copy in) if this is the only definition reaching in
     					//see InferCreate
-    					IASTDeclarator decl = ASTUtil.findNearestAncestor(D, IASTDeclarator.class);
-						if(decl == null || decl.getInitializer() != null) {
-							transfers.get(K).add(D.resolveBinding());
-						}
+    					if(!isUninitializedDeclaration(D)) {
+    						transfers.get(K).add(D.resolveBinding());
+    					}
     				}
     			}
     		}

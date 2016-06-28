@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -111,11 +110,8 @@ public class InferCreate extends InferDataTransfer {
 	
 	private boolean anyDefReachingConstructIsOutside(IBinding V, IASTStatement K) {
 		for(IASTName D : rd.reachingDefinitions(K)) {
-			if(!ASTUtil.isAncestor(D, K) && D.resolveBinding().equals(V)) {
-				IASTDeclarator decl = ASTUtil.findNearestAncestor(D, IASTDeclarator.class);
-				if(decl == null || decl.getInitializer() != null) {
-					return true;
-				}
+			if(!ASTUtil.isAncestor(D, K) && D.resolveBinding().equals(V) && !isUninitializedDeclaration(D)) {
+				return true;
 			}
 		}
 		return false;
