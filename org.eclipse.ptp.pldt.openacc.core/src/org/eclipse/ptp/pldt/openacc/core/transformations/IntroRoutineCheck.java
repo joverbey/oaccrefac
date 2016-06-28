@@ -26,7 +26,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.FunctionNode;
 
 public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> {
 
-	private FunctionNode tree;
+	private FunctionNode graph;
 	
 	public IntroRoutineCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
 		super(statements, statementsAndComments);
@@ -39,23 +39,23 @@ public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> 
 			for (IASTFunctionCallExpression call : ASTUtil.find(statement, IASTFunctionCallExpression.class)) {
 				IASTFunctionDefinition definition = ASTUtil.findFunctionDefinition(call);
 				if (definition == null) {
-					status.addError("Cannot find function definition.");
+					status.addError("Cannot find function definition.", ASTUtil.getStatusContext(call, call));
+				} else {
+				    definitions.add(definition);
 				}
-				definitions.add(definition);
 			}
 		}
 		try {
-			tree = new FunctionNode(definitions, status);
+			graph = new FunctionNode(definitions, status);
 		} catch (FunctionGraphException e) {
 			status.addFatalError(e.getMessage(), e.getContext());
 		}
-		//TODO: Add dependence checks.
 		//TODO: Check whether root level is valid.
 		return status;
 	}
 	
-	public FunctionNode getTree() {
-		return tree;
+	public FunctionNode getGraph() {
+		return graph;
 	}
 	
 }

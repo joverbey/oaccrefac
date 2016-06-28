@@ -24,11 +24,11 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 public class FunctionNode {
 
-	private FunctionNode root;
-	private RefactoringStatus status;
+	private final FunctionNode root;
+	private final RefactoringStatus status;
 	private FunctionLevel level = null;
-	private IASTFunctionDefinition definition;
-	private ArrayList<FunctionNode> children = new ArrayList<FunctionNode>();
+	private final IASTFunctionDefinition definition;
+	private final ArrayList<FunctionNode> children = new ArrayList<FunctionNode>();
 	
 	
 
@@ -40,10 +40,10 @@ public class FunctionNode {
 		this.status = status;
 		for (IASTFunctionDefinition definition : definitions) {
 			if (ASTUtil.getPragmaNodes(definition).isEmpty()) {
-				FunctionNode existingNode = root.findDescendent(definition, new HashSet<FunctionNode>());
-				if (existingNode != null) {
+				FunctionNode existingNode = root.findDescendant(definition, new HashSet<FunctionNode>());
+				if (existingNode != null && (!children.contains(existingNode))) {
 					this.children.add(existingNode);
-				} else {
+				} else if (existingNode == null) {
 					new FunctionNode(definition, root, this);
 				}
 			}
@@ -54,6 +54,7 @@ public class FunctionNode {
 			throws FunctionGraphException {
 		this.definition = definition;
 		this.root = root;
+		this.status = null;
 		parent.children.add(this); // Children have to be added in constructor, not after, to avoid infinite loop.
 		this.checkForStatic();
 		this.addChildren();
@@ -73,6 +74,15 @@ public class FunctionNode {
 		return level;
 	}
 	
+	private void checkForStatic() {
+		for (IASTName name : ASTUtil.find(definition, IASTName.class)) {
+			if (name.getBinding() instanceof IVariable && ((IVariable) name.getBinding()).isStatic()) {
+				root.status.addError("OpenACC routines cannot contain static variables.", 
+						ASTUtil.getStatusContext(name, name));
+			}
+		}
+	}
+	
 	private void addChildren() throws FunctionGraphException {
 		for (IASTFunctionCallExpression call : ASTUtil.find(definition, IASTFunctionCallExpression.class)) {
 			IASTFunctionDefinition functionDefinition = ASTUtil.findFunctionDefinition(call);
@@ -83,7 +93,7 @@ public class FunctionNode {
 					setLevelFromPragma(pragma.getRawSignature());
 				}
 				if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
-					FunctionNode existingNode = root.findDescendent(functionDefinition, new HashSet<FunctionNode>());
+					FunctionNode existingNode = root.findDescendant(functionDefinition, new HashSet<FunctionNode>());
 					if (existingNode != null) {
 						this.children.add(existingNode);
 					} else {
@@ -131,19 +141,19 @@ public class FunctionNode {
 			}
 		}
 		HashSet<FunctionNode> visited = new HashSet<FunctionNode>();
-		if (level != FunctionLevel.SEQ && this.findDescendent(definition, visited) != null) {
+		if (level != FunctionLevel.SEQ && this.findDescendant(definition, visited) != null) {
 			root.status.addError("Recursive functions must have sequential parallelization.",
 					ASTUtil.getStatusContext(definition, definition));
 		}
 	}
 	
-	private FunctionNode findDescendent(IASTFunctionDefinition definition, HashSet<FunctionNode> visited) {
+	private FunctionNode findDescendant(IASTFunctionDefinition definition, HashSet<FunctionNode> visited) {
 		for (FunctionNode child : children) {
 			if (child.definition != null && child.definition.equals(definition)) {
 				return child;
 			} else if (!visited.contains(child)) {
 				visited.add(child);
-				FunctionNode output = child.findDescendent(definition, visited);
+				FunctionNode output = child.findDescendant(definition, visited);
 				if (output != null) {
 					return output;
 				}
@@ -152,15 +162,7 @@ public class FunctionNode {
 		return null;
 	}
 	
-	private void checkForStatic() {
-		List<IASTName> names = ASTUtil.find(definition, IASTName.class);
-		for (IASTName name : names) {
-			if (name.getBinding() instanceof IVariable && ((IVariable) name.getBinding()).isStatic()) {
-				root.status.addError("OpenACC routines cannot contain static variables.", 
-						ASTUtil.getStatusContext(name, name));
-			}
-		}
-	}
+	
 	
 	@Override
 	public String toString() {
