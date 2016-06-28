@@ -21,6 +21,11 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccGangClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccVectorClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccWorkerClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 
 public class FunctionNode {
 
@@ -76,7 +81,7 @@ public class FunctionNode {
 	
 	private void checkForStatic() {
 		for (IASTName name : ASTUtil.find(definition, IASTName.class)) {
-			if (name.getBinding() instanceof IVariable && ((IVariable) name.getBinding()).isStatic()) {
+			if (name.resolveBinding() instanceof IVariable && ((IVariable) name.resolveBinding()).isStatic()) {
 				root.status.addError("OpenACC routines cannot contain static variables.", 
 						ASTUtil.getStatusContext(name, name));
 			}
@@ -90,7 +95,7 @@ public class FunctionNode {
 				root.status.addError("Cannot find function definition.", ASTUtil.getStatusContext(call, call));
 			} else {
 				for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
-					setLevelFromPragma(pragma.getRawSignature());
+					setLevelFromPragma(pragma);
 				}
 				if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
 					FunctionNode existingNode = root.findDescendant(functionDefinition, new HashSet<FunctionNode>());
@@ -109,23 +114,32 @@ public class FunctionNode {
 		}
 	}
 	
-	private void findInherentRestriction() {
+	private void findInherentRestriction() throws FunctionGraphException {
 		for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getInternalPragmaNodes(definition.getBody())) {
-			setLevelFromPragma(pragma.getRawSignature());
+			setLevelFromPragma(pragma);
 		}
 	}
 
-	private void setLevelFromPragma(String rawSignature) {
-		if (rawSignature.contains("parallel") || rawSignature.contains("kernels")
-				|| rawSignature.contains("gang")) {
-			level = FunctionLevel.GANG;
-		} else if (rawSignature.contains("seq") && (level == null)) {
-			level = FunctionLevel.SEQ;
-		} else if (rawSignature.contains("vector") && (level == null || level == FunctionLevel.SEQ)) {
-			level = FunctionLevel.VECTOR;
-		} else if (rawSignature.contains("worker") && (level == null || level.compareTo(FunctionLevel.WORKER) < 0)) {
-			level = FunctionLevel.WORKER;
-		} 
+	private void setLevelFromPragma(IASTPreprocessorPragmaStatement pragma) throws FunctionGraphException {
+		try {
+			IAccConstruct parse = new OpenACCParser().parse(pragma.getRawSignature());
+			if (!OpenACCUtil.find(parse, 
+					ASTAccVectorClauseNode.class).isEmpty() && 
+					(level == null || level == FunctionLevel.SEQ)) {
+				level = FunctionLevel.VECTOR;
+			} else if (!OpenACCUtil.find(parse, 
+					ASTAccWorkerClauseNode.class).isEmpty() && 
+					(level == null || level.compareTo(FunctionLevel.WORKER) < 0)) {
+				level = FunctionLevel.WORKER;
+			} else if (OpenACCUtil.isAccAccelConstruct(parse)
+					|| !OpenACCUtil.find(parse, 
+							ASTAccGangClauseNode.class).isEmpty()) {
+				level = FunctionLevel.GANG;
+			} 
+		} catch (Exception e) {
+			root.status.addError("Cannot parse preprocessor statement.", 
+					ASTUtil.getStatusContext(pragma, pragma));
+		}
 	}
 	
 	private void findCurrentLevel() throws FunctionGraphException {
