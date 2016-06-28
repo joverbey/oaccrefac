@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Auburn University and others.
+tat * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,7 +33,10 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
@@ -41,6 +44,8 @@ import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
@@ -51,11 +56,17 @@ import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Region;
+import org.eclipse.ltk.core.refactoring.FileStatusContext;
+import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
@@ -313,7 +324,7 @@ public class ASTUtil {
 		return pragCode;
 	}
 
-	public static List<IASTPreprocessorPragmaStatement> getPragmaNodes(IASTStatement statement) {
+	public static List<IASTPreprocessorPragmaStatement> getPragmaNodes(IASTNode statement) {
 		int loopLoc = statement.getFileLocation().getNodeOffset();
 		int precedingStmtOffset = getNearestPrecedingStatementOffset(statement);
 		List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
@@ -328,6 +339,17 @@ public class ASTUtil {
 		Collections.sort(pragmas, ASTUtil.FORWARD_COMPARATOR);
 		return pragmas;
 	}
+	
+	public static List<IASTPreprocessorPragmaStatement> getInternalPragmaNodes(IASTStatement statement) {
+		List<IASTPreprocessorPragmaStatement> pragmas = new ArrayList<IASTPreprocessorPragmaStatement>();
+		for (IASTPreprocessorStatement pre : statement.getTranslationUnit().getAllPreprocessorStatements()) {
+			if (pre instanceof IASTPreprocessorPragmaStatement && doesNodeLexicallyContain(statement, pre)) {
+				pragmas.add((IASTPreprocessorPragmaStatement) pre);
+			}
+		}
+		return pragmas;
+	}
+
 
     public static Map<IASTPreprocessorPragmaStatement, IASTNode> getEnclosingPragmas(IASTStatement statement) {
         Map<IASTPreprocessorPragmaStatement, IASTNode> pragmas = new TreeMap<>(ASTUtil.FORWARD_COMPARATOR);
@@ -353,7 +375,7 @@ public class ASTUtil {
         return pragmas;
     }
 
-	private static int getNearestPrecedingStatementOffset(IASTStatement stmt) {
+	private static int getNearestPrecedingStatementOffset(IASTNode stmt) {
 
 		class OffsetFinder extends ASTVisitor {
 
@@ -388,8 +410,8 @@ public class ASTUtil {
 		}
 
 		OffsetFinder finder = new OffsetFinder(stmt.getFileLocation().getNodeOffset());
-		IASTFunctionDefinition containingFunc = ASTUtil.findNearestAncestor(stmt, IASTFunctionDefinition.class);
-		containingFunc.accept(finder);
+		IASTNode containingNode = ASTUtil.findNearestAncestor(stmt, IASTNode.class);
+		containingNode.accept(finder);
 		return finder.finalOffset;
 	}
 
@@ -452,6 +474,53 @@ public class ASTUtil {
     	return true;
 	}
 	
+
+	public static IASTFunctionDefinition findFunctionDefinition(IASTFunctionCallExpression call) {
+		if (!(call.getFunctionNameExpression() instanceof IASTIdExpression)) {
+			return null;
+		}
+		IASTName callName = ((IASTIdExpression) call.getFunctionNameExpression()).getName();
+		
+		IBinding binding = callName.resolveBinding();
+		if (!(binding instanceof IFunction)) {
+			return null;
+		}
+		
+		List<IASTFunctionDefinition> functionDefinitions = 
+				find(call.getTranslationUnit(), IASTFunctionDefinition.class);
+		for (IASTFunctionDefinition definition : functionDefinitions) {
+			IASTName definitionName = definition.getDeclarator().getName();
+			if (definitionName.toString().equals(callName.toString())) {
+				return definition;
+			}
+		}
+		return null;
+	}
+	
+	public static RefactoringStatusContext getStatusContext(IASTNode node1, IASTNode node2) {
+	    if (node1.getTranslationUnit() != node2.getTranslationUnit()) {
+	        return null;
+	    }
+	    
+	    String filename = node1.getTranslationUnit().getFileLocation().getFileName();
+	    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
+	    if (file == null) {
+	        return null;
+	    }
+	
+	    IASTFileLocation fileLocation1 = node1.getFileLocation();
+	    IASTFileLocation fileLocation2 = node2.getFileLocation();
+	    int start1 = fileLocation1.getNodeOffset();
+	    int end1 = start1 + fileLocation1.getNodeLength();
+	    int start2 = fileLocation2.getNodeOffset();
+	    int end2 = start2 + fileLocation2.getNodeLength();
+	    int start = Math.min(start1, start2);
+	    int end = Math.max(end1, end2);
+	    return new FileStatusContext(file, new Region(start, end - start));
+	}
+
 	private ASTUtil() {
 	}
+
+	
 }
