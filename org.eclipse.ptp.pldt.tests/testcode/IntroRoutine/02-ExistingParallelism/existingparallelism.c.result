@@ -1,0 +1,22 @@
+int main() {
+    for (int i = 0; i < 100; i++){ /*<<<<< 2,1,4,6,pass*/
+        int a = foo();
+    }
+}
+
+#pragma acc routine gang
+int foo() {
+#pragma acc parallel
+	{
+#pragma acc loop
+		for (int i = 0; i < 100; i++) {
+
+		}
+	}
+	return bar();
+}
+
+#pragma acc routine seq
+int bar() {
+	return 1;
+}
