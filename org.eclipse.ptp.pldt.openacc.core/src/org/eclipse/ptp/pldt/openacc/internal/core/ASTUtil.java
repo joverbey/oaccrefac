@@ -490,7 +490,7 @@ public class ASTUtil {
 				find(call.getTranslationUnit(), IASTFunctionDefinition.class);
 		for (IASTFunctionDefinition definition : functionDefinitions) {
 			IASTName definitionName = definition.getDeclarator().getName();
-			if (definitionName.toString().equals(callName.toString())) {
+			if (definitionName.resolveBinding().equals(callName.resolveBinding())) {
 				return definition;
 			}
 		}

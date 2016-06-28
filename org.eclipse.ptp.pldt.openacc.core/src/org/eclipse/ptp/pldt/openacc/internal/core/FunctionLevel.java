@@ -24,12 +24,24 @@ public enum FunctionLevel {
 		};
 	},
 	VECTOR {
+		
+		@Override
+		public FunctionLevel next() {
+			return WORKER;
+		}
+		
 		@Override
 		public String toString() {
 			return "vector"; 
 		};
 	},
 	WORKER {
+		
+		@Override
+		public FunctionLevel next() {
+			return GANG;
+		}
+		
 		@Override
 		public String toString() {
 			return "worker"; 
@@ -47,7 +59,5 @@ public enum FunctionLevel {
 		};
 	};
 	
-	public FunctionLevel next() {
-		return FunctionLevel.values()[this.ordinal() + 1];
-	}
+	public abstract FunctionLevel next();
 }

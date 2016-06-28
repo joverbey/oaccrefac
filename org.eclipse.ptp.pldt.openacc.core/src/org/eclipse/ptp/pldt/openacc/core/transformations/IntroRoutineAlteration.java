@@ -17,16 +17,16 @@ import org.eclipse.ptp.pldt.openacc.internal.core.FunctionNode;
 
 public class IntroRoutineAlteration extends SourceStatementsAlteration<IntroRoutineCheck> {
 
-	FunctionNode tree;
+	private final FunctionNode graph;
 	
 	public IntroRoutineAlteration(IASTRewrite rewriter, IntroRoutineCheck check) {
 		super(rewriter, check);
-		tree = check.getTree();
+		graph = check.getGraph();
 	}
 
 	@Override
 	protected void doChange() {
-		for (FunctionNode node : tree.getChildren()) {
+		for (FunctionNode node : graph.getChildren()) {
 			changeNode(node, new HashSet<FunctionNode>());
 		}
 		finalizeChanges();
@@ -38,8 +38,8 @@ public class IntroRoutineAlteration extends SourceStatementsAlteration<IntroRout
 		}
 		marked.add(node);
 		int offset = node.getDefinition().getFileLocation().getNodeOffset();
-        String pragma = "#pragma acc routine ";
-        pragma += node.getLevel().toString();
+        String pragma = pragma("acc routine");
+        pragma += (" " + node.getLevel().toString());
         insert(offset, pragma + System.lineSeparator());
         for (FunctionNode child : node.getChildren()) {
         	changeNode(child, marked);
