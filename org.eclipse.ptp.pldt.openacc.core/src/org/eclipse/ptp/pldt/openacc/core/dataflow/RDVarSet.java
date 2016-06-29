@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 /**
@@ -89,14 +90,18 @@ public class RDVarSet {
     }
     
     public boolean contains(IASTName definition) {
-        for(IBinding binding : set.keySet()) {
-            if(binding.equals(definition.resolveBinding())) {
-                for(IASTNode node : set.get(binding)) {
-                    if(ASTUtil.isAncestor(definition, node)) {
-                        return true;
-                    }
-                }
-            }
+    	if(!ASTPatternUtil.isDefinition(definition)) {
+    		return false;
+    	}
+        if(!set.containsKey(definition.resolveBinding())) {
+        	return false;
+        }
+        Set<IASTNode> defs = set.get(definition.resolveBinding());
+        for(IASTNode defNode : defs) {
+        	if((defNode instanceof Global && ((Global) defNode).resolveBinding().equals(definition.resolveBinding())) 
+        			|| ASTUtil.isAncestor(definition, defNode)) {
+        		return true;
+        	}
         }
         return false;
     }

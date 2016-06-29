@@ -13,9 +13,6 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
@@ -24,33 +21,37 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
 /**
  * StripMine performs the strip mine refactoring.
  */
-public class StripMineLoop extends CLILoopRefactoring<AbstractTileLoopsParams, AbstractTileLoopsCheck> {
+public class StripMineLoop extends CLILoopRefactoring<StripMineParams, StripMineCheck> {
 
-    /**
-     * stripFactor is the factor to use in strip mining the loop
-     */
-    private final int numFactor;
-    private final String newName;
+	private int stripFactor;
+	private boolean zeroBased;
+	private boolean handleOverflow;
+    private String newNameOuter;
+    private String newNameInner;
     
-    public StripMineLoop(int numFactor, String newName) {
-    	this.numFactor = numFactor;
-    	this.newName = newName;
-    }
+    public StripMineLoop(int stripFactor, boolean zeroBased, boolean handleOverflow, String newNameOuter,
+			String newNameInner) {
+		this.stripFactor = stripFactor;
+		this.zeroBased = zeroBased;
+		this.handleOverflow = handleOverflow;
+		this.newNameOuter = newNameOuter;
+		this.newNameInner = newNameInner;
+	}
 
-    @Override
-    public AbstractTileLoopsCheck createCheck(IASTStatement loop) {
+	@Override
+    public StripMineCheck createCheck(IASTStatement loop) {
 		 return new StripMineCheck((IASTForStatement) loop);
     }
 
     @Override
-    protected AbstractTileLoopsParams createParams(IASTStatement forLoop) {
-        return new StripMineParams(numFactor, newName);
+    protected StripMineParams createParams(IASTStatement forLoop) {
+        return new StripMineParams(stripFactor, zeroBased, handleOverflow, newNameOuter, newNameInner);
     }
 
     @Override
-	public AbstractTileLoopsAlteration createAlteration(IASTRewrite rewriter, 
-    		AbstractTileLoopsCheck check) throws CoreException {
-        return new StripMineAlteration(rewriter, numFactor, newName, check);
+	public StripMineAlteration createAlteration(IASTRewrite rewriter, 
+    		StripMineCheck check) throws CoreException {
+        return new StripMineAlteration(rewriter, stripFactor, zeroBased, handleOverflow, newNameOuter, newNameInner, check);
     }
 
 }

@@ -80,15 +80,15 @@ public class DataDependence {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(type);
-        sb.append(" ");
+        sb.append(" "); //$NON-NLS-1$
         sb.append(getStatement1().getFileLocation().getStartingLineNumber());
-        sb.append(" -> ");
+        sb.append(" -> "); //$NON-NLS-1$
         sb.append(getStatement2().getFileLocation().getStartingLineNumber());
-        sb.append(" ");
+        sb.append(" "); //$NON-NLS-1$
         sb.append('[');
         for (int i = 0; i < directionVector.length; i++) {
             if (i > 0)
-                sb.append(", ");
+                sb.append(", "); //$NON-NLS-1$
             sb.append(directionVector[i]);
         }
         sb.append(']');
@@ -103,21 +103,21 @@ public class DataDependence {
         StringBuilder sb = new StringBuilder();
         String typeString = type.toString().toLowerCase();
         if (isLoopCarried()) {
-            sb.append("Loop-carried ");
+            sb.append("Loop-carried "); //$NON-NLS-1$
             sb.append(typeString);
         } else {
             sb.append(Character.toUpperCase(typeString.charAt(0)));
             sb.append(typeString.substring(1));
         }
-        sb.append(" dependence from line ");
+        sb.append(" dependence from line "); //$NON-NLS-1$
         sb.append(getStatement1().getFileLocation().getStartingLineNumber());
-        sb.append(" to line ");
+        sb.append(" to line "); //$NON-NLS-1$
         sb.append(getStatement2().getFileLocation().getStartingLineNumber());
-        sb.append(" ");
+        sb.append(" "); //$NON-NLS-1$
         sb.append('[');
         for (int i = 0; i < directionVector.length; i++) {
             if (i > 0)
-                sb.append(", ");
+                sb.append(", "); //$NON-NLS-1$
             sb.append(directionVector[i]);
         }
         sb.append(']');

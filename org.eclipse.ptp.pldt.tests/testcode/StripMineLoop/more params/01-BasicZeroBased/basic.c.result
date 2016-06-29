@@ -1,0 +1,19 @@
+static int foo();
+
+int main() {
+
+	int N = 100;
+	int a[N];
+	for (int j = 0; j < N; j += 2) {
+		for (int k = 0; k < 2 && j + k < N; k++) {
+			int i = j + k;
+			/*<<<<< 8,1,11,3,2,true,true,j,k,pass*/
+			a[i] = 0;
+		}
+	}
+
+}
+
+int foo() {
+	return 0;
+}

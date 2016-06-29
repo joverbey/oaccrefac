@@ -17,14 +17,14 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
-public class StripMineCheck extends AbstractTileLoopsCheck {
+public class StripMineCheck extends ForLoopCheck<StripMineParams> {
 
     public StripMineCheck(IASTForStatement loop) {
         super(loop);
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
+    protected void doParameterCheck(RefactoringStatus status, StripMineParams params) {
     	
     	// Presence of a openacc pragma doesn't influence whether or not strip 
     	// mining can be performed. This is because for strip mining to be 
@@ -35,23 +35,29 @@ public class StripMineCheck extends AbstractTileLoopsCheck {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.loop);
         
         // Check strip factor validity...
-        if (params.getNumFactor() <= 0) {
-            status.addFatalError("Invalid strip factor (<= 0).");
+        if (params.getStripFactor() <= 0) {
+            status.addFatalError("Invalid strip factor (<= 0)");
             return;
         }
         
-        if (ASTUtil.isNameInScope(params.getNewName(), loop.getScope())) {
-        	status.addWarning("Index variable name already exists in scope.");
+        if (ASTUtil.isNameInScope(params.getNewNameOuter(), loop.getScope())) {
+        	status.addWarning("Outer index variable name already exists in scope");
+        }
+        
+        if (params.shouldBeZeroBased() && ASTUtil.isNameInScope(params.getNewNameInner(), loop.getScope())) {
+        	status.addWarning("Inner index variable name already exists in scope");
         }
 
         // If the strip factor is not divisible by the original linear
         // iteration factor, (i.e. loop counts by 4), then we cannot
         // strip mine because the refactoring will change behavior
-        int iterator = inq.getIterationFactor();
-        if (params.getNumFactor() % iterator != 0 || params.getNumFactor() <= iterator) {
-            status.addError("Strip mine factor must be greater than and "
-                    + "divisible by the intended loop's iteration factor.");
-            return;
+        int iterFactor = inq.getIterationFactor();
+        if (params.getStripFactor() % iterFactor != 0 || params.getStripFactor() <= iterFactor) {
+            status.addError("Strip mine factor must be greater than and divisible by the intended loop's iteration factor");
+        }
+        
+        if(!params.shouldHandleOverflow() && inq.getInclusiveUpperBound() % params.getStripFactor() != 0) {
+        	status.addWarning("Loop range overflow will not be handled, but the loop upper bound is not divisible by strip factor, so overflow will occur");
         }
         
     }

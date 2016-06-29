@@ -1,0 +1,19 @@
+int main() {
+    for (int i = 0; i < 100; i++){ /*<<<<< 2,1,4,6,pass*/
+        int a = foo();
+    }
+}
+
+#pragma acc routine worker
+int foo() {
+	return bar();
+}
+
+#pragma acc routine vector
+int bar() {
+#pragma acc loop vector
+	for (int i = 0; i < 100; i++) {
+
+	}
+	return 1;
+}

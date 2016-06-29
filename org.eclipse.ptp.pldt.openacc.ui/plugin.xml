@@ -161,6 +161,13 @@
                tooltip="Introduces an OpenACC data construct">
          </action>
          <action
+               class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroRoutineDelegate"
+               id="edu.auburn.oaccrefac.internal.ui.actions.IntroOpenACCRoutine"
+               label="Introduce OpenACC &amp;Routine..."
+               menubarPath="org.eclipse.jdt.ui.refactoring.menu/oaccIntroGroup"
+               tooltip="Introduces an OpenACC routine">
+         </action>
+         <action
                class="org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring.IntroOpenACCLoopDelegate"
                id="edu.auburn.oaccrefac.internal.ui.actions.IntroduceOpenACCLoop"
                label="Introduce OpenACC &amp;Loop..."
