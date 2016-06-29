@@ -24,6 +24,8 @@
 
         <jar jarfile="pldt-refactoring.jar">
             <fileset dir="${basedir}/temp" includes="**/*" />
+            <fileset dir="${basedir}/../org.eclipse.ptp.pldt.openacc.cli/src/" includes="**/*.properties" />
+            <fileset dir="${basedir}/../org.eclipse.ptp.pldt.openacc.core/src/" includes="**/*.properties" />
         	<zipfileset includes="**/*" excludes="**/*.SF" src="${basedir}/lib/org.eclipse.cdt.core_5.10.0.201506020305.jar"/>
         	<zipfileset includes="**/*" excludes="**/*.SF" src="${basedir}/lib/org.eclipse.cdt.codan.core_3.3.0.201506020305.jar"/>
         	<zipfileset includes="**/*" excludes="**/*.SF" src="${basedir}/lib/org.eclipse.cdt.codan.core.cxx_3.3.0.201506020305.jar"/>
