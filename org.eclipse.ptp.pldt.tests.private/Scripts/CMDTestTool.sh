@@ -10,10 +10,10 @@ then
 	exit
 fi
 
-printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParallelLoop\nLoopCutting\nStripMineLoop\nTileLoops\nUnroll\nExpandDataConstruct\n"
+printf "Please enter the desired refactoring exactly as listed below: \nDistributeLoops\nFuseLoops\nInterchangeLoops\nIntroduceKernelsLoop\nIntroduceParallelLoop\nLoopCutting\nStripMineLoop\nTileLoops\nUnroll\nExpandDataConstruct\nMergeDataConstruct\n"
 
 read refactoring
-if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "StripMineLoop" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ] && [ "$refactoring" != "ExpandDataConstruct" ] && [ "$refactoring" != "LoopCutting" ]; then
+if [ "$refactoring" != "DistributeLoops" ] && [ "$refactoring" != "FuseLoops" ] && [ "$refactoring" != "InterchangeLoops" ] && [ "$refactoring" != "IntroduceKernelsLoop" ] && [ "$refactoring" != "IntroduceParallelLoop" ] && [ "$refactoring" != "StripMineLoop" ] && [ "$refactoring" != "TileLoops" ] && [ "$refactoring" != "Unroll" ] && [ "$refactoring" != "ExpandDataConstruct" ] && [ "$refactoring" != "LoopCutting" ] && [ "$refactoring" != "ExpandDataConstruct" ] && [ "$refactoring" != "MergeDataConstruct" ]; then
 	echo "That is not a recognized refactoring, please enter as shown above next time"
 	exit
 fi
@@ -56,6 +56,12 @@ if [ "$refactoring" == "LoopCutting" ]; then
 	refactoring="-tile -cut"
 	echo "Enter number of cuts"
 	read param1
+fi
+if [ "$refactoring" == "ExpandDataConstruct" ]; then
+	refactoring="-expand"
+fi
+if [ "$refactoring" == "MergeDataConstruct" ]; then
+	refactoring="-merge"
 fi
 
 fileToRefactor=""

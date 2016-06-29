@@ -25,7 +25,7 @@ import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
+public class MergeDataConstructsCheck extends PragmaDirectiveCheck<RefactoringParams> {
 
 	private IASTPreprocessorPragmaStatement secondPrag;
 	private IASTStatement secondStmt;

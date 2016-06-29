@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -129,6 +130,15 @@ public class Main {
 			case "-fuse":
 				refactoring = new FuseLoops();
 				break;
+			case "-expand":
+				refactoring = new ExpandDataConstruct();
+				break;
+			case "-merge":
+				refactoring = new MergeDataConstructs();
+				break;
+			/*case "-introdata":
+			refactoring = new IntroOpenACCDataConstruct();
+			break;*/
 			default:
 				throw new IllegalArgumentException("Specified refactoring is invalid");
 			}

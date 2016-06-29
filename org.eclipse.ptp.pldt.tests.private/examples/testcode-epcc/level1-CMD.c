@@ -1313,10 +1313,10 @@ double gesummv(){
 
   alpha = 43532;
   beta = 12313;
-  /* loop63outer */
+  /* loop64outer */
   for (i = 0; i < n; i++){
     x[i] = i / n;
-    /* loop63outer */
+    /* loop64inner */
     for (j = 0; j < n; j++){
       A[i*n+j] = (i*j) / n;
       B[i*n+j] = A[i*n+j];
@@ -1324,11 +1324,11 @@ double gesummv(){
   }
 
   /* Host */
-  /* loop63outer */
+  /* loop65outer */
   for (i = 0; i < n; i++){
     Htmp[i] = 0;
     Hy[i] = 0;
-    /* loop63outer */
+    /* loop65inner */
     for (j = 0; j < n; j++){
       Htmp[i] = A[i*n+j] * x[j] + Htmp[i];
       Hy[i] = B[i*n+j] * x[j] + Hy[i];
@@ -1345,12 +1345,12 @@ double gesummv(){
 #pragma acc data copyin(A[0:n*n], B[0:n*n], x[0:n], beta, alpha), copyout(Ay[0:n]), create(i,j,t1,t2)
   {
 #pragma acc parallel loop private(t1,t2)
-	  /* loop64outer */
+	  /* loop66outer */
     for (i = 0; i < n; i++){
       t1 = 0;
       t2 = 0;
 #pragma acc loop reduction(+:t1,t2)
-      /* loop64inner */
+      /* loop66inner */
       for (j = 0; j < n; j++){
         t1 += A[i*n+j] * x[j];
 	t2 += B[i*n+j] * x[j];
@@ -1362,7 +1362,7 @@ double gesummv(){
   t_end = gettime();
 
   /* Compare */
-  /* loop65outer */
+  /* loop67outer */
   for (i=0;i<n;i++){
     if ( fabs(Ay[i] - Hy[i])/Hy[i] > TOL ){
       flag = 1;
@@ -1412,9 +1412,9 @@ double gemm(){
 
   alpha = 32412;
   beta = 2123;
-  /* loop66outer */
+  /* loop68outer */
   for (i = 0; i < n; i++){
-	  /* loop66inner */
+	  /* loop68inner */
     for (j = 0; j < n; j++){
       A[i*n+j] = rand()/(1.0+RAND_MAX);
       B[i*n+j] = rand()/(1.0+RAND_MAX);
@@ -1425,12 +1425,12 @@ double gemm(){
 
 
   /* Host for reference */
-  /* loop67outer */
+  /* loop69outer */
   for (i = 0; i < n; i++){
-	  /* loop67inner */
+	  /* loop69inner */
     for (j = 0; j < n; j++){
         H[i*n+j] *= beta;
-        /* loop67inner2 */
+        /* loop69inner2 */
         for (k = 0; k < n; k++)
           H[i*n+j] += alpha * A[i*n+k] * B[k*n+j];
     }
@@ -1445,13 +1445,13 @@ double gemm(){
   {
 #pragma acc kernels
 #pragma acc loop independent
-	  /* loop68outer */
+	  /* loop70outer */
     for (i = 0; i < n; i++){
 #pragma acc loop independent
-    	/* loop68inner */
+    	/* loop70inner */
       for (j = 0; j < n; j++){
         C[i*n+j] *= beta;
-        /* loop68inner2 */
+        /* loop70inner2 */
         for (k = 0; k < n; k++){
           C[i*n+j] += alpha * A[i*n+k] * B[k*n+j];
         }
@@ -1462,9 +1462,9 @@ double gemm(){
   t_end = gettime();
 
   /* Compare */
-  /* loop69outer */
+  /* loop71outer */
   for (i = 0; i < n; i++){
-	  /* loop69inner */
+	  /* loop71inner */
     for (j = 0; j < n; j++){
       if (fabs(H[i*n+j] - C[i*n+j])/H[i*n+j] > TOL){
         flag = 1;
@@ -1504,9 +1504,9 @@ double twodconv(){
     /* Something went wrong in the memory allocation here, fail gracefully */
     return(-10000);
   }
-  /* loop70outer */
+  /* loop72outer */
   for (i = 0; i < n; i++){
-	  /* loop70inner */
+	  /* loop72inner */
     for (j = 0; j < n; j++){
       A[i*n+j] = rand()/(1.0+RAND_MAX);
     }
@@ -1517,9 +1517,9 @@ double twodconv(){
   c11 = +2;  c21 = +5;  c31 = -8;
   c12 = -3;  c22 = +6;  c32 = -9;
   c13 = +4;  c23 = +7;  c33 = +10;
-  /* loop71outer */
+  /* loop73outer */
   for (i = 1; i < n - 1; i++){
-	  /* loop71inner */
+	  /* loop73inner */
     for (j = 1; j < n - 1; j++){
       B[i*n+j] = c11 * A[(i-1)*n+(j-1)] + c12 * A[i*n+(j-1)] + c13 * A[(i+1)*n+(j-1)]
         + c21 * A[(i-1)*n+j] + c22 * A[i*n+j] + c23 * A[(i+1)*n+j]
@@ -1535,9 +1535,9 @@ double twodconv(){
   {
 #pragma acc kernels
 #pragma acc loop independent
-	  /* loop72outer */
+	  /* loop74outer */
     for (i = 1; i < n - 1; i++){
-    	/* loop72inner */
+    	/* loop74inner */
       for (j = 1; j < n - 1; j++){
       B_Gpu[i*n+j] = c11 * A[(i-1)*n+(j-1)] + c12 * A[i*n+(j-1)] + c13 * A[(i+1)*n+(j-1)]
         + c21 * A[(i-1)*n+j] + c22 * A[i*n+j] + c23 * A[(i+1)*n+j]
@@ -1546,9 +1546,9 @@ double twodconv(){
     }
   }
   t_end = gettime();
-  /* loop73outer */
+  /* loop75outer */
   for (i = 1; i < n-1; i++){
-	  /* loop73inner */
+	  /* loop75inner */
     for (j = 1; j < n-1; j++){
       if (fabs(B[i*n+j] - B_Gpu[i*n+j])/B[i*n+j] > TOL){
         flag = 1;
@@ -1590,11 +1590,11 @@ double threedconv(){
 
 
   /* Init */
-  /* loop74outer */
+  /* loop76outer */
   for (i = 0; i < n; i++){
-	  /* loop74inner */
+	  /* loop76inner */
     for (j = 0; j < n; j++){
-    	/* loop74inner2 */
+    	/* loop76inner2 */
       for (k = 0; k < n; k++){
         A[i*n*n+j*n+k] = rand()/(1.0+RAND_MAX);
       }
@@ -1602,11 +1602,11 @@ double threedconv(){
   }
 
   /* HOST */
-  /* loop75outer */
+  /* loop77outer */
   for (i = 1; i < n - 1; i++){
-	  /* loop75inner */
+	  /* loop77inner */
     for (j = 1; j < n - 1; j++){
-    	/* loop75inner2 */
+    	/* loop77inner2 */
       for (k = 1; k < n - 1; k++){
         B[i*n*n+j*n+k] = 0
           +   c11 * A[(i-1)*n*n + (j-1)*n + (k-1)]  +  c13 * A[(i+1)*n*n + (j-1)*n + (k-1)]
@@ -1631,11 +1631,11 @@ double threedconv(){
   {
 #pragma acc kernels
 #pragma acc loop independent
-	  /* loop76outer */
+	  /* loop78outer */
     for (i = 1; i < n - 1; i++){
-    	/* loop76inner */
+    	/* loop78inner */
       for (j = 1; j < n - 1; j++){
-    	  /* loop76inner2 */
+    	  /* loop78inner2 */
         for (k = 1; k < n - 1; k++){
           B_Gpu[i*n*n+j*n+k] = 0
           +   c11 * A[(i-1)*n*n + (j-1)*n + (k-1)]  +  c13 * A[(i+1)*n*n + (j-1)*n + (k-1)]
@@ -1655,11 +1655,11 @@ double threedconv(){
   t_end = gettime();
 
   /* Compare */
-  /* loop77outer */
+  /* loop79outer */
   for (i = 1; i < n - 1; i++){
-	  /* loop77inner */
+	  /* loop79inner */
     for (j = 1; j < n - 1; j++){
-    	/* loop77inner2 */
+    	/* loop79inner2 */
       for (k = 1; k < n - 1; k++){
         if (fabs(B[i*n*n+j*n+k] - B_Gpu[i*n*n+j*n+k])/B[i*n*n+j*n+k] > TOL){
           flag = 1;

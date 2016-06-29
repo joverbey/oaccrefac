@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.Check;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
 
@@ -72,7 +73,7 @@ public abstract class CLIRefactoring<P extends RefactoringParams, C extends Chec
      * @return Checker.
      */
     protected abstract C createCheck(IASTStatement statement);
-
+    
     /**
      * createAlteration writes the alteration.
      * 
@@ -82,4 +83,5 @@ public abstract class CLIRefactoring<P extends RefactoringParams, C extends Chec
      * @throws CoreException
      */
     public abstract SourceAlteration<?> createAlteration(IASTRewrite rewriter, C check) throws CoreException;
+
 }

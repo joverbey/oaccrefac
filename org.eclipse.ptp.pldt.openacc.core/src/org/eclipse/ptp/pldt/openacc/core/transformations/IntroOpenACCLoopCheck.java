@@ -80,7 +80,8 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
             status.addError("This loop cannot be parallelized because it carries a dependence.");
             for (DataDependence d : dep.getDependences()) {
                 if (d.isLoopCarried()) {
-                    status.addError("    " + d.toStringForErrorMessage(), createStatusContextForDependence(d));
+                	//status.addError("    " + d.toStringForErrorMessage(), createStatusContextForDependence(d));
+                	//breaks cli
                 }
             }
         }

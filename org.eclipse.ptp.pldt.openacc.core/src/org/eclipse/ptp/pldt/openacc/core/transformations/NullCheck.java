@@ -74,7 +74,8 @@ public class NullCheck extends ForLoopCheck<NullParams> {
 			}
         });
         for (DataDependence d : deps) {
-            status.addInfo(d.toString(), createStatusContextForDependence(d));
+           //status.addInfo(d.toString(), createStatusContextForDependence(d));
+        	//breaks cli
         }
     }
 
