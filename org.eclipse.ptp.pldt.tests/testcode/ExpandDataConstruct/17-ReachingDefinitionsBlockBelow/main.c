@@ -14,13 +14,7 @@ int main() {
 	while (0)
 		;
 
-#pragma acc data copyin(a)
-	{
-		int x = 0;
-		for (int j = 0; j < 10; j++) {
-			x += j;
-		}
-	}
+	b = a;
 
 	return 0;
 

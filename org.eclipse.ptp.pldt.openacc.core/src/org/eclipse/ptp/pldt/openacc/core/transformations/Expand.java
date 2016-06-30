@@ -13,13 +13,21 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTDoStatement;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
@@ -92,7 +100,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		return largestexp;
 	}
 	
-	private void insertNewPragma(IASTStatement[] exparr,List<IASTComment> comments) {
+	private void insertNewPragma(IASTStatement[] exparr, List<IASTComment> comments) {
 
 		class DeclaratorRemover extends ASTVisitor {
 
@@ -196,7 +204,6 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			pragma += " " + comment.getRawSignature();
 		}
 		this.insertBefore(exparr[0], pragma + NL);
-		
 	}
 	
 	private int getMaxInDirection(IASTStatement statement, boolean up) {
@@ -208,11 +215,15 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			if (next == null) {
 				break;
 			}
+			if(containsBadControlFlowStatement(next)) {
+				getCheck().getStatus().addWarning(String.format("Construct will not expand %s statement that may cause premature exit from the construct", up? "above" : "below"));
+				break;
+			}
 			if(next instanceof IASTStatement && OpenACCUtil.isAccConstruct((IASTStatement) next)) {
 				getCheck().getStatus().addInfo(String.format("Construct will not expand %s another existing OpenACC construct", up? "above" : "below"));
 				break;
 			}
-			if(!ExpandDataConstructCheck.checkCopyinCopyoutReachingDefinitions(rd, next, statement)) {
+			if(ExpandDataConstructCheck.getAccTransferProblems(rd, next, statement) != null) {
 				getCheck().getStatus().addWarning(String.format("Construct will not expand %s statement that may alter values copied to or from the accelerator", up? "above" : "below"));
 				break;
 			}
@@ -221,6 +232,33 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		return i;
 	}
 
+	private boolean containsBadControlFlowStatement(IASTNode next) {
+		if (!ASTUtil.find(next, IASTGotoStatement.class).isEmpty()) {
+    		return true;
+    	}
+    	List<IASTStatement> ctlFlowStmts = new ArrayList<IASTStatement>();
+    	ctlFlowStmts.addAll(ASTUtil.find(next, IASTBreakStatement.class));
+    	ctlFlowStmts.addAll(ASTUtil.find(next, IASTContinueStatement.class));
+    	ctlFlowStmts.addAll(ASTUtil.find(next, IASTReturnStatement.class));
+    	for (IASTStatement statement : ctlFlowStmts) {
+			if (!insideInner(next, statement, IASTWhileStatement.class) 
+					&& !insideInner(next, statement, IASTSwitchStatement.class) 
+					&& !insideInner(next, statement, IASTDoStatement.class) 
+					&& !insideInner(next, statement, IASTForStatement.class)) {
+				return true;
+			}
+    	}
+    	return false;
+	}
+
+	private <T extends IASTNode> boolean insideInner(IASTNode next, IASTStatement statement, Class<T> clazz) {
+		T node = ASTUtil.findNearestAncestor(statement, clazz);
+    	if (node == null) {
+    		return false;
+    	}
+    	return ASTUtil.isAncestor(node, next);
+	}
+	
 	private IASTStatement[] getExpansionStatements(int stmtsUp, int stmtsDown, IASTStatement original) {
 		List<IASTStatement> statements = new ArrayList<IASTStatement>();
 		statements.add(original);
