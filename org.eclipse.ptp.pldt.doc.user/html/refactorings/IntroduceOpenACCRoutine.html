@@ -6,16 +6,18 @@ IntroduceOpenACCRoutine
 <h3><b>Introduce OpenACC Routine</b></h3>
 
 <h3>Use:</h3>
-<p>?</p>
+<p>Any functions called within a parallel region must be parallelized with the routine directive.</p>
 
 <h3>Description:</h3>
-<p>?</p>
+<p>Adds a preprocessor directive to functions allowing them to also be compiled for device execution.
+   Recursively refactors all functions called by the refactored function.</p>
 
 <h3>Example:</h3>
 <p>
 <ol>
-<li> Select the desired  Refactoring menu.</li>
-<li> The resulting statement.</li>
+<li> Select the statements with the desired function calls and choose Introduce OpenACC Routine under
+		the refactoring menu.</li>
+<li> The resulting function definitions.</li>
 </ol>
 </p>
 
@@ -24,7 +26,9 @@ IntroduceOpenACCRoutine
 <h3>Restrictions:</h3>
 <p>
 <ul>
-<li>?</li>
+<li>There cannot be any inconsistencies in the call levels, e.g., a region with vector parallelism cannot
+	call a function with gang parallelism.</li>
+<li>A parallelized function cannot contain function static variables.</li>
 </ul>
 </p>
 
