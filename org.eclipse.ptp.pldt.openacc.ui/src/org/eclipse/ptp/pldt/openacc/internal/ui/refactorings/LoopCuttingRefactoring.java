@@ -25,7 +25,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 public class LoopCuttingRefactoring extends ForLoopRefactoring{
 
     private int cutFactor;
-    private String newName = "";
+    private String newName = ""; //$NON-NLS-1$
     private LoopCuttingCheck check;
     
     // TODO: put a good comment here

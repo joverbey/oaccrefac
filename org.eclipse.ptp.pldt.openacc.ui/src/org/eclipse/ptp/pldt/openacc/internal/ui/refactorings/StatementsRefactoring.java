@@ -50,7 +50,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         discoverStatementsFromRegion();
 
         if (statements.length == 0) {
-            initStatus.addFatalError("Selected region contains no statements on which to perform the refactoring.");
+            initStatus.addFatalError(Messages.StatementsRefactoring_NoStatementsToRefactor);
             return initStatus;
         }
 
@@ -61,7 +61,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         initStatus.addInfo(msg);
         */
 
-        pm.subTask("Checking initial conditions...");
+        pm.subTask(Messages.StatementsRefactoring_CheckingInitialConditions);
         doCheckInitialConditions(initStatus, pm);
         return initStatus;
     }
@@ -92,7 +92,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
     protected RefactoringStatus checkFinalConditions(IProgressMonitor pm, CheckConditionsContext checkContext)
             throws CoreException, OperationCanceledException {
         RefactoringStatus result = new RefactoringStatus();
-        pm.subTask("Determining if transformation can be safely performed...");
+        pm.subTask(Messages.StatementsRefactoring_DeterminingIfSafe);
         doCheckFinalConditions(result, pm);
         return result;
     }
@@ -113,7 +113,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
     @Override
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
-        pm.subTask("Calculating modifications...");
+        pm.subTask(Messages.StatementsRefactoring_CalculatingModifications);
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(refactoringContext.getAST(getTranslationUnit(), pm));
 
         refactor(new CDTASTRewriteProxy(rewriter), pm);

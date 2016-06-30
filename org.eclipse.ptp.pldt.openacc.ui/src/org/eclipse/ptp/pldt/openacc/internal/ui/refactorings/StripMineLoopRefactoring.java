@@ -27,8 +27,8 @@ public class StripMineLoopRefactoring extends ForLoopRefactoring {
 	private int stripFactor = -1;
 	private boolean zeroBased = false;
 	private boolean handleOverflow = true;
-    private String newNameOuter = "";
-    private String newNameInner = "";
+    private String newNameOuter = ""; //$NON-NLS-1$
+    private String newNameInner = ""; //$NON-NLS-1$
     private StripMineCheck stripCheck;
 
     public StripMineLoopRefactoring(ICElement element, ISelection selection, ICProject project) {
