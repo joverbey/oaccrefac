@@ -39,7 +39,7 @@ public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> 
 			for (IASTFunctionCallExpression call : ASTUtil.find(statement, IASTFunctionCallExpression.class)) {
 				IASTFunctionDefinition definition = ASTUtil.findFunctionDefinition(call);
 				if (definition == null) {
-					status.addError("Cannot find function definition.", ASTUtil.getStatusContext(call, call));
+					status.addError(Messages.IntroRoutineCheck_CannotFindFunctionDefinition, ASTUtil.getStatusContext(call, call));
 				} else {
 				    definitions.add(definition);
 				}

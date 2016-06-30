@@ -34,12 +34,12 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
     protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
         
         if(((TileLoopsParams) params).getHeight() < 1) {
-            status.addFatalError("Height must be at least 1");
+            status.addFatalError(Messages.TileLoopsCheck_HeightMustBe);
             return;
         }
         
         if(((TileLoopsParams) params).getWidth() < 1) {
-            status.addFatalError("Width must be at least 1");
+            status.addFatalError(Messages.TileLoopsCheck_WidthMustBe);
             return;
         }
         
@@ -56,17 +56,17 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
         // are not allowed by pragmas.
         
         if (!ASTUtil.getPragmaNodes(this.getLoop()).isEmpty()) {
-            status.addError("This loop contains an ACC pragma.");
+            status.addError(Messages.TileLoopsCheck_LoopContainsPragma);
         }
 
         if (!inq.isPerfectLoopNest(1)) {
-            status.addFatalError("Only perfectly nested loops can be tiled.");
+            status.addFatalError(Messages.TileLoopsCheck_OnlyPerfectlyNestedLoops);
             return;
         }
         
         List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (headers.size() < 2) {
-            status.addFatalError("There must be two nested loops to perform loop tiling.");
+            status.addFatalError(Messages.TileLoopsCheck_MustBeTwoLoops);
             return;
         }
         

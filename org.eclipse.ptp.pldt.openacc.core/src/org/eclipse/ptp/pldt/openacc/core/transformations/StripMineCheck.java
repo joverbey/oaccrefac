@@ -36,16 +36,16 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
         
         // Check strip factor validity...
         if (params.getStripFactor() <= 0) {
-            status.addFatalError("Invalid strip factor (<= 0)");
+            status.addFatalError(Messages.StripMineCheck_InvalidStripFactor);
             return;
         }
         
         if (ASTUtil.isNameInScope(params.getNewNameOuter(), loop.getScope())) {
-        	status.addWarning("Outer index variable name already exists in scope");
+        	status.addWarning(Messages.StripMineCheck_OuterNameAlreadyExists);
         }
         
         if (params.shouldBeZeroBased() && ASTUtil.isNameInScope(params.getNewNameInner(), loop.getScope())) {
-        	status.addWarning("Inner index variable name already exists in scope");
+        	status.addWarning(Messages.StripMineCheck_InnerNameAlreadyExists);
         }
 
         // If the strip factor is not divisible by the original linear
@@ -53,11 +53,11 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
         // strip mine because the refactoring will change behavior
         int iterFactor = inq.getIterationFactor();
         if (params.getStripFactor() % iterFactor != 0 || params.getStripFactor() <= iterFactor) {
-            status.addError("Strip mine factor must be greater than and divisible by the intended loop's iteration factor");
+            status.addError(Messages.StripMineCheck_FactorMustBeGreaterAndDivisible);
         }
         
         if(!params.shouldHandleOverflow() && inq.getInclusiveUpperBound() % params.getStripFactor() != 0) {
-        	status.addWarning("Loop range overflow will not be handled, but the loop upper bound is not divisible by strip factor, so overflow will occur");
+        	status.addWarning(Messages.StripMineCheck_OverflowWillOccur);
         }
         
     }

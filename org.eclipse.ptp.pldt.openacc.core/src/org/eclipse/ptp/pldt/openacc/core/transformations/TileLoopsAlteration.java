@@ -86,7 +86,7 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
 		String outerUb = outerConditionExpression.getOperand2().getRawSignature();
 		String innerComparisonOperator = getOperatorAsString(innerConditionExpression);
 		String outerComparisonOperator = getOperatorAsString(outerConditionExpression);
-        if (innerNewName.equals("")) {
+        if (innerNewName.equals("")) { //$NON-NLS-1$
         	try {
         		innerNewName = createNewName(innerIndexVar, inner.getScope().getParent());
         	} catch (DOMException e) {
@@ -94,7 +94,7 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
         		return;
         	}
         }
-        if (outerNewName.equals("")) {
+        if (outerNewName.equals("")) { //$NON-NLS-1$
         	try {
         		outerNewName = createNewName(outerIndexVar, outer.getScope().getParent());
         	} catch (DOMException e) {
@@ -110,7 +110,7 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
         	IASTDeclarationStatement ds = (IASTDeclarationStatement) inner.getInitializerStatement();
             IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
             innerType = dec.getDeclSpecifier().getRawSignature();
-            init4 = String.format("%s %s = %s", innerType, innerIndexVar, innerNewName);
+            init4 = String.format("%s %s = %s", innerType, innerIndexVar, innerNewName); //$NON-NLS-1$
         } else {
         	IASTExpressionStatement es = (IASTExpressionStatement) inner.getInitializerStatement();
             IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
@@ -121,10 +121,10 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             else {
             	innerType = type.toString();
             }
-            init4 = String.format("%s = %s", innerIndexVar, innerNewName);
+            init4 = String.format("%s = %s", innerIndexVar, innerNewName); //$NON-NLS-1$
         }
         cond4 = parenth(
-                String.format("%s <  %s + %d && %s %s %s", innerIndexVar, innerNewName, width, innerIndexVar, 
+                String.format("%s <  %s + %d && %s %s %s", innerIndexVar, innerNewName, width, innerIndexVar,  //$NON-NLS-1$
                 		innerComparisonOperator, innerUb));
         iter4 = inner.getIterationExpression().getRawSignature();
         body4 = inner.getBody().getRawSignature();
@@ -137,7 +137,7 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
         	IASTDeclarationStatement ds = (IASTDeclarationStatement) outer.getInitializerStatement();
             IASTSimpleDeclaration dec = (IASTSimpleDeclaration) ds.getDeclaration();
             outerType = dec.getDeclSpecifier().getRawSignature();
-            init3 = String.format("%s %s = %s", outerType, outerIndexVar, outerNewName);
+            init3 = String.format("%s %s = %s", outerType, outerIndexVar, outerNewName); //$NON-NLS-1$
         } else {
         	IASTExpressionStatement es = (IASTExpressionStatement) outer.getInitializerStatement();
             IASTBinaryExpression e = (IASTBinaryExpression) es.getExpression();
@@ -148,10 +148,10 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             else {
             	outerType = type.toString();
             }
-            init3 = String.format("%s = %s", outerIndexVar, outerNewName);
+            init3 = String.format("%s = %s", outerIndexVar, outerNewName); //$NON-NLS-1$
         }
         cond3 = parenth(
-                String.format("%s <  %s + %d && %s %s %s", outerIndexVar, outerNewName, height, outerIndexVar, 
+                String.format("%s <  %s + %d && %s %s %s", outerIndexVar, outerNewName, height, outerIndexVar,  //$NON-NLS-1$
                 		outerComparisonOperator, outerUb));
         iter3 = outer.getIterationExpression().getRawSignature();
         IASTComment[] outerComments = getBodyComments(outer);
@@ -175,9 +175,9 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             innerInitRhs = init.getInitializerClause().getRawSignature();
         }
-        init2 = String.format("%s %s = %s", innerType, innerNewName, innerInitRhs);
-        cond2 = String.format("%s %s %s", innerNewName, innerComparisonOperator, innerUb);
-        iter2 = String.format("%s += %d", innerNewName, width);
+        init2 = String.format("%s %s = %s", innerType, innerNewName, innerInitRhs); //$NON-NLS-1$
+        cond2 = String.format("%s %s %s", innerNewName, innerComparisonOperator, innerUb); //$NON-NLS-1$
+        iter2 = String.format("%s += %d", innerNewName, width); //$NON-NLS-1$
         loop2 = forLoop(init2, cond2, iter2, compound(loop3));
 
         // --------loop1----------------------------
@@ -195,9 +195,9 @@ public class TileLoopsAlteration extends AbstractTileLoopsAlteration {
             IASTEqualsInitializer init = (IASTEqualsInitializer) dec.getDeclarators()[0].getInitializer();
             outerInitRhs = init.getInitializerClause().getRawSignature();
         }
-        init1 = String.format("%s %s = %s", outerType, outerNewName, outerInitRhs);
-        cond1 = String.format("%s %s %s", outerNewName, outerComparisonOperator, outerUb);
-        iter1 = String.format("%s += %d", outerNewName, height);
+        init1 = String.format("%s %s = %s", outerType, outerNewName, outerInitRhs); //$NON-NLS-1$
+        cond1 = String.format("%s %s %s", outerNewName, outerComparisonOperator, outerUb); //$NON-NLS-1$
+        iter1 = String.format("%s += %d", outerNewName, height); //$NON-NLS-1$
         loop1 = forLoop(init1, cond1, iter1, compound(loop2));
 
         // ------Done------------------------

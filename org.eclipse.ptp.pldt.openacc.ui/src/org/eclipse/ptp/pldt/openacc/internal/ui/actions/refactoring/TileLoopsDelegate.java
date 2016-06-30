@@ -33,40 +33,40 @@ public class TileLoopsDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final TileLoopsRefactoring refac = (TileLoopsRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Tile Loops", true);
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, Messages.TileLoopsDelegate_TileLoops, true);
         ColumnedLoopRefactoringWizardPage page = wizard.getColumnPage();
-        page.addLeftInputControl("Tile Width: ", new NumberValueChangedListener() {
+        page.addLeftInputControl(Messages.TileLoopsDelegate_TileWidth, new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setWidth(value);
             }
         });
-        page.addLeftInputControl("Tile Height: ", new NumberValueChangedListener() {
+        page.addLeftInputControl(Messages.TileLoopsDelegate_TileHeight, new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setHeight(value);
             }
         });
-        page.addLeftInputControl("Inner Index Variable: ", new StringValueChangedListener() {
+        page.addLeftInputControl(Messages.TileLoopsDelegate_InnerIndexVariable, new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
                 refac.setInnerNewName(value);
             }
         });
-        page.addLeftInputControl("Outer Index Variable: ", new StringValueChangedListener() {
+        page.addLeftInputControl(Messages.TileLoopsDelegate_OuterIndexVariable, new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
                 refac.setOuterNewName(value);
             }
         });
         
-        page.addRightInputControl("Cut Factor: ", new NumberValueChangedListener() {
+        page.addRightInputControl(Messages.TileLoopsDelegate_CutFactor, new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setCutFactor(value);
             }
         });
-        page.addRightInputControl("Index Variable Name: ", new StringValueChangedListener() {
+        page.addRightInputControl(Messages.TileLoopsDelegate_IndexVariableName, new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
                 refac.setNewName(value);

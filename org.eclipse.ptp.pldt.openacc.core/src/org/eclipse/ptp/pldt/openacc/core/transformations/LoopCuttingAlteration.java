@@ -65,7 +65,7 @@ public class LoopCuttingAlteration extends AbstractTileLoopsAlteration {
         IASTForStatement loop = getLoop();
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
         String indexVar = inq.getIndexVariable().toString();
-        if (newName.equals("")) {
+        if (newName.equals("")) { //$NON-NLS-1$
         	try {
         		newName = createNewName(indexVar, loop.getScope().getParent());
         	} catch (DOMException e) {
@@ -80,9 +80,9 @@ public class LoopCuttingAlteration extends AbstractTileLoopsAlteration {
 		String compOp = getOperatorAsString(condExpr);
 		String ub = condExpr.getOperand2().getRawSignature();
         if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
-            innerInit = String.format("int %s = %s", indexVar, newName);
+            innerInit = String.format("int %s = %s", indexVar, newName); //$NON-NLS-1$
         } else {
-            innerInit = String.format("%s = %s", indexVar, newName);
+            innerInit = String.format("%s = %s", indexVar, newName); //$NON-NLS-1$
         }
         innerCond = getInnerCond(indexVar, newName, cutFactor, compOp, ub);
         innerIter = getInnerIter(loop, indexVar, ub, cutFactor);
@@ -90,7 +90,7 @@ public class LoopCuttingAlteration extends AbstractTileLoopsAlteration {
         if (!(loop.getBody() instanceof IASTCompoundStatement)) {
 	        IASTComment[] outerComments = getBodyComments(loop);
 	        for (IASTComment comment : outerComments) {
-	        	innerBody = comment.getRawSignature() + "\n" + innerBody;
+	        	innerBody = comment.getRawSignature() + "\n" + innerBody; //$NON-NLS-1$
 	        }
 	        innerBody = compound(innerBody);
         }
@@ -118,7 +118,7 @@ public class LoopCuttingAlteration extends AbstractTileLoopsAlteration {
             initRhs = init.getInitializerClause().getRawSignature();
             initType = dec.getDeclSpecifier().getRawSignature();
         }
-        outerInit = String.format("%s %s = %s", initType, newName, initRhs);
+        outerInit = String.format("%s %s = %s", initType, newName, initRhs); //$NON-NLS-1$
         outerCond = getOuterCond(newName, compOp, ub, cutFactor);
         outerIter = getOuterIter(newName, cutFactor);
         outer = forLoop(outerInit, outerCond, outerIter, compound(inner));
@@ -127,20 +127,20 @@ public class LoopCuttingAlteration extends AbstractTileLoopsAlteration {
     }
     
     private String getOuterCond(String newName, String compOp, String ub, int numValue) {
-    	return String.format("%s < %s", newName, ub + " / " + numValue);
+    	return String.format("%s < %s", newName, ub + " / " + numValue); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     private String getOuterIter(String newName, int numFactor) {
-    	return newName + "++";
+    	return newName + "++"; //$NON-NLS-1$
     }
     
     private String getInnerCond(String indexVar, String newName, int numFactor, 
     		String compOp, String ub) {
-    	return parenth(String.format("%s < %s", indexVar, ub));
+    	return parenth(String.format("%s < %s", indexVar, ub)); //$NON-NLS-1$
     }
     
     private String getInnerIter(IASTForStatement loop, String indexVar, String ub, int numValue) {
-    	return indexVar + "+=" + ub + "/" + numValue;
+    	return indexVar + "+=" + ub + "/" + numValue; //$NON-NLS-1$ //$NON-NLS-2$
     }
     
 }

@@ -82,7 +82,7 @@ public class FunctionNode {
 	private void checkForStatic() {
 		for (IASTName name : ASTUtil.find(definition, IASTName.class)) {
 			if (name.resolveBinding() instanceof IVariable && ((IVariable) name.resolveBinding()).isStatic()) {
-				root.status.addError("OpenACC routines cannot contain static variables.", 
+				root.status.addError(Messages.FunctionNode_CannotContainStaticVariables, 
 						ASTUtil.getStatusContext(name, name));
 			}
 		}
@@ -92,7 +92,7 @@ public class FunctionNode {
 		for (IASTFunctionCallExpression call : ASTUtil.find(definition, IASTFunctionCallExpression.class)) {
 			IASTFunctionDefinition functionDefinition = ASTUtil.findFunctionDefinition(call);
 			if (functionDefinition == null) {
-				root.status.addError("Cannot find function definition.", ASTUtil.getStatusContext(call, call));
+				root.status.addError(Messages.FunctionNode_CannotFindFunctionDefinitions, ASTUtil.getStatusContext(call, call));
 			} else {
 				for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
 					setLevelFromPragma(pragma);
@@ -107,7 +107,7 @@ public class FunctionNode {
 				} else {
 					level = level.next(); // Routines must be called from one level higher than themselves.
 					if (level == null) {
-						throw new FunctionGraphException("Levels of parallelism in the function call graph are inconsistent."); 
+						throw new FunctionGraphException(Messages.FunctionNode_InconsistentLevelsofParallelism); 
 					}
 				}
 			}
@@ -137,7 +137,7 @@ public class FunctionNode {
 				level = FunctionLevel.GANG;
 			} 
 		} catch (Exception e) {
-			root.status.addError("Cannot parse preprocessor statement.", 
+			root.status.addError(Messages.FunctionNode_CannotParsePreprocessorStatement, 
 					ASTUtil.getStatusContext(pragma, pragma));
 		}
 	}
@@ -151,12 +151,12 @@ public class FunctionNode {
 				level = child.level.next();
 			}
 			if (level == null) {
-				throw new FunctionGraphException("Levels of parallelism in the function call graph are inconsistent.");
+				throw new FunctionGraphException(Messages.FunctionNode_InconsistentLevelsofParallelism);
 			}
 		}
 		HashSet<FunctionNode> visited = new HashSet<FunctionNode>();
 		if (level != FunctionLevel.SEQ && this.findDescendant(definition, visited) != null) {
-			root.status.addError("Recursive functions must have sequential parallelization.",
+			root.status.addError(Messages.FunctionNode_RecursiveMustBeSequential,
 					ASTUtil.getStatusContext(definition, definition));
 		}
 	}
@@ -180,17 +180,17 @@ public class FunctionNode {
 	
 	@Override
 	public String toString() {
-		String output = "";
+		String output = ""; //$NON-NLS-1$
 		if (root.equals(this)) {
-			output += "Root, ";
+			output += Messages.FunctionNode_Root;
 		}
-		output += "Level: ";
+		output += Messages.FunctionNode_Level;
 		if (level != null) {
 			output += level.name();
 		} else {
-			output += "null";
+			output += Messages.FunctionNode_Null;
 		}
-		output += ", Children: ";
+		output += Messages.FunctionNode_Children;
 		output += children.size();
 		return output;
 	}

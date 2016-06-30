@@ -50,7 +50,7 @@ public class ColumnedLoopRefactoringWizardPage extends LoopRefactoringWizardPage
 		Composite c = new Composite (parent, SWT.NONE);
 		c.setLayout(new GridLayout());
 		ColumnedButtonSelectionListener listener = new ColumnedButtonSelectionListener(refac);
-		RadioButtonComposite buttons = new RadioButtonComposite(c, SWT.NONE, "Tiling", "Cutting", listener);
+		RadioButtonComposite buttons = new RadioButtonComposite(c, SWT.NONE, Messages.ColumnedLoopRefactoringWizardPage_Tiling, Messages.ColumnedLoopRefactoringWizardPage_Cutting, listener);
 		Composite bottom = new Composite(c, SWT.NONE);
 		bottom.setLayout(new GridLayout(2, true));
 		Composite left = new Composite(bottom, SWT.RIGHT_TO_LEFT);

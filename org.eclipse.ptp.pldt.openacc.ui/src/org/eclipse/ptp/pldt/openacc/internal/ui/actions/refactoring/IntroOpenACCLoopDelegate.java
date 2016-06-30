@@ -40,9 +40,9 @@ public class IntroOpenACCLoopDelegate extends RefactoringActionDelegate {
     public RefactoringWizard createWizard(Refactoring refactoring) {
     	final IntroOpenACCLoopRefactoring refac = (IntroOpenACCLoopRefactoring) refactoring;
         LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, 
-        		"Introduce OpenACC Loop", true);
+        		Messages.IntroOpenACCLoopDelegate_IntroduceOpenACCLoop, true);
         LoopRefactoringWizardPage page = wizard.getInputPage();
-        page.addInputControl("Kernels", new RadioButtonSelectionListener(refac));
+        page.addInputControl(Messages.IntroOpenACCLoopDelegate_Kernels, new RadioButtonSelectionListener(refac));
         return wizard;
     }
 

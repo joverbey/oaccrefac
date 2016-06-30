@@ -37,12 +37,12 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
     
         // Check strip factor validity...
         if (params.getNumFactor() <= 0) {
-        	status.addFatalError("Invalid cut factor (<= 0).");
+        	status.addFatalError(Messages.LoopCuttingCheck_InvalidCutFactor);
         	return;
         }
         
         if (ASTUtil.isNameInScope(params.getNewName(), loop.getScope())) {
-        	status.addWarning("Index variable name already exists in scope.");
+        	status.addWarning(Messages.LoopCuttingCheck_NameAlreadyExists);
         }
     
         //Check that iterator is divisible by cut size(new loop iterations = 4)
@@ -51,8 +51,8 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
         int iterator = inq.getIterationFactor();
         if (params.getNumFactor() % iterator != 0 || params.getNumFactor() <= iterator) {
         	status.addFatalError(
-        		"LoopCut factor must be greater than and "
-        				+ "divisible by the intended loop's iteration factor."
+        		Messages.LoopCuttingCheck_FactorMustBeGreater
+        				+ Messages.LoopCuttingCheck_DivisibleByIterationFactor
         	);
         	return;
         }
@@ -62,7 +62,7 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
     @Override
 	public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
 		if (dep != null && dep.hasLevel1CarriedDependence()) {
-			status.addError("This loop cannot be cut because it carries a dependence.");
+			status.addError(Messages.LoopCuttingCheck_CannotCutCarriesDependence);
 		}
 
 	}

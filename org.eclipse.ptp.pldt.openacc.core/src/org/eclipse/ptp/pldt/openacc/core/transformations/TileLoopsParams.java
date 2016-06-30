@@ -16,7 +16,7 @@ public class TileLoopsParams extends AbstractTileLoopsParams {
     private int height;    
     
     public TileLoopsParams(int width, int height) {
-    	super(0, "");
+    	super(0, ""); //$NON-NLS-1$
         this.width = width;
         this.height = height;
     }

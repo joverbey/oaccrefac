@@ -55,7 +55,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
     	if (containsUnsupportedOp(loop)) {
             status.addError(
-                    "Cannot refactor loops containing break, continue, or goto");
+                    Messages.ForLoopCheck_CannotRefactor);
         }
     	doLoopFormCheck(status);
         return status;
@@ -71,7 +71,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         try {
             dependenceAnalysis = new DependenceAnalysis(pm, statements);
         } catch (DependenceTestFailure e) {
-            status.addError("Dependences could not be analyzed.  " + e.getMessage());
+            status.addError(Messages.ForLoopCheck_CannotAnalyzeDependences + e.getMessage());
             return status;
         }
         

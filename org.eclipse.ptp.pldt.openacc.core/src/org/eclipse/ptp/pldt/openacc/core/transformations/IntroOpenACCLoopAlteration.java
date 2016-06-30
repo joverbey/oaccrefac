@@ -28,15 +28,15 @@ public class IntroOpenACCLoopAlteration extends ForLoopAlteration<IntroOpenACCLo
     protected void doChange() {
         if (inParallelRegion || inKernelsRegion){
             int offset = getLoop().getFileLocation().getNodeOffset();
-            this.insert(offset, pragma("acc loop") + System.lineSeparator());
+            this.insert(offset, pragma("acc loop") + System.lineSeparator()); //$NON-NLS-1$
             finalizeChanges();
         } else if (kernels) {
             int offset = getLoop().getFileLocation().getNodeOffset();
-            this.insert(offset, pragma("acc kernels loop"));
+            this.insert(offset, pragma("acc kernels loop")); //$NON-NLS-1$
             finalizeChanges();
         } else {
             int offset = getLoop().getFileLocation().getNodeOffset();
-            this.insert(offset, pragma("acc parallel loop") + System.lineSeparator());
+            this.insert(offset, pragma("acc parallel loop") + System.lineSeparator()); //$NON-NLS-1$
             finalizeChanges();
         }
     }

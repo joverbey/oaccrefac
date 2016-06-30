@@ -75,7 +75,7 @@ public class FuseLoopsAlteration extends ForLoopAlteration<FuseLoopsCheck> {
         }
 
         //FIXME this is a workaround. see issue #48 
-        insertBefore(first, "");
+        insertBefore(first, ""); //$NON-NLS-1$
         
         replace(getLastBodyIndex(first), getFirstBodyIndex(second) - getLastBodyIndex(first), NL);
         
