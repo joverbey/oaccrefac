@@ -4,6 +4,11 @@
 UnrollLoop
 </title>
 
+<h3><b>Unroll Loop</b></h3>
+
+<h3>Use:</h3>
+<p>Loop unrolling can decrease performance time regardless of parallelization.  The execution of a for loop is an expensive process that is almost always far more expensive than the loop bodies cost.  Because of this duplicating the for loop body and decreasing number of for loop iterations will have an overall decrease in cost.</p>
+
 <h3>Description:</h3>
 <p>Duplicates the body of a loop inside the loop and reduces the number of iterations by the amount of duplications.</p>
 
@@ -18,9 +23,6 @@ UnrollLoop
 <img src="../images/refactorings/Unroll/Unroll3Final.png">
 </ol>
 </p>
-
-<h3>Use:</h3>
-<p>Loop unrolling can decrease performance time regardless of parallelization.  The execution of a for loop is an expensive process that is almost always far more expensive than the loop bodies cost.  Because of this duplicating the for loop body and decreasing number of for loop iterations will have an overall decrease in cost.</p>
 
 <h3>Restrictions:</h3>
 <p>
