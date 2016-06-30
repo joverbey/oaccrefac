@@ -18,7 +18,10 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccGangClauseNode;
@@ -95,7 +98,7 @@ public class FunctionNode {
 				root.status.addError(Messages.FunctionNode_CannotFindFunctionDefinitions, ASTUtil.getStatusContext(call, call));
 			} else {
 				for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
-					setLevelFromPragma(pragma);
+					level = getLevelFromPragma(pragma, level);
 				}
 				if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
 					FunctionNode existingNode = root.findDescendant(functionDefinition, new HashSet<FunctionNode>());
@@ -116,11 +119,11 @@ public class FunctionNode {
 	
 	private void findInherentRestriction() throws FunctionGraphException {
 		for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getInternalPragmaNodes(definition.getBody())) {
-			setLevelFromPragma(pragma);
+			this.level = getLevelFromPragma(pragma, level);
 		}
 	}
 
-	private void setLevelFromPragma(IASTPreprocessorPragmaStatement pragma) throws FunctionGraphException {
+	private FunctionLevel getLevelFromPragma(IASTPreprocessorPragmaStatement pragma, FunctionLevel level) throws FunctionGraphException {
 		try {
 			IAccConstruct parse = new OpenACCParser().parse(pragma.getRawSignature());
 			if (!OpenACCUtil.find(parse, 
@@ -140,6 +143,7 @@ public class FunctionNode {
 			root.status.addError(Messages.FunctionNode_CannotParsePreprocessorStatement, 
 					ASTUtil.getStatusContext(pragma, pragma));
 		}
+		return level;
 	}
 	
 	private void findCurrentLevel() throws FunctionGraphException {
@@ -152,6 +156,20 @@ public class FunctionNode {
 			}
 			if (level == null) {
 				throw new FunctionGraphException(Messages.FunctionNode_InconsistentLevelsofParallelism);
+			}
+		}
+		for (IASTFunctionCallExpression call : ASTUtil.findFunctionCalls(definition)) {
+			if (definition.equals(ASTUtil.findFunctionDefinition(call))) {
+				for (IASTNode node = (IASTNode) ASTUtil.findNearestAncestor(call, IASTStatement.class); 
+						node != null && !(node instanceof IASTTranslationUnit); node = node.getParent()) {
+					for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(node)) {
+						if ((level.compareTo(FunctionLevel.SEQ) != 0)
+								&& (level.compareTo(getLevelFromPragma(pragma, level)) >= 0)) {
+							throw new FunctionGraphException("Function call levels are inconsistent.", 
+									ASTUtil.getStatusContext(pragma, call));
+						}
+					}
+				}
 			}
 		}
 		HashSet<FunctionNode> visited = new HashSet<FunctionNode>();

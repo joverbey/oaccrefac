@@ -497,6 +497,18 @@ public class ASTUtil {
 		return null;
 	}
 	
+	public static List<IASTFunctionCallExpression> findFunctionCalls(IASTFunctionDefinition definition) {
+		
+		List<IASTFunctionCallExpression> calls = new ArrayList<IASTFunctionCallExpression>();
+		for (IASTFunctionCallExpression call : find(definition.getTranslationUnit(), IASTFunctionCallExpression.class)) {
+			if ((definition.equals(findFunctionDefinition(call)))) {
+				calls.add(call);
+			}
+		}
+		
+		return calls;
+	}
+	
 	public static RefactoringStatusContext getStatusContext(IASTNode node1, IASTNode node2) {
 	    if (node1.getTranslationUnit() != node2.getTranslationUnit()) {
 	        return null;
