@@ -30,6 +30,25 @@ import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccWorkerClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 
+/**
+ * Used to create and analyze a function call graph.
+ * 
+ * <p>When performing the IntroRoutine refactoring, all definitions called in refactored functions must also be 
+ * refactored. Each node in the graph contains a function definition and a list of children, or nodes containing 
+ * definitions of functions called in the current node's definition. When created, a node will add itself to its 
+ * parent's children, create or find its own children, and then determine its current level.</p>
+ * 
+ * <p>A function's level determines the clause in the pragma directive, and is either sequential, vector, worker, 
+ * or gang, with each level higher than the last. Each node must have a level higher than the highest level of all its children. The exception is if
+ * the highest level is sequential, in which case the node may itself also be sequential. If a node contains a child
+ * with the gang level, then the function cannot be parallelized and an exception is thrown.</p>
+ *
+ * <p>Every node is sequential by default, with a higher level forced only if a child has a higher level or there
+ * is an inherent level in the definition, i.e., it contains a parallel 
+ * region. Such a node must have at least the level specified by the parallel region. The entire graph will be 
+ * sequential unless one of these parallel regions is encountered. Then the parallelism will propagate up the call
+ * hierarchy.</p>
+ */
 public class FunctionNode {
 
 	private final FunctionNode root;
@@ -165,7 +184,7 @@ public class FunctionNode {
 					for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(node)) {
 						if ((level.compareTo(FunctionLevel.SEQ) != 0)
 								&& (level.compareTo(getLevelFromPragma(pragma, level)) >= 0)) {
-							throw new FunctionGraphException("Function call levels are inconsistent.", 
+							throw new FunctionGraphException(Messages.FunctionNode_InconsistentCallLevels, 
 									ASTUtil.getStatusContext(pragma, call));
 						}
 					}

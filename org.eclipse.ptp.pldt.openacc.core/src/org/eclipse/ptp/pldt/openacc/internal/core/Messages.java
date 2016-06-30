@@ -8,6 +8,7 @@ public class Messages extends NLS {
 	public static String FunctionNode_CannotFindFunctionDefinitions;
 	public static String FunctionNode_CannotParsePreprocessorStatement;
 	public static String FunctionNode_Children;
+	public static String FunctionNode_InconsistentCallLevels;
 	public static String FunctionNode_InconsistentLevelsofParallelism;
 	public static String FunctionNode_Level;
 	public static String FunctionNode_Null;
