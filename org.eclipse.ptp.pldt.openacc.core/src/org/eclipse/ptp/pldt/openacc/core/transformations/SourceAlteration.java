@@ -23,7 +23,6 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
@@ -32,10 +31,6 @@ import org.eclipse.text.edits.TextEditGroup;
  * SourceAlteration describes the base class for change objects that use the
  * ASTRewrite in their algorithms.
  * <p>
- * All that the inheriting classes need to implement are two abstract methods 
- * {@link #doChange()} and {@link #doCheckConditions(RefactoringStatus)}.
- * 
- * @author Adam Eichelkraut
  */
 public abstract class SourceAlteration<T extends Check<?>> {
     public static final String PRAGMA = "#pragma";
@@ -53,6 +48,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
 
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
+    private final T check;
     
     //string to insert in the final replacement
     private StringBuilder src;
@@ -66,6 +62,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     
     public SourceAlteration(IASTRewrite rewriter, T check) {
         this.tu = check.getTranslationUnit();
+        this.check = check;
         this.rewriter = rewriter;
         this.src = null;
         this.startOffset = -1;
@@ -373,6 +370,10 @@ public abstract class SourceAlteration<T extends Check<?>> {
         return this.getClass().getSimpleName() + ": " + repls.toString();
     }
 
+    public T getCheck() {
+    	return check;
+    }
+    
     /**
      * Called by the CLI to rewrite the AST. Not used by the Eclipse GUI.
      * 

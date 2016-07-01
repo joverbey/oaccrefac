@@ -43,8 +43,8 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new LoopCuttingCheck(getLoop());
-        check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
+        check = new LoopCuttingCheck(status, getLoop());
+        check.performChecks(pm, new LoopCuttingParams(cutFactor, newName));
     }
     
     @Override

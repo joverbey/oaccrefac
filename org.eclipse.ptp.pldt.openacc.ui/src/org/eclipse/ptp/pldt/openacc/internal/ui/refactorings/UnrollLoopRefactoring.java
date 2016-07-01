@@ -53,8 +53,8 @@ public class UnrollLoopRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new UnrollLoopCheck(getLoop());
-        check.performChecks(status, pm, new UnrollLoopParams(unrollFactor));
+        check = new UnrollLoopCheck(status, getLoop());
+        check.performChecks(pm, new UnrollLoopParams(unrollFactor));
     }
 
     @Override

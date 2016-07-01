@@ -40,7 +40,7 @@ public abstract class CLIRefactoring<P extends RefactoringParams, C extends Chec
     	if (check == null) {
     		return null;
     	}
-    	return check.performChecks(new RefactoringStatus(), new NullProgressMonitor(), createParams(statement));
+    	return check.performChecks(new NullProgressMonitor(), createParams(statement));
     }
     
     public final String performAlteration(IASTRewrite rw) {

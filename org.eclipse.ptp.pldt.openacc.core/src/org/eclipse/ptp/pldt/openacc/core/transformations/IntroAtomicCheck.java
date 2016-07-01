@@ -38,8 +38,8 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
 
     private int type = NONE;
 
-    public IntroAtomicCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
-        super(statements, statementsAndComments);
+    public IntroAtomicCheck(RefactoringStatus status, IASTStatement[] statements, IASTNode[] statementsAndComments) {
+        super(status, statements, statementsAndComments);
     }
 
     /**
@@ -50,7 +50,7 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
      * For now, we're only going to care about the first statement in the list
      * of statements given to us.
      */
-    protected void checkAtomicsAvailable(RefactoringStatus status) {
+    protected void checkAtomicsAvailable() {
         // Find all of the pragmas surrounding the highlighted statements.
         if (getStatements().length == 0) {
             // Failed because there weren't any statements to analyze.
@@ -124,8 +124,8 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
     }
 
     @Override
-    public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
-        checkAtomicsAvailable(status);
+    public RefactoringStatus doCheck(IProgressMonitor pm) {
+        checkAtomicsAvailable();
         return status;
     }
 }

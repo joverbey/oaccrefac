@@ -40,8 +40,8 @@ public class NullRefactoring extends ForLoopRefactoring {
                 ASTUtil.summarize(getLoop()));
         status.addInfo(msg, getLocation(getLoop()));
 
-        check = new NullCheck(getLoop());
-        check.performChecks(status, pm, new NullParams());
+        check = new NullCheck(status, getLoop());
+        check.performChecks(pm, new NullParams());
     }
 
     @Override

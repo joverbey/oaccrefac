@@ -17,18 +17,28 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 public abstract class Check<T extends RefactoringParams> {
 
-    protected void doParameterCheck(RefactoringStatus status, T params) { }
+	protected RefactoringStatus status;
+	
+	public Check(RefactoringStatus status) {
+		this.status = status;
+	}
+	
+    protected void doParameterCheck(T params) { }
     
     public abstract IASTTranslationUnit getTranslationUnit();
     
-    public RefactoringStatus parameterCheck(RefactoringStatus status, IProgressMonitor pm, T params) {
-        doParameterCheck(status, params);
+    public RefactoringStatus parameterCheck(IProgressMonitor pm, T params) {
+        doParameterCheck(params);
         return status;
     }
     
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
-        parameterCheck(status, pm, params);
+    public RefactoringStatus performChecks(IProgressMonitor pm, T params) {
+        parameterCheck(pm, params);
         return status;
     }
     
+    public RefactoringStatus getStatus() {
+    	return status;
+    }
+
 }

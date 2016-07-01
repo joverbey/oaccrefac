@@ -44,8 +44,8 @@ public class IntroOpenACCLoopRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-	    check = new IntroOpenACCLoopCheck(getLoop(), kernels);        
-	    check.performChecks(status, pm, null);
+	    check = new IntroOpenACCLoopCheck(status, getLoop(), kernels);        
+	    check.performChecks(pm, null);
     }
 
     @Override

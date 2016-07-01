@@ -1,0 +1,28 @@
+#include <stdio.h>
+
+int main() {
+
+	printf("test");
+
+	int i, j, b, a;
+
+	for (i = 0; i < 10; i++)
+#pragma acc data copyin(i) /*<<<<< 10,0,11,0,pass*/
+		for (j = 0; j < 10; j++) {
+#pragma acc parallel loop
+			for (i = 0; i < 10; i++)
+				a = i;
+#pragma acc parallel loop
+			for (i = 0; i < 10; i++) {
+				a = i;
+			}
+		}
+
+	b = 6;
+
+	while (0)
+		;
+
+	return 0;
+
+}

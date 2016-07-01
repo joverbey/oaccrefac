@@ -23,12 +23,12 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
-	public DistributeLoopsCheck(IASTForStatement loop) {
-		super(loop);
+	public DistributeLoopsCheck(RefactoringStatus status, IASTForStatement loop) {
+		super(status, loop);
 	}
 
 	@Override
-	public void doLoopFormCheck(RefactoringStatus status) {
+	public void doLoopFormCheck() {
 		// If the loop doesn't have children, bail.
 		if (!(loop.getBody() instanceof IASTCompoundStatement)) {
 			status.addFatalError("Loop body is not a compound statement, so distribution cannot be performed.");
@@ -43,11 +43,11 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 		if (!ASTUtil.find(loop.getBody(), IASTDeclarationStatement.class).isEmpty()) {
     		status.addError("Loop distribution isolates declaration statement.");
     	}
-		checkPragma(status);
+		checkPragma();
 	}
 
 	@Override
-	protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+	protected void doDependenceCheck(DependenceAnalysis dep) {
 		for (DataDependence d : dep.getDependences()) {
 			// if there is a loop-carried anti-dependence in the less-than direction
 			if (d.isLoopCarried()
@@ -60,7 +60,7 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 		}
 	}
 
-	private void checkPragma(RefactoringStatus status) {
+	private void checkPragma() {
 		if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
 			status.addFatalError("Can't distribute loop with pragmas.");
 		}

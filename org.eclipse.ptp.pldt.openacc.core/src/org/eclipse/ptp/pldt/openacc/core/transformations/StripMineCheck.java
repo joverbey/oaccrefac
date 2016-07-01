@@ -19,13 +19,12 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 public class StripMineCheck extends ForLoopCheck<StripMineParams> {
 
-    public StripMineCheck(IASTForStatement loop) {
-        super(loop);
+    public StripMineCheck(RefactoringStatus status, IASTForStatement loop) {
+        super(status, loop);
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, StripMineParams params) {
-    	
+    protected void doParameterCheck(StripMineParams params) {
     	// Presence of a openacc pragma doesn't influence whether or not strip 
     	// mining can be performed. This is because for strip mining to be 
     	// performed, each loop iteration must be independent from another.

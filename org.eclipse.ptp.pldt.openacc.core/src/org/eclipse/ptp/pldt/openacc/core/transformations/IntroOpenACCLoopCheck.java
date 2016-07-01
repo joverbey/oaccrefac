@@ -32,8 +32,8 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
     private final boolean inParallelRegion;
     private final boolean inKernelsRegion;
 
-    public IntroOpenACCLoopCheck(final IASTForStatement loop, boolean kernels) {
-        super(loop);
+    public IntroOpenACCLoopCheck(RefactoringStatus status, final IASTForStatement loop, boolean kernels) {
+        super(status, loop);
         this.kernels = kernels;
         this.inParallelRegion = ancestorHasPragma(loop, ASTAccParallelNode.class, ASTAccParallelLoopNode.class);
         this.inKernelsRegion = ancestorHasPragma(loop, ASTAccKernelsNode.class, ASTAccKernelsLoopNode.class);
@@ -65,17 +65,17 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
     }
 
     @Override
-    protected void doLoopFormCheck(RefactoringStatus status) {
+    protected void doLoopFormCheck() {
         if (kernels && inParallelRegion) {
             status.addFatalError(Messages.IntroOpenACCLoopCheck_KernelsCannotInParallelRegion);
         } else if (!kernels && inKernelsRegion) {
             status.addFatalError(Messages.IntroOpenACCLoopCheck_ParallelCannotInKernelsRegion);
         }
-        checkForExistingPragma(status);
+        checkForExistingPragma();
     }
 
     @Override
-    public void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    public void doDependenceCheck(DependenceAnalysis dep) {
         if (dep != null && dep.hasLevel1CarriedDependence()) {
             status.addError(Messages.IntroOpenACCLoopCheck_CannotParallelizeCarriesDependence);
             for (DataDependence d : dep.getDependences()) {
@@ -87,7 +87,7 @@ public class IntroOpenACCLoopCheck extends ForLoopCheck<RefactoringParams> {
         }
     }
 
-    private void checkForExistingPragma(RefactoringStatus status) {
+    private void checkForExistingPragma() {
         if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
             status.addFatalError(Messages.IntroOpenACCLoopCheck_PragmaCannotBeAddedHasPragma);
         }

@@ -13,6 +13,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.UnrollLoopCheck;
@@ -41,7 +42,7 @@ public class UnrollLoop extends CLILoopRefactoring<UnrollLoopParams, UnrollLoopC
      */
     @Override
     protected UnrollLoopCheck createCheck(IASTStatement loop) {
-        return new UnrollLoopCheck((IASTForStatement) loop);
+        return new UnrollLoopCheck(new RefactoringStatus(), (IASTForStatement) loop);
     }
 
     @Override

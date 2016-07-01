@@ -8,7 +8,7 @@ int main() {
 #pragma acc data copyin(i) /*<<<<< 8,0,9,0,pass*/
 	{
 #pragma acc parallel loop
-		for (; i < 10; i++)
+		for (i = 0; i < 10; i++)
 			a = i;
 	}
 

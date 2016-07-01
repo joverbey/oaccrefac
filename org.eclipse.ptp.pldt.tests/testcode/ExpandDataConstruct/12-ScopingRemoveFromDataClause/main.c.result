@@ -1,6 +1,6 @@
 int main() {
 
-	int i;
+	int i, a;
 
 #pragma acc parallel
 	{
@@ -8,20 +8,20 @@ int main() {
 			printf("test");
 	}
 
-#pragma acc data copyin( i) /*<<<<< 13,0,14,0,pass*/
+#pragma acc data copyin( i) copyout(a) /*<<<<< 13,0,14,0,pass*/
 	{
-		int a, b = 7;
+		int b = 7;
 
 #pragma acc parallel loop
 		for (; i < 10; i++)
-			a = b;
+			a = i;
 
-		b = a;
+		b = 7;
 
 		while (0)
 			;
-
-		return 0;
 	}
+
+	return a;
 
 }

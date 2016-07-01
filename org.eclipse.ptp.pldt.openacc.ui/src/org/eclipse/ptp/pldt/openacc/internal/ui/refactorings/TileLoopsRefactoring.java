@@ -78,11 +78,11 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
     	if (cut) {
-    		check = new LoopCuttingCheck(getLoop());
-    		check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
+    		check = new LoopCuttingCheck(status, getLoop());
+    		check.performChecks(pm, new LoopCuttingParams(cutFactor, newName));
     	} else {
-	        check = new TileLoopsCheck(getLoop());
-	        check.performChecks(status, pm, new TileLoopsParams(width, height));
+	        check = new TileLoopsCheck(status, getLoop());
+	        check.performChecks(pm, new TileLoopsParams(width, height));
     	}
     }
 
