@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -52,12 +53,12 @@ public class Main {
 		try {
 			switch (args[0]) {
 			// 2 args
-			case "-tile":
+			case "-tile": //$NON-NLS-1$
 				boolean cut = false;
-				String name1 = "", name2 = "";
+				String name1 = "", name2 = ""; //$NON-NLS-1$ //$NON-NLS-2$
 				int width = 0, height = 0;
 				for (int i = argIndex; i < args.length; i++) {
-					if (args[i].equals("-cut") || args[i].equals("-c")) {
+					if (args[i].equals("-cut") || args[i].equals("-c")) { //$NON-NLS-1$ //$NON-NLS-2$
 						cut = true;
 						argIndex++;
 					}
@@ -65,7 +66,7 @@ public class Main {
 				if (cut) {
 					width = parseInt(args[argIndex++]);
 					for (int i = argIndex; i < args.length; i++) {
-						if (args[i].equals("-name") || args[i].equals("-n")) {
+						if (args[i].equals("-name") || args[i].equals("-n")) { //$NON-NLS-1$ //$NON-NLS-2$
 							name1 = args[++i];
 							argIndex += 2;
 						}
@@ -74,7 +75,7 @@ public class Main {
 					width = parseInt(args[argIndex++]);
 					height = parseInt(args[argIndex++]);
 					for (int i = argIndex; i < args.length; i++) {
-						if (args[i].equals("-name") || args[i].equals("-n")) {
+						if (args[i].equals("-name") || args[i].equals("-n")) { //$NON-NLS-1$ //$NON-NLS-2$
 							name1 = args[++i];
 							name2 = args[++i];
 							argIndex += 3;
@@ -83,13 +84,13 @@ public class Main {
 				}
 				refactoring = new TileLoops(width, height, name1, name2, cut);
 				break;
-			case "-strip-mine":
-				String name = "";
+			case "-strip-mine": //$NON-NLS-1$
+				String name = ""; //$NON-NLS-1$
 				int factor = parseInt(args[argIndex++]);
 				loop:
 				for (int i = argIndex; i < args.length; i++) {
 					switch (args[i]) {
-					case "-name":
+					case "-name": //$NON-NLS-1$
 						name = args[++i];
 						argIndex += 2;
 						break;
@@ -100,19 +101,19 @@ public class Main {
 				refactoring = new StripMineLoop(factor, false, true, name, null);
 				break;
 			// 1 arg
-			case "-interchange":
+			case "-interchange": //$NON-NLS-1$
 				refactoring = new InterchangeLoops(parseInt(args[argIndex++]));
 				break;
-			case "-unroll":
+			case "-unroll": //$NON-NLS-1$
 				refactoring = new UnrollLoop(parseInt(args[argIndex++]));
 				break;
-			case "-introduce-loop":
+			case "-introduce-loop": //$NON-NLS-1$
 				boolean kernels = false;
 				loop:
 				for (int i = argIndex; i < args.length; i++) {
 					switch (args[i]) {
-					case "-k":
-					case "-kernels":
+					case "-k": //$NON-NLS-1$
+					case "-kernels": //$NON-NLS-1$
 						kernels = true;
 						argIndex++;
 						break;
@@ -123,24 +124,33 @@ public class Main {
 				refactoring = new IntroOpenACCLoop(kernels);
 				break;
 			// no args
-			case "-distribute":
+			case "-distribute": //$NON-NLS-1$
 				refactoring = new DistributeLoops();
 				break;
-			case "-fuse":
+			case "-fuse": //$NON-NLS-1$
 				refactoring = new FuseLoops();
 				break;
+			case "-expand":
+				refactoring = new ExpandDataConstruct();
+				break;
+			case "-merge":
+				refactoring = new MergeDataConstructs();
+				break;
+			/*case "-introdata":
+			refactoring = new IntroOpenACCDataConstruct();
+			break;*/
 			default:
-				throw new IllegalArgumentException("Specified refactoring is invalid");
+				throw new IllegalArgumentException(Messages.Main_RefactoringIsInvalid);
 			}
 
 			for (int i = argIndex; i < args.length; i++) {
 				switch (args[i]) {
-				case "-ln":
-				case "--loop-name":
+				case "-ln": //$NON-NLS-1$
+				case "--loop-name": //$NON-NLS-1$
 					loopName = args[++i];
 					break;
-				case "-pos":
-				case "--position":
+				case "-pos": //$NON-NLS-1$
+				case "--position": //$NON-NLS-1$
 					row = parseInt(args[++i]);
 					break;
 				default:
@@ -163,7 +173,7 @@ public class Main {
         try {
             translationUnit = parse(filename);
         } catch (CoreException e) {
-            System.err.printf("Unable to parse %s (%s)\n", filename, e.getMessage());
+            System.err.printf(Messages.Main_UnableToParse, filename, e.getMessage());
             System.exit(2);
         }
 
@@ -177,13 +187,13 @@ public class Main {
 
         if (statement == null) {
             System.err.println(
-                    "Please add a comment containing the loop name entered immediately above the loop to refactor.");
+                    Messages.Main_PleaseAddComment);
             System.exit(3);
         }
         
         RefactoringStatus status = refactoring.performChecks(statement);
         if (status == null) {
-        	System.err.println("No applicable statement found at selection.");
+        	System.err.println(Messages.Main_NoApplicableStatement);
         	System.exit(4);
         }
 
@@ -195,37 +205,13 @@ public class Main {
         String error = refactoring.performAlteration(rw);
     	//System.err.print(error);
         if (error != null) {
-            System.err.printf("Internal error creating change: %s\n", error);
+            System.err.printf(Messages.Main_InternalErrorCreatingChange, error);
             System.exit(5);
         }
 	}
 
 	public static void printUsage() {
-		System.err.println(new StringBuilder()
-				.append("Usage: Main <refactoring> <refactoring args> <options> <filename>\n")
-				.append("  Refactorings:\n")
-				.append("    DistributeLoops            - Break up one loop with independent statements to many loops\n")
-				.append("    FuseLoops                  - Join loops with independent statements into one loo\n")
-				.append("    InterchangeLoops           - Swap nested loops\n")
-				.append("    IntroduceACCLoop [-kernels]\n")
-				.append("                               - change loop to acc parallel loop\n")
-				.append("                      -kernels:  (optional) change loop to acc kernels loop\n")
-				.append("    StripMine <strip_factor> [-name <new_name>] \n")
-				.append("                               - insert loop with strip_factor iterations\n")
-				.append("                <strip_factor>:  the number of times to strip the loop iterations\n")
-				.append("              -name <new_name>:  (optional) the new variable name\n")
-				.append("    TileLoops [-cut] <width> <height> [-name <new_name>] - break up loop into tiles of width by height\n")
-				.append("                          -cut:  (optional) specifies that a loop cut intead of a tile\n")
-				.append("                                 must be placed at beginning\n")
-				.append("                       <width>:  the width of the tiles, or cut factor if cut\n")
-				.append("                      <height>:  the height of the tiles, omit for cut\n")
-				.append("              -name <new_name>:  (optional) the new variable name(s)\n")
-				.append("                                 one for cut, two otherwise\n")
-				.append("    Unroll <factor>            - unroll loop by factor\n")
-				.append("                      <factor>:  the number of loop iterations to unroll\n")
-				.append("  Options:\n")
-				.append("    -ln  or --loop-name <name> - the name of the loop to refactor\n")
-				.append("    -pos or --position <line> 	- the line number of the statement"));
+		System.err.println(Messages.Main_Usage);
 	}
 	
 	public static void printStatus(RefactoringStatus status) {
@@ -305,7 +291,7 @@ public class Main {
                                 found = statement;
                                 return PROCESS_ABORT;
                             } else {
-                                if (commentLower.contains("autotune") || commentLower.contains("refactor")){
+                                if (commentLower.contains("autotune") || commentLower.contains("refactor")){ //$NON-NLS-1$ //$NON-NLS-2$
                                     found = statement;
                                     return PROCESS_ABORT;
                                 }

@@ -31,7 +31,7 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 		IASTForStatement loop = getLoop();
 		ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
 		String indexVar = inq.getIndexVariable().toString();
-		if (newName.equals("")) {
+		if (newName.equals("")) { //$NON-NLS-1$
 			try {
 				newName = createNewName(indexVar, loop.getScope().getParent());
 			} catch (DOMException e) {
@@ -47,22 +47,22 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 		String ub = condExpr.getOperand2().getRawSignature();
 		if (loop.getInitializerStatement() instanceof IASTDeclarationStatement) {
 			IASTSimpleDeclaration s = (IASTSimpleDeclaration) ((IASTDeclarationStatement) loop.getInitializerStatement()).getDeclaration();
-			innerInit = String.format("%s %s = %s", s.getDeclSpecifier().getRawSignature(), indexVar, newName);
+			innerInit = String.format("%s %s = %s", s.getDeclSpecifier().getRawSignature(), indexVar, newName); //$NON-NLS-1$
 		} else {
-			innerInit = String.format("%s = %s", indexVar, newName);
+			innerInit = String.format("%s = %s", indexVar, newName); //$NON-NLS-1$
 		}
 		if(handleOverflow) {
-			innerCond = String.format("%s < %s + %d && %s %s %s", indexVar, newName, stripFactor, indexVar, compOp, ub);
+			innerCond = String.format("%s < %s + %d && %s %s %s", indexVar, newName, stripFactor, indexVar, compOp, ub); //$NON-NLS-1$
 		}
 		else {
-			innerCond = String.format("%s < %s + %d", indexVar, newName, stripFactor);
+			innerCond = String.format("%s < %s + %d", indexVar, newName, stripFactor); //$NON-NLS-1$
 		}
 		innerIter = loop.getIterationExpression().getRawSignature();
 		innerBody = loop.getBody().getRawSignature();
 		if (!(loop.getBody() instanceof IASTCompoundStatement)) {
 			IASTComment[] outerComments = getBodyComments(loop);
 			for (IASTComment comment : outerComments) {
-				innerBody = comment.getRawSignature() + "\n" + innerBody;
+				innerBody = comment.getRawSignature() + "\n" + innerBody; //$NON-NLS-1$
 			}
 			innerBody = compound(innerBody);
 		}
@@ -88,9 +88,9 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 			initRhs = init.getInitializerClause().getRawSignature();
 			initType = dec.getDeclSpecifier().getRawSignature();
 		}
-		outerInit = String.format("%s %s = %s", initType, newName, initRhs);
-		outerCond = String.format("%s %s %s", newName, compOp, ub);
-		outerIter = String.format("%s += %d", newName, stripFactor);
+		outerInit = String.format("%s %s = %s", initType, newName, initRhs); //$NON-NLS-1$
+		outerCond = String.format("%s %s %s", newName, compOp, ub); //$NON-NLS-1$
+		outerIter = String.format("%s += %d", newName, stripFactor); //$NON-NLS-1$
 		outer = forLoop(outerInit, outerCond, outerIter, compound(inner));
 		this.replace(loop, outer);
 		finalizeChanges();
@@ -100,10 +100,10 @@ public class NormalStripMine extends ForLoopAlteration<StripMineCheck> {
 		String compOp;
 		switch (condExpr.getOperator()) {
 		case IASTBinaryExpression.op_lessEqual:
-			compOp = "<=";
+			compOp = "<="; //$NON-NLS-1$
 			break;
 		case IASTBinaryExpression.op_lessThan:
-			compOp = "<";
+			compOp = "<"; //$NON-NLS-1$
 			break;
 		default:
 			throw new IllegalStateException();

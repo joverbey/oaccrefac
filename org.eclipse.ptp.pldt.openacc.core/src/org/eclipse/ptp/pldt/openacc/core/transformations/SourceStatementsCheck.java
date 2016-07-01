@@ -21,20 +21,21 @@ public abstract class SourceStatementsCheck<T extends RefactoringParams> extends
     private final IASTStatement[] statements;
     private final IASTNode[] allEnclosedNodes;
 
-    protected SourceStatementsCheck(IASTStatement[] statements, IASTNode[] allEnclosedNodes) {
+    protected SourceStatementsCheck(RefactoringStatus status, IASTStatement[] statements, IASTNode[] allEnclosedNodes) {
+    	super(status);
         this.statements = statements;
         this.allEnclosedNodes = allEnclosedNodes;
     }
 
-    public abstract RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm);
+    public abstract RefactoringStatus doCheck(IProgressMonitor pm);
 
     @Override
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
-        super.performChecks(status, pm, params);
+    public RefactoringStatus performChecks(IProgressMonitor pm, T params) {
+        super.performChecks(pm, params);
         if (status.hasFatalError()) {
             return status;
         }
-        doCheck(status, pm);
+        doCheck(pm);
         return status;
     }
 

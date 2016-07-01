@@ -25,17 +25,17 @@ import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-public class MergeDataConstructsCheck extends PragmaDirectiveCheck<NullParams> {
+public class MergeDataConstructsCheck extends PragmaDirectiveCheck<RefactoringParams> {
 
 	private IASTPreprocessorPragmaStatement secondPrag;
 	private IASTStatement secondStmt;
 	
-	public MergeDataConstructsCheck(IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
-		super(pragma, statement);
+	public MergeDataConstructsCheck(RefactoringStatus status, IASTPreprocessorPragmaStatement pragma, IASTStatement statement) {
+		super(status, pragma, statement);
 	}
 	
     @Override
-    public void doFormCheck(RefactoringStatus status) {
+    public void doFormCheck() {
     	if(!isDataPragma(getPragma())) {
     		status.addFatalError("The pragma must be a data construct");
     		return;

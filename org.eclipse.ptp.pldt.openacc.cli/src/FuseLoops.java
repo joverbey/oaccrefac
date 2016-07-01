@@ -13,6 +13,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.FuseLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.FuseLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
@@ -25,7 +26,7 @@ public class FuseLoops extends CLILoopRefactoring<RefactoringParams, FuseLoopsCh
 
     @Override
     protected FuseLoopsCheck createCheck(IASTStatement loop) {
-        return new FuseLoopsCheck((IASTForStatement) loop);
+        return new FuseLoopsCheck(new RefactoringStatus(), (IASTForStatement) loop);
     }
 
     @Override

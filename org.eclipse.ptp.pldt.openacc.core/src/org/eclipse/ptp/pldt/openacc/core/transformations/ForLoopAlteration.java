@@ -62,7 +62,7 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
      */
     protected String createNewName(String name, IScope scope, String... blacklist) {
         for (int i = 0; true; i++) {
-            String newName = name + "_" + i;
+            String newName = name + "_" + i; //$NON-NLS-1$
             if (!ASTUtil.isNameInScope(newName, scope) && !Arrays.asList(blacklist).contains(newName)) {
                 return newName;
             }
@@ -75,7 +75,7 @@ public abstract class ForLoopAlteration<T extends ForLoopCheck<?>> extends Sourc
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
                     .getNodeOffset() > loop.getIterationExpression().getFileLocation().getNodeOffset()
-                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
+                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length() //$NON-NLS-1$
                     && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
                             + loop.getBody().getFileLocation().getNodeLength()) {
             	boolean inner = false;

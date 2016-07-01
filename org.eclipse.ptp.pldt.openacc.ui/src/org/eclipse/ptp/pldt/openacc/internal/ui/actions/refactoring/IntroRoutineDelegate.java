@@ -19,7 +19,7 @@ public class IntroRoutineDelegate extends RefactoringActionDelegate {
 
 	@Override
 	public RefactoringWizard createWizard(Refactoring refactoring) {
-		return new LoopRefactoringWizard(refactoring, "Introduce OpenACC Routine", false);
+		return new LoopRefactoringWizard(refactoring, Messages.IntroRoutineDelegate_IntroduceOpenACCRoutine, false);
 	}
 
 }

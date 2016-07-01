@@ -18,10 +18,37 @@ import java.util.List;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
+import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccGangClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccVectorClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccWorkerClauseNode;
+import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 
+/**
+ * Used to create and analyze a function call graph.
+ * 
+ * <p>When performing the IntroRoutine refactoring, all definitions called in refactored functions must also be 
+ * refactored. Each node in the graph contains a function definition and a list of children, or nodes containing 
+ * definitions of functions called in the current node's definition. When created, a node will add itself to its 
+ * parent's children, create or find its own children, and then determine its current level.</p>
+ * 
+ * <p>A function's level determines the clause in the pragma directive, and is either sequential, vector, worker, 
+ * or gang, with each level higher than the last. Each node must have a level higher than the highest level of all its children. The exception is if
+ * the highest level is sequential, in which case the node may itself also be sequential. If a node contains a child
+ * with the gang level, then the function cannot be parallelized and an exception is thrown.</p>
+ *
+ * <p>Every node is sequential by default, with a higher level forced only if a child has a higher level or there
+ * is an inherent level in the definition, i.e., it contains a parallel 
+ * region. Such a node must have at least the level specified by the parallel region. The entire graph will be 
+ * sequential unless one of these parallel regions is encountered. Then the parallelism will propagate up the call
+ * hierarchy.</p>
+ */
 public class FunctionNode {
 
 	private final FunctionNode root;
@@ -76,8 +103,8 @@ public class FunctionNode {
 	
 	private void checkForStatic() {
 		for (IASTName name : ASTUtil.find(definition, IASTName.class)) {
-			if (name.getBinding() instanceof IVariable && ((IVariable) name.getBinding()).isStatic()) {
-				root.status.addError("OpenACC routines cannot contain static variables.", 
+			if (name.resolveBinding() instanceof IVariable && ((IVariable) name.resolveBinding()).isStatic()) {
+				root.status.addError(Messages.FunctionNode_CannotContainStaticVariables, 
 						ASTUtil.getStatusContext(name, name));
 			}
 		}
@@ -87,10 +114,10 @@ public class FunctionNode {
 		for (IASTFunctionCallExpression call : ASTUtil.find(definition, IASTFunctionCallExpression.class)) {
 			IASTFunctionDefinition functionDefinition = ASTUtil.findFunctionDefinition(call);
 			if (functionDefinition == null) {
-				root.status.addError("Cannot find function definition.", ASTUtil.getStatusContext(call, call));
+				root.status.addError(Messages.FunctionNode_CannotFindFunctionDefinitions, ASTUtil.getStatusContext(call, call));
 			} else {
 				for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(functionDefinition)) {
-					setLevelFromPragma(pragma.getRawSignature());
+					level = getLevelFromPragma(pragma, level);
 				}
 				if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
 					FunctionNode existingNode = root.findDescendant(functionDefinition, new HashSet<FunctionNode>());
@@ -102,30 +129,40 @@ public class FunctionNode {
 				} else {
 					level = level.next(); // Routines must be called from one level higher than themselves.
 					if (level == null) {
-						throw new FunctionGraphException("Levels of parallelism in the function call graph are inconsistent."); 
+						throw new FunctionGraphException(Messages.FunctionNode_InconsistentLevelsofParallelism); 
 					}
 				}
 			}
 		}
 	}
 	
-	private void findInherentRestriction() {
+	private void findInherentRestriction() throws FunctionGraphException {
 		for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getInternalPragmaNodes(definition.getBody())) {
-			setLevelFromPragma(pragma.getRawSignature());
+			this.level = getLevelFromPragma(pragma, level);
 		}
 	}
 
-	private void setLevelFromPragma(String rawSignature) {
-		if (rawSignature.contains("parallel") || rawSignature.contains("kernels")
-				|| rawSignature.contains("gang")) {
-			level = FunctionLevel.GANG;
-		} else if (rawSignature.contains("seq") && (level == null)) {
-			level = FunctionLevel.SEQ;
-		} else if (rawSignature.contains("vector") && (level == null || level == FunctionLevel.SEQ)) {
-			level = FunctionLevel.VECTOR;
-		} else if (rawSignature.contains("worker") && (level == null || level.compareTo(FunctionLevel.WORKER) < 0)) {
-			level = FunctionLevel.WORKER;
-		} 
+	private FunctionLevel getLevelFromPragma(IASTPreprocessorPragmaStatement pragma, FunctionLevel level) throws FunctionGraphException {
+		try {
+			IAccConstruct parse = new OpenACCParser().parse(pragma.getRawSignature());
+			if (!OpenACCUtil.find(parse, 
+					ASTAccVectorClauseNode.class).isEmpty() && 
+					(level == null || level == FunctionLevel.SEQ)) {
+				level = FunctionLevel.VECTOR;
+			} else if (!OpenACCUtil.find(parse, 
+					ASTAccWorkerClauseNode.class).isEmpty() && 
+					(level == null || level.compareTo(FunctionLevel.WORKER) < 0)) {
+				level = FunctionLevel.WORKER;
+			} else if (OpenACCUtil.isAccAccelConstruct(parse)
+					|| !OpenACCUtil.find(parse, 
+							ASTAccGangClauseNode.class).isEmpty()) {
+				level = FunctionLevel.GANG;
+			} 
+		} catch (Exception e) {
+			root.status.addError(Messages.FunctionNode_CannotParsePreprocessorStatement, 
+					ASTUtil.getStatusContext(pragma, pragma));
+		}
+		return level;
 	}
 	
 	private void findCurrentLevel() throws FunctionGraphException {
@@ -137,12 +174,26 @@ public class FunctionNode {
 				level = child.level.next();
 			}
 			if (level == null) {
-				throw new FunctionGraphException("Levels of parallelism in the function call graph are inconsistent.");
+				throw new FunctionGraphException(Messages.FunctionNode_InconsistentLevelsofParallelism);
+			}
+		}
+		for (IASTFunctionCallExpression call : ASTUtil.findFunctionCalls(definition)) {
+			if (definition.equals(ASTUtil.findFunctionDefinition(call))) {
+				for (IASTNode node = (IASTNode) ASTUtil.findNearestAncestor(call, IASTStatement.class); 
+						node != null && !(node instanceof IASTTranslationUnit); node = node.getParent()) {
+					for (IASTPreprocessorPragmaStatement pragma : ASTUtil.getPragmaNodes(node)) {
+						if ((level.compareTo(FunctionLevel.SEQ) != 0)
+								&& (level.compareTo(getLevelFromPragma(pragma, level)) >= 0)) {
+							throw new FunctionGraphException(Messages.FunctionNode_InconsistentCallLevels, 
+									ASTUtil.getStatusContext(pragma, call));
+						}
+					}
+				}
 			}
 		}
 		HashSet<FunctionNode> visited = new HashSet<FunctionNode>();
 		if (level != FunctionLevel.SEQ && this.findDescendant(definition, visited) != null) {
-			root.status.addError("Recursive functions must have sequential parallelization.",
+			root.status.addError(Messages.FunctionNode_RecursiveMustBeSequential,
 					ASTUtil.getStatusContext(definition, definition));
 		}
 	}
@@ -166,17 +217,17 @@ public class FunctionNode {
 	
 	@Override
 	public String toString() {
-		String output = "";
+		String output = ""; //$NON-NLS-1$
 		if (root.equals(this)) {
-			output += "Root, ";
+			output += Messages.FunctionNode_Root;
 		}
-		output += "Level: ";
+		output += Messages.FunctionNode_Level;
 		if (level != null) {
 			output += level.name();
 		} else {
-			output += "null";
+			output += Messages.FunctionNode_Null;
 		}
-		output += ", Children: ";
+		output += Messages.FunctionNode_Children;
 		output += children.size();
 		return output;
 	}

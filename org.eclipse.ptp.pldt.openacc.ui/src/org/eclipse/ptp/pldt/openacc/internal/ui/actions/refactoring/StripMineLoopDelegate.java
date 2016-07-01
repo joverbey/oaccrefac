@@ -37,27 +37,27 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
         final StripMineLoopRefactoring refac = (StripMineLoopRefactoring) refactoring;
-        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, "Strip Mine Loop", true);
+        LoopRefactoringWizard wizard = new LoopRefactoringWizard(refactoring, Messages.StripMineLoopDelegate_StripMineLoop, true);
         LoopRefactoringWizardPage page = wizard.getInputPage();
-        page.addInputControl("Strip Size", new NumberValueChangedListener() {
+        page.addInputControl(Messages.StripMineLoopDelegate_StripSize, new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
                 refac.setStripFactor(value);
             }
         });
-        page.addInputControl("Outer Index Variable Name", new StringValueChangedListener() {
+        page.addInputControl(Messages.StripMineLoopDelegate_OuterIndexVariableName, new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
                 refac.setNewNameOuter(value);
             }
         });
-        page.addInputControl("Inner Index Variable Name", new StringValueChangedListener() {
+        page.addInputControl(Messages.StripMineLoopDelegate_InnerIndexVariableName, new StringValueChangedListener() {
             @Override
             public void stringValueChanged(String value) {
                 refac.setNewNameInner(value);
             }
         });
-        page.addInputControl("Zero Based", new CheckButtonSelectionListener(false, 2) {
+        page.addInputControl(Messages.StripMineLoopDelegate_ZeroBased, new CheckButtonSelectionListener(false, 2) {
 			
 			@Override
 			protected void toggleButton(boolean selection) {
@@ -74,7 +74,7 @@ public class StripMineLoopDelegate extends RefactoringActionDelegate {
 				recursiveSetEnabled(comp, selection);
 			}
 		});
-        page.addInputControl("Handle Overflow", new CheckButtonSelectionListener(true) {
+        page.addInputControl(Messages.StripMineLoopDelegate_HandleOverflow, new CheckButtonSelectionListener(true) {
 			
 			@Override
 			protected void toggleButton(boolean selection) {

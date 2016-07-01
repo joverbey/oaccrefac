@@ -25,7 +25,7 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
 public class LoopCuttingRefactoring extends ForLoopRefactoring{
 
     private int cutFactor;
-    private String newName = "";
+    private String newName = ""; //$NON-NLS-1$
     private LoopCuttingCheck check;
     
     // TODO: put a good comment here
@@ -43,8 +43,8 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new LoopCuttingCheck(getLoop());
-        check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
+        check = new LoopCuttingCheck(status, getLoop());
+        check.performChecks(pm, new LoopCuttingParams(cutFactor, newName));
     }
     
     @Override

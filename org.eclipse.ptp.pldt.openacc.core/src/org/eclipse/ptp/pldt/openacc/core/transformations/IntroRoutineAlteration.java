@@ -38,8 +38,8 @@ public class IntroRoutineAlteration extends SourceStatementsAlteration<IntroRout
 		}
 		marked.add(node);
 		int offset = node.getDefinition().getFileLocation().getNodeOffset();
-        String pragma = pragma("acc routine");
-        pragma += (" " + node.getLevel().toString());
+        String pragma = pragma("acc routine"); //$NON-NLS-1$
+        pragma += (" " + node.getLevel().toString()); //$NON-NLS-1$
         insert(offset, pragma + System.lineSeparator());
         for (FunctionNode child : node.getChildren()) {
         	changeNode(child, marked);

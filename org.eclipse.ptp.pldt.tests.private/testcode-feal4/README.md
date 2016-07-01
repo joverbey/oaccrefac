@@ -37,12 +37,13 @@ BE CAREFUL OF CURRENT BUGS IN INTRO DATA
 in `crackLastRound()`:  
 	
 - manually declare a new boolean initialized to `false`  
-- manually replace the break in the `score == numplain` if statement with an assignment of `true` to the new variable  
+- manually replace the break in the `score == numPlain` if statement with an assignment of `true` to the new variable  
 - with the tool, strip mine the `fakeK` loop with a strip factor of 65535, 0-based loops, and ignoring overflow  
 - manually add a condition to the new outer loop that will cause it to stop iteration if the variable is `true`  
 - with the tool, parallelize the new inner loop  
 - with the tool, make all writes in the above if statement atomic  
 - with the tool, introduce a data construct around the new outer for loop  
+- change the `copyout` clauses to `copy` clauses due to conditional writes
 
 in `main()`:  
 	

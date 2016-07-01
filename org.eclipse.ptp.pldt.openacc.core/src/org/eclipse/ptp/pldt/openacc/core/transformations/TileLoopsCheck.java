@@ -25,28 +25,28 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
     private IASTForStatement outer;
     private IASTForStatement inner;
     
-    public TileLoopsCheck(IASTForStatement loop) {
-        super(loop);
+    public TileLoopsCheck(RefactoringStatus status, IASTForStatement loop) {
+        super(status, loop);
         this.outer = loop;
     }
 
     @Override
-    protected void doParameterCheck(RefactoringStatus status, AbstractTileLoopsParams params) {
+    protected void doParameterCheck(AbstractTileLoopsParams params) {
         
         if(((TileLoopsParams) params).getHeight() < 1) {
-            status.addFatalError("Height must be at least 1");
+            status.addFatalError(Messages.TileLoopsCheck_HeightMustBe);
             return;
         }
         
         if(((TileLoopsParams) params).getWidth() < 1) {
-            status.addFatalError("Width must be at least 1");
+            status.addFatalError(Messages.TileLoopsCheck_WidthMustBe);
             return;
         }
         
     }
     
     @Override
-    protected void doLoopFormCheck(RefactoringStatus status) {
+    protected void doLoopFormCheck() {
         
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
         
@@ -56,17 +56,17 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
         // are not allowed by pragmas.
         
         if (!ASTUtil.getPragmaNodes(this.getLoop()).isEmpty()) {
-            status.addError("This loop contains an ACC pragma.");
+            status.addError(Messages.TileLoopsCheck_LoopContainsPragma);
         }
 
         if (!inq.isPerfectLoopNest(1)) {
-            status.addFatalError("Only perfectly nested loops can be tiled.");
+            status.addFatalError(Messages.TileLoopsCheck_OnlyPerfectlyNestedLoops);
             return;
         }
         
         List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (headers.size() < 2) {
-            status.addFatalError("There must be two nested loops to perform loop tiling.");
+            status.addFatalError(Messages.TileLoopsCheck_MustBeTwoLoops);
             return;
         }
         
@@ -75,7 +75,7 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
     }
 
     @Override
-    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    protected void doDependenceCheck(DependenceAnalysis dep) {
         /**
          * An interchange check is actually a slightly overly conservative tiling check for 2d tiling. 
          * The two are prevented by the same sorts of dependence, but interchange is prevented by ANY 
@@ -88,7 +88,7 @@ public class TileLoopsCheck extends AbstractTileLoopsCheck {
          * that can't be done since the inner loop in the interchange check is discovered elsewhere
          */
         
-        new InterchangeLoopsCheck(outer).performChecks(status, new NullProgressMonitor(), new InterchangeLoopParams(1));        
+        new InterchangeLoopsCheck(status, outer).performChecks(new NullProgressMonitor(), new InterchangeLoopParams(1));        
     }
 
     public IASTForStatement getOuter() {

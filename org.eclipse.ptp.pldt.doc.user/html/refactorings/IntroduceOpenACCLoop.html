@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>
+IntroduceOpenACCLoop
+</title>
+
+<h3><b>Introduce OpenACC Loop</b></h3>
+
+<h3>Description:</h3>
+<p>Parallelizes a loop by adding a parallel loop directive to it.</p>
+
+<p><b>Use:</b></p>
+
+<h3>Example:</h3>
+<p>
+<ol>
+<li> Select the desired for loop to be changed and choose Parallelize (OpenACC) under the Refactoring menu.</li>
+<img src="../images/refactorings/IntroduceParallel/IntroduceParallel1.png">
+<li> The resulting for loop.</li>
+<img src="../images/refactorings/IntroduceParallel/IntroduceParallel2.png">
+<li> If a kernel is desired please select that in pop up window.  Here is the result for kernels
+<img>
+</ol>
+
+<h3>Restrictions:</h3>
+<p>
+<ul>
+<li>There must not be any dependences carried by the loop to be parallelized</li>
+<li>The loop may not have a pragma or kernel already attached to it.</li>
+<li>Kernels will throw a warnings instead of error.
+</ul>
+</p>
+
+</html>

@@ -14,6 +14,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
@@ -61,9 +62,9 @@ public class TileLoops extends CLILoopRefactoring<AbstractTileLoopsParams, Abstr
     @Override
     protected AbstractTileLoopsCheck createCheck(IASTStatement loop) {
     	if (cut) {
-    		return new LoopCuttingCheck((IASTForStatement) loop);
+    		return new LoopCuttingCheck(new RefactoringStatus(), (IASTForStatement) loop);
     	} else {
-    		return new TileLoopsCheck((IASTForStatement) loop);
+    		return new TileLoopsCheck(new RefactoringStatus(), (IASTForStatement) loop);
     	}
     }
 

@@ -29,6 +29,6 @@ public class FuseLoopsDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopRefactoringWizard(refactoring, "Fuse Loops", false);
+        return new LoopRefactoringWizard(refactoring, Messages.FuseLoopsDelegate_FuseLoops, false);
     }
 }

@@ -23,10 +23,10 @@ public abstract class AbstractTileLoopsAlteration
 		String compOp;
 		switch (condExpr.getOperator()) {
 		case IASTBinaryExpression.op_lessEqual:
-			compOp = "<=";
+			compOp = "<="; //$NON-NLS-1$
 			break;
 		case IASTBinaryExpression.op_lessThan:
-			compOp = "<";
+			compOp = "<"; //$NON-NLS-1$
 			break;
 		default:
 			throw new IllegalStateException();

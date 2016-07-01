@@ -11,10 +11,16 @@ int main() {
 			a = i;
 	}
 
-	b = a;
-
 	while (0)
 		;
+
+#pragma acc data copyin(a)
+	{
+		int x = 0;
+		for (int j = 0; j < 10; j++) {
+			x += j;
+		}
+	}
 
 	return 0;
 

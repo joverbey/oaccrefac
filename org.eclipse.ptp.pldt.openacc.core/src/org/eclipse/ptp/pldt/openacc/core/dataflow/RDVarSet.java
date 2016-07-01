@@ -98,8 +98,7 @@ public class RDVarSet {
         }
         Set<IASTNode> defs = set.get(definition.resolveBinding());
         for(IASTNode defNode : defs) {
-        	if((defNode instanceof Global && ((Global) defNode).resolveBinding().equals(definition.resolveBinding())) 
-        			|| ASTUtil.isAncestor(definition, defNode)) {
+        	if(ASTUtil.isAncestor(definition, defNode)) {
         		return true;
         	}
         }

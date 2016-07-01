@@ -4,23 +4,29 @@
 TileLoop
 </title>
 
+<h3><b>Tile Loops</b></h3>
+
+<h3>Use:</h3>
+<p>Ensures that data used in a loop is kept in the cache until it needs to be reused and eliminates cache size requirements.</p>
+
 <h3>Description:</h3>
-<p>Executes a Strip Mine and Interchange on a two-dimensional iteration to then iterate in in blocks.</p>
+<p>Executes a Strip Mine and Interchange on a two-dimensional iteration to then iterate in blocks.  The cutting variant executes a Strip Mine and Interchange on a one-dimensional iteration to then iterate in blocks.</p>
 
 <h3>Example:</h3>
 <p>
 <ol>
 <li>Select the desired for loop to be changed and choose Tiling under the Refactoring menu.</li>
-<img src="../images/refactorings/Tiling/Tiling1.png">
-<li>Next you will be prompted...</li>
-<img src="../images/refactorings/Tiling/Tiling2.png">
+<img src="../images/refactorings/Tiling/Tiling1Final.png">
+<li>Next make sure Tiling is selected and then enter the desired height and width.</li>
+<img src="../images/refactorings/Tiling/Tiling2Final.png">
 <li>The resulting for loop.</li>
-<img src="../images/refactorings/Tiling/Tiling3.png">
+<img src="../images/refactorings/Tiling/Tiling3Final.png">
+<li>If cutting is desired please make sure that its selected and enter the cut factor.</li>
+<img src="../images/refactorings/LoopCutting/LoopCutting2Final.png">
+<li>The resulting for loop.</li>
+<img src="../images/refactorings/LoopCutting/LoopCutting3Final.png">
 </ol>
 </p>
-
-<h3>Use:</h3>
-<p>Ensures that data used in a loop is kept in the cache until it needs to be reused and eliminates cache size requirements.</p>
 
 <h3>Restrictions:</h3>
 <p>
@@ -31,4 +37,5 @@ TileLoop
 <li>The selected loop cannot carry dependence in the greater than direction and be in the less than direction after interchange as occurred.</li>
 </ul>
 </p>
+
 </html>

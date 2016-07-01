@@ -12,6 +12,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopCheck;
@@ -29,7 +30,7 @@ public class IntroOpenACCLoop extends CLILoopRefactoring<RefactoringParams, Intr
 	}
     @Override
     protected IntroOpenACCLoopCheck createCheck(IASTStatement loop) {
-        return new IntroOpenACCLoopCheck((IASTForStatement) loop, kernels);
+        return new IntroOpenACCLoopCheck(new RefactoringStatus(), (IASTForStatement) loop, kernels);
     }
     
     @Override

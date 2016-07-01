@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -23,10 +24,16 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.text.Region;
+import org.eclipse.ltk.core.refactoring.FileStatusContext;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
+//import org.eclipse.ptp.pldt.openacc.core.dependence.DataDependence;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
@@ -35,26 +42,25 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
 
     protected final IASTForStatement loop;
     
-    protected ForLoopCheck(IASTForStatement loop) {
+    protected ForLoopCheck(RefactoringStatus status, IASTForStatement loop) {
+    	super(status);
         this.loop = loop;
     }
     
-    protected void doLoopFormCheck(RefactoringStatus status) { 
-
-    }
+    protected void doLoopFormCheck() { }
     
-    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) { }
+    protected void doDependenceCheck(DependenceAnalysis dep) { }
 
-    public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
+    public RefactoringStatus loopFormCheck(IProgressMonitor pm) {
     	if (containsUnsupportedOp(loop)) {
             status.addError(
-                    "Cannot refactor loops containing break, continue, or goto");
+                    Messages.ForLoopCheck_CannotRefactor);
         }
-    	doLoopFormCheck(status);
+    	doLoopFormCheck();
         return status;
     }
     
-    public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
+    public RefactoringStatus dependenceCheck(IProgressMonitor pm) {
         
         IASTStatement[] statements;
         DependenceAnalysis dependenceAnalysis;
@@ -64,25 +70,25 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         try {
             dependenceAnalysis = new DependenceAnalysis(pm, statements);
         } catch (DependenceTestFailure e) {
-            status.addError("Dependences could not be analyzed.  " + e.getMessage());
+            status.addError(Messages.ForLoopCheck_CannotAnalyzeDependences + e.getMessage());
             return status;
         }
         
-        doDependenceCheck(status, dependenceAnalysis);
+        doDependenceCheck(dependenceAnalysis);
         return status;
     }
     
     @Override
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
-        super.performChecks(status, pm, params);
+    public RefactoringStatus performChecks(IProgressMonitor pm, T params) {
+        super.performChecks(pm, params);
         if(status.hasFatalError()) {
             return status;
         }
-        loopFormCheck(status, pm);
+        loopFormCheck(pm);
         if(status.hasFatalError()) {
             return status;
         }
-        dependenceCheck(status, pm);
+        dependenceCheck(pm);
         return status;
     }
 
@@ -132,7 +138,30 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     }
     
 
+
     protected RefactoringStatusContext createStatusContextForDependence(DataDependence d) {
         return ASTUtil.getStatusContext(d.getAccess1().getVariableName(), d.getAccess2().getVariableName());
+    }
+
+    protected RefactoringStatusContext getLocation(IASTNode node1, IASTNode node2) {
+        if (node1.getTranslationUnit() != node2.getTranslationUnit()) {
+            return null;
+        }
+        
+        String filename = node1.getTranslationUnit().getFileLocation().getFileName();
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
+        if (file == null) {
+            return null;
+        }
+
+        IASTFileLocation fileLocation1 = node1.getFileLocation();
+        IASTFileLocation fileLocation2 = node2.getFileLocation();
+        int start1 = fileLocation1.getNodeOffset();
+        int end1 = start1 + fileLocation1.getNodeLength();
+        int start2 = fileLocation2.getNodeOffset();
+        int end2 = start2 + fileLocation2.getNodeLength();
+        int start = Math.min(start1, start2);
+        int end = Math.max(end1, end2);
+        return new FileStatusContext(file, new Region(start, end - start));
     }
 }

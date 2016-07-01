@@ -38,9 +38,9 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     private int width = 0;
     private int height = 0;
     private int cutFactor = 0;
-    private String newName = "";
-    private String innerNewName = "";
-    private String outerNewName = "";
+    private String newName = ""; //$NON-NLS-1$
+    private String innerNewName = ""; //$NON-NLS-1$
+    private String outerNewName = ""; //$NON-NLS-1$
     private AbstractTileLoopsCheck check;
 
     public TileLoopsRefactoring(ICElement element, ISelection selection, ICProject project) {
@@ -78,11 +78,11 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
     	if (cut) {
-    		check = new LoopCuttingCheck(getLoop());
-    		check.performChecks(status, pm, new LoopCuttingParams(cutFactor, newName));
+    		check = new LoopCuttingCheck(status, getLoop());
+    		check.performChecks(pm, new LoopCuttingParams(cutFactor, newName));
     	} else {
-	        check = new TileLoopsCheck(getLoop());
-	        check.performChecks(status, pm, new TileLoopsParams(width, height));
+	        check = new TileLoopsCheck(status, getLoop());
+	        check.performChecks(pm, new TileLoopsParams(width, height));
     	}
     }
 

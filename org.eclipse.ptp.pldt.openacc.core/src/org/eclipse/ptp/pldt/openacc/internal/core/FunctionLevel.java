@@ -20,7 +20,7 @@ public enum FunctionLevel {
 		
 		@Override
 		public String toString() {
-			return "seq"; 
+			return "seq";  //$NON-NLS-1$
 		};
 	},
 	VECTOR {
@@ -32,7 +32,7 @@ public enum FunctionLevel {
 		
 		@Override
 		public String toString() {
-			return "vector"; 
+			return "vector";  //$NON-NLS-1$
 		};
 	},
 	WORKER {
@@ -44,7 +44,7 @@ public enum FunctionLevel {
 		
 		@Override
 		public String toString() {
-			return "worker"; 
+			return "worker";  //$NON-NLS-1$
 		};
 	},
 	GANG {
@@ -55,7 +55,7 @@ public enum FunctionLevel {
 		
 		@Override
 		public String toString() {
-			return "gang"; 
+			return "gang";  //$NON-NLS-1$
 		};
 	};
 	

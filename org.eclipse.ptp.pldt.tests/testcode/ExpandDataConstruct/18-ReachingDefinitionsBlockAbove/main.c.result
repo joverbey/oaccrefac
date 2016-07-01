@@ -1,0 +1,23 @@
+int main() {
+
+	printf("test");
+
+	int a, b, i;
+
+	b = a;
+
+#pragma acc data /*<<<<< 11,0,12,0,pass*/
+	{
+		a = b;
+
+#pragma acc parallel loop
+		for (; i < 10; i++)
+			a = b;
+
+		while (0)
+			;
+	}
+
+	return 0;
+
+}

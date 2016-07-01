@@ -62,8 +62,8 @@ public class Example {
 
         // rw.replace(forLoop, rw.createLiteralNode("/* For loop is gone */"), new TextEditGroup("Remove loop"));
 
-        DistributeLoopsCheck check = new DistributeLoopsCheck(forLoop);
-        RefactoringStatus status = check.performChecks(new RefactoringStatus(), new NullProgressMonitor(), null);
+        DistributeLoopsCheck check = new DistributeLoopsCheck(new RefactoringStatus(), forLoop);
+        RefactoringStatus status = check.performChecks(new NullProgressMonitor(), null);
         printStatus(status);
         if (status.hasFatalError()) {
             System.exit(1);

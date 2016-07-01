@@ -6,16 +6,17 @@ int main() {
 
 	for (i = 0; i < 10; i++) {
 
-		int a, b;
+		int a = 10;
+		int b;
 
-#pragma acc data copyin(i) /*<<<<< 11,0,12,0,pass*/
+#pragma acc data copyin(i) /*<<<<< 12,0,13,0,pass*/
 		{
 #pragma acc parallel loop
 			for (; i < 10; i++)
 				a = i;
 		}
 
-		b = a;
+		b = 7;
 	}
 
 	while (0)

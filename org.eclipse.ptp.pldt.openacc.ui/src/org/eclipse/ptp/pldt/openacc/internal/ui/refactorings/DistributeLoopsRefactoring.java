@@ -43,8 +43,8 @@ public class DistributeLoopsRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new DistributeLoopsCheck(this.getLoop());
-        check.performChecks(status, pm, null);
+        check = new DistributeLoopsCheck(status, this.getLoop());
+        check.performChecks(pm, null);
     }
 
     @Override

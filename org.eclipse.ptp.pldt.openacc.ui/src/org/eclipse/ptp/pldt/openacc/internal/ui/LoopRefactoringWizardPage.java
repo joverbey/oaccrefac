@@ -62,7 +62,7 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         	else if (controlListeners.get(i) instanceof RadioButtonSelectionListener) {
         		if (!hasButtons) {
         			hasButtons = true;
-        			radioButtons = new RadioButtonComposite(c, SWT.LEFT_TO_RIGHT, "Parallel", controlLabels.get(i), 
+        			radioButtons = new RadioButtonComposite(c, SWT.LEFT_TO_RIGHT, Messages.LoopRefactoringWizardPage_Parallel, controlLabels.get(i), 
         					(RadioButtonSelectionListener) controlListeners.get(i));
         		}
         	} else if (controlListeners.get(i) instanceof CheckButtonSelectionListener) {
