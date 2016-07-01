@@ -18,10 +18,10 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferDataTransfer;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.DataTransferInference;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 import junit.framework.TestCase;
@@ -38,9 +38,9 @@ public class InferCopyTests extends TestCase {
                 + "}");
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTStatement[] stmts = ((IASTCompoundStatement) func.getBody()).getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copyouts.get().keySet()) {
 			assertTrue(copyouts.get().get(stmt).isEmpty());
 		}
@@ -67,9 +67,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			assertTrue(copyins.get().get(stmt).isEmpty());
 			assertTrue(copyouts.get().get(stmt).isEmpty());
@@ -96,9 +96,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			if(stmt.equals(copies.getRoot())) {
 				assertTrue(copyins.get().get(stmt).isEmpty());
@@ -142,9 +142,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			if(stmt.equals(copies.getRoot())) {
 				assertTrue(containsBinding(copyins, stmt, "a"));
@@ -195,9 +195,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			if(stmt.equals(copies.getRoot())) { //copyout b, in b
 				assertTrue(containsBinding(copyins, stmt, "c"));
@@ -259,9 +259,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			if(stmt.equals(copies.getRoot())) { //copyout b, in b
 				assertTrue(copyins.get().get(stmt).isEmpty());
@@ -327,9 +327,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			if(stmt.equals(copies.getRoot())) { //copyout b, in b
 				assertTrue(containsBinding(copyins, stmt, "c"));
@@ -404,9 +404,9 @@ public class InferCopyTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCopyin copyins = new InferCopyin(stmts);
-		InferCopyout copyouts = new InferCopyout(stmts);
-		InferCopy copies = new InferCopy(copyins, copyouts);
+		CopyinInference copyins = new CopyinInference(stmts);
+		CopyoutInference copyouts = new CopyoutInference(stmts);
+		CopyInference copies = new CopyInference(copyins, copyouts);
 		for(IASTStatement stmt : copies.get().keySet()) {
 			if(stmt.equals(copies.getRoot())) {
 				assertTrue(copyins.get().get(stmt).isEmpty());
@@ -448,7 +448,7 @@ public class InferCopyTests extends TestCase {
 		}
 	}
 	
-	private boolean containsBinding(InferDataTransfer copyouts, IASTStatement statement, String binding) {
+	private boolean containsBinding(DataTransferInference copyouts, IASTStatement statement, String binding) {
 		Set<IBinding> bindings = copyouts.get().get(statement);
 		for(IBinding b : bindings) {
 			if(b.getName().equals(binding)) {

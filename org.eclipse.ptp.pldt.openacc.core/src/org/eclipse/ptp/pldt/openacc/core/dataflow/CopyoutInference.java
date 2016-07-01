@@ -16,19 +16,14 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-public class InferCopyout extends InferDataTransfer {
+public class CopyoutInference extends DataTransferInference {
 
-	public InferCopyout(ReachingDefinitions rd, IASTStatement... construct) {
-		super(rd, construct);
+	public CopyoutInference(IASTStatement[] construct, IASTStatement... accIgnore) {
+		super(construct, accIgnore);
 		infer();
 	}
 	
-	public InferCopyout(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
-		super(rd, construct, accIgnore);
-		infer();
-	}
-	
-	public InferCopyout(IASTStatement... construct) {
+	public CopyoutInference(IASTStatement... construct) {
 		super(construct);
 		infer();
 	}
@@ -60,7 +55,7 @@ public class InferCopyout extends InferDataTransfer {
     	
 	}
 	
-	private boolean canPropagateUp(IBinding V, IASTStatement K, IASTStatement C, ReachingDefinitions rd) {
+	private boolean canPropagateUp(IBinding V, IASTStatement K, IASTStatement C, ReachingDefinitionsAnalysis rd) {
 		for(IASTName U : rd.reachedUses(C)) {
 			if(V.equals(U.resolveBinding()) && 
 					tree.isAncestor(U, K) && 

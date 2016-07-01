@@ -24,9 +24,9 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
@@ -63,7 +63,7 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
     
     private void doReachingDefinitionsCheck() {
         if(forParent != null) {
-        	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
+        	ReachingDefinitionsAnalysis rd = ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(getStatement(), IASTFunctionDefinition.class));
         	ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(forParent);
     		if(inq.isCountedLoop()) {
     			IBinding index = inq.getIndexVariable();
@@ -141,11 +141,11 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
 	 * If the only discovered problems involve ignored variables, returns an ignored variable 
 	 *   that would be a problem. 
 	 */
-	public static IASTName getAccTransferProblems(ReachingDefinitions rd, IASTNode next, IASTStatement original, IBinding... ignore) {
+	public static IASTName getAccTransferProblems(ReachingDefinitionsAnalysis rd, IASTNode next, IASTStatement original, IBinding... ignore) {
 		//if a definition in the newly-included statement reaches the construct and defines a variable in the copyin set, stop
 		IASTName bad = null;
-		InferCopyin copyin = new InferCopyin(rd, new IASTStatement[] { original }, original);
-		InferCopyout copyout = new InferCopyout(rd, new IASTStatement[] { original }, original);
+		CopyinInference copyin = new CopyinInference(new IASTStatement[] { original }, original);
+		CopyoutInference copyout = new CopyoutInference(new IASTStatement[] { original }, original);
 		List<IBinding> ignores = Arrays.asList(ignore);
 		for(IASTName def : rd.reachingDefinitions(original)) {
 			if(ASTUtil.isAncestor(def, next) && copyin.get().get(copyin.getRoot()).contains(def.resolveBinding())) {

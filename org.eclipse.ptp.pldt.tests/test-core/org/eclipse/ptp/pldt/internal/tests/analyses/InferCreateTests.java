@@ -19,8 +19,8 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
@@ -38,7 +38,7 @@ public class InferCreateTests extends TestCase {
 				+ "}");
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTStatement[] stmts = ((IASTCompoundStatement) func.getBody()).getStatements();
-		Map<IASTStatement, Set<IBinding>> copyins = new InferCopyin(stmts).get();
+		Map<IASTStatement, Set<IBinding>> copyins = new CopyinInference(stmts).get();
 		for (IASTStatement stmt : copyins.keySet()) {
 			assertTrue(copyins.get(stmt).isEmpty());
 		}
@@ -59,7 +59,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> copyins = new InferCopyin(stmts).get();
+		Map<IASTStatement, Set<IBinding>> copyins = new CopyinInference(stmts).get();
 		for (IASTStatement stmt : copyins.keySet()) {
 			assertTrue(copyins.get(stmt).isEmpty());
 		}
@@ -84,7 +84,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
+		Map<IASTStatement, Set<IBinding>> create = new CreateInference(stmts).get();
 		for (IASTStatement stmt : create.keySet()) {
 			if (stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(create, stmt, "a"));
@@ -123,7 +123,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
+		Map<IASTStatement, Set<IBinding>> create = new CreateInference(stmts).get();
 		for (IASTStatement stmt : create.keySet()) {
 			if (stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(create, stmt, "b"));
@@ -161,7 +161,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
+		Map<IASTStatement, Set<IBinding>> create = new CreateInference(stmts).get();
 		for (IASTStatement stmt : create.keySet()) {
 			if (stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(create, stmt, "a"));
@@ -200,7 +200,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> create = new InferCreate(stmts).get();
+		Map<IASTStatement, Set<IBinding>> create = new CreateInference(stmts).get();
 		for (IASTStatement stmt : create.keySet()) {
 			assertTrue(create.get(stmt).isEmpty());
 		}
@@ -235,7 +235,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
+		Map<IASTStatement, Set<IBinding>> creates = new CreateInference(stmts).get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(creates, stmt, "b"));
@@ -288,7 +288,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
+		Map<IASTStatement, Set<IBinding>> creates = new CreateInference(stmts).get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(creates, stmt, "a"));
@@ -341,7 +341,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
+		Map<IASTStatement, Set<IBinding>> creates = new CreateInference(stmts).get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(creates, stmt, "a"));
@@ -400,7 +400,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
+		Map<IASTStatement, Set<IBinding>> creates = new CreateInference(stmts).get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(creates, stmt, "a"));
@@ -459,7 +459,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		Map<IASTStatement, Set<IBinding>> creates = new InferCreate(stmts).get(); 
+		Map<IASTStatement, Set<IBinding>> creates = new CreateInference(stmts).get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {
 				assertTrue(containsBinding(creates, stmt, "a"));
@@ -515,7 +515,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCreate infer = new InferCreate(stmts);
+		CreateInference infer = new CreateInference(stmts);
 		Map<IASTStatement, Set<IBinding>> creates = infer.get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {
@@ -565,7 +565,7 @@ public class InferCreateTests extends TestCase {
 		IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
 		IASTCompoundStatement outer = getFirstChildCompound(func.getBody());  
 		IASTStatement[] stmts = outer.getStatements();
-		InferCreate infer = new InferCreate(stmts);
+		CreateInference infer = new CreateInference(stmts);
 		Map<IASTStatement, Set<IBinding>> creates = infer.get(); 
 		for(IASTStatement stmt : creates.keySet()) {
 			if(stmt instanceof ArbitraryStatement) {

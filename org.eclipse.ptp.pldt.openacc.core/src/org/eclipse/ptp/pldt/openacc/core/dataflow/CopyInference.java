@@ -17,28 +17,28 @@ import java.util.Set;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-public class InferCopy extends InferDataTransfer {
+public class CopyInference extends DataTransferInference {
 	
-	private final InferCopyin inferCopyin;
-	private final InferCopyout inferCopyout;
+	private final CopyinInference inferCopyin;
+	private final CopyoutInference inferCopyout;
 	
-	public InferCopy(ReachingDefinitions rd, IASTStatement... construct) {
+	public CopyInference(ReachingDefinitionsAnalysis rd, IASTStatement... construct) {
 		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");
 	}
 	
-	public InferCopy(IASTStatement... construct) {
+	public CopyInference(IASTStatement... construct) {
 		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");
 	}
 	
-	public InferCopy(InferCopyin inferCopyin, InferCopyout inferCopyout) {
-		super(null, inferCopyin.construct);
+	public CopyInference(CopyinInference inferCopyin, CopyoutInference inferCopyout) {
+		super(inferCopyin.construct);
 		this.inferCopyin = inferCopyin;
 		this.inferCopyout = inferCopyout;
 		infer();
 	}
 	
-	public InferCopy(InferCopyin inferCopyin, InferCopyout inferCopyout, IASTStatement... accIgnore) {
-		super(null, inferCopyin.construct, accIgnore);
+	public CopyInference(CopyinInference inferCopyin, CopyoutInference inferCopyout, IASTStatement... accIgnore) {
+		super(inferCopyin.construct, accIgnore);
 		this.inferCopyin = inferCopyin;
 		this.inferCopyout = inferCopyout;
 		infer();

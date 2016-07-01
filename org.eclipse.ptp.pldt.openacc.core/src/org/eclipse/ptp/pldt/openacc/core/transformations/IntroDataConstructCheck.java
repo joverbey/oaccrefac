@@ -31,10 +31,10 @@ import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
@@ -77,14 +77,14 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     
 	@Override
     public RefactoringStatus doCheck(IProgressMonitor pm) {
-        doReachingDefinitionsCheck(new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
+        doReachingDefinitionsCheck(ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
         return status;
     }
 
-    protected void doReachingDefinitionsCheck(ReachingDefinitions rd) {
-    	Map<IASTStatement, Set<IBinding>> copyin = new InferCopyin(rd, getStatements()).get();
-    	Map<IASTStatement, Set<IBinding>> copyout = new InferCopyout(rd, getStatements()).get();
-    	Map<IASTStatement, Set<IBinding>> create = new InferCreate(rd, getStatements()).get();
+    protected void doReachingDefinitionsCheck(ReachingDefinitionsAnalysis rd) {
+    	Map<IASTStatement, Set<IBinding>> copyin = new CopyinInference(getStatements()).get();
+    	Map<IASTStatement, Set<IBinding>> copyout = new CopyoutInference(getStatements()).get();
+    	Map<IASTStatement, Set<IBinding>> create = new CreateInference(getStatements()).get();
     	boolean allRootsEmpty = true;
     	for(IASTStatement statement : copyin.keySet()) {
     		if(statement instanceof ArbitraryStatement && !copyin.get(statement).isEmpty()) {
