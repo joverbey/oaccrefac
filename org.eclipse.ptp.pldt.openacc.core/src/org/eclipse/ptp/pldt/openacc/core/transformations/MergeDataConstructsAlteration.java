@@ -15,14 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
@@ -47,7 +45,6 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     protected void doChange() {
 
     	IASTStatement[] statements = concat(ASTUtil.getStatementsIfCompound(getFirstStatement()), ASTUtil.getStatementsIfCompound(getSecondStatement()));
-    	ReachingDefinitionsAnalysis rd = ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));
     	
     	CopyinInference inferCopyin = new CopyinInference(statements, getFirstStatement(), getSecondStatement());
     	CopyoutInference inferCopyout = new CopyoutInference(statements, getFirstStatement(), getSecondStatement());
@@ -76,34 +73,34 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     					continue;
     				}
     				String newPragma;
-        			if(ast instanceof ASTAccDataNode) newPragma = pragma("acc data");
-        			else if(ast instanceof ASTAccParallelNode) newPragma = pragma("acc parallel");
-        			else if(ast instanceof ASTAccParallelLoopNode) newPragma = pragma("acc parallel loop");
-        			else if(ast instanceof ASTAccKernelsNode) newPragma = pragma("acc kernels");
-        			else if(ast instanceof ASTAccKernelsLoopNode) newPragma = pragma("acc kernels loop");
+        			if(ast instanceof ASTAccDataNode) newPragma = pragma("acc data"); //$NON-NLS-1$
+        			else if(ast instanceof ASTAccParallelNode) newPragma = pragma("acc parallel"); //$NON-NLS-1$
+        			else if(ast instanceof ASTAccParallelLoopNode) newPragma = pragma("acc parallel loop"); //$NON-NLS-1$
+        			else if(ast instanceof ASTAccKernelsNode) newPragma = pragma("acc kernels"); //$NON-NLS-1$
+        			else if(ast instanceof ASTAccKernelsLoopNode) newPragma = pragma("acc kernels loop"); //$NON-NLS-1$
         			else throw new IllegalStateException();
         			if(!inferCopyin.get().get(con).isEmpty())
-        				newPragma += " " + copyin(inferCopyin.get().get(con));
+        				newPragma += " " + copyin(inferCopyin.get().get(con)); //$NON-NLS-1$
         			if(!inferCopyout.get().get(con).isEmpty())
-        				newPragma += " " + copyout(inferCopyout.get().get(con));
+        				newPragma += " " + copyout(inferCopyout.get().get(con)); //$NON-NLS-1$
         			if(!inferCopy.get().get(con).isEmpty())
-        				newPragma += " " + copy(inferCopy.get().get(con));
+        				newPragma += " " + copy(inferCopy.get().get(con)); //$NON-NLS-1$
         			if(!inferCreate.get().get(con).isEmpty())
-        				newPragma += " " + create(inferCreate.get().get(con));
+        				newPragma += " " + create(inferCreate.get().get(con)); //$NON-NLS-1$
         			replace(pragma, newPragma);
     			}
     		}
     	}
     	IASTStatement con = inferCopyin.getRoot();
-    	String top = pragma("acc data");
+    	String top = pragma("acc data"); //$NON-NLS-1$
     	if(!inferCopyin.get().get(con).isEmpty())
-    		top += " " + copyin(inferCopyin.get().get(con));
+    		top += " " + copyin(inferCopyin.get().get(con)); //$NON-NLS-1$
     	if(!inferCopyout.get().get(con).isEmpty())
-    		top += " " + copyout(inferCopyout.get().get(con));
+    		top += " " + copyout(inferCopyout.get().get(con)); //$NON-NLS-1$
     	if(!inferCopy.get().get(con).isEmpty())
-    		top += " " + copy(inferCopy.get().get(con));
+    		top += " " + copy(inferCopy.get().get(con)); //$NON-NLS-1$
     	if(!inferCreate.get().get(con).isEmpty())
-    		top += " " + create(inferCreate.get().get(con));
+    		top += " " + create(inferCreate.get().get(con)); //$NON-NLS-1$
     	replace(getFirstPragma(), top);
 		insertBefore(getFirstStatement(), LCURLY);
 		insertAfter(getSecondStatement(), RCURLY);

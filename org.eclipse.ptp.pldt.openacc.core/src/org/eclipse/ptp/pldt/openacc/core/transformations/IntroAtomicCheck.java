@@ -54,12 +54,12 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
         // Find all of the pragmas surrounding the highlighted statements.
         if (getStatements().length == 0) {
             // Failed because there weren't any statements to analyze.
-            status.addFatalError("No statements selected");
+            status.addFatalError(Messages.IntroAtomicCheck_NoStatementsSelected);
             return;
         }
         IASTStatement statement = getStatements()[0];
         if (!(statement instanceof IASTExpressionStatement)) {
-            status.addError("Statement must be an expression statement.");
+            status.addError(Messages.IntroAtomicCheck_MustBeExpression);
             return;
         }
         if (statement.getParent() instanceof IASTForStatement) {
@@ -70,7 +70,7 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
                 // since we're pretty much just checking to see if the selected
                 // statement is the loop body. We could
                 // probably even use ==, but I don't want to go too crazy.
-                status.addFatalError("Statement cannot be inside a for loop declaration.");
+                status.addFatalError(Messages.IntroAtomicCheck_MustBeInsideForLoop);
                 return;
             }
         }
@@ -98,7 +98,7 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
         }
 
         if (parallelRegion == null) {
-            status.addError("Statement is not in a parallel region.");
+            status.addError(Messages.IntroAtomicCheck_NotInParallelRegion);
             return;
         }
         AtomicStatementInquisitor inquisitor = AtomicStatementInquisitor.newInstance(statement, parallelRegion);
@@ -113,7 +113,7 @@ public class IntroAtomicCheck extends SourceStatementsCheck<RefactoringParams> {
             type = UPDATE;
             break;
         case AtomicStatementInquisitor.NONE:
-            status.addFatalError("No suitable atomic type found.");
+            status.addFatalError(Messages.IntroAtomicCheck_NoSuitableAtomicTypeFound);
             type = NONE;
             break;
         }

@@ -14,14 +14,12 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
@@ -39,29 +37,26 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
 
     @Override
     protected void doChange() {
-        IASTStatement[] stmts = getStatements();
-        ReachingDefinitionsAnalysis rd = ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
-        
         CopyinInference inferCopyin = new CopyinInference(getStatements());
         CopyoutInference inferCopyout = new CopyoutInference(getStatements());
         CopyInference inferCopy = new CopyInference(inferCopyin, inferCopyout);
         CreateInference inferCreate = new CreateInference(getStatements());
         
-        StringBuilder newOuterPragma = new StringBuilder(pragma("acc data"));
+        StringBuilder newOuterPragma = new StringBuilder(pragma("acc data")); //$NON-NLS-1$
         if(!inferCopyin.get().get(inferCopyin.getRoot()).isEmpty()) {
-        	newOuterPragma.append(" ");
+        	newOuterPragma.append(" "); //$NON-NLS-1$
         	newOuterPragma.append(copyin(inferCopyin.get().get(inferCopyin.getRoot())));
         }
         if(!inferCopyout.get().get(inferCopyout.getRoot()).isEmpty()) {
-        	newOuterPragma.append(" ");
+        	newOuterPragma.append(" "); //$NON-NLS-1$
             newOuterPragma.append(copyout(inferCopyout.get().get(inferCopyout.getRoot())));
         }
         if(!inferCopy.get().get(inferCopy.getRoot()).isEmpty()) {
-        	newOuterPragma.append(" ");
+        	newOuterPragma.append(" "); //$NON-NLS-1$
             newOuterPragma.append(copy(inferCopy.get().get(inferCopy.getRoot())));
         }
         if(!inferCreate.get().get(inferCreate.getRoot()).isEmpty()) {
-        	newOuterPragma.append(" ");
+        	newOuterPragma.append(" "); //$NON-NLS-1$
             newOuterPragma.append(create(inferCreate.get().get(inferCreate.getRoot())));
         }
         
@@ -91,24 +86,24 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
 					}
 					//TODO also get clauses other than copyin/copyout/create from constructs here
 					if (construct instanceof ASTAccDataNode) {
-						sb.append(pragma("acc data"));
+						sb.append(pragma("acc data")); //$NON-NLS-1$
 					} else if (construct instanceof ASTAccKernelsNode) {
-						sb.append(pragma("acc kernels"));
+						sb.append(pragma("acc kernels")); //$NON-NLS-1$
 					} else if (construct instanceof ASTAccKernelsLoopNode) {
-						sb.append(pragma("acc kernels loop"));
+						sb.append(pragma("acc kernels loop")); //$NON-NLS-1$
 					} else if (construct instanceof ASTAccParallelNode) {
-						sb.append(pragma("acc parallel"));
+						sb.append(pragma("acc parallel")); //$NON-NLS-1$
 					} else if (construct instanceof ASTAccParallelLoopNode) {
-						sb.append(pragma("acc parallel loop"));
+						sb.append(pragma("acc parallel loop")); //$NON-NLS-1$
 					}
 					if(!inferCopyin.get().get(statement).isEmpty())
-						sb.append(" " + copyin(inferCopyin.get().get(statement)));
+						sb.append(" " + copyin(inferCopyin.get().get(statement))); //$NON-NLS-1$
 					if(!inferCopyout.get().get(statement).isEmpty())
-						sb.append(" " + copyout(inferCopyout.get().get(statement)));
+						sb.append(" " + copyout(inferCopyout.get().get(statement))); //$NON-NLS-1$
 					if(!inferCopy.get().get(statement).isEmpty())
-						sb.append(" " + copy(inferCopy.get().get(statement)));
+						sb.append(" " + copy(inferCopy.get().get(statement))); //$NON-NLS-1$
 					if(!inferCreate.get().get(statement).isEmpty())
-						sb.append(" " + create(inferCreate.get().get(statement)));
+						sb.append(" " + create(inferCreate.get().get(statement))); //$NON-NLS-1$
 					this.replace(prag, sb.toString());
 				} 
 			}

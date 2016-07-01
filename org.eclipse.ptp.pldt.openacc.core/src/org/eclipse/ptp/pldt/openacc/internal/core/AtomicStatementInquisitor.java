@@ -43,31 +43,31 @@ public final class AtomicStatementInquisitor {
     public static final int UPDATE = 3;
 
     private static final String[] READ_PATTERNS = {
-            "v = x;"
+            "v = x;" //$NON-NLS-1$
     };
 
     private static final String[] WRITE_PATTERNS = {
-            "x = expr;"
+            "x = expr;" //$NON-NLS-1$
     };
 
     private static final String[] UPDATE_PATTERNS = {
-            "x++;", "x--;", "++x;", "--x;",
-            "x += expr;", "x -= expr;", "x *= expr;", "x /= expr;", "x %= expr", "x <<= expr;", "x >>= expr;",
-            "x = x + expr;", "x = x - expr;", "x = x * expr;", "x = x / expr;", "x = x % expr;", "x = x << expr;",
-                    "x = x >> expr;",
-            "x = expr + x;", "x = expr - x;", "x = expr * x;", "x = expr / x;", "x = expr % x;", "x = expr << x;",
-                    "x = expr >> x;",
+            "x++;", "x--;", "++x;", "--x;", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "x += expr;", "x -= expr;", "x *= expr;", "x /= expr;", "x %= expr", "x <<= expr;", "x >>= expr;", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "x = x + expr;", "x = x - expr;", "x = x * expr;", "x = x / expr;", "x = x % expr;", "x = x << expr;", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                    "x = x >> expr;", //$NON-NLS-1$
+            "x = expr + x;", "x = expr - x;", "x = expr * x;", "x = expr / x;", "x = expr % x;", "x = expr << x;", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                    "x = expr >> x;", //$NON-NLS-1$
     };
 
     private static final String[] CAPTURE_PATTERNS = {
-            "{ v = x; x += expr; }",
-            "{ x += expr; v = x; }",
-            "{ v = x; x++; }",
-            "{ x++; v = x; }",
-            "{ v = x; x = x + expr; }",
-            "{ x = x + expr; v = x; }",
-            "{ v = x; x = expr + x; }",
-            "{ x = expr + x; v = x; }",
+            "{ v = x; x += expr; }", //$NON-NLS-1$
+            "{ x += expr; v = x; }", //$NON-NLS-1$
+            "{ v = x; x++; }", //$NON-NLS-1$
+            "{ x++; v = x; }", //$NON-NLS-1$
+            "{ v = x; x = x + expr; }", //$NON-NLS-1$
+            "{ x = x + expr; v = x; }", //$NON-NLS-1$
+            "{ v = x; x = expr + x; }", //$NON-NLS-1$
+            "{ x = expr + x; v = x; }", //$NON-NLS-1$
     };
 
     private final int type;
@@ -87,7 +87,7 @@ public final class AtomicStatementInquisitor {
             public int visit(IASTExpression expr) {
                 if (expr.getParent() instanceof IASTUnaryExpression) {
                     IASTUnaryExpression unaryExpression = (IASTUnaryExpression) expr.getParent();
-                    unaryExpression.setOperand(new ArbitraryLValue("x"));
+                    unaryExpression.setOperand(new ArbitraryLValue("x")); //$NON-NLS-1$
                 }
                 return PROCESS_CONTINUE;
             }
@@ -98,17 +98,17 @@ public final class AtomicStatementInquisitor {
                         && name.getParent().getParent() instanceof IASTBinaryExpression) {
                     IASTIdExpression id = (IASTIdExpression) name.getParent();
                     IASTBinaryExpression binary = (IASTBinaryExpression) id.getParent();
-                    if (name.toString().equals("expr")) {
+                    if (name.toString().equals("expr")) { //$NON-NLS-1$
                         if (binary.getOperand1().equals(id)) {
                             binary.setOperand1(new ArbitraryExpression());
                         } else if (binary.getOperand2().equals(id)) {
                             binary.setOperand2(new ArbitraryExpression());
                         }
-                    } else if (name.toString().equals("x")) {
+                    } else if (name.toString().equals("x")) { //$NON-NLS-1$
                         if (binary.getOperand1().equals(id)) {
-                            binary.setOperand1(new ArbitraryLValue("x"));
+                            binary.setOperand1(new ArbitraryLValue("x")); //$NON-NLS-1$
                         } else if (binary.getOperand2().equals(id)) {
-                            binary.setOperand2(new ArbitraryLValue("x"));
+                            binary.setOperand2(new ArbitraryLValue("x")); //$NON-NLS-1$
                         }
                     }
                 }
@@ -122,13 +122,13 @@ public final class AtomicStatementInquisitor {
             IASTExpressionStatement orig = (IASTExpressionStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTExpressionStatement patternAST = orig.copy(CopyStyle.withoutLocations);
             IASTBinaryExpression binary = (IASTBinaryExpression) patternAST.getExpression();
-            binary.setOperand1(new ArbitraryLValue("v"));
-            binary.setOperand2(new ArbitraryLValue("x"));
+            binary.setOperand1(new ArbitraryLValue("v")); //$NON-NLS-1$
+            binary.setOperand2(new ArbitraryLValue("x")); //$NON-NLS-1$
             
             ASTMatcher matcher = ASTMatcher.unifyWithMatcher(patternAST, statement);
             if (matcher != null) {
                 readMapping = matcher.getNameMapping();
-                readType = matcher.getArbitraryTypeBindings().get("x");
+                readType = matcher.getArbitraryTypeBindings().get("x"); //$NON-NLS-1$
                 break;
             }
         }
@@ -139,13 +139,13 @@ public final class AtomicStatementInquisitor {
             IASTExpressionStatement orig = (IASTExpressionStatement) ASTUtil.parseStatementNoFail(pattern);
             IASTExpressionStatement patternAST = orig.copy(CopyStyle.withoutLocations);
             IASTBinaryExpression binary = (IASTBinaryExpression) patternAST.getExpression();
-            binary.setOperand1(new ArbitraryLValue("x"));
+            binary.setOperand1(new ArbitraryLValue("x")); //$NON-NLS-1$
             binary.setOperand2(new ArbitraryExpression());
             
             ASTMatcher matcher = ASTMatcher.unifyWithMatcher(patternAST, statement);
             if (matcher != null) {
                 writeMapping = matcher.getNameMapping();
-                writeType = matcher.getArbitraryTypeBindings().get("x");
+                writeType = matcher.getArbitraryTypeBindings().get("x"); //$NON-NLS-1$
                 break;
             }
         }
@@ -160,19 +160,19 @@ public final class AtomicStatementInquisitor {
             ASTMatcher matcher = ASTMatcher.unifyWithMatcher(patternAST, statement);
             if (matcher != null) {
                 updateMapping = matcher.getNameMapping();
-                updateType = matcher.getArbitraryTypeBindings().get("x");
+                updateType = matcher.getArbitraryTypeBindings().get("x"); //$NON-NLS-1$
                 break;
             }
         }
 
-        if (readMapping != null && isDeclaredInNode(readMapping.get("v"), parallelRegion)
-                && !isDeclaredInNode(readMapping.get("x"), parallelRegion)
+        if (readMapping != null && isDeclaredInNode(readMapping.get("v"), parallelRegion) //$NON-NLS-1$
+                && !isDeclaredInNode(readMapping.get("x"), parallelRegion) //$NON-NLS-1$
                 && isScalarType(readType)) {
             type = READ;
-        } else if (updateMapping != null && !isDeclaredInNode(updateMapping.get("x"), parallelRegion)
+        } else if (updateMapping != null && !isDeclaredInNode(updateMapping.get("x"), parallelRegion) //$NON-NLS-1$
                 && isScalarType(updateType)) {
             type = UPDATE;
-        } else if (writeMapping != null && !isDeclaredInNode(writeMapping.get("x"), parallelRegion)
+        } else if (writeMapping != null && !isDeclaredInNode(writeMapping.get("x"), parallelRegion) //$NON-NLS-1$
                 && isScalarType(writeType)) {
             type = WRITE;
         } else {

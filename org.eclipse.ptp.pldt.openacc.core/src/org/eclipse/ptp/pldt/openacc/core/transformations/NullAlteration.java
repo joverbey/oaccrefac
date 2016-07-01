@@ -33,7 +33,7 @@ public class NullAlteration extends ForLoopAlteration<NullCheck> {
 
     @Override
     protected void doChange() {
-        this.insert(0, ""); // FIXME: Should not be necessary (get NPE otherwise)
+        this.insert(0, ""); // FIXME: Should not be necessary (get NPE otherwise) //$NON-NLS-1$
         finalizeChanges();
     }
 }

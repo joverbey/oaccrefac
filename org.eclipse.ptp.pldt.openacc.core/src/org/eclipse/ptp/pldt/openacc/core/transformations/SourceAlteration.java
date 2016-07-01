@@ -33,18 +33,18 @@ import org.eclipse.text.edits.TextEditGroup;
  * <p>
  */
 public abstract class SourceAlteration<T extends Check<?>> {
-    public static final String PRAGMA = "#pragma";
-    public static final String LCURLY = "{";
-    public static final String RCURLY = "}";
-    public static final String LPAREN = "(";
-    public static final String RPAREN = ")";
-    public static final String SEMICOLON = ";";
-    public static final String COMMA = ",";
+    public static final String PRAGMA = "#pragma"; //$NON-NLS-1$
+    public static final String LCURLY = "{"; //$NON-NLS-1$
+    public static final String RCURLY = "}"; //$NON-NLS-1$
+    public static final String LPAREN = "("; //$NON-NLS-1$
+    public static final String RPAREN = ")"; //$NON-NLS-1$
+    public static final String SEMICOLON = ";"; //$NON-NLS-1$
+    public static final String COMMA = ","; //$NON-NLS-1$
     public static final String NL = System.lineSeparator();
-    public static final String COPYIN = "copyin";
-    public static final String COPYOUT = "copyout";
-    public static final String COPY = "copy";
-    public static final String CREATE = "create";
+    public static final String COPYIN = "copyin"; //$NON-NLS-1$
+    public static final String COPYOUT = "copyout"; //$NON-NLS-1$
+    public static final String COPY = "copy"; //$NON-NLS-1$
+    public static final String CREATE = "create"; //$NON-NLS-1$
 
     private final IASTRewrite rewriter;
     private final IASTTranslationUnit tu;
@@ -71,7 +71,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         this.numRepls = 0;
 
         if (this.rewriter == null) {
-            throw new IllegalArgumentException("Rewriter cannot be null!");
+            throw new IllegalArgumentException("Rewriter cannot be null");
         }
     }
 
@@ -132,7 +132,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
      * @return false if the change overlaps a previous one; true otherwise
      */
     protected final boolean remove(int offset, int length) {
-       return replace(offset, length, "");
+       return replace(offset, length, ""); //$NON-NLS-1$
     }
 
     /**
@@ -171,12 +171,12 @@ public abstract class SourceAlteration<T extends Check<?>> {
     }
 
     protected final String pragma(String code) {
-        return " " + PRAGMA + " " + code.trim();
+        return " " + PRAGMA + " " + code.trim(); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     protected final String copyin(Set<IBinding> vars) {
         StringBuilder sb = new StringBuilder(COPYIN + LPAREN);
-        String separator = "";
+        String separator = ""; //$NON-NLS-1$
         for(IBinding var : vars) {
             sb.append(separator);
             sb.append(var.getName().trim());
@@ -188,7 +188,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     
     protected final String copyout(Set<IBinding> vars) {
         StringBuilder sb = new StringBuilder(COPYOUT + LPAREN);
-        String separator = "";
+        String separator = ""; //$NON-NLS-1$
         for(IBinding var : vars) {
             sb.append(separator);
             sb.append(var.getName().trim());
@@ -200,7 +200,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     
     protected final String copy(Set<IBinding> vars) {
         StringBuilder sb = new StringBuilder(COPY + LPAREN);
-        String separator = "";
+        String separator = ""; //$NON-NLS-1$
         for(IBinding var : vars) {
             sb.append(separator);
             sb.append(var.getName().trim());
@@ -212,7 +212,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
     
     protected final String create(Set<IBinding> vars) {
         StringBuilder sb = new StringBuilder(CREATE + LPAREN);
-        String separator = "";
+        String separator = ""; //$NON-NLS-1$
         for(IBinding var : vars) {
             sb.append(separator);
             sb.append(var.getName().trim());
@@ -239,7 +239,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
             init += SEMICOLON;
         if (!cond.trim().endsWith(SEMICOLON))
             cond += SEMICOLON;
-        StringBuilder sb = new StringBuilder(String.format("for (%s %s %s)", init, cond, iter));
+        StringBuilder sb = new StringBuilder(String.format("for (%s %s %s)", init, cond, iter)); //$NON-NLS-1$
         sb.append(System.lineSeparator());
         sb.append(body);
         return sb.toString();
@@ -359,15 +359,15 @@ public abstract class SourceAlteration<T extends Check<?>> {
                 adjust += repl.text.length() - (repl.endOffset - repl.startOffset);
             }
             
-            TextEditGroup teg = new TextEditGroup("teg");
+            TextEditGroup teg = new TextEditGroup("teg"); //$NON-NLS-1$
             teg.addTextEdit(new ReplaceEdit(this.startOffset, this.endOffset - this.startOffset, ASTUtil.format(src.toString())));
-            rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg);
+            rewriter.insertBefore(tu, tu.getChildren()[0], rewriter.createLiteralNode(""), teg); //$NON-NLS-1$
         }
     }
     
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ": " + repls.toString();
+        return this.getClass().getSimpleName() + ": " + repls.toString(); //$NON-NLS-1$
     }
 
     public T getCheck() {
@@ -398,7 +398,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         
         @Override
         public String toString() {
-            return "[" + startOffset + ", " + endOffset + ") --> \"" + text + "\"";
+            return "[" + startOffset + ", " + endOffset + ") --> \"" + text + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
     }
     

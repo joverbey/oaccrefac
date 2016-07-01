@@ -24,6 +24,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
 import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
@@ -56,7 +57,7 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
         }
         catch(Exception e) {
             //will enter on Exception from parser or ClassCastException if ACC non-data pragma
-            status.addFatalError("The pragma must be a data construct");
+            status.addFatalError(Messages.ExpandDataConstructCheck_MustBeDataConstruct);
         }
         
     }
@@ -71,23 +72,24 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
 				IASTName condProblem = getAccTransferProblems(rd, forParent.getConditionExpression(), getStatement(), index);
 				IASTName iterProblem = getAccTransferProblems(rd, forParent.getIterationExpression(), getStatement(), index);
         		if(initProblem != null && !initProblem.resolveBinding().equals(index)) {
-        				status.addError(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of %s (line %d) copied to or from the accelerator", initProblem.getRawSignature(), initProblem.getFileLocation().getStartingLineNumber()));
+        			//status.addError(String.format(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, initProblem.getRawSignature(), initProblem.getFileLocation().getStartingLineNumber()));
+        			status.addError(NLS.bind(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, new Object[] { initProblem.getRawSignature(), initProblem.getFileLocation().getStartingLineNumber() }));
         		}
         		if(condProblem != null && !condProblem.resolveBinding().equals(index)) {
-        				status.addError(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of %s (line %d) copied to or from the accelerator", condProblem.getRawSignature(), condProblem.getFileLocation().getStartingLineNumber()));
+        			status.addError(NLS.bind(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, new Object[] { condProblem.getRawSignature(), condProblem.getFileLocation().getStartingLineNumber() }));
         		}
         		if(iterProblem != null && !iterProblem.resolveBinding().equals(index)) {
-        				status.addError(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of %s (line %d) copied to or from the accelerator", iterProblem.getRawSignature(), iterProblem.getFileLocation().getStartingLineNumber()));
+        			status.addError(NLS.bind(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, new Object[] { iterProblem.getRawSignature(), iterProblem.getFileLocation().getStartingLineNumber() }));
         		}
         		
         		if(initProblem != null && initProblem.resolveBinding().equals(index)) {
-    				status.addWarning(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of the index variable copied in"));
+    				status.addWarning(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemIndexVar);
     			}
         		else if(condProblem != null && condProblem.resolveBinding().equals(index)) {
-    				status.addWarning(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of the index variable copied in"));
+    				status.addWarning(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemIndexVar);
     			}
         		else if(iterProblem != null && iterProblem.resolveBinding().equals(index)) {
-    				status.addWarning(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of the index variable copied in"));
+    				status.addWarning(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemIndexVar);
     			}
     		}
     		else {
@@ -95,13 +97,13 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
         		IASTName condProblem = getAccTransferProblems(rd, forParent.getConditionExpression(), getStatement());
         		IASTName iterProblem = getAccTransferProblems(rd, forParent.getIterationExpression(), getStatement());
         		if(initProblem != null) {
-        			status.addError(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of %s (line %d) copied to or from the accelerator", initProblem.getRawSignature(), initProblem.getFileLocation().getStartingLineNumber()));
+        			status.addError(NLS.bind(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, new Object[] { initProblem.getRawSignature(), initProblem.getFileLocation().getStartingLineNumber() }));
         		}
         		if(condProblem != null) {
-        			status.addError(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of %s (line %d) copied to or from the accelerator", condProblem.getRawSignature(), condProblem.getFileLocation().getStartingLineNumber()));
+        			status.addError(NLS.bind(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, new Object[] { condProblem.getRawSignature(), condProblem.getFileLocation().getStartingLineNumber() }));
         		}
         		if(iterProblem != null) {
-        			status.addError(String.format("Construct will be promoted above its containing for loop, but doing so may change the value of %s (line %d) copied to or from the accelerator", iterProblem.getRawSignature(), iterProblem.getFileLocation().getStartingLineNumber()));
+        			status.addError(NLS.bind(Messages.ExpandDataConstructCheck_PromoteDataTransferProblemNonIndexVar, new Object[] { iterProblem.getRawSignature(), iterProblem.getFileLocation().getStartingLineNumber() }));
         		}
     		}
     		

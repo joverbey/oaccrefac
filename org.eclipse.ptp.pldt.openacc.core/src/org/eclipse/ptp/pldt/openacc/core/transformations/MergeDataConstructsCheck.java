@@ -21,6 +21,7 @@ import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
@@ -37,18 +38,18 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<RefactoringPa
     @Override
     public void doFormCheck() {
     	if(!isDataPragma(getPragma())) {
-    		status.addFatalError("The pragma must be a data construct");
+    		status.addFatalError(Messages.MergeDataConstructsCheck_MustBeDataConstruct);
     		return;
     	}
         
         IASTNode next = ASTUtil.getNextSibling(getStatement());
         if(next == null || !(next instanceof IASTStatement) || getDataPragma((IASTStatement) next) == null) {
-        	status.addFatalError("The data construct must be immediately followed by another data construct");
+        	status.addFatalError(Messages.MergeDataConstructsCheck_MustBeFollowedByDataConstruct);
         	return;
         }
         
         if(!(getStatement() instanceof IASTCompoundStatement) || !(next instanceof IASTCompoundStatement)) {
-        	status.addFatalError("Both data regions should be compound statement to perform the merge");
+        	status.addFatalError(Messages.MergeDataConstructsCheck_ShouldBeCompoundStatements);
         	return;
         }
         
@@ -57,7 +58,7 @@ public class MergeDataConstructsCheck extends PragmaDirectiveCheck<RefactoringPa
         
         IASTName conflict = getNameConflict(getFirstStatement(), getSecondStatement());
         if(conflict != null) {
-        	status.addError(String.format("A definition of \"%s\" in the first construct may shadow \"%s\" used in the second construct", conflict.getRawSignature(), conflict.getRawSignature()));
+        	status.addError(NLS.bind(Messages.MergeDataConstructsCheck_VariableShadowingMayOccur, new Object[] { conflict.getRawSignature(), conflict.getRawSignature() }));
             return;
         }
         

@@ -60,7 +60,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			this.remove(stmtOffset + comp.lastIndexOf('}'), 1);
 		}
 		
-		this.insertBefore(exparr[0], "{" + NL);
+		this.insertBefore(exparr[0], "{" + NL); //$NON-NLS-1$
 		
 		List<IASTComment> commentsWithPragma = new ArrayList<IASTComment>();
 		for(IASTComment comment : getStatement().getTranslationUnit().getComments()) {
@@ -71,7 +71,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		}
 		insertNewPragma(exparr, commentsWithPragma);
 		
-		this.insertAfter(exparr[exparr.length - 1], NL + "}");
+		this.insertAfter(exparr[exparr.length - 1], NL + "}"); //$NON-NLS-1$
 		
 		finalizeChanges();
 	}
@@ -126,7 +126,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from copyin clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CopyinIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -142,7 +142,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from copyout clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CopyoutIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -158,7 +158,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from copy clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CopyIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -174,7 +174,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from create clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CreateIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -201,7 +201,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 		
 		String pragma = construct.toString();
 		for(IASTComment comment : comments) {
-			pragma += " " + comment.getRawSignature();
+			pragma += " " + comment.getRawSignature(); //$NON-NLS-1$
 		}
 		this.insertBefore(exparr[0], pragma + NL);
 	}
@@ -215,16 +215,20 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 			if (next == null) {
 				break;
 			}
-			if(containsBadControlFlowStatement(next)) {
-				getCheck().getStatus().addWarning(String.format("Construct will not expand %s statement that may cause premature exit from the construct", up? "above" : "below"));
+			if (containsBadControlFlowStatement(next)) {
+				getCheck().getStatus().addWarning(String.format(Messages.Expand_ConstructWillNotIncludeBadCtlFlowStatements,
+						up ? Messages.Expand_Above : Messages.Expand_Below));
 				break;
 			}
-			if(next instanceof IASTStatement && OpenACCUtil.isAccConstruct((IASTStatement) next)) {
-				getCheck().getStatus().addInfo(String.format("Construct will not expand %s another existing OpenACC construct", up? "above" : "below"));
+			if (next instanceof IASTStatement && OpenACCUtil.isAccConstruct((IASTStatement) next)) {
+				getCheck().getStatus().addInfo(String.format(Messages.Expand_ConstructWillNotIncludeOtherOACCConstruct,
+						up ? Messages.Expand_Above : Messages.Expand_Below));
 				break;
 			}
-			if(ExpandDataConstructCheck.getAccTransferProblems(rd, next, statement) != null) {
-				getCheck().getStatus().addWarning(String.format("Construct will not expand %s statement that may alter values copied to or from the accelerator", up? "above" : "below"));
+			if (ExpandDataConstructCheck.getAccTransferProblems(rd, next, statement) != null) {
+				getCheck().getStatus()
+						.addWarning(String.format(Messages.Expand_ConstructWillNotIncludeStatementToChangeDataTransfer,
+								up ? Messages.Expand_Above : Messages.Expand_Below));
 				break;
 			}
 			i++;

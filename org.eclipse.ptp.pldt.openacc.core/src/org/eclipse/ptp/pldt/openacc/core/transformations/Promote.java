@@ -83,7 +83,7 @@ public class Promote extends PragmaDirectiveAlteration<ExpandDataConstructCheck>
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from copyin clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CopyinIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -99,7 +99,7 @@ public class Promote extends PragmaDirectiveAlteration<ExpandDataConstructCheck>
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from copyout clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CopyoutIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -115,7 +115,7 @@ public class Promote extends PragmaDirectiveAlteration<ExpandDataConstructCheck>
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from copy clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CopyIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -131,7 +131,7 @@ public class Promote extends PragmaDirectiveAlteration<ExpandDataConstructCheck>
 					ASTAccDataItemNode item = list.get(i);
 					if(item != null) {
 						if (item.getIdentifier().getIdentifier().getText().equals(declarator)) {
-							getCheck().getStatus().addInfo(String.format("Identifier \"%s\" will be removed from create clause", declarator));
+							getCheck().getStatus().addInfo(String.format(Messages.ExpandDataConstruct_CreateIdentifierWillBeRemoved, declarator));
 							list.remove(i);
 						}
 					}
@@ -158,7 +158,7 @@ public class Promote extends PragmaDirectiveAlteration<ExpandDataConstructCheck>
 		
 		String pragma = construct.toString();
 		for(IASTComment comment : comments) {
-			pragma += " " + comment.getRawSignature();
+			pragma += " " + comment.getRawSignature(); //$NON-NLS-1$
 		}
 		
 		return pragma;
