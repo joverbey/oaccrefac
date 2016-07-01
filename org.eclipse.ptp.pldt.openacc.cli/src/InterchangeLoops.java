@@ -13,6 +13,7 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsAlteration;
@@ -34,7 +35,7 @@ public class InterchangeLoops extends CLILoopRefactoring<InterchangeLoopParams, 
 
     @Override
     protected InterchangeLoopsCheck createCheck(IASTStatement loop) {
-        return new InterchangeLoopsCheck((IASTForStatement) loop);
+        return new InterchangeLoopsCheck(new RefactoringStatus(), (IASTForStatement) loop);
     }
 
     @Override

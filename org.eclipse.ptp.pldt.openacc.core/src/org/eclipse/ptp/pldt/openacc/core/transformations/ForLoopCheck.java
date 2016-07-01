@@ -42,26 +42,25 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
 
     protected final IASTForStatement loop;
     
-    protected ForLoopCheck(IASTForStatement loop) {
+    protected ForLoopCheck(RefactoringStatus status, IASTForStatement loop) {
+    	super(status);
         this.loop = loop;
     }
     
-    protected void doLoopFormCheck(RefactoringStatus status) { 
-
-    }
+    protected void doLoopFormCheck() { }
     
-    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) { }
+    protected void doDependenceCheck(DependenceAnalysis dep) { }
 
-    public RefactoringStatus loopFormCheck(RefactoringStatus status, IProgressMonitor pm) {
+    public RefactoringStatus loopFormCheck(IProgressMonitor pm) {
     	if (containsUnsupportedOp(loop)) {
             status.addError(
                     Messages.ForLoopCheck_CannotRefactor);
         }
-    	doLoopFormCheck(status);
+    	doLoopFormCheck();
         return status;
     }
     
-    public RefactoringStatus dependenceCheck(RefactoringStatus status, IProgressMonitor pm) {
+    public RefactoringStatus dependenceCheck(IProgressMonitor pm) {
         
         IASTStatement[] statements;
         DependenceAnalysis dependenceAnalysis;
@@ -75,21 +74,21 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
             return status;
         }
         
-        doDependenceCheck(status, dependenceAnalysis);
+        doDependenceCheck(dependenceAnalysis);
         return status;
     }
     
     @Override
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, T params) {
-        super.performChecks(status, pm, params);
+    public RefactoringStatus performChecks(IProgressMonitor pm, T params) {
+        super.performChecks(pm, params);
         if(status.hasFatalError()) {
             return status;
         }
-        loopFormCheck(status, pm);
+        loopFormCheck(pm);
         if(status.hasFatalError()) {
             return status;
         }
-        dependenceCheck(status, pm);
+        dependenceCheck(pm);
         return status;
     }
 

@@ -29,15 +29,15 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     private IASTForStatement outer;
     private IASTForStatement inner;
 
-    public InterchangeLoopsCheck(IASTForStatement outer) {
+    public InterchangeLoopsCheck(RefactoringStatus status, IASTForStatement outer) {
         // passing the second loop in also causes duplicate variable accesses when doing the dependence analysis
-        super(outer);
+        super(status, outer);
         this.outer = outer;
         this.inq = ForStatementInquisitor.getInquisitor(outer);
     }
     
     @Override
-    protected void doParameterCheck(RefactoringStatus status, InterchangeLoopParams params) {
+    protected void doParameterCheck(InterchangeLoopParams params) {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
         List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (params.getDepth() < 0 || params.getDepth() >= headers.size()) {
@@ -49,7 +49,7 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     }
     
     @Override
-    protected void doLoopFormCheck(RefactoringStatus status) {
+    protected void doLoopFormCheck() {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(outer);
 
         if (!(inq.getPerfectlyNestedLoops().contains(inner))) {
@@ -94,7 +94,7 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
     }
 
     @Override
-    protected void doDependenceCheck(RefactoringStatus status, DependenceAnalysis dep) {
+    protected void doDependenceCheck(DependenceAnalysis dep) {
 
         List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         int second_depth = headers.indexOf(inner);

@@ -42,8 +42,8 @@ public class IntroDataConstructRefactoring extends StatementsRefactoring {
     
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroDataConstructCheck(getStatements(), getAllEnclosedNodes());
-        check.performChecks(initStatus, pm, null);
+        check = new IntroDataConstructCheck(status, getStatements(), getAllEnclosedNodes());
+        check.performChecks(pm, null);
     }
 
     @Override

@@ -41,8 +41,8 @@ public class InterchangeLoopsRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new InterchangeLoopsCheck(getLoop());
-        check.performChecks(status, pm, new InterchangeLoopParams(depth));
+        check = new InterchangeLoopsCheck(status, getLoop());
+        check.performChecks(pm, new InterchangeLoopParams(depth));
     }
 
     @Override

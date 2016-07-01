@@ -42,8 +42,8 @@ public class MergeDataConstructsRefactoring extends PragmaDirectiveRefactoring {
     
     @Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new MergeDataConstructsCheck(getPragma(), getStatement());
-        check.performChecks(initStatus, pm, null);
+        check = new MergeDataConstructsCheck(status, getPragma(), getStatement());
+        check.performChecks(pm, null);
     }
 
     @Override

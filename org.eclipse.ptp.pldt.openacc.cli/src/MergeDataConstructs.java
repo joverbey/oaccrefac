@@ -10,6 +10,7 @@
  *******************************************************************************/
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.MergeDataConstructsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.MergeDataConstructsCheck;
@@ -21,7 +22,7 @@ public class MergeDataConstructs extends CLIRefactoring<RefactoringParams, Merge
     @Override
     protected MergeDataConstructsCheck createCheck(IASTStatement statement) {
     	if(ASTUtil.getPragmaNodes(statement).size() > 0){
-    		return new MergeDataConstructsCheck(ASTUtil.getPragmaNodes(statement).get(0), statement);
+    		return new MergeDataConstructsCheck(new RefactoringStatus(), ASTUtil.getPragmaNodes(statement).get(0), statement);
     	}
     	return null;
     }

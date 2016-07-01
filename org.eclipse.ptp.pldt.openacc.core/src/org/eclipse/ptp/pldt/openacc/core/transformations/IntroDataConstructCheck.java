@@ -40,11 +40,11 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryState
 
 public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringParams> {
 
-    public IntroDataConstructCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
-        super(statements, statementsAndComments);
+    public IntroDataConstructCheck(RefactoringStatus status, IASTStatement[] statements, IASTNode[] statementsAndComments) {
+        super(status, statements, statementsAndComments);
     }
     
-    protected void formCheck(RefactoringStatus status) {
+    protected void formCheck() {
     	IASTStatement[] stmts = getStatements();
     	if(stmts.length < 1) {
     		status.addWarning("Data construct will not surround any statements");
@@ -71,18 +71,17 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     		}
     	}
     	
-    	checkControlFlow(status, getStatements());
+    	checkControlFlow(getStatements());
     	
     }
     
 	@Override
-    public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
-        doReachingDefinitionsCheck(status,
-                new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
+    public RefactoringStatus doCheck(IProgressMonitor pm) {
+        doReachingDefinitionsCheck(new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
         return status;
     }
 
-    protected void doReachingDefinitionsCheck(RefactoringStatus status, ReachingDefinitions rd) {
+    protected void doReachingDefinitionsCheck(ReachingDefinitions rd) {
     	Map<IASTStatement, Set<IBinding>> copyin = new InferCopyin(rd, getStatements()).get();
     	Map<IASTStatement, Set<IBinding>> copyout = new InferCopyout(rd, getStatements()).get();
     	Map<IASTStatement, Set<IBinding>> create = new InferCreate(rd, getStatements()).get();
@@ -108,13 +107,13 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     }
 
     @Override
-    public RefactoringStatus performChecks(RefactoringStatus status, IProgressMonitor pm, RefactoringParams params) {
-    	super.performChecks(status, pm, params);
-    	formCheck(status);
+    public RefactoringStatus performChecks(IProgressMonitor pm, RefactoringParams params) {
+    	super.performChecks(pm, params);
+    	formCheck();
     	return status;
     }
 
-	private void checkControlFlow(RefactoringStatus status, IASTStatement... statements) {
+	private void checkControlFlow(IASTStatement... statements) {
 		/*
 		 * if there is a control flow statement, it:
 		 * must not be labeled

@@ -36,8 +36,8 @@ public class IntroRoutineRefactoring extends StatementsRefactoring {
 	
 	@Override
     public void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new IntroRoutineCheck(getStatements(), getAllEnclosedNodes());
-        check.performChecks(initStatus, pm, null);
+        check = new IntroRoutineCheck(status, getStatements(), getAllEnclosedNodes());
+        check.performChecks(pm, null);
     }
 
 	@Override

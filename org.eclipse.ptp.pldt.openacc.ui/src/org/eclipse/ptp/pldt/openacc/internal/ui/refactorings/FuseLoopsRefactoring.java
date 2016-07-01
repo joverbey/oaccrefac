@@ -43,8 +43,8 @@ public class FuseLoopsRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckInitialConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new FuseLoopsCheck(getLoop());
-        check.performChecks(status, pm, null);
+        check = new FuseLoopsCheck(status, getLoop());
+        check.performChecks(pm, null);
     }
 
     @Override

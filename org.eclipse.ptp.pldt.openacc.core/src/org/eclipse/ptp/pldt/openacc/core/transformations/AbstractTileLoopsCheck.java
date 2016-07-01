@@ -11,11 +11,12 @@
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 public abstract class AbstractTileLoopsCheck extends ForLoopCheck<AbstractTileLoopsParams> {
 	
-	public AbstractTileLoopsCheck(IASTForStatement loop) {
-        super(loop);
+	public AbstractTileLoopsCheck(RefactoringStatus status, IASTForStatement loop) {
+        super(status, loop);
     }
 	
 }
