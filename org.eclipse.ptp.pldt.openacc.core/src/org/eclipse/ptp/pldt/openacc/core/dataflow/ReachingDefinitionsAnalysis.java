@@ -48,15 +48,24 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 @SuppressWarnings("restriction")
-public class ReachingDefinitions { 
+public class ReachingDefinitionsAnalysis { 
 
-    private IControlFlowGraph cfg;
+	private IControlFlowGraph cfg;
     private IASTFunctionDefinition func;
     
     private Map<IBasicBlock, RDVarSet> entrySets;
     private Map<IBasicBlock, RDVarSet> exitSets;
     
-    public ReachingDefinitions(IASTFunctionDefinition func) {
+    private static Map<IASTFunctionDefinition, ReachingDefinitionsAnalysis> cache = new HashMap<>();
+    
+    public static ReachingDefinitionsAnalysis forFunction(IASTFunctionDefinition func) {
+    	if(!cache.containsKey(func)) {
+    		cache.put(func, new ReachingDefinitionsAnalysis(func));
+    	}
+		return cache.get(func);
+	}
+    
+    private ReachingDefinitionsAnalysis(IASTFunctionDefinition func) {
         this.cfg = new ControlFlowGraphBuilder().build(func);
         this.func = func;
         

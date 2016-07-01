@@ -22,19 +22,14 @@ import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
-public class InferCreate extends InferDataTransfer {
+public class CreateInference extends DataTransferInference {
 
-	public InferCreate(ReachingDefinitions rd, IASTStatement... construct) {
-		super(rd, construct);
+	public CreateInference(IASTStatement[] construct, IASTStatement... accIgnore) {
+		super(construct, accIgnore);
 		infer();
 	}
 	
-	public InferCreate(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
-		super(rd, construct, accIgnore);
-		infer();
-	}
-	
-	public InferCreate(IASTStatement... construct) {
+	public CreateInference(IASTStatement... construct) {
 		super(construct);
 		infer();
 	}

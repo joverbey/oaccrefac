@@ -27,8 +27,6 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
  * Reaching definitions entry/exit set for a block. Essentially a mapping of variables to sets of statements
  * that generated a definition that may reach that block's entry/exit. 
  * 
- * @author alexander
- *
  */
 public class RDVarSet {
 
@@ -127,3 +125,5 @@ public class RDVarSet {
     }
 
 }
+
+

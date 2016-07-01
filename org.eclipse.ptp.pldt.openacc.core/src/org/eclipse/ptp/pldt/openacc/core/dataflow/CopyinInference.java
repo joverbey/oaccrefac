@@ -16,19 +16,14 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 
-public class InferCopyin extends InferDataTransfer {
+public class CopyinInference extends DataTransferInference {
 
-	public InferCopyin(ReachingDefinitions rd, IASTStatement... construct) {
-		super(rd, construct);
+	public CopyinInference(IASTStatement[] construct, IASTStatement... accIgnore) {
+		super(construct, accIgnore);
 		infer();
 	}
 	
-	public InferCopyin(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
-		super(rd, construct, accIgnore);
-		infer();
-	}
-	
-	public InferCopyin(IASTStatement... construct) {
+	public CopyinInference(IASTStatement... construct) {
 		super(construct);
 		infer();
 	}
@@ -64,7 +59,7 @@ public class InferCopyin extends InferDataTransfer {
     	}
     }
 	
-	private boolean canPropagateUp(IBinding V, IASTStatement K, IASTStatement C, ReachingDefinitions rd) {
+	private boolean canPropagateUp(IBinding V, IASTStatement K, IASTStatement C, ReachingDefinitionsAnalysis rd) {
 		//if a definition of V is inside K, is not inside C, reaches C, and is being copied into C as it is, we cannot propagate up
 		for(IASTName D : rd.reachingDefinitions(C)) {
 			if(V.equals(D.resolveBinding()) && 

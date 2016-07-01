@@ -17,11 +17,11 @@ import java.util.Set;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
@@ -40,12 +40,12 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
     @Override
     protected void doChange() {
         IASTStatement[] stmts = getStatements();
-        ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
+        ReachingDefinitionsAnalysis rd = ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(stmts[0], IASTFunctionDefinition.class));
         
-        InferCopyin inferCopyin = new InferCopyin(rd, getStatements());
-        InferCopyout inferCopyout = new InferCopyout(rd, getStatements());
-        InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout);
-        InferCreate inferCreate = new InferCreate(rd, getStatements());
+        CopyinInference inferCopyin = new CopyinInference(getStatements());
+        CopyoutInference inferCopyout = new CopyoutInference(getStatements());
+        CopyInference inferCopy = new CopyInference(inferCopyin, inferCopyout);
+        CreateInference inferCreate = new CreateInference(getStatements());
         
         StringBuilder newOuterPragma = new StringBuilder(pragma("acc data"));
         if(!inferCopyin.get().get(inferCopyin.getRoot()).isEmpty()) {
@@ -73,7 +73,7 @@ public class IntroDataConstructAlteration extends SourceStatementsAlteration<Int
         finalizeChanges();
     }
     
-    private void replaceContainedPragmas(InferCopyin inferCopyin, InferCopyout inferCopyout, InferCopy inferCopy, InferCreate inferCreate) {
+    private void replaceContainedPragmas(CopyinInference inferCopyin, CopyoutInference inferCopyout, CopyInference inferCopy, CreateInference inferCreate) {
     	Set<IASTStatement> allStatements = new HashSet<IASTStatement>();
     	allStatements.addAll(inferCopyin.get().keySet());
     	allStatements.addAll(inferCopyout.get().keySet());

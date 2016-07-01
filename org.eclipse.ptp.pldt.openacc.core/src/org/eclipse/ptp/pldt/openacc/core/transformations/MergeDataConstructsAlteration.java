@@ -18,11 +18,11 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopy;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
@@ -47,12 +47,12 @@ public class MergeDataConstructsAlteration extends PragmaDirectiveAlteration<Mer
     protected void doChange() {
 
     	IASTStatement[] statements = concat(ASTUtil.getStatementsIfCompound(getFirstStatement()), ASTUtil.getStatementsIfCompound(getSecondStatement()));
-    	ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));
+    	ReachingDefinitionsAnalysis rd = ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(getFirstStatement(), IASTFunctionDefinition.class));
     	
-    	InferCopyin inferCopyin = new InferCopyin(rd, statements, getFirstStatement(), getSecondStatement());
-    	InferCopyout inferCopyout = new InferCopyout(rd, statements, getFirstStatement(), getSecondStatement());
-    	InferCopy inferCopy = new InferCopy(inferCopyin, inferCopyout, getFirstStatement(), getSecondStatement());
-    	InferCreate inferCreate = new InferCreate(rd, statements, getFirstStatement(), getSecondStatement());
+    	CopyinInference inferCopyin = new CopyinInference(statements, getFirstStatement(), getSecondStatement());
+    	CopyoutInference inferCopyout = new CopyoutInference(statements, getFirstStatement(), getSecondStatement());
+    	CopyInference inferCopy = new CopyInference(inferCopyin, inferCopyout, getFirstStatement(), getSecondStatement());
+    	CreateInference inferCreate = new CreateInference(statements, getFirstStatement(), getSecondStatement());
     	
     	remove(getSecondPragma());
     	removeCurlyBraces(getFirstStatement());

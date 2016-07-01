@@ -28,7 +28,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyinClauseNode;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccCopyoutClauseNode;
@@ -209,7 +209,7 @@ public class Expand extends PragmaDirectiveAlteration<ExpandDataConstructCheck> 
 	private int getMaxInDirection(IASTStatement statement, boolean up) {
 		int i = 0;
 		IASTNode next = statement;
-		ReachingDefinitions rd = new ReachingDefinitions(ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class));
+		ReachingDefinitionsAnalysis rd = ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(statement, IASTFunctionDefinition.class));
 		while (true) {
 			next = up ? ASTUtil.getPreviousSibling(next) : ASTUtil.getNextSibling(next);
 			if (next == null) {
