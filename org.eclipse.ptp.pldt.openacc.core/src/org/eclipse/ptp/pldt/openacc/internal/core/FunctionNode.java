@@ -121,7 +121,7 @@ public class FunctionNode {
 				}
 				if (level == null) { // Implies the child doesn't have a preceding pragma, and should be modified.
 					FunctionNode existingNode = root.findDescendant(functionDefinition, new HashSet<FunctionNode>());
-					if (existingNode != null) {
+					if (existingNode != null && !children.contains(existingNode)) {
 						this.children.add(existingNode);
 					} else {
 						new FunctionNode(functionDefinition, root, this);

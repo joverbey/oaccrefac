@@ -1,0 +1,25 @@
+int main() {
+    for (int i = 0; i < 100; i++){
+        int a = foo(3);
+    }
+}
+
+#pragma acc routine worker
+int foo(int n) { /*<<<<< 6,1,10,6,pass*/
+	return bar();
+}
+
+#pragma acc routine vector
+int bar() {
+#pragma acc parallel loop vector
+	for (int i = 0; i < 100; i++) {
+
+	}
+	return 1;
+}
+
+#pragma acc routine gang
+int nonFunction() {
+	int a = foo(6);
+	return a;
+}

@@ -26,8 +26,9 @@ public class IntroRoutineAlteration extends SourceStatementsAlteration<IntroRout
 
 	@Override
 	protected void doChange() {
+		HashSet<FunctionNode> marked = new HashSet<FunctionNode>();
 		for (FunctionNode node : graph.getChildren()) {
-			changeNode(node, new HashSet<FunctionNode>());
+			changeNode(node, marked);
 		}
 		finalizeChanges();
 	}

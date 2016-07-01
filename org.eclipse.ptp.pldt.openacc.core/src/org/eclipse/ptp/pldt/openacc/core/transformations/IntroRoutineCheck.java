@@ -28,17 +28,22 @@ public class IntroRoutineCheck extends SourceStatementsCheck<RefactoringParams> 
 
 	private FunctionNode graph;
 	
-	public IntroRoutineCheck(IASTStatement[] statements, IASTNode[] statementsAndComments) {
-		super(statements, statementsAndComments);
+	public IntroRoutineCheck(IASTStatement[] statements, IASTNode[] allEnclosedNodes) {
+		super(statements, allEnclosedNodes);
 	}
 	
 	@Override
 	public RefactoringStatus doCheck(RefactoringStatus status, IProgressMonitor pm) {
 		List<IASTFunctionDefinition> definitions = new ArrayList<IASTFunctionDefinition>();
+		for (IASTNode node : getAllEnclosedNodes()) {
+			if (node instanceof IASTFunctionDefinition) {
+				definitions.add((IASTFunctionDefinition) node);
+			}
+		}
 		for (IASTStatement statement : getStatements()) {
 			for (IASTFunctionCallExpression call : ASTUtil.find(statement, IASTFunctionCallExpression.class)) {
 				IASTFunctionDefinition definition = ASTUtil.findFunctionDefinition(call);
-				if (definition == null) {
+				if (definition == null && !(definitions.contains(statement))) {
 					status.addError(Messages.IntroRoutineCheck_CannotFindFunctionDefinition, ASTUtil.getStatusContext(call, call));
 				} else {
 				    definitions.add(definition);

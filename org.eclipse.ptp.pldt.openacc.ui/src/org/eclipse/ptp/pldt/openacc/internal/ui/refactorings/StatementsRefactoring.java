@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTComment;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -126,11 +127,13 @@ public abstract class StatementsRefactoring extends CRefactoring {
         List<IASTStatement> statements = collectStatements(regionBegin, regionEnd);
         List<IASTComment> comments = collectComments(regionBegin, regionEnd, statements);
         List<IASTPreprocessorStatement> preprocs = collectPreprocessorStatements(regionBegin, regionEnd, statements);
+        List<IASTFunctionDefinition> definitions = collectFunctionDefinitions(regionBegin, regionEnd);
         List<IASTNode> allEnclosedNodes = new LinkedList<IASTNode>();
         
         allEnclosedNodes.addAll(statements);
         allEnclosedNodes.addAll(comments);
         allEnclosedNodes.addAll(preprocs);
+        allEnclosedNodes.addAll(definitions);
         
         Collections.sort(statements, ASTUtil.FORWARD_COMPARATOR);
         Collections.sort(allEnclosedNodes, ASTUtil.FORWARD_COMPARATOR);
@@ -198,6 +201,20 @@ public abstract class StatementsRefactoring extends CRefactoring {
         }
         
         return comments;
+    }
+    
+    private List<IASTFunctionDefinition> collectFunctionDefinitions(int regionBegin, int regionEnd) {
+        List<IASTFunctionDefinition> all = ASTUtil.find(ast, IASTFunctionDefinition.class);
+        List<IASTFunctionDefinition> definitions = new LinkedList<>();
+        //filter out statements not within the region bounds
+        for (IASTFunctionDefinition stmt : all) {
+            int stmtBegin = stmt.getFileLocation().getNodeOffset();
+            int stmtEnd = stmtBegin + stmt.getFileLocation().getNodeLength();
+            if (stmtBegin >= regionBegin && stmtEnd <= regionEnd) {
+                definitions.add(stmt);
+            }
+        }
+		return definitions;
     }
 
     private List<IASTPreprocessorStatement> collectPreprocessorStatements(int regionBegin, int regionEnd, List<IASTStatement> statements) {
