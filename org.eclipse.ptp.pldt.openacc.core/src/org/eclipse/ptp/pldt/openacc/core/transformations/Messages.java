@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ptp.pldt.openacc.core.transformations.messages"; //$NON-NLS-1$
+	public static String AbstractTileLoopsCheck_LoopFormNotSupported;
 	public static String ForLoopCheck_CannotAnalyzeDependences;
 	public static String ForLoopCheck_CannotRefactor;
 	public static String FuseLoopsCheck_CannotFuseDifferentPragmas;

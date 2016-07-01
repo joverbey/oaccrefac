@@ -12,6 +12,7 @@ package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
 public abstract class AbstractTileLoopsCheck extends ForLoopCheck<AbstractTileLoopsParams> {
 	
@@ -19,4 +20,12 @@ public abstract class AbstractTileLoopsCheck extends ForLoopCheck<AbstractTileLo
         super(status, loop);
     }
 	
+	@Override 
+	protected void doLoopFormCheck() {
+		ForStatementInquisitor inquisitor = ForStatementInquisitor.getInquisitor(loop);
+		if (!inquisitor.isCountedLoop()) {
+            status.addFatalError(Messages.AbstractTileLoopsCheck_LoopFormNotSupported);
+            return;
+        }
+	}
 }
