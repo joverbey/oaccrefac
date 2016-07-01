@@ -51,17 +51,17 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "int b = 20;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 4, null));
+                assertTrue(contains(ru, "b", 4));
                 assertTrue(ru.size() == 1);
                 break;
             case "a = b;":
-                assertTrue(contains(rd, "b", 3, null));
+                assertTrue(contains(rd, "b", 3));
                 assertTrue(rd.size() == 1);
-                assertTrue(contains(ru, "a", 5, null));
+                assertTrue(contains(ru, "a", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a;":
-                assertTrue(contains(rd, "a", 4, null));
+                assertTrue(contains(rd, "a", 4));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
@@ -71,11 +71,11 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "a = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a + 1;":
-                assertTrue(contains(rd, "a", 7, null));
+                assertTrue(contains(rd, "a", 7));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
@@ -106,17 +106,17 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "int b;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 4, null));
+                assertTrue(contains(ru, "b", 4));
                 assertTrue(ru.size() == 1);
                 break;
             case "a = b;":
-                assertTrue(contains(rd, "b", 3, null));
+                assertTrue(contains(rd, "b", 3));
                 assertTrue(rd.size() == 1);
-                assertTrue(contains(ru, "a", 5, null));
+                assertTrue(contains(ru, "a", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a;":
-                assertTrue(contains(rd, "a", 4, null));
+                assertTrue(contains(rd, "a", 4));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
@@ -126,11 +126,11 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "a = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a + 1;":
-                assertTrue(contains(rd, "a", 7, null));
+                assertTrue(contains(rd, "a", 7));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
@@ -158,51 +158,51 @@ public class ReachingDefinitionsTest extends TestCase {
             switch(node.getRawSignature()) {
             case "int a[3] = {1, 2, 3};":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 5, null));
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 5));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 2);
                 break;
             case "int b[2] = {4, 5};":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 4, null));
+                assertTrue(contains(ru, "b", 4));
                 assertTrue(ru.size() == 1);
                 break;
             case "a[1] = b[1];":
-                assertTrue(contains(rd, "b", 3, null));
+                assertTrue(contains(rd, "b", 3));
                 assertTrue(rd.size() == 1);
-                assertTrue(contains(ru, "a", 5, null));
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 5));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 2);
                 break;
             case "b = a;":
-            	assertTrue(contains(rd, "a", 2, null));
-            	assertTrue(contains(rd, "a", 4, null));
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(contains(rd, "a", 4));
                 assertTrue(rd.size() == 2);
-                assertTrue(contains(ru, "b", 9, null));
+                assertTrue(contains(ru, "b", 9));
                 assertTrue(ru.size() == 1);
                 break;
             case "a[2] = 12;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 1);
                 break;
             case "a[1] = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 1);
                 break;
             case "b[0] = a[1] + 1;":
-            	assertTrue(contains(rd, "a", 2, null));
-            	assertTrue(contains(rd, "a", 4, null));
-            	assertTrue(contains(rd, "a", 6, null));
-                assertTrue(contains(rd, "a", 7, null));
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(contains(rd, "a", 4));
+            	assertTrue(contains(rd, "a", 6));
+                assertTrue(contains(rd, "a", 7));
                 assertTrue(rd.size() == 4);
-                assertTrue(contains(ru, "b", 9, null));
+                assertTrue(contains(ru, "b", 9));
                 assertTrue(ru.size() == 1);
                 break;
             case "a[0] = b[2] + 2;":
-            	assertTrue(contains(rd, "b", 5, null));
-                assertTrue(contains(rd, "b", 8, null));
+            	assertTrue(contains(rd, "b", 5));
+                assertTrue(contains(rd, "b", 8));
             	assertTrue(rd.size() == 2);
                 assertTrue(ru.isEmpty());
                 break;
@@ -237,52 +237,52 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "int b;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 7, null));
+                assertTrue(contains(ru, "b", 7));
                 assertTrue(ru.size() == 1);
                 break;
             case "a = b;":
-                assertTrue(contains(rd, "b", 3, null));
-                assertTrue(contains(rd, "b", 11, null));
+                assertTrue(contains(rd, "b", 3));
+                assertTrue(contains(rd, "b", 11));
                 assertTrue(rd.size() == 2);
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a;":
-                assertTrue(contains(rd, "a", 7, null));
+                assertTrue(contains(rd, "a", 7));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
             case "a = i;":
-                assertTrue(contains(rd, "i", 6, null));
-                assertTrue(contains(rd, "i", 4, null));
+                assertTrue(contains(rd, "i", 6));
+                assertTrue(contains(rd, "i", 4));
                 assertTrue(rd.size() == 2);
                 assertTrue(ru.isEmpty());
                 break;
             case "a = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 11, null));
+                assertTrue(contains(ru, "a", 11));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a + i;":
-                assertTrue(contains(rd, "a", 10, null));
-                assertTrue(contains(rd, "i", 4, null));
-                assertTrue(contains(rd, "i", 6, null));
+                assertTrue(contains(rd, "a", 10));
+                assertTrue(contains(rd, "i", 4));
+                assertTrue(contains(rd, "i", 6));
                 assertTrue(rd.size() == 3);
-                assertTrue(contains(ru, "b", 7, null));
+                assertTrue(contains(ru, "b", 7));
                 assertTrue(ru.size() == 1);
                 break;
             case "int i = 0;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "i", 5, null));
-                assertTrue(contains(ru, "i", 9, null));
-                assertTrue(contains(ru, "i", 11, null));
+                assertTrue(contains(ru, "i", 5));
+                assertTrue(contains(ru, "i", 9));
+                assertTrue(contains(ru, "i", 11));
                 assertTrue(ru.size() == 3);
                 break;
             case "i++":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "i", 5, null));
-                assertTrue(contains(ru, "i", 9, null));
-                assertTrue(contains(ru, "i", 11, null));
+                assertTrue(contains(ru, "i", 5));
+                assertTrue(contains(ru, "i", 9));
+                assertTrue(contains(ru, "i", 11));
                 assertTrue(ru.size() == 3);
                 break;
             }
@@ -312,74 +312,74 @@ public class ReachingDefinitionsTest extends TestCase {
             switch(node.getRawSignature()) {
             case "int a[10];":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 8, null));
-                assertTrue(contains(ru, "a", 11, null));
+                assertTrue(contains(ru, "a", 8));
+                assertTrue(contains(ru, "a", 11));
                 assertTrue(ru.size() == 2);
                 break;
             case "int b[20];":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 7, null));
+                assertTrue(contains(ru, "b", 7));
                 assertTrue(ru.size() == 1);
                 break;
             case "a[0] = b[6];":
-                assertTrue(contains(rd, "b", 3, null));
-                assertTrue(contains(rd, "b", 8, null));
-                assertTrue(contains(rd, "b", 11, null));
+                assertTrue(contains(rd, "b", 3));
+                assertTrue(contains(rd, "b", 8));
+                assertTrue(contains(rd, "b", 11));
                 assertTrue(rd.size() == 3);
-                assertTrue(contains(ru, "a", 8, null));
-                assertTrue(contains(ru, "a", 11, null));
+                assertTrue(contains(ru, "a", 8));
+                assertTrue(contains(ru, "a", 11));
                 assertTrue(ru.size() == 2);
                 break;
             case "b[2] = a[9];":
-            	assertTrue(contains(rd, "a", 2, null));
-                assertTrue(contains(rd, "a", 7, null));
-                assertTrue(contains(rd, "a", 9, null));
-                assertTrue(contains(rd, "a", 10, null));
+            	assertTrue(contains(rd, "a", 2));
+                assertTrue(contains(rd, "a", 7));
+                assertTrue(contains(rd, "a", 9));
+                assertTrue(contains(rd, "a", 10));
                 assertTrue(rd.size() == 4);
-                assertTrue(contains(ru, "b", 7, null));
+                assertTrue(contains(ru, "b", 7));
                 assertTrue(ru.size() == 1);
                 break;
             case "a[3] = i;":
-                assertTrue(contains(rd, "i", 4, null));
-                assertTrue(contains(rd, "i", 6, null));
+                assertTrue(contains(rd, "i", 4));
+                assertTrue(contains(rd, "i", 6));
                 assertTrue(rd.size() == 2);
-                assertTrue(contains(ru, "a", 8, null));
-                assertTrue(contains(ru, "a", 11, null));
+                assertTrue(contains(ru, "a", 8));
+                assertTrue(contains(ru, "a", 11));
                 assertTrue(ru.size() == 2);
                 break;
             case "a[i] = 14;":
-                assertTrue(contains(rd, "i", 4, null));
-                assertTrue(contains(rd, "i", 6, null));
+                assertTrue(contains(rd, "i", 4));
+                assertTrue(contains(rd, "i", 6));
                 assertTrue(rd.size() == 2);
-                assertTrue(contains(ru, "a", 8, null));
-                assertTrue(contains(ru, "a", 11, null));
+                assertTrue(contains(ru, "a", 8));
+                assertTrue(contains(ru, "a", 11));
                 assertTrue(ru.size() == 2);
                 break;
             case "b[5] = a[6] + i;":
-            	assertTrue(contains(rd, "a", 2, null));
-            	assertTrue(contains(rd, "a", 7, null));
-            	assertTrue(contains(rd, "a", 9, null));
-            	assertTrue(contains(rd, "a", 10, null));
-                assertTrue(contains(rd, "i", 4, null));
-                assertTrue(contains(rd, "i", 6, null));
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(contains(rd, "a", 7));
+            	assertTrue(contains(rd, "a", 9));
+            	assertTrue(contains(rd, "a", 10));
+                assertTrue(contains(rd, "i", 4));
+                assertTrue(contains(rd, "i", 6));
                 assertTrue(rd.size() == 6);
-                assertTrue(contains(ru, "b", 7, null));
+                assertTrue(contains(ru, "b", 7));
                 assertTrue(ru.size() == 1);
                 break;
             case "int i = 0;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "i", 5, null));
-                assertTrue(contains(ru, "i", 9, null));
-                assertTrue(contains(ru, "i", 10, null));
-                assertTrue(contains(ru, "i", 11, null));
+                assertTrue(contains(ru, "i", 5));
+                assertTrue(contains(ru, "i", 9));
+                assertTrue(contains(ru, "i", 10));
+                assertTrue(contains(ru, "i", 11));
                 assertTrue(ru.size() == 4);
                 break;
             case "i++":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "i", 5, null));
-                assertTrue(contains(ru, "i", 9, null));
-                assertTrue(contains(ru, "i", 10, null));
-                assertTrue(contains(ru, "i", 11, null));
+                assertTrue(contains(ru, "i", 5));
+                assertTrue(contains(ru, "i", 9));
+                assertTrue(contains(ru, "i", 10));
+                assertTrue(contains(ru, "i", 11));
                 assertTrue(ru.size() == 4);
                 break;
             }
@@ -408,33 +408,33 @@ public class ReachingDefinitionsTest extends TestCase {
             switch(node.getRawSignature()) {
             case "int a = 10;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 4, null));
-                assertTrue(contains(ru, "a", 10, null));
+                assertTrue(contains(ru, "a", 4));
+                assertTrue(contains(ru, "a", 10));
                 assertTrue(ru.size() == 2);
                 break;
             case "int b = 20;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 5, null));
+                assertTrue(contains(ru, "b", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "a < 12":
-                assertTrue(contains(rd, "a", 2, null));
-                assertTrue(contains(rd, "a", 8, null));
+                assertTrue(contains(rd, "a", 2));
+                assertTrue(contains(rd, "a", 8));
                 assertTrue(rd.size() == 2);
                 assertTrue(ru.isEmpty());
                 break;
             case "a = b;":
-                assertTrue(contains(rd, "b", 3, null));
-                assertTrue(contains(rd, "b", 6, null));
+                assertTrue(contains(rd, "b", 3));
+                assertTrue(contains(rd, "b", 6));
                 assertTrue(rd.size() == 2);
-                assertTrue(contains(ru, "a", 6, null));
+                assertTrue(contains(ru, "a", 6));
                 assertTrue(ru.size() == 1);
                 cases.add(4);
                 break;
             case "b = a;":
-                assertTrue(contains(rd, "a", 5, null));
+                assertTrue(contains(rd, "a", 5));
                 assertTrue(rd.size() == 1);
-                assertTrue(contains(ru, "b", 5, null));
+                assertTrue(contains(ru, "b", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "a = 12;":
@@ -443,13 +443,13 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "a = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 4, null));
-                assertTrue(contains(ru, "a", 10, null));
+                assertTrue(contains(ru, "a", 4));
+                assertTrue(contains(ru, "a", 10));
                 assertTrue(ru.size() == 2);
                 break;
             case "b = a + 1;":
-                assertTrue(contains(rd, "a", 2, null));
-                assertTrue(contains(rd, "a", 8, null));
+                assertTrue(contains(rd, "a", 2));
+                assertTrue(contains(rd, "a", 8));
                 assertTrue(rd.size() == 2);
                 assertTrue(ru.isEmpty());
                 break;
@@ -480,30 +480,30 @@ public class ReachingDefinitionsTest extends TestCase {
             switch(node.getRawSignature()) {
             case "int a = 10;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 4, null));
-                assertTrue(contains(ru, "a", 8, null));
+                assertTrue(contains(ru, "a", 4));
+                assertTrue(contains(ru, "a", 8));
                 assertTrue(ru.size() == 2);
                 break;
             case "int b = 20;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 5, null));
+                assertTrue(contains(ru, "b", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "a == 10":
-                assertTrue(contains(rd, "a", 2, null));
+                assertTrue(contains(rd, "a", 2));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
             case "a = b;":
                 //this enters on both the statement and the binary expression it contains
                 if (node instanceof IASTStatement) {
-                    assertTrue(contains(rd, "b", 3, null));
+                    assertTrue(contains(rd, "b", 3));
                     assertTrue(rd.size() == 1);
-                    assertTrue(contains(ru, "a", 12, null));
+                    assertTrue(contains(ru, "a", 12));
                     assertTrue(ru.size() == 1);
                 }
                 break;
             case "b = a;":
-                assertTrue(contains(rd, "a", 2, null));
+                assertTrue(contains(rd, "a", 2));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
@@ -513,12 +513,12 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "a = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 12, null));
+                assertTrue(contains(ru, "a", 12));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a + 1;":
-                assertTrue(contains(rd, "a", 5, null));
-                assertTrue(contains(rd, "a", 10, null));
+                assertTrue(contains(rd, "a", 5));
+                assertTrue(contains(rd, "a", 10));
                 assertTrue(rd.size() == 2);
                 assertTrue(ru.isEmpty());
                 break;
@@ -551,20 +551,20 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "int b = 20;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "b", 5, null));
+                assertTrue(contains(ru, "b", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "a = b;":
-                assertTrue(contains(rd, "b", 3, null));
-                assertTrue(contains(rd, "b", 6, null));
+                assertTrue(contains(rd, "b", 3));
+                assertTrue(contains(rd, "b", 6));
                 assertTrue(rd.size() == 2);
-                assertTrue(contains(ru, "a", 6, null));
+                assertTrue(contains(ru, "a", 6));
                 assertTrue(ru.size() == 1);
                 break;
             case "b = a;":
-                assertTrue(contains(rd, "a", 5, null));
+                assertTrue(contains(rd, "a", 5));
                 assertTrue(rd.size() == 1);
-                assertTrue(contains(ru, "b", 5, null));
+                assertTrue(contains(ru, "b", 5));
                 assertTrue(ru.size() == 1);
                 break;
             case "a = 12;":
@@ -573,17 +573,17 @@ public class ReachingDefinitionsTest extends TestCase {
                 break;
             case "a = 14;":
                 assertTrue(rd.isEmpty());
-                assertTrue(contains(ru, "a", 9, null));
-                assertTrue(contains(ru, "a", 10, null));
+                assertTrue(contains(ru, "a", 9));
+                assertTrue(contains(ru, "a", 10));
                 assertTrue(ru.size() == 2);
                 break;
             case "a < 12":
-                assertTrue(contains(rd, "a", 8, null));
+                assertTrue(contains(rd, "a", 8));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
             case "b = a + 1;":
-                assertTrue(contains(rd, "a", 8, null));
+                assertTrue(contains(rd, "a", 8));
                 assertTrue(rd.size() == 1);
                 assertTrue(ru.isEmpty());
                 break;
@@ -591,7 +591,7 @@ public class ReachingDefinitionsTest extends TestCase {
         }
     }
     
-    public void testForLoopGlobals() throws Exception {
+    public void testForLoopGlobal() throws Exception {
         IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
                 + "int x;"
                 + "void main() {            \n" //1
@@ -612,22 +612,187 @@ public class ReachingDefinitionsTest extends TestCase {
             switch(node.getRawSignature()) {
             case "b = x;":
             	assertTrue(containsGlobal(rd, "x"));
-            	assertTrue(contains(rd, "x", 7, null));
+            	assertTrue(contains(rd, "x", 7));
             	assertTrue(rd.size() == 2);
             	assertTrue(ru.isEmpty());
             	break;
             case "x = i;":
-            	assertTrue(contains(rd, "i", 3, null));
-            	assertTrue(contains(rd, "i", 5, null));
+            	assertTrue(contains(rd, "i", 3));
+            	assertTrue(contains(rd, "i", 5));
             	assertTrue(rd.size() == 2);
-            	assertTrue(contains(ru, "x", 6, null));
-            	assertTrue(contains(ru, "x", 9, null));
+            	assertTrue(contains(ru, "x", 6));
+            	assertTrue(contains(ru, "x", 9));
             	assertTrue(containsGlobal(ru, "x"));
             	assertTrue(ru.size() == 3);
             	break;
             case "a = x;":
             	assertTrue(containsGlobal(rd, "x"));
-            	assertTrue(contains(rd, "x", 7, null));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            }
+        }
+    }
+
+    public void testForLoopGlobals() throws Exception {
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "int x, y;"
+                + "void main() {            \n" //1
+                + "    int a, b;            \n" //2
+                + "    for(int i = 0;       \n" //3
+                + "       i < 10;           \n" //4
+                + "       i++) {            \n" //5
+                + "        b = x;           \n" //6
+                + "        x = y;           \n" //7
+                + "        y = a;           \n" //8
+                + "    }                    \n" //9
+                + "    x = y + 1;           \n" //10
+                + "    y = x;               \n" //11
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "b = x;":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            case "x = y;":
+            	assertTrue(containsGlobal(rd, "y"));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 6));
+            	assertTrue(ru.size() == 1);
+            	break;
+            case "y = a;":
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(rd.size() == 1);
+            	assertTrue(contains(ru, "y", 7));
+            	assertTrue(contains(ru, "y", 10));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "x = y + 1;":
+            	assertTrue(containsGlobal(rd, "y"));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 11));
+            	assertTrue(containsGlobal(ru, "x"));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "y = x;":
+            	assertTrue(contains(rd, "x", 10));
+            	assertTrue(rd.size() == 1);
+            	assertTrue(containsGlobal(ru, "y"));
+            	assertTrue(ru.size() == 1);
+            	break;
+            }
+        }
+    }
+
+    public void testForLoopGlobalArrays() throws Exception {
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "int x[10], y[10];"
+                + "void main() {         \n" //1
+                + "    int a, b;         \n" //2
+                + "    for(int i = 0;    \n" //3
+                + "       i < 10;        \n" //4
+                + "       i++) {         \n" //5
+                + "        b = x[1];     \n" //6
+                + "        x[2] = y[3];  \n" //7
+                + "        y[4] = a;     \n" //8
+                + "    }                 \n" //9
+                + "    x[5] = y[6] + 1;  \n" //10
+                + "    y[7] = x[8];      \n" //11
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "b = x[i];":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            case "x[i] = y[i];":
+            	assertTrue(containsGlobal(rd, "y"));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 6));
+            	assertTrue(contains(ru, "x", 11));
+            	assertTrue(containsGlobal(ru, "y"));
+            	assertTrue(ru.size() == 3);
+            	break;
+            case "y[i] = a;":
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(rd.size() == 1);
+            	assertTrue(contains(ru, "y", 7));
+            	assertTrue(contains(ru, "y", 10));
+            	assertTrue(containsGlobal(ru, "y"));
+            	assertTrue(ru.size() == 3);
+            	break;
+            case "x[i] = y[i] + 1;":
+            	assertTrue(containsGlobal(rd, "y"));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 11));
+            	assertTrue(containsGlobal(ru, "x"));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "y[i] = x[i];":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(contains(rd, "x", 10));
+            	assertTrue(rd.size() == 3);
+            	assertTrue(containsGlobal(ru, "y"));
+            	assertTrue(ru.size() == 1);
+            	break;
+            }
+        }
+    }
+    
+    public void testForLoopParam() throws Exception {
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "void foo(int x) {        \n" //1
+                + "    int a, b;            \n" //2
+                + "    for(int i = 0;       \n" //3
+                + "       i < 10;           \n" //4
+                + "       i++) {            \n" //5
+                + "        b = x;           \n" //6
+                + "        x = i;           \n" //7
+                + "    }                    \n" //8
+                + "    a = x;               \n" //9
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "b = x;":
+            	assertTrue(contains(rd, "x", 1));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            case "x = i;":
+            	assertTrue(contains(rd, "i", 3));
+            	assertTrue(contains(rd, "i", 5));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 6));
+            	assertTrue(contains(ru, "x", 9));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "a = x;":
+            	assertTrue(contains(rd, "x", 1));
+            	assertTrue(contains(rd, "x", 7));
             	assertTrue(rd.size() == 2);
             	assertTrue(ru.isEmpty());
             	break;
@@ -635,12 +800,130 @@ public class ReachingDefinitionsTest extends TestCase {
         }
     }
     
+    public void testForLoopParams() throws Exception {
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "void main(int x, int y) {\n" //1
+                + "    int a, b;            \n" //2
+                + "    for(int i = 0;       \n" //3
+                + "       i < 10;           \n" //4
+                + "       i++) {            \n" //5
+                + "        b = x;           \n" //6
+                + "        x = y;           \n" //7
+                + "        y = a;           \n" //8
+                + "    }                    \n" //9
+                + "    x = y + 1;           \n" //10
+                + "    y = x;               \n" //11
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "b = x;":
+            	assertTrue(contains(rd, "x", 1));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            case "x = y;":
+            	assertTrue(contains(rd, "y", 1));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 6));
+            	assertTrue(ru.size() == 1);
+            	break;
+            case "y = a;":
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(rd.size() == 1);
+            	assertTrue(contains(ru, "y", 7));
+            	assertTrue(contains(ru, "y", 10));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "x = y + 1;":
+            	assertTrue(contains(rd, "y", 1));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 11));
+            	assertTrue(ru.size() == 1);
+            	break;
+            case "y = x;":
+            	assertTrue(contains(rd, "x", 10));
+            	assertTrue(rd.size() == 1);
+            	assertTrue(ru.isEmpty());
+            	break;
+            }
+        }
+    }
+    
+    public void testForLoopParamArrays() throws Exception {
+        IASTTranslationUnit tu = ASTUtil.translationUnitForString(""
+                + "void main(int *x, int *y) {\n" //1
+                + "    int a, b;         \n" //2
+                + "    for(int i = 0;    \n" //3
+                + "       i < 10;        \n" //4
+                + "       i++) {         \n" //5
+                + "        b = x[1];     \n" //6
+                + "        x[2] = y[3];  \n" //7
+                + "        y[4] = a;     \n" //8
+                + "    }                 \n" //9
+                + "    x[5] = y[6] + 1;  \n" //10
+                + "    y[7] = x[8];      \n" //11
+                + "}");
+        IASTFunctionDefinition func = ASTUtil.findFirst(tu, IASTFunctionDefinition.class);
+        ReachingDefinitions rda = new ReachingDefinitions(func);
+        for(IASTNode node : getStatements(func)) {
+            Set<IASTName> rd = rda.reachingDefinitions(node);
+            Set<IASTName> ru = rda.reachedUses(node);
+            switch(node.getRawSignature()) {
+            case "b = x[i];":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(ru.isEmpty());
+            	break;
+            case "x[i] = y[i];":
+            	assertTrue(containsGlobal(rd, "y"));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 6));
+            	assertTrue(contains(ru, "x", 11));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "y[i] = a;":
+            	assertTrue(contains(rd, "a", 2));
+            	assertTrue(rd.size() == 1);
+            	assertTrue(contains(ru, "y", 7));
+            	assertTrue(contains(ru, "y", 10));
+            	assertTrue(ru.size() == 2);
+            	break;
+            case "x[i] = y[i] + 1;":
+            	assertTrue(containsGlobal(rd, "y"));
+            	assertTrue(contains(rd, "y", 8));
+            	assertTrue(rd.size() == 2);
+            	assertTrue(contains(ru, "x", 11));
+            	assertTrue(ru.size() == 1);
+            	break;
+            case "y[i] = x[i];":
+            	assertTrue(containsGlobal(rd, "x"));
+            	assertTrue(contains(rd, "x", 7));
+            	assertTrue(contains(rd, "x", 10));
+            	assertTrue(rd.size() == 3);
+            	assertTrue(ru.isEmpty());
+            	break;
+            }
+        }
+    }
     
     private List<IASTNode> getStatements(IASTFunctionDefinition func) {
         List<IASTNode> stmts = new ArrayList<IASTNode>();
         stmts.addAll(ASTUtil.find(func, IASTStatement.class));
         stmts.addAll(ASTUtil.find(func, IASTExpression.class));
         return stmts;
+    }
+    
+    private boolean contains(Set<IASTName> names, String name, Integer lineNumber) {
+    	return contains(names, name, lineNumber, null);
     }
     
     private boolean contains(Set<IASTName> names, String name, Integer lineNumber, Integer offset) {

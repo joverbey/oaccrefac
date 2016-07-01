@@ -145,31 +145,13 @@ public class ReachingDefinitions {
         			}
         		}
         		if(bb instanceof IExitNode) {
-        			for(IASTNode use : entry.get(def.resolveBinding())) {
-        				if(use instanceof Global) {
-        					reachedUses.add((Global) use);
-        				}
+        			if(isNonLocal(def.resolveBinding())) {
+        				reachedUses.add(Global.newInstance(def.resolveBinding()));
         			}
         		}
         	}
         }
         
-//        for(IBasicBlock bb : entrySets.keySet()) {
-//            Object data = ((ICfgData) bb).getData();
-//            Set<IASTName> uses = new HashSet<IASTName>();
-//            if(data instanceof IASTNode) {
-//                for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
-//                    if(!ASTPatternUtil.isDefinition(use)) {
-//                        if(reachingDefinitions(use).contains(def)) {
-//                            reachedUses.add(use);
-//                        }
-//                    }
-//                }
-//            }
-//            if(bb instanceof IExitNode) {
-//            	
-//            }
-//        }
         return reachedUses;
         
     }
@@ -274,16 +256,19 @@ public class ReachingDefinitions {
     private void addGlobalDefs(IBasicBlock startNode, RDVarSet entries) {
     	for(IASTName ref : ASTUtil.find(func, IASTName.class)) {
     		IBinding binding = ref.resolveBinding();
-    		try {
-				if(binding instanceof IVariable 
-						&& !binding.getScope().getKind().equals(EScopeKind.eLocal)) {
-					Global fake = Global.newInstance(binding);
-					entries.add(binding, fake);
-				}
-			} catch (DOMException e) {
-				e.printStackTrace();
+			if(isNonLocal(binding)) {
+				Global fake = Global.newInstance(binding);
+				entries.add(binding, fake);
 			}
     	}
+	}
+
+	private boolean isNonLocal(IBinding binding) {
+		try {
+			return binding instanceof IVariable && !binding.getScope().getKind().equals(EScopeKind.eLocal);
+		} catch (DOMException e) {
+			return false;
+		}
 	}
     
     private void addParams(IBasicBlock startNode, RDVarSet entries) {
