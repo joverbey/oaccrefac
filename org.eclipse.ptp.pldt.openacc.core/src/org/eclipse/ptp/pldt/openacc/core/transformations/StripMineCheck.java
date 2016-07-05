@@ -23,6 +23,15 @@ public class StripMineCheck extends ForLoopCheck<StripMineParams> {
         super(status, loop);
     }
 
+    @Override 
+	protected void doLoopFormCheck() {
+		ForStatementInquisitor inquisitor = ForStatementInquisitor.getInquisitor(loop);
+		if (!inquisitor.isCountedLoop()) {
+            status.addFatalError(Messages.AbstractTileLoopsCheck_LoopFormNotSupported);
+            return;
+        }
+	}
+    
     @Override
     protected void doParameterCheck(StripMineParams params) {
     	// Presence of a openacc pragma doesn't influence whether or not strip 
