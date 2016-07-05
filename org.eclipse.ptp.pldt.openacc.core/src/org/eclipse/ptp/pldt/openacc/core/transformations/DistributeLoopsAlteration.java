@@ -74,9 +74,9 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         
         for (int i = stmts.length - 1; i >= 0; i--) {
             if(ASTUtil.getPragmaNodes(getLoop()).size() != 0){
-                this.insert(offset, pragma("acc parallel loop"));
+                this.insert(offset, pragma("acc parallel loop")); //$NON-NLS-1$
             }
-            String newBody = "";
+            String newBody = ""; //$NON-NLS-1$
             for(IASTComment comment : ASTUtil.getLeadingComments(stmts[i])) {
                 newBody += comment.getRawSignature() + System.lineSeparator();
             }

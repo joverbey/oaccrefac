@@ -22,16 +22,16 @@ public class IntroAtomicAlteration extends SourceStatementsAlteration<IntroAtomi
     @Override
     protected void doChange() {
         int offset = getStatements()[0].getFileLocation().getNodeOffset();
-        String pragma = "#pragma acc atomic ";
+        String pragma = "#pragma acc atomic "; //$NON-NLS-1$
         switch (type) {
         case IntroAtomicCheck.READ:
-            pragma += "read";
+            pragma += "read"; //$NON-NLS-1$
             break;
         case IntroAtomicCheck.WRITE:
-            pragma += "write";
+            pragma += "write"; //$NON-NLS-1$
             break;
         case IntroAtomicCheck.UPDATE:
-            pragma += "update";
+            pragma += "update"; //$NON-NLS-1$
             break;
         case IntroAtomicCheck.NONE:
             return;

@@ -31,28 +31,41 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStandardFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
+import org.eclipse.cdt.core.dom.ast.gnu.c.ICASTKnRFunctionDeclarator;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTPatternUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 @SuppressWarnings("restriction")
-public class ReachingDefinitions { 
+public class ReachingDefinitionsAnalysis { 
 
-    private IControlFlowGraph cfg;
+	private IControlFlowGraph cfg;
     private IASTFunctionDefinition func;
     
     private Map<IBasicBlock, RDVarSet> entrySets;
     private Map<IBasicBlock, RDVarSet> exitSets;
     
-    public ReachingDefinitions(IASTFunctionDefinition func) {
+    private static Map<IASTFunctionDefinition, ReachingDefinitionsAnalysis> cache = new HashMap<>();
+    
+    public static ReachingDefinitionsAnalysis forFunction(IASTFunctionDefinition func) {
+    	if(!cache.containsKey(func)) {
+    		cache.put(func, new ReachingDefinitionsAnalysis(func));
+    	}
+		return cache.get(func);
+	}
+    
+    private ReachingDefinitionsAnalysis(IASTFunctionDefinition func) {
         this.cfg = new ControlFlowGraphBuilder().build(func);
         this.func = func;
         
@@ -104,7 +117,7 @@ public class ReachingDefinitions {
         for(IASTNode def : reachingDefs) {
             for(IASTName name : ASTUtil.find(def, IASTName.class)) {
                 //if a name found under the definition node is a definition and refers to the right variable
-                if((name instanceof Global || ASTPatternUtil.isDefinition(name)) && name.resolveBinding().equals(varUse.resolveBinding())) {
+                if((name instanceof Global || isParam(name) || ASTPatternUtil.isDefinition(name)) && name.resolveBinding().equals(varUse.resolveBinding())) {
                     reachingDefNames.add(name);
                 }
             }
@@ -113,7 +126,7 @@ public class ReachingDefinitions {
         
     }
     
-    /**
+	/**
      * Given a name which is used as a definition, returns a set of every use of the same variable
      * that the definition reaches. 
      * 
@@ -141,31 +154,13 @@ public class ReachingDefinitions {
         			}
         		}
         		if(bb instanceof IExitNode) {
-        			for(IASTNode use : entry.get(def.resolveBinding())) {
-        				if(use instanceof Global) {
-        					reachedUses.add((Global) use);
-        				}
+        			if(isNonLocal(def.resolveBinding())) {
+        				reachedUses.add(Global.newInstance(def.resolveBinding()));
         			}
         		}
         	}
         }
         
-//        for(IBasicBlock bb : entrySets.keySet()) {
-//            Object data = ((ICfgData) bb).getData();
-//            Set<IASTName> uses = new HashSet<IASTName>();
-//            if(data instanceof IASTNode) {
-//                for(IASTName use : ASTUtil.find((IASTNode) data, IASTName.class)) {
-//                    if(!ASTPatternUtil.isDefinition(use)) {
-//                        if(reachingDefinitions(use).contains(def)) {
-//                            reachedUses.add(use);
-//                        }
-//                    }
-//                }
-//            }
-//            if(bb instanceof IExitNode) {
-//            	
-//            }
-//        }
         return reachedUses;
         
     }
@@ -209,7 +204,7 @@ public class ReachingDefinitions {
     }
     
     private void identifyReachingDefinitions(IControlFlowGraph cfg) {
-//    	addGlobalDefs(cfg.getStartNode());
+
         boolean changed;
         do {
             changed = false;
@@ -224,6 +219,7 @@ public class ReachingDefinitions {
                 
                 if(bb instanceof IStartNode) {
                 	addGlobalDefs(bb, bbEntry);
+                	addParams(bb, bbEntry);
                 }
 
                 for(IBasicBlock pred : bb.getIncomingNodes()) {
@@ -269,16 +265,36 @@ public class ReachingDefinitions {
     private void addGlobalDefs(IBasicBlock startNode, RDVarSet entries) {
     	for(IASTName ref : ASTUtil.find(func, IASTName.class)) {
     		IBinding binding = ref.resolveBinding();
-    		try {
-				if(binding instanceof IVariable 
-						&& !binding.getScope().getKind().equals(EScopeKind.eLocal)) {
-					Global fake = Global.newInstance(binding);
-					entries.add(binding, fake);
-				}
-			} catch (DOMException e) {
-				e.printStackTrace();
+			if(isNonLocal(binding)) {
+				Global fake = Global.newInstance(binding);
+				entries.add(binding, fake);
 			}
     	}
+	}
+
+	private boolean isNonLocal(IBinding binding) {
+		try {
+			return binding instanceof IVariable && !binding.getScope().getKind().equals(EScopeKind.eLocal);
+		} catch (DOMException e) {
+			return false;
+		}
+	}
+    
+    private void addParams(IBasicBlock startNode, RDVarSet entries) {
+    	if(func.getDeclarator() instanceof IASTStandardFunctionDeclarator) {
+    		for(IASTParameterDeclaration d : ((IASTStandardFunctionDeclarator) func.getDeclarator()).getParameters()) {
+    			entries.add(d.getDeclarator().getName().resolveBinding(), d);
+    		}
+    	}
+    	else if(func.getDeclarator() instanceof ICASTKnRFunctionDeclarator) {
+    		for(IASTName n : ((ICASTKnRFunctionDeclarator) func.getDeclarator()).getParameterNames()) {
+    			entries.add(n.resolveBinding(), n);
+    		}
+    	}
+	}
+    
+    private boolean isParam(IASTName name) {
+		return name.resolveBinding() instanceof IVariable && ASTUtil.findNearestAncestor(name, IASTFunctionDeclarator.class) != null;
 	}
 
 	private List<IASTName> varWritesIn(IBasicBlock bb) {

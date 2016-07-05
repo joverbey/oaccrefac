@@ -31,10 +31,10 @@ import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyin;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCopyout;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.InferCreate;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitions;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.CreateInference;
+import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;
 
@@ -47,7 +47,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     protected void formCheck() {
     	IASTStatement[] stmts = getStatements();
     	if(stmts.length < 1) {
-    		status.addWarning("Data construct will not surround any statements");
+    		status.addWarning(Messages.IntroDataConstructCheck_WillNotSurroundAnyStatements);
     		return;
     	}
 		for(IASTStatement stmt : stmts) {
@@ -55,18 +55,18 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
 			if(parent instanceof IASTIfStatement) {
 				IASTIfStatement ifStmt = (IASTIfStatement) parent; 
 				if (ifStmt.getThenClause().equals(stmt) || ifStmt.getElseClause().equals(stmt)) {
-					status.addError("Data construct must either be inside the conditional statement or surround both the if statement and its else clause");
+					status.addError(Messages.IntroDataConstructCheck_MustBeInConditionalOrSurroundIfAndElse);
 				}
 			}
 		}
     	
     	if(!ASTUtil.doesConstructContainAllReferencesToVariablesItDeclares(stmts)) {
-    		status.addError("Construct would surround variable declaration and cause scope errors");
+    		status.addError(Messages.IntroDataConstructCheck_WouldSurroundDeclarationScopeErrors);
     	}
     	
     	for(IASTStatement stmt : stmts) {
     		if(ASTUtil.find(stmt, IASTIfStatement.class).size() > 0) {
-    			status.addWarning("Construct contains a conditional statement; if a variable is conditionally written to and copied out without being copied in, it may result in incorrect values");
+    			status.addWarning(Messages.IntroDataConstructCheck_ConditionalWriteMayCauseIncorrectDataTransfer);
     			break;
     		}
     	}
@@ -77,14 +77,14 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     
 	@Override
     public RefactoringStatus doCheck(IProgressMonitor pm) {
-        doReachingDefinitionsCheck(new ReachingDefinitions(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
+        doReachingDefinitionsCheck(ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(getStatements()[0], IASTFunctionDefinition.class)));
         return status;
     }
 
-    protected void doReachingDefinitionsCheck(ReachingDefinitions rd) {
-    	Map<IASTStatement, Set<IBinding>> copyin = new InferCopyin(rd, getStatements()).get();
-    	Map<IASTStatement, Set<IBinding>> copyout = new InferCopyout(rd, getStatements()).get();
-    	Map<IASTStatement, Set<IBinding>> create = new InferCreate(rd, getStatements()).get();
+    protected void doReachingDefinitionsCheck(ReachingDefinitionsAnalysis rd) {
+    	Map<IASTStatement, Set<IBinding>> copyin = new CopyinInference(getStatements()).get();
+    	Map<IASTStatement, Set<IBinding>> copyout = new CopyoutInference(getStatements()).get();
+    	Map<IASTStatement, Set<IBinding>> create = new CreateInference(getStatements()).get();
     	boolean allRootsEmpty = true;
     	for(IASTStatement statement : copyin.keySet()) {
     		if(statement instanceof ArbitraryStatement && !copyin.get(statement).isEmpty()) {
@@ -102,7 +102,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     		}
     	}
     	if(allRootsEmpty) {
-    		status.addWarning("Resulting data construct cannot do any data transfer");
+    		status.addWarning(Messages.IntroDataConstructCheck_NoDataTransfer);
     	}
     }
 
@@ -129,7 +129,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
 		for (IASTStatement ctlFlow : ctlFlowStmts) {
 			if (ctlFlow instanceof IASTGotoStatement) {
 				status.addError(String.format(
-						"Construct will contain goto statement (line %d) that may cause control flow to leave the construct prematurely",
+						Messages.IntroDataConstructCheck_WillContainGotoStatement,
 						ctlFlow.getFileLocation().getStartingLineNumber()));
 			}
 			IASTForStatement f = ASTUtil.findNearestAncestor(ctlFlow, IASTForStatement.class);
@@ -140,7 +140,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
 						&& (w == null || !ASTUtil.isAncestor(w, statements))
 						&& (d == null || !ASTUtil.isAncestor(d, statements))) {
 					status.addError(String.format(
-							"Construct will contain continue statement (line %d) that may cause control flow to leave the construct prematurely",
+							Messages.IntroDataConstructCheck_WillContainBadContinue,
 							ctlFlow.getFileLocation().getStartingLineNumber()));
 				}
 			} else if (ctlFlow instanceof IASTBreakStatement) {
@@ -150,7 +150,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
 						&& (d == null || !ASTUtil.isAncestor(d, statements))
 						&& (s == null || !ASTUtil.isAncestor(s, statements))) {
 					status.addError(String.format(
-							"Construct will contain break statement (line %d) that may cause control flow to leave the construct prematurely",
+							Messages.IntroDataConstructCheck_WillContainBadBreak,
 							ctlFlow.getFileLocation().getStartingLineNumber()));
 				}
 			}

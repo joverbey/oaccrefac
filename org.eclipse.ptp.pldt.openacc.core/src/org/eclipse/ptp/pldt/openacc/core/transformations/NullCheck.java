@@ -39,30 +39,30 @@ public class NullCheck extends ForLoopCheck<NullParams> {
 
         // If the loop is not a counted loop, fail
         if (!inquisitor.isCountedLoop()) {
-            status.addFatalError("Loop form not supported (not a 0-based counted loop).");
+            status.addFatalError(Messages.NullCheck_LoopFormNotSupported);
             return;
         }
 
         Long ub = inquisitor.getInclusiveUpperBound();
         if (ub != null) {
-            status.addInfo(String.format("Loop upper bound is %d.", ub));
+            status.addInfo(String.format(Messages.NullCheck_LoopUpperBound, ub));
         }
 
         if (inquisitor.isPerfectLoopNest()) {
-            status.addInfo("Loop is a perfect loop nest.");
+            status.addInfo(Messages.NullCheck_LoopIsPerfectNest);
         }
 
         // If the loop contains unsupported statements, fail
         IASTNode unsupported = inquisitor.getFirstUnsupportedStmt();
         if (unsupported != null) {
-            status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
+            status.addFatalError(Messages.NullCheck_LoopContainsUnsupportedStatement + ASTUtil.toString(unsupported).trim());
         }
     }
 
     @Override
     public void doDependenceCheck(DependenceAnalysis dep) {
         if (dep == null) {
-            status.addFatalError("Dependences could not be analyzed");
+            status.addFatalError(Messages.NullCheck_DependencesCouldNotBeAnalyzed);
             return;
         }
 
@@ -73,10 +73,10 @@ public class NullCheck extends ForLoopCheck<NullParams> {
 				return o1.toString().compareTo(o2.toString());
 			}
         });
-        for (DataDependence d : deps) {
-           //status.addInfo(d.toString(), createStatusContextForDependence(d));
-        	//breaks cli
-        }
+      //breaks cli
+//        for (DataDependence d : deps) {
+//           status.addInfo(d.toString(), createStatusContextForDependence(d));
+//        }
     }
 
     @Override

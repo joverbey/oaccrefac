@@ -28,11 +28,11 @@ import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 public class FunctionWhitelist {
     private static Set<String> whitelist = new HashSet<String>(Arrays.asList(new String[] {
             // Double-precision
-            "acos", "asin", "atan", "atan2", "cos", "cosh", "exp", "fabs", "fmax", "fmin", "log", "log10", "pow", "sin",
-            "sinh", "sqrt", "tan", "tanh",
+            "acos", "asin", "atan", "atan2", "cos", "cosh", "exp", "fabs", "fmax", "fmin", "log", "log10", "pow", "sin", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
+            "sinh", "sqrt", "tan", "tanh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             // Single-precision
-            "acosf", "asinf", "atanf", "atan2f", "cosf", "coshf", "expf", "fabsf", "fmaxf", "fminf", "logf", "log10f",
-            "powf", "sinf", "sinhf", "sqrtf", "tanf", "tanhf", }));
+            "acosf", "asinf", "atanf", "atan2f", "cosf", "coshf", "expf", "fabsf", "fmaxf", "fminf", "logf", "log10f", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+            "powf", "sinf", "sinhf", "sqrtf", "tanf", "tanhf", })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
     public static boolean isWhitelisted(IASTFunctionCallExpression expr) {
         if (expr.getFunctionNameExpression() instanceof IASTIdExpression) {

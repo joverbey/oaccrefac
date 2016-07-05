@@ -210,7 +210,7 @@ public class LinearExpression {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < coeffs.length; i++) {
 			if (i > 0)
-				sb.append(" + ");
+				sb.append(" + "); //$NON-NLS-1$
 			sb.append(coeffs[i]);
 			if (i > 0) {
 				sb.append('*');

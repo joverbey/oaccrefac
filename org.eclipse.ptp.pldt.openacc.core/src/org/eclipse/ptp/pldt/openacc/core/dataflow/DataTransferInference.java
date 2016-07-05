@@ -21,8 +21,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccDataNode;
@@ -33,7 +36,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryState
 /**
  * Subclasses should define <code>infer()</code> and call it explicitly from their own constructors.
  */
-public abstract class InferDataTransfer {
+public abstract class DataTransferInference {
 	
 	/** everything checking to see if a node copies in something should look to this map, not to the actual AST **/
 	protected Map<IASTStatement, Set<IBinding>> transfers;
@@ -42,7 +45,7 @@ public abstract class InferDataTransfer {
 	protected ConstructTree tree;
 	
 	protected IASTStatement[] construct;
-	protected ReachingDefinitions rd;
+	protected ReachingDefinitionsAnalysis rd;
 	protected List<IASTStatement> topoSorted;
 	
 	private static Map<IASTStatement[], ArbitraryStatement> roots;
@@ -64,23 +67,19 @@ public abstract class InferDataTransfer {
 		});
 	}
 	
-	protected InferDataTransfer() {
+	protected DataTransferInference() {
 		
 	}
 	
-	public InferDataTransfer(ReachingDefinitions rd, IASTStatement... construct) {
-		init(rd, construct, new IASTStatement[] {});
+	public DataTransferInference(IASTStatement[] construct, IASTStatement... accIgnore) {
+		init(ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(construct[0], IASTFunctionDefinition.class)), construct, accIgnore);
 	}
 	
-	public InferDataTransfer(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement... accIgnore) {
-		init(rd, construct, accIgnore);
+	public DataTransferInference(IASTStatement... construct) {
+		init(ReachingDefinitionsAnalysis.forFunction(ASTUtil.findNearestAncestor(construct[0], IASTFunctionDefinition.class)), construct, new IASTStatement[] {});
 	}
 	
-	public InferDataTransfer(IASTStatement... construct) {
-		init(new ReachingDefinitions(ASTUtil.findNearestAncestor(construct[0], IASTFunctionDefinition.class)), construct, new IASTStatement[] {});
-	}
-	
-	private void init(ReachingDefinitions rd, IASTStatement[] construct, IASTStatement[] accIgnore) {
+	private void init(ReachingDefinitionsAnalysis rd, IASTStatement[] construct, IASTStatement[] accIgnore) {
 		if(construct.length == 0) {
 			throw new IllegalArgumentException("At least one statement should be in the construct");
 		}
@@ -151,6 +150,15 @@ public abstract class InferDataTransfer {
     		topovisit(child, sorted);
     	}
     	sorted.add((IASTStatement) root);
+    }
+    
+    protected boolean isUninitializedDeclaration(IASTName name) {
+    	IASTDeclarator decl = ASTUtil.findNearestAncestor(name, IASTDeclarator.class);
+		IASTSimpleDeclaration simple = ASTUtil.findNearestAncestor(name, IASTSimpleDeclaration.class);
+		if(simple == null || decl == null || decl.getInitializer() != null) {
+			return false;
+		}
+		return true;
     }
     
     public IASTStatement getRoot() {
