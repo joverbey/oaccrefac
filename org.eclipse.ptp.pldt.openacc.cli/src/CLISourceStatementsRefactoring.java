@@ -33,6 +33,7 @@ public abstract class CLISourceStatementsRefactoring<P extends RefactoringParams
 	private IASTTranslationUnit ast;
 	private IASTStatement[] statements;
     private IASTNode[] allEnclosedNodes;
+	private int regionEnd = -1;
     
     @Override 
     public RefactoringStatus performChecks(IASTStatement statement) {
@@ -40,10 +41,16 @@ public abstract class CLISourceStatementsRefactoring<P extends RefactoringParams
     	return super.performChecks(statement);
     }
     
+    public void setRegionEnd(int regionEnd) {
+    	this.regionEnd = regionEnd;
+    }
+    
 	private void discoverStatementsFromRegion(IASTStatement statement) {
 		this.ast = statement.getTranslationUnit();
         int regionBegin = statement.getFileLocation().getNodeOffset();//selectedRegion.getOffset();
-        int regionEnd = statement.getFileLocation().getNodeLength() + regionBegin;
+        if (regionEnd == -1) {
+        	regionEnd = statement.getFileLocation().getNodeLength() + regionBegin;
+        }
 
         List<IASTStatement> statements = collectStatements(regionBegin, regionEnd);
         List<IASTComment> comments = collectComments(regionBegin, regionEnd, statements);

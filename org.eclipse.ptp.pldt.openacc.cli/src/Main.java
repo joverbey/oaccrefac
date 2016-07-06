@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
@@ -33,6 +34,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
 
@@ -49,7 +52,8 @@ public class Main {
 		int argIndex = 1;
 		String filename = null;
 		String loopName = null;
-		int row = -1;
+		int startOfSelection = -1;
+		int endOfSelection = -1;
 		try {
 			switch (args[0]) {
 			// 2 args
@@ -139,22 +143,34 @@ public class Main {
 			case "-introduce-routine":
 				refactoring = new IntroRoutine();
 				break;
-			/*case "-introdata":
-			refactoring = new IntroOpenACCDataConstruct();
-			break;*/
+			case "-introduce-data":
+				refactoring = new IntroOpenACCDataConstruct();
+				break;
+			case "-introduce-atomic":
+				refactoring = new IntroAtomic();
+				break;
 			default:
 				throw new IllegalArgumentException(Messages.Main_RefactoringIsInvalid);
 			}
 
 			for (int i = argIndex; i < args.length; i++) {
 				switch (args[i]) {
-				case "-ln": //$NON-NLS-1$
-				case "--loop-name": //$NON-NLS-1$
+				case "-f": //$NON-NLS-1$
+				case "--find": //$NON-NLS-1$
 					loopName = args[++i];
 					break;
 				case "-pos": //$NON-NLS-1$
 				case "--position": //$NON-NLS-1$
-					row = parseInt(args[++i]);
+					startOfSelection = parseInt(args[++i]);
+					if (refactoring instanceof CLISourceStatementsRefactoring) {
+						//Check whether there are two pos args representing a range
+						try {
+							endOfSelection = parseInt(args[++i]);
+						} catch (NumberFormatException e) {
+							endOfSelection = -1;
+							i--;
+						} 
+					}
 					break;
 				default:
 					filename = args[i];
@@ -167,7 +183,7 @@ public class Main {
 			System.exit(1);
 		}
 
-		if (filename == null && (row == -1 || loopName == null)) {
+		if (filename == null && (startOfSelection == -1 || loopName == null)) {
 			printUsage();
 			System.exit(1);
 		}
@@ -182,10 +198,17 @@ public class Main {
 
         IASTStatement statement = null;
         IASTRewrite rw = ASTRewrite.create(translationUnit);
-        if (row != -1) {
-        	statement = findStatementForPosition(translationUnit, row);
+        if (startOfSelection != -1) {
+        	statement = findStatementForPosition(translationUnit, startOfSelection);
         } else {
 	        statement = findStatementToAutotune(translationUnit, loopName);        	
+        }
+        
+        if (endOfSelection != -1) {
+        	IASTStatement endStatement = findStatementForPosition(translationUnit, endOfSelection);
+			IASTFileLocation fileLocation = endStatement.getFileLocation();
+			((CLISourceStatementsRefactoring) refactoring).setRegionEnd(fileLocation.getNodeOffset() 
+					+ fileLocation.getNodeLength());
         }
 
         if (statement == null) {
