@@ -136,6 +136,9 @@ public class Main {
 			case "-merge":
 				refactoring = new MergeDataConstructs();
 				break;
+			case "-introduce-routine":
+				refactoring = new IntroRoutine();
+				break;
 			/*case "-introdata":
 			refactoring = new IntroOpenACCDataConstruct();
 			break;*/
