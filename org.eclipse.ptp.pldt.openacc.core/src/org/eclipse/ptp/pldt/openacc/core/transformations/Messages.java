@@ -5,6 +5,11 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ptp.pldt.openacc.core.transformations.messages"; //$NON-NLS-1$
 	public static String AbstractTileLoopsCheck_LoopFormNotSupported;
+	public static String DistributeLoopsCheck_BodyNotCompound;
+	public static String DistributeLoopsCheck_IsolatesDeclarationStatement;
+	public static String DistributeLoopsCheck_LoopCarriesDependence;
+	public static String DistributeLoopsCheck_LoopIsAccConstruct;
+	public static String DistributeLoopsCheck_OnlyOneStatement;
 	public static String Expand_Above;
 	public static String Expand_Below;
 	public static String Expand_ConstructWillNotIncludeBadCtlFlowStatements;
