@@ -114,13 +114,13 @@ public class RDVarSet {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[ ");
+        sb.append("[ "); //$NON-NLS-1$
         for(IBinding binding : set.keySet()) {
             for(IASTNode stmt : set.get(binding)) {
-                sb.append("(" + binding + ", " + stmt.getFileLocation().getStartingLineNumber() + ") ");
+                sb.append("(" + binding + ", " + stmt.getFileLocation().getStartingLineNumber() + ") "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
         }
-        sb.append("]");
+        sb.append("]"); //$NON-NLS-1$
         return sb.toString();
     }
 

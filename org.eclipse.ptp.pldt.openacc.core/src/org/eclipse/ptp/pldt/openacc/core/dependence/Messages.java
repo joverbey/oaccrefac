@@ -11,6 +11,7 @@ public class Messages extends NLS {
 	public static String DependenceAnalysis_FindingVariableAccesses;
 	public static String DependenceAnalysis_LoopCannotBeAnalyzed;
 	public static String DependenceAnalysis_UnsupportedConstruct;
+	public static String PointsToAnalysis_ProgressMonitorTaskName;
 
 	static {
 		// initialize resource bundle

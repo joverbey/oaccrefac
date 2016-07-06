@@ -265,7 +265,7 @@ public class Global implements IASTName {
 
 	@Override
 	public String toString() {
-		return "GLOBAL:" + binding.toString();
+		return "GLOBAL:" + binding.toString(); //$NON-NLS-1$
 	}
 	
 }

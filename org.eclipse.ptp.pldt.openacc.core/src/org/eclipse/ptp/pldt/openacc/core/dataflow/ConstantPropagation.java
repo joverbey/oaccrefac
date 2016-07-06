@@ -149,35 +149,35 @@ public final class ConstantPropagation {
 
         StringBuilder sb = new StringBuilder();
         for (IBasicBlock bb : cfg.getNodes()) {
-            sb.append("NODE " + nodeNumbers.get(bb) + ":\n");
+            sb.append("NODE " + nodeNumbers.get(bb) + ":\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            sb.append("incoming edges from: ");
+            sb.append("incoming edges from: "); //$NON-NLS-1$
             for (IBasicBlock pred : bb.getIncomingNodes()) {
-                sb.append(nodeNumbers.get(pred) + " ");
+                sb.append(nodeNumbers.get(pred) + " "); //$NON-NLS-1$
             }
-            sb.append("\n");
+            sb.append("\n"); //$NON-NLS-1$
 
-            sb.append("| " + entrySets.get(bb) + "\n");
+            sb.append("| " + entrySets.get(bb) + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
             if (bb instanceof ICfgData) {
                 Object data = ((ICfgData) bb).getData();
                 if (data instanceof IASTNode) {
-                    sb.append("V " + bb.getClass().getSimpleName() + ": " + ((IASTNode) data).getClass().getSimpleName()
-                            + ": " + ASTUtil.toString((IASTNode) data) + "\n");
+                    sb.append("V " + bb.getClass().getSimpleName() + ": " + ((IASTNode) data).getClass().getSimpleName() //$NON-NLS-1$ //$NON-NLS-2$
+                            + ": " + ASTUtil.toString((IASTNode) data) + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
                 } else {
-                    sb.append("V " + bb.getClass().getSimpleName() + "\n");
+                    sb.append("V " + bb.getClass().getSimpleName() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             } else {
-                sb.append("V " + bb.getClass().getSimpleName() + "\n");
+                sb.append("V " + bb.getClass().getSimpleName() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            sb.append("| " + exitSets.get(bb) + "\n");
+            sb.append("| " + exitSets.get(bb) + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            sb.append("outgoing edges to: ");
+            sb.append("outgoing edges to: "); //$NON-NLS-1$
             for (IBasicBlock succ : bb.getOutgoingNodes()) {
-                sb.append(nodeNumbers.get(succ) + " ");
+                sb.append(nodeNumbers.get(succ) + " "); //$NON-NLS-1$
             }
-            sb.append("\n");
+            sb.append("\n"); //$NON-NLS-1$
 
-            sb.append("\n");
+            sb.append("\n"); //$NON-NLS-1$
         }
 
         return sb.toString();

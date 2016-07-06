@@ -407,18 +407,18 @@ public class ReachingDefinitionsAnalysis {
         for (IBasicBlock bb : cfg.getNodes()) {
             Object data = ((ICfgData) bb).getData();
             if (data != null && data instanceof IASTNode) {
-                sb.append(((IASTNode) data).getRawSignature() + " at "
-                        + ((IASTNode) data).getFileLocation().getStartingLineNumber() + ":");
+                sb.append(((IASTNode) data).getRawSignature() + " at " //$NON-NLS-1$
+                        + ((IASTNode) data).getFileLocation().getStartingLineNumber() + ":"); //$NON-NLS-1$
                 sb.append(System.lineSeparator());
 
-                sb.append("\tEntries: ");
+                sb.append("\tEntries: "); //$NON-NLS-1$
                 if (entrySets.containsKey(bb)) {
                     sb.append(entrySets.get(bb));
                 }
 
                 sb.append(System.lineSeparator());
 
-                sb.append("\tExits: ");
+                sb.append("\tExits: "); //$NON-NLS-1$
                 if (exitSets.containsKey(bb)) {
                     sb.append(exitSets.get(bb));
                 }
