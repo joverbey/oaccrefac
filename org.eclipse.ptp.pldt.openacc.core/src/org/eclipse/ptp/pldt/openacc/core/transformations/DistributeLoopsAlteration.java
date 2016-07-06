@@ -62,7 +62,6 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         String init = this.getLoop().getInitializerStatement().getRawSignature();
         String cond = this.getLoop().getConditionExpression().getRawSignature();
         String incr = this.getLoop().getIterationExpression().getRawSignature();
-        // Remove the old loop from the statement list
         this.remove(getLoop());
 
         // Precondition guarantees that body is a compound statement
@@ -73,9 +72,6 @@ public class DistributeLoopsAlteration extends ForLoopAlteration<DistributeLoops
         int offset = this.getLoop().getFileLocation().getNodeOffset();
         
         for (int i = stmts.length - 1; i >= 0; i--) {
-            if(ASTUtil.getPragmaNodes(getLoop()).size() != 0){
-                this.insert(offset, pragma("acc parallel loop")); //$NON-NLS-1$
-            }
             String newBody = ""; //$NON-NLS-1$
             for(IASTComment comment : ASTUtil.getLeadingComments(stmts[i])) {
                 newBody += comment.getRawSignature() + System.lineSeparator();
