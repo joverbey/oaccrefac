@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -130,10 +129,10 @@ public class Main {
 			case "-fuse": //$NON-NLS-1$
 				refactoring = new FuseLoops();
 				break;
-			case "-expand":
+			case "-expand": //$NON-NLS-1$
 				refactoring = new ExpandDataConstruct();
 				break;
-			case "-merge":
+			case "-merge": //$NON-NLS-1$
 				refactoring = new MergeDataConstructs();
 				break;
 			/*case "-introdata":

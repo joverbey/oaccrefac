@@ -40,7 +40,7 @@ public class Example {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Usage: example <filename.c>");
+            System.err.println("Usage: example <filename.c>"); //$NON-NLS-1$
             System.exit(1);
         }
 
@@ -49,14 +49,14 @@ public class Example {
         try {
             translationUnit = parse(filename);
         } catch (CoreException e) {
-            System.err.printf("Unable to parse %s (%s)\n", filename, e.getMessage());
+            System.err.printf("Unable to parse %s (%s)\n", filename, e.getMessage()); //$NON-NLS-1$
             System.exit(1);
         }
 
         IASTRewrite rw = ASTRewrite.create(translationUnit);
         IASTForStatement forLoop = ASTUtil.findFirst(translationUnit, IASTForStatement.class);
         if (forLoop == null) {
-            System.err.println("No loop found");
+            System.err.println("No loop found"); //$NON-NLS-1$
             System.exit(1);
         }
 
@@ -74,7 +74,7 @@ public class Example {
             xform.change();
             xform.rewriteAST().perform(new NullProgressMonitor());
         } catch (CoreException e) {
-            System.err.printf("Internal error creating change: %s\n", e.getMessage());
+            System.err.printf("Internal error creating change: %s\n", e.getMessage()); //$NON-NLS-1$
             System.exit(1);
         }
     }
