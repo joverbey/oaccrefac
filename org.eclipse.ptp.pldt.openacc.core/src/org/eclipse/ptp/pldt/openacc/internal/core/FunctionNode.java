@@ -123,7 +123,7 @@ public class FunctionNode {
 					FunctionNode existingNode = root.findDescendant(functionDefinition, new HashSet<FunctionNode>());
 					if (existingNode != null && !children.contains(existingNode)) {
 						this.children.add(existingNode);
-					} else {
+					} else if (existingNode == null) {
 						new FunctionNode(functionDefinition, root, this);
 					}
 				} else {

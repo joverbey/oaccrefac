@@ -1,0 +1,18 @@
+int main() {
+    for (int i = 0; i < 100; i++){ /*<<<<< 2,1,4,6,pass*/
+        int a = foo();
+    }
+}
+
+#pragma acc routine seq
+int foo() {
+	return bar() + bar();
+}
+
+#pragma acc routine seq
+int bar() {
+	for (int i = 0; i < 100; i++) {
+
+	}
+	return 1;
+}
