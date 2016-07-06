@@ -71,7 +71,7 @@ public abstract class SourceAlteration<T extends Check<?>> {
         this.numRepls = 0;
 
         if (this.rewriter == null) {
-            throw new IllegalArgumentException("Rewriter cannot be null");
+            throw new IllegalArgumentException("Rewriter cannot be null"); //$NON-NLS-1$
         }
     }
 

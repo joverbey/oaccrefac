@@ -39,7 +39,7 @@ public class ArbitraryExpression extends ASTNode implements IASTExpression {
 
     @Override
     public String toString() {
-        return "?????";
+        return "?????"; //$NON-NLS-1$
     }
 
     @Override

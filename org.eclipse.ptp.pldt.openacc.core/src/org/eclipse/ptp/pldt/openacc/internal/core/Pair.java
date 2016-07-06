@@ -30,6 +30,6 @@ public class Pair<T, V> {
 
     @Override
     public String toString() {
-        return String.format("Pair<%s, %s>", first.toString(), second.toString());
+        return String.format("Pair<%s, %s>", first.toString(), second.toString()); //$NON-NLS-1$
     }
 }

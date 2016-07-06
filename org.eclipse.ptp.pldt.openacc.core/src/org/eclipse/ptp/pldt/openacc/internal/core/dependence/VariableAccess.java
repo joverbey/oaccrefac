@@ -50,7 +50,7 @@ public class VariableAccess implements Comparable<VariableAccess> {
 
     public boolean refersToSameVariableAs(VariableAccess that) throws DependenceTestFailure {
         if (this.binding == null || that.binding == null)
-            throw new IllegalStateException("Unable to resolve binding");
+            throw new IllegalStateException("Unable to resolve binding"); //$NON-NLS-1$
         return this.binding.equals(that.binding);
     }
 
@@ -164,16 +164,16 @@ public class VariableAccess implements Comparable<VariableAccess> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(isWrite ? "Write of " : "Read of ");
+        sb.append(isWrite ? "Write of " : "Read of "); //$NON-NLS-1$ //$NON-NLS-2$
         sb.append(variable);
         if (arraySubscripts != null) {
             for (int i = 0; i < arraySubscripts.length; i++) {
-                sb.append("[");
+                sb.append("["); //$NON-NLS-1$
                 sb.append(arraySubscripts[i]);
-                sb.append("]");
+                sb.append("]"); //$NON-NLS-1$
             }
         }
-        sb.append(" at ");
+        sb.append(" at "); //$NON-NLS-1$
         sb.append(getEnclosingStatement().getRawSignature());
         return sb.toString();
     }
@@ -191,7 +191,7 @@ public class VariableAccess implements Comparable<VariableAccess> {
 
 	public boolean bindsTo(IBinding binding) {
         if (this.binding == null)
-            throw new IllegalStateException("Unable to resolve binding");
+            throw new IllegalStateException("Unable to resolve binding"); //$NON-NLS-1$
 		return this.binding.equals(binding);
 	}
 }

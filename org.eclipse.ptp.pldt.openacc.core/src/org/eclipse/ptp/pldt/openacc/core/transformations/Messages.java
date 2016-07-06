@@ -66,6 +66,15 @@ public class Messages extends NLS {
 	public static String TileLoopsCheck_MustBeTwoLoops;
 	public static String TileLoopsCheck_OnlyPerfectlyNestedLoops;
 	public static String TileLoopsCheck_WidthMustBe;
+	public static String UnrollLoopCheck_CannotDetermineLowerBound;
+	public static String UnrollLoopCheck_CannotDetermineUpperBound;
+	public static String UnrollLoopCheck_InvalidLoopUnrollingFactor;
+	public static String UnrollLoopCheck_LoopBodyIsEmpty;
+	public static String UnrollLoopCheck_LoopContainsUnsupportedStatement;
+	public static String UnrollLoopCheck_LoopFormNotSupported;
+	public static String UnrollLoopCheck_LoopIndexVariableChanged;
+	public static String UnrollLoopCheck_TooManyTimes;
+	public static String UnrollLoopCheck_UpperBoundIsNotConstant;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
