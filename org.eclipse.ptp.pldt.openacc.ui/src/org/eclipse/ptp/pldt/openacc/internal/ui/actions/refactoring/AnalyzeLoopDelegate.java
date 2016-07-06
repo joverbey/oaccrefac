@@ -35,7 +35,7 @@ public class AnalyzeLoopDelegate extends RefactoringActionDelegate {
     private static class Wizard extends RefactoringWizard {
         public Wizard(Refactoring refactoring) {
             super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-            setDefaultPageTitle("Analyze Loop");
+            setDefaultPageTitle(Messages.AnalyzeLoopDelegate_WizardTitle);
             setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
         }
 
