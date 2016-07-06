@@ -62,7 +62,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
         initStatus.addInfo(msg);
         */
 
-        pm.subTask(Messages.StatementsRefactoring_CheckingInitialConditions);
+        pm.subTask(Messages.Refactoring_CheckingInitialConditions);
         doCheckInitialConditions(initStatus, pm);
         return initStatus;
     }
@@ -114,7 +114,7 @@ public abstract class StatementsRefactoring extends CRefactoring {
     @Override
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
-        pm.subTask(Messages.StatementsRefactoring_CalculatingModifications);
+        pm.subTask(Messages.Refactoring_CalculatingModifications);
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(refactoringContext.getAST(getTranslationUnit(), pm));
 
         refactor(new CDTASTRewriteProxy(rewriter), pm);

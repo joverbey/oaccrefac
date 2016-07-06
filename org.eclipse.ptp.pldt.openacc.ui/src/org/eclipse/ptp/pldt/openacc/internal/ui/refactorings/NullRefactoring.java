@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.core.transformations.NullAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.NullCheck;
@@ -36,8 +37,8 @@ public class NullRefactoring extends ForLoopRefactoring {
 
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        String msg = String.format("Selected loop (line %d) is: %s", getLoop().getFileLocation().getStartingLineNumber(),
-                ASTUtil.summarize(getLoop()));
+		String msg = NLS.bind(Messages.NullRefactoring_SelectedLoopInfo,
+				new Object[] { getLoop().getFileLocation().getStartingLineNumber(), ASTUtil.summarize(getLoop()) });
         status.addInfo(msg, getLocation(getLoop()));
 
         check = new NullCheck(status, getLoop());

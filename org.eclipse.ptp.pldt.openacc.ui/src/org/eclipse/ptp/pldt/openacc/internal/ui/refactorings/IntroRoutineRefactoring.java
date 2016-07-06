@@ -25,7 +25,6 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineCheck;
  * 
  * @author Carl Worley
  */
-@SuppressWarnings("restriction")
 public class IntroRoutineRefactoring extends StatementsRefactoring {
 
 	private IntroRoutineCheck check;

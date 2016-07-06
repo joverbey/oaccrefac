@@ -31,7 +31,7 @@ public class IntroDataConstructRefactoring extends StatementsRefactoring {
         super(element, selection, project);
         
         if (selection == null || tu.getResource() == null || project == null) {
-            initStatus.addFatalError("Invalid selection");
+            initStatus.addFatalError(Messages.Refactoring_InvalidSelection);
         }
     }
 

@@ -65,7 +65,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         super(element, selection, project);
 
         if (selection == null || tu.getResource() == null || project == null) {
-            initStatus.addFatalError("Invalid selection");
+            initStatus.addFatalError(Messages.Refactoring_InvalidSelection);
         }
     }
 
@@ -92,7 +92,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     @Override
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
-        pm.subTask("Calculating modifications...");
+        pm.subTask(Messages.Refactoring_CalculatingModifications);
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(ast);
 
         refactor(new CDTASTRewriteProxy(rewriter), pm);
@@ -110,23 +110,23 @@ public abstract class ForLoopRefactoring extends CRefactoring {
             return initStatus;
         }
 
-        pm.subTask("Waiting for indexer...");
+        pm.subTask(Messages.Refactoring_WaitingForIndexer);
         prepareIndexer(pm);
-        pm.subTask("Analyzing selection...");
+        pm.subTask(Messages.Refactoring_AnalyzingSelection);
 
         SubMonitor progress = SubMonitor.convert(pm, 10);
         ast = getAST(tu, progress.newChild(9));
         forLoop = findFirstLoop(ast);
         if (forLoop == null) {
-            initStatus.addFatalError("Please select a for loop.");
+            initStatus.addFatalError(Messages.ForLoopRefactoring_SelectAForLoop);
             return initStatus;
         }
 
         ForStatementInquisitor forLoopInquisitor = ForStatementInquisitor.getInquisitor(forLoop);
 
-        pm.subTask("Checking initial conditions...");
+        pm.subTask(Messages.Refactoring_CheckingInitialConditions);
         if (!forLoopInquisitor.isCountedLoop()) {
-            initStatus.addFatalError("Loop form not supported (not a 0-based counted loop).", getLocation(forLoop));
+            initStatus.addFatalError(Messages.ForLoopRefactoring_LoopNotZeroBased, getLocation(forLoop));
             return initStatus;
         }
 
@@ -137,7 +137,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
                     "Cannot refactor -- loop contains iteration augment statement (break or continue or goto)");
         }*/
 
-        pm.subTask("Done checking initial conditions");
+        pm.subTask(Messages.Refactoring_DoneChckingInitialConditions);
         return initStatus;
     }
     
@@ -183,7 +183,7 @@ public abstract class ForLoopRefactoring extends CRefactoring {
     protected RefactoringStatus checkFinalConditions(IProgressMonitor pm, CheckConditionsContext checkContext)
             throws CoreException, OperationCanceledException {
         RefactoringStatus result = new RefactoringStatus();
-        pm.subTask("Determining if transformation can be safely performed...");
+        pm.subTask(Messages.Refactoring_DeterminingIfSafe);
         doCheckFinalConditions(result, pm);
         return result;
     }
@@ -205,11 +205,11 @@ public abstract class ForLoopRefactoring extends CRefactoring {
         while (!im.isProjectIndexed(project)) {
             im.joinIndexer(500, pm);
             if (pm.isCanceled()) {
-                throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
+                throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, Messages.Refactoring_NoIndex));
             }
         }
         if (!im.isProjectIndexed(project)) {
-            throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, "Cannot continue.  No index."));
+            throw new CoreException(new Status(IStatus.ERROR, CUIPlugin.PLUGIN_ID, Messages.Refactoring_NoIndex));
         }
     }
 

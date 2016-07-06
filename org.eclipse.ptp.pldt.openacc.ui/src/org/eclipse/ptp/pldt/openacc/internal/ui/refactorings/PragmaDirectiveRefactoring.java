@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
 
 @SuppressWarnings("restriction")
@@ -44,17 +45,17 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
 
         pragma = findPragma();
         if (pragma == null) {
-            initStatus.addFatalError("Please select a pragma directive.");
+            initStatus.addFatalError(Messages.PragmaDirectiveRefactoring_SelectAPragma);
             return initStatus;
         }
 
         statement = findStatement(pragma);
 
-        String msg = String.format("Selected \"%s\" on line %d", pragma.getRawSignature(),
-                pragma.getFileLocation().getStartingLineNumber());
+        String msg = NLS.bind(Messages.PragmaDirectiveRefactoring_SelectedPragmaInfo, 
+        		new Object[] { pragma.getRawSignature(), pragma.getFileLocation().getStartingLineNumber() });
         initStatus.addInfo(msg);
 
-        pm.subTask("Checking initial conditions...");
+        pm.subTask(Messages.Refactoring_CheckingInitialConditions);
         doCheckInitialConditions(initStatus, pm);
         return initStatus;
     }
@@ -63,7 +64,7 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
     protected RefactoringStatus checkFinalConditions(IProgressMonitor pm, CheckConditionsContext checkContext)
             throws CoreException, OperationCanceledException {
         RefactoringStatus result = new RefactoringStatus();
-        pm.subTask("Determining if transformation can be safely performed...");
+        pm.subTask(Messages.Refactoring_DeterminingIfSafe);
         doCheckFinalConditions(result, pm);
         return result;
     }
@@ -84,7 +85,7 @@ public abstract class PragmaDirectiveRefactoring extends CRefactoring {
     @Override
     protected void collectModifications(IProgressMonitor pm, ModificationCollector collector)
             throws CoreException, OperationCanceledException {
-        pm.subTask("Calculating modifications...");
+        pm.subTask(Messages.Refactoring_CalculatingModifications);
         ASTRewrite rewriter = collector.rewriterForTranslationUnit(refactoringContext.getAST(getTranslationUnit(), pm));
 
         refactor(new CDTASTRewriteProxy(rewriter), pm);
