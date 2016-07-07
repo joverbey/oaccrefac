@@ -137,13 +137,13 @@ public class Main {
 			case "-merge": //$NON-NLS-1$
 				refactoring = new MergeDataConstructs();
 				break;
-			case "-introduce-routine":
+			case "-introduce-routine": //$NON-NLS-1$
 				refactoring = new IntroRoutine();
 				break;
-			case "-introduce-data":
+			case "-introduce-data": //$NON-NLS-1$
 				refactoring = new IntroOpenACCDataConstruct();
 				break;
-			case "-introduce-atomic":
+			case "-introduce-atomic": //$NON-NLS-1$
 				refactoring = new IntroAtomic();
 				break;
 			default:
