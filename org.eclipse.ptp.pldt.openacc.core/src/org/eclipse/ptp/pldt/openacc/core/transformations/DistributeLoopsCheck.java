@@ -20,6 +20,7 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceType;
 import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.OpenACCUtil;
 
 public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 
@@ -31,19 +32,22 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 	public void doLoopFormCheck() {
 		// If the loop doesn't have children, bail.
 		if (!(loop.getBody() instanceof IASTCompoundStatement)) {
-			status.addFatalError("Loop body is not a compound statement, so distribution cannot be performed.");
+			status.addFatalError(Messages.DistributeLoopsCheck_BodyNotCompound);
 			return;
 		}
 
 		if (loop.getBody().getChildren().length < 2) {
-			status.addFatalError("Loop distribution can only be applied if there is more than one statement in the loop body.");
+			status.addFatalError(Messages.DistributeLoopsCheck_OnlyOneStatement);
 			return;
 		}
 		
 		if (!ASTUtil.find(loop.getBody(), IASTDeclarationStatement.class).isEmpty()) {
-    		status.addError("Loop distribution isolates declaration statement.");
+    		status.addError(Messages.DistributeLoopsCheck_IsolatesDeclarationStatement);
     	}
-		checkPragma();
+		
+		if (OpenACCUtil.isAccConstruct(getLoop())) {
+			status.addError(Messages.DistributeLoopsCheck_LoopIsAccConstruct);
+		}
 	}
 
 	@Override
@@ -55,14 +59,8 @@ public class DistributeLoopsCheck extends ForLoopCheck<RefactoringParams> {
 							|| d.getDirectionVector()[d.getLevel() - 1] == Direction.LE)
 					&& d.getType() == DependenceType.ANTI) {
 
-				status.addError("Distribution cannot be performed because the loop carries a dependence.");
+				status.addError(Messages.DistributeLoopsCheck_LoopCarriesDependence);
 			}
-		}
-	}
-
-	private void checkPragma() {
-		if (!ASTUtil.getPragmaNodes(loop).isEmpty()) {
-			status.addFatalError("Can't distribute loop with pragmas.");
 		}
 	}
 	

@@ -210,10 +210,10 @@ public final class Matrix {
         // trying to add a row with the incorrect number of columns
         // or adding at an invalid index
         if (rowIn.length != numColumns || index < 0 || index > getNumRows() + 1) {
-            System.out.println("len in: " + rowIn.length);
-            System.out.println("num cols: " + numColumns);
-            System.out.println("index: " + index);
-            System.out.println("num rows: " + getNumRows() + "\n");
+            System.out.println("len in: " + rowIn.length); //$NON-NLS-1$
+            System.out.println("num cols: " + numColumns); //$NON-NLS-1$
+            System.out.println("index: " + index); //$NON-NLS-1$
+            System.out.println("num rows: " + getNumRows() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
             throw new IllegalArgumentException("addRowAtIndex - invalid column or index number"); //$NON-NLS-1$
         }
 

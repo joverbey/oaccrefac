@@ -219,7 +219,7 @@ public class ASTUtil {
 	}
 
 	public static IASTTranslationUnit translationUnitForString(String string) throws CoreException {
-		return translationUnitForFileContent(FileContent.create("test.c", string.toCharArray()));
+		return translationUnitForFileContent(FileContent.create("test.c", string.toCharArray())); //$NON-NLS-1$
 	}
 
 	private static IASTTranslationUnit translationUnitForFileContent(FileContent fileContent) throws CoreException {
@@ -237,12 +237,12 @@ public class ASTUtil {
 		try {
 			return parseStatement(string);
 		} catch (CoreException e) {
-			throw new IllegalStateException("INTERNAL ERROR: Could not parse " + string);
+			throw new IllegalStateException("INTERNAL ERROR: Could not parse " + string); //$NON-NLS-1$
 		}
 	}
 
 	public static IASTStatement parseStatement(String string) throws CoreException {
-		String program = String.format("void f() { %s; }", string);
+		String program = String.format("void f() { %s; }", string); //$NON-NLS-1$
 		IASTTranslationUnit tu = translationUnitForString(program);
 		if (tu == null)
 			throw new CoreException(Status.CANCEL_STATUS);
@@ -256,12 +256,12 @@ public class ASTUtil {
 		try {
 			return parseExpression(string);
 		} catch (CoreException e) {
-			throw new IllegalStateException("INTERNAL ERROR: Could not parse " + string);
+			throw new IllegalStateException("INTERNAL ERROR: Could not parse " + string); //$NON-NLS-1$
 		}
 	}
 
 	public static IASTExpression parseExpression(String string) throws CoreException {
-		IASTStatement stmt = parseStatement(string + ";");
+		IASTStatement stmt = parseStatement(string + ";"); //$NON-NLS-1$
 		if (stmt == null || !(stmt instanceof IASTExpressionStatement))
 			throw new CoreException(Status.CANCEL_STATUS);
 		return ((IASTExpressionStatement) stmt).getExpression();
@@ -282,7 +282,7 @@ public class ASTUtil {
 			}
 			return sb.toString().trim();
 		} catch (ExpansionOverlapsBoundaryException e) {
-			return "<error>";
+			return "<error>"; //$NON-NLS-1$
 		}
 	}
 
@@ -311,7 +311,7 @@ public class ASTUtil {
 
 		String result = toString(node).replace('\n', ' ');
 		if (result.length() > MAX_LEN)
-			result = result.substring(0, MAX_LEN + 1) + "...";
+			result = result.substring(0, MAX_LEN + 1) + "..."; //$NON-NLS-1$
 		return result;
 	}
 

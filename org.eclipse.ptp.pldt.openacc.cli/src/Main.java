@@ -19,7 +19,6 @@ import java.util.Map;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -34,8 +33,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
 
@@ -134,10 +131,10 @@ public class Main {
 			case "-fuse": //$NON-NLS-1$
 				refactoring = new FuseLoops();
 				break;
-			case "-expand":
+			case "-expand": //$NON-NLS-1$
 				refactoring = new ExpandDataConstruct();
 				break;
-			case "-merge":
+			case "-merge": //$NON-NLS-1$
 				refactoring = new MergeDataConstructs();
 				break;
 			case "-introduce-routine":

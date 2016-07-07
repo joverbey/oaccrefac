@@ -5,6 +5,11 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ptp.pldt.openacc.core.transformations.messages"; //$NON-NLS-1$
 	public static String AbstractTileLoopsCheck_LoopFormNotSupported;
+	public static String DistributeLoopsCheck_BodyNotCompound;
+	public static String DistributeLoopsCheck_IsolatesDeclarationStatement;
+	public static String DistributeLoopsCheck_LoopCarriesDependence;
+	public static String DistributeLoopsCheck_LoopIsAccConstruct;
+	public static String DistributeLoopsCheck_OnlyOneStatement;
 	public static String Expand_Above;
 	public static String Expand_Below;
 	public static String Expand_ConstructWillNotIncludeBadCtlFlowStatements;
@@ -24,6 +29,15 @@ public class Messages extends NLS {
 	public static String FuseLoopsCheck_DependencesNotAnalyzed;
 	public static String FuseLoopsCheck_FusionCreatesDependence;
 	public static String FuseLoopsCheck_MustBeTwoLoops;
+	public static String InterchangeLoopsCheck_Depth;
+	public static String InterchangeLoopsCheck_InterchangingSelectedLoopWith;
+	public static String InterchangeLoopsCheck_NoForLoopAtNestDepth;
+	public static String InterchangeLoopsCheck_OfLoopNest;
+	public static String InterchangeLoopsCheck_OnlyPerfectlyNested;
+	public static String InterchangeLoopsCheck_PerfectlyNestedLoopHeadersOfFirst;
+	public static String InterchangeLoopsCheck_Period;
+	public static String InterchangeLoopsCheck_SecondForMustBeWithin;
+	public static String InterchangeLoopsCheck_WillChangeDependenceStructure;
 	public static String IntroAtomicCheck_MustBeExpression;
 	public static String IntroAtomicCheck_MustBeInsideForLoop;
 	public static String IntroAtomicCheck_NoStatementsSelected;
@@ -66,6 +80,23 @@ public class Messages extends NLS {
 	public static String TileLoopsCheck_MustBeTwoLoops;
 	public static String TileLoopsCheck_OnlyPerfectlyNestedLoops;
 	public static String TileLoopsCheck_WidthMustBe;
+	public static String UnrollLoopCheck_CannotDetermineLowerBound;
+	public static String UnrollLoopCheck_CannotDetermineUpperBound;
+	public static String UnrollLoopCheck_CantDetermineLowerBound;
+	public static String UnrollLoopCheck_CantDetermineUpperBound;
+	public static String UnrollLoopCheck_CantUnrollMoreTimesThanLoopRuns;
+	public static String UnrollLoopCheck_IndexVariableChangedInBody;
+	public static String UnrollLoopCheck_InvalidLoopUnrollingFactor;
+	public static String UnrollLoopCheck_InvalidUnrollFactor;
+	public static String UnrollLoopCheck_LoopBodyIsEmpty;
+	public static String UnrollLoopCheck_LoopContainsUnsupported;
+	public static String UnrollLoopCheck_LoopContainsUnsupportedStatement;
+	public static String UnrollLoopCheck_LoopFormNotSupported;
+	public static String UnrollLoopCheck_LoopIndexVariableChanged;
+	public static String UnrollLoopCheck_NothingToUnroll;
+	public static String UnrollLoopCheck_TooManyTimes;
+	public static String UnrollLoopCheck_UpperBoundIsNotConstant;
+	public static String UnrollLoopCheck_UpperBoundNotConstant;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

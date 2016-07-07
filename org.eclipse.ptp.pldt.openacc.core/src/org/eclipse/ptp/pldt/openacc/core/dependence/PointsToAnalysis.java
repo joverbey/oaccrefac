@@ -61,12 +61,12 @@ public class PointsToAnalysis {
         notRestrictPointers = new HashSet<>();
         variables = new HashSet<>();
         if (function == null) {
-            throw new IllegalArgumentException("function may not be null.");
+            throw new IllegalArgumentException("function may not be null."); //$NON-NLS-1$
         }
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
-        monitor.beginTask("Points To Analysis", IProgressMonitor.UNKNOWN);
+        monitor.beginTask(Messages.PointsToAnalysis_ProgressMonitorTaskName, IProgressMonitor.UNKNOWN);
         performAnalysis(monitor, function);
         monitor.done();
     }
@@ -79,16 +79,16 @@ public class PointsToAnalysis {
      */
     public boolean variablesMayPointToSame(IVariable a, IVariable b) {
         if (a == null || b == null) {
-            throw new IllegalArgumentException("Variables can't be null.");
+            throw new IllegalArgumentException("Variables can't be null."); //$NON-NLS-1$
         }
         if (!variables.contains(a)) {
             throw new IllegalArgumentException(
-                    "a, called " + a.getName() + ", is not a local variable."
+                    "a, called " + a.getName() + ", is not a local variable." //$NON-NLS-1$ //$NON-NLS-2$
             );
         }
         if (!variables.contains(b)) {
             throw new IllegalArgumentException(
-                    "b, called " + b.getName() + ", is not a local variable."
+                    "b, called " + b.getName() + ", is not a local variable." //$NON-NLS-1$ //$NON-NLS-2$
             );
         }
         return notRestrictPointers.contains(a) && notRestrictPointers.contains(b);

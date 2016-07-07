@@ -9,7 +9,6 @@
  *     Auburn University - initial API and implementation
  *******************************************************************************/
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,24 +20,19 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class FindName {
 
-    public static void main(String[] args) throws CoreException {
+    public static void main(String[] args) throws IOException, CoreException {
         String fileName = args[0];
         String[] results = getNames(fileName);
         for(String result : results){
-            System.out.print(result + " ");
+            System.out.print(result + " "); //$NON-NLS-1$
         }
     }
 
-    private static String[] getNames(String fileNameIn) throws CoreException {
+    private static String[] getNames(String fileNameIn) throws IOException, CoreException {
         ArrayList<String> comments = new ArrayList<String>();
 
         String fileContents = readFile(fileNameIn);
-        IASTTranslationUnit translation = null;
-        try {
-            translation = ASTUtil.translationUnitForString(fileContents);
-        } catch (CoreException ie) {
-            ie.getCause();
-        }
+        IASTTranslationUnit translation = ASTUtil.translationUnitForString(fileContents);
 
         // IASTStatement statement = ASTUtil.parseStatement(fileContents);
         for (IASTComment comment : translation.getComments()) {
@@ -49,7 +43,7 @@ public class FindName {
         }
         ArrayList<String> tempList = new ArrayList<String>();
         for (String comment : comments) {
-            if (comment.startsWith("/* loop") || comment.startsWith("/* datacon")) {
+            if (comment.startsWith("/* loop") || comment.startsWith("/* datacon")) { //$NON-NLS-1$ //$NON-NLS-2$
                 String tempString = comment.substring(3);
                 tempString = tempString.substring(0, tempString.length() - 3);
                 tempList.add(tempString);
@@ -61,33 +55,20 @@ public class FindName {
 
     }
 
-    private static String readFile(String fileName) {
+    private static String readFile(String fileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            try {
-                StringBuilder builder = new StringBuilder();
-                String line = reader.readLine();
+            StringBuilder builder = new StringBuilder();
+            String line = reader.readLine();
 
-                while (line != null) {
-                    builder.append(line);
-                    builder.append("\n");
-                    line = reader.readLine();
-                }
-                return builder.toString();
-            } catch (IOException ie) {
-                ie.printStackTrace();
-                return ("File not opened correctly");
-            } finally {
-                try {
-                    reader.close();
-                } catch (IOException ie) {
-                    System.err.println("File not closed correctly");
-                }
+            while (line != null) {
+                builder.append(line);
+                builder.append("\n"); //$NON-NLS-1$
+                line = reader.readLine();
             }
-        } catch (FileNotFoundException ie) {
-            return ("File not found.");
+            return builder.toString();
+        } finally {
+            reader.close();
         }
-
     }
-
 }

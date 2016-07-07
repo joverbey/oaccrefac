@@ -23,11 +23,11 @@ public class CopyInference extends DataTransferInference {
 	private final CopyoutInference inferCopyout;
 	
 	public CopyInference(ReachingDefinitionsAnalysis rd, IASTStatement... construct) {
-		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");
+		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences"); //$NON-NLS-1$
 	}
 	
 	public CopyInference(IASTStatement... construct) {
-		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences");
+		throw new UnsupportedOperationException("Copy inference should only be done using copyin and copyout inferences"); //$NON-NLS-1$
 	}
 	
 	public CopyInference(CopyinInference inferCopyin, CopyoutInference inferCopyout) {

@@ -81,7 +81,7 @@ public abstract class DataTransferInference {
 	
 	private void init(ReachingDefinitionsAnalysis rd, IASTStatement[] construct, IASTStatement[] accIgnore) {
 		if(construct.length == 0) {
-			throw new IllegalArgumentException("At least one statement should be in the construct");
+			throw new IllegalArgumentException("At least one statement should be in the construct"); //$NON-NLS-1$
 		}
 		
 		ArbitraryStatement root;
@@ -179,14 +179,14 @@ public abstract class DataTransferInference {
     	stmts.add(0, root);
     	for(IASTStatement statement : stmts) {
     		sb.append(statement.getClass().getSimpleName());
-    		sb.append("@");
+    		sb.append("@"); //$NON-NLS-1$
     		if(statement instanceof ArbitraryStatement)
-    			sb.append("OUTER");
+    			sb.append("OUTER"); //$NON-NLS-1$
     		else
-    			sb.append("l" + statement.getFileLocation().getStartingLineNumber());
-    		sb.append(" : ");
+    			sb.append("l" + statement.getFileLocation().getStartingLineNumber()); //$NON-NLS-1$
+    		sb.append(" : "); //$NON-NLS-1$
     		sb.append(transfers.get(statement));
-    		sb.append("\n");
+    		sb.append("\n"); //$NON-NLS-1$
     	}
     	return sb.toString();
     }
@@ -284,10 +284,10 @@ public abstract class DataTransferInference {
     	
     	private void toString(IASTStatement node, StringBuilder sb, int depth) {
     		for(int i = 0; i < depth; i++) {
-    			sb.append("\t");
+    			sb.append("\t"); //$NON-NLS-1$
     		}
-    		sb.append("-" + node.getClass().getSimpleName() + "@" + node.hashCode());
-    		sb.append("\n");
+    		sb.append("-" + node.getClass().getSimpleName() + "@" + node.hashCode()); //$NON-NLS-1$ //$NON-NLS-2$
+    		sb.append("\n"); //$NON-NLS-1$
     		for(IASTStatement child : getChildren(node)) {
     			toString(child, sb, depth + 1);
     		}

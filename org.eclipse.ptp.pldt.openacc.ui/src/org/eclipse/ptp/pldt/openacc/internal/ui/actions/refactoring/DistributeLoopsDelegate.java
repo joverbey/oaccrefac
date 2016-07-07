@@ -29,6 +29,6 @@ public class DistributeLoopsDelegate extends RefactoringActionDelegate {
 
     @Override
     public RefactoringWizard createWizard(Refactoring refactoring) {
-        return new LoopRefactoringWizard(refactoring, "Distribute Loop", false);
+        return new LoopRefactoringWizard(refactoring, Messages.DistributeLoopsDelegate_WizardTitle, false);
     }
 }

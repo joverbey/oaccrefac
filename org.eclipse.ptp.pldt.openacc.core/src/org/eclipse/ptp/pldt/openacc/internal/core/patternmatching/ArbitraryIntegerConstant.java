@@ -40,7 +40,7 @@ public final class ArbitraryIntegerConstant extends ASTNode implements IASTExpre
 
     @Override
     public String toString() {
-        return "?????";
+        return "?????"; //$NON-NLS-1$
     }
 
     @Override

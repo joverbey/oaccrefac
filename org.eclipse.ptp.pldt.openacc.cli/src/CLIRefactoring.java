@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.Check;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
 

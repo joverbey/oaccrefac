@@ -31,7 +31,7 @@ package org.eclipse.ptp.pldt.openacc.core.dependence;
  * @see IDependenceTester
  */
 public enum Direction {
-    GT(">"), LT("<"), EQ("="), GE(">="), LE("<="), ANY("*");
+    GT(">"), LT("<"), EQ("="), GE(">="), LE("<="), ANY("*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
     private final String string;
 

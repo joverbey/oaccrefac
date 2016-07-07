@@ -41,7 +41,7 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(this.getLoop());
         List<IASTForStatement> headers = inq.getPerfectlyNestedLoops();
         if (params.getDepth() < 0 || params.getDepth() >= headers.size()) {
-            status.addFatalError("There is no for-loop at perfect loop nest depth " + params.getDepth() + ".");
+            status.addFatalError(Messages.InterchangeLoopsCheck_NoForLoopAtNestDepth + params.getDepth() + Messages.InterchangeLoopsCheck_Period);
             return;
         }
         
@@ -53,7 +53,7 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
         ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(outer);
 
         if (!(inq.getPerfectlyNestedLoops().contains(inner))) {
-            status.addFatalError("Only perfectly nested loops can be interchanged.");
+            status.addFatalError(Messages.InterchangeLoopsCheck_OnlyPerfectlyNested);
             return;
         }
  
@@ -103,12 +103,12 @@ public class InterchangeLoopsCheck extends ForLoopCheck<InterchangeLoopParams> {
             boolean isValid = isInterchangeValid(numEnclosingLoops, second_depth + numEnclosingLoops,
                     dep.getDependences());
             if (!isValid) {
-                status.addError("Interchanging the selected loop with the loop at " + "depth " + second_depth
-                        + " will change the dependence structure " + "of the loop nest.");
+                status.addError(Messages.InterchangeLoopsCheck_InterchangingSelectedLoopWith + Messages.InterchangeLoopsCheck_Depth + second_depth
+                        + Messages.InterchangeLoopsCheck_WillChangeDependenceStructure + Messages.InterchangeLoopsCheck_OfLoopNest);
             }
         } else {
             throw new IllegalArgumentException(
-                    "Second for-statement must be within" + "perfectly nested loop headers of first.");
+                    Messages.InterchangeLoopsCheck_SecondForMustBeWithin + Messages.InterchangeLoopsCheck_PerfectlyNestedLoopHeadersOfFirst);
         }
     }
 

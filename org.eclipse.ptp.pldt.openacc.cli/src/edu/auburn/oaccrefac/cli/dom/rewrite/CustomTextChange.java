@@ -36,8 +36,8 @@ public class CustomTextChange extends TextChange {
      * @throws CModelException
      */
     public CustomTextChange(String sourceCode) {
-        super("");
-        setTextType("c");
+        super(""); //$NON-NLS-1$
+        setTextType("c"); //$NON-NLS-1$
         this.sourceCode = sourceCode;
     }
 

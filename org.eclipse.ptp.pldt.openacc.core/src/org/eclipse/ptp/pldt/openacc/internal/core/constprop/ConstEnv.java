@@ -62,11 +62,11 @@ public class ConstEnv {
 
     public ConstEnv set(IBinding variable, Long value) {
         if (!ConstantPropagation.canTrackConstantValues(variable))
-            throw new IllegalArgumentException("Cannot track constant values for " + variable
-                    + ".  Invoke canTrackConstantValues() before calling set().");
+            throw new IllegalArgumentException("Cannot track constant values for " + variable //$NON-NLS-1$
+                    + ".  Invoke canTrackConstantValues() before calling set()."); //$NON-NLS-1$
         if (!ConstantPropagation.isInTrackedRange(variable, value))
             throw new IllegalArgumentException(
-                    "Value is out of range for " + variable + ".  Invoke isInTrackedRange() before calling set().");
+                    "Value is out of range for " + variable + ".  Invoke isInTrackedRange() before calling set()."); //$NON-NLS-1$ //$NON-NLS-2$
 
         Map<IBinding, Long> updated = new HashMap<IBinding, Long>(this.env);
         if (value == null)
@@ -108,10 +108,10 @@ public class ConstEnv {
         boolean first = true;
         for (IBinding b : this.env.keySet()) {
             if (!first)
-                sb.append(", ");
+                sb.append(", "); //$NON-NLS-1$
             first = false;
             sb.append(b);
-            sb.append(" -> ");
+            sb.append(" -> "); //$NON-NLS-1$
             sb.append(this.env.get(b));
         }
         return sb.toString();

@@ -223,7 +223,7 @@ public final class ASTMatcher {
     }
 
 	private boolean unsupported(IASTNode pattern) {
-        throw new UnsupportedOperationException("Pattern matching not implemented for "
+        throw new UnsupportedOperationException("Pattern matching not implemented for " //$NON-NLS-1$
                 + pattern.getClass().getSimpleName());
     }
 
