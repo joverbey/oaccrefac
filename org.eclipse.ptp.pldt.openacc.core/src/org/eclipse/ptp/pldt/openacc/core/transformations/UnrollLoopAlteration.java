@@ -166,7 +166,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         StringBuilder trailer = new StringBuilder();
         for (int i = 0; i < extras; i++) {
             appendModifiedOrigBody(trailer);
-            trailer.append(newIndexVariable + "++;" + System.lineSeparator());
+            trailer.append(newIndexVariable + "++;" + System.lineSeparator()); //$NON-NLS-1$
         }
         return trailer.toString();
     }
@@ -187,7 +187,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
         for (int i = 0; i < unrollFactor; i++) {
             appendModifiedOrigBody(body);
             if (i != unrollFactor - 1) {
-                body.append(newIndexVariable + "++;" + System.lineSeparator());
+                body.append(newIndexVariable + "++;" + System.lineSeparator()); //$NON-NLS-1$
             }
         }
         return compound(body.toString());
@@ -207,13 +207,13 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
             declaration = newDeclaration.toString();
             return declaration;
         } else {
-            return "";
+            return ""; //$NON-NLS-1$
         }
     }
 
     private String getInitializer() {
         if (shouldMoveDeclAboveLoop()) {
-            return "; ";
+            return "; "; //$NON-NLS-1$
         } else {
             return getModifiedStatement(loop.getInitializerStatement(), getUses(getNameFromInitializer()));
         }
@@ -222,19 +222,19 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
     private String getCondition(int condOffset) {
         StringBuilder cond = new StringBuilder();
         cond.append(newIndexVariable);
-        cond.append(" < ");
+        cond.append(" < "); //$NON-NLS-1$
         String ub = ((IASTBinaryExpression) loop.getConditionExpression()).getOperand2().getRawSignature();
         if (condOffset > 0) {
-            ub += " + " + condOffset;
+            ub += " + " + condOffset; //$NON-NLS-1$
         } else if (condOffset < 0) {
-            ub += " - " + (-1 * condOffset);
+            ub += " - " + (-1 * condOffset); //$NON-NLS-1$
         }
         cond.append(ub);
         return cond.toString();
     }
 
     private String getIterationExpression() {
-        return newIndexVariable + "++";
+        return newIndexVariable + "++"; //$NON-NLS-1$
     }
 
     private IASTNode[] getBodyObjects() {
@@ -249,7 +249,7 @@ public class UnrollLoopAlteration extends ForLoopAlteration<UnrollLoopCheck> {
             // if the comment's offset is in between the end of the loop header and the end of the loop body
             if (comment.getFileLocation()
                     .getNodeOffset() > loop.getIterationExpression().getFileLocation().getNodeOffset()
-                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length()
+                            + loop.getIterationExpression().getFileLocation().getNodeLength() + ")".length() //$NON-NLS-1$
                     && comment.getFileLocation().getNodeOffset() < loop.getBody().getFileLocation().getNodeOffset()
                             + loop.getBody().getFileLocation().getNodeLength()) {
                 objects.add(comment);

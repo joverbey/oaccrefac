@@ -44,7 +44,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 		IASTStatement body = loop.getBody();
 		// If the body is empty, exit out -- pointless to unroll.
 		if (body == null || body instanceof IASTNullStatement) {
-			status.addFatalError("Loop body is empty -- nothing to unroll!");
+			status.addFatalError(Messages.UnrollLoopCheck_NothingToUnroll);
 			return;
 		}
 
@@ -52,27 +52,27 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 		
 		// If the loop is not a counted loop, fail
 		if (!loopInquisitor.isCountedLoop()) {
-			status.addFatalError("Loop form not supported");
+			status.addFatalError(Messages.UnrollLoopCheck_LoopFormNotSupported);
 			return;
 		}
 
 		// If the loop contains unsupported statements, fail
 		IASTNode unsupported = loopInquisitor.getFirstUnsupportedStmt();
 		if (unsupported != null) {
-			status.addFatalError("Loop contains unsupported statement: " + ASTUtil.toString(unsupported).trim());
+			status.addFatalError(Messages.UnrollLoopCheck_LoopContainsUnsupported + ASTUtil.toString(unsupported).trim());
 			return;
 		}
 
 		// If the upper bound is not a constant, we cannot do loop unrolling
 		if (upperBound == null) {
-			status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+			status.addFatalError(Messages.UnrollLoopCheck_UpperBoundNotConstant);
 			return;
 		}
 
 		// If lower bound is not constant, we can't calculate the number of times to repeat the "trailer"
 		// after the unrolled loop
 		if (loopInquisitor.getLowerBound() == null) {
-			status.addFatalError("Upper bound is not a constant value. Cannot perform unrolling!");
+			status.addFatalError(Messages.UnrollLoopCheck_UpperBoundNotConstant);
 			return;
 		}
 		
@@ -95,7 +95,7 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 		DefinitionFinder finder = new DefinitionFinder();
 		loop.getBody().accept(finder);
 		if (finder.isDefinition) {
-			status.addFatalError("Loop index variable is changed in the loop body. Cannot perform unrolling!");
+			status.addFatalError(Messages.UnrollLoopCheck_IndexVariableChangedInBody);
 			return;
 		}
 
@@ -105,12 +105,12 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 	protected void doParameterCheck(UnrollLoopParams params) {
 		// Check unroll factor validity...
 		if (params.getUnrollFactor() <= 0) {
-			status.addFatalError("Invalid loop unroll factor! (<= 0)");
+			status.addFatalError(Messages.UnrollLoopCheck_InvalidUnrollFactor);
 			return;
 		}
 
 		if (upperBound == null) {
-			status.addFatalError("Can't determine loop upper bound");
+			status.addFatalError(Messages.UnrollLoopCheck_CantDetermineUpperBound);
 			return;
 		}
 
@@ -119,13 +119,13 @@ public class UnrollLoopCheck extends ForLoopCheck<UnrollLoopParams> {
 		ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(loop);
 		Long lbo = inq.getLowerBound();
 		if(lbo == null){
-			status.addFatalError("Can't determine loop lower bound");
+			status.addFatalError(Messages.UnrollLoopCheck_CantDetermineLowerBound);
 			return;
 		}
 		long lb = lbo.longValue();
 		long loopRunTimes = upperBound.longValue() - lb;
 		if (params.getUnrollFactor() > loopRunTimes) {
-			status.addFatalError("Can't unroll loop more times than the loop runs");
+			status.addFatalError(Messages.UnrollLoopCheck_CantUnrollMoreTimesThanLoopRuns);
 			return;
 		}
 	}
