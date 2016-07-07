@@ -143,7 +143,7 @@ public class Main {
 			case "-introduce-data": //$NON-NLS-1$
 				refactoring = new IntroOpenACCDataConstruct();
 				break;
-			case "-introduce-atomic": //$NON-NLS-1$
+			case "-introduce-atomic": //$NON-NLS-1$	
 				refactoring = new IntroAtomic();
 				break;
 			default:
