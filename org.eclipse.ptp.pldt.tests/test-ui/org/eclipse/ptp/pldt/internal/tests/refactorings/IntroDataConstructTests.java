@@ -15,24 +15,24 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroDataConstructRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCDataConstructRefactoring;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class IntroDataConstructTests extends RefactoringTest<IntroDataConstructRefactoring> {
+public class IntroDataConstructTests extends RefactoringTest<IntroOpenACCDataConstructRefactoring> {
     @Parameters(name = "{0}")
     public static Iterable<Object[]> generateParameters() throws Exception {
         return generateParameters("testcode/IntroDataConstruct");
     }
 
     public IntroDataConstructTests(String description, File fileContainingMarker, int markerOffset, String markerText) throws Exception {
-        super(IntroDataConstructRefactoring.class, fileContainingMarker, markerOffset, markerText);
+        super(IntroOpenACCDataConstructRefactoring.class, fileContainingMarker, markerOffset, markerText);
     }
 
     @Override
-    protected void configureRefactoring(IntroDataConstructRefactoring refactoring, IFile file,
+    protected void configureRefactoring(IntroOpenACCDataConstructRefactoring refactoring, IFile file,
             TextSelection selection, LinkedList<String> markerFields) {
     }
 }

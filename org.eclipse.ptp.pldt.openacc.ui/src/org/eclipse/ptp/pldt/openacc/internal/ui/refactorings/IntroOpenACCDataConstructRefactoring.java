@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Alexander Calvert - initial API and implementation
+ *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
 
 package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
@@ -23,11 +23,11 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructAlter
 import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructCheck;
 
 @SuppressWarnings("restriction")
-public class IntroDataConstructRefactoring extends StatementsRefactoring {
+public class IntroOpenACCDataConstructRefactoring extends StatementsRefactoring {
 
     private IntroDataConstructCheck check;
     
-    public IntroDataConstructRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public IntroOpenACCDataConstructRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
         
         if (selection == null || tu.getResource() == null || project == null) {

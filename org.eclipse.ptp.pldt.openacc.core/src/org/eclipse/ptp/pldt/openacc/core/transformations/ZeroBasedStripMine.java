@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015, 2016 Auburn University and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Alexander Calvert (Auburn) - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
 import org.eclipse.cdt.core.dom.ast.DOMException;
@@ -16,7 +26,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
  * 
  * for(k = 0; k < l; k++)
  * 
- * for(int i = 0; i < L; i += S)
+ * for(int i = 0; i < l; i += S)
  *   for(int j = 0; j < S; j++)
  *     k = i + j;
  *

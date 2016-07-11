@@ -8,7 +8,6 @@
  * Contributors:
  *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
-
 package org.eclipse.ptp.pldt.openacc.internal.core;
 
 import org.eclipse.ltk.core.refactoring.RefactoringStatusContext;

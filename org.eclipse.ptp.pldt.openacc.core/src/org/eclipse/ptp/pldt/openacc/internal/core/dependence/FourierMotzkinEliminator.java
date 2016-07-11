@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Susan Chesnut - Initial API and implementation
+ *    Alexander Calvert (Auburn) - minor bug fixes
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.core.dependence;
 

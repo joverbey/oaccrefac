@@ -6,7 +6,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Auburn University - initial API and implementation
+ *     Jeff Overbey (Auburn) - initial API and implementation
+ *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.internal.core;
 

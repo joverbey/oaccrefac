@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Alexander Calvert - initial API and implementation
+ *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
 
 package org.eclipse.ptp.pldt.openacc.internal.ui.actions.refactoring;
@@ -18,14 +18,14 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ptp.pldt.openacc.internal.ui.LoopRefactoringWizard;
-import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroDataConstructRefactoring;
+import org.eclipse.ptp.pldt.openacc.internal.ui.refactorings.IntroOpenACCDataConstructRefactoring;
 
 @SuppressWarnings("restriction")
 public class IntroOpenACCDataConstructDelegate extends RefactoringActionDelegate {
 
     @Override
     public CRefactoring createRefactoring(IWorkingCopy wc, ITextSelection selection, ICProject project) {
-        return new IntroDataConstructRefactoring(wc, selection, project);
+        return new IntroOpenACCDataConstructRefactoring(wc, selection, project);
     }
 
     @Override
