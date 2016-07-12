@@ -120,15 +120,15 @@ for i in "${nameArray[@]}"
 do
 	echo $i >> ./Scripts/errorlog.txt
 	if [ "$refactoring" == "-interchange" ] || [ "$refactoring" == "-strip-mine" ] || [ "$refactoring" == "-unroll" ]; then
-		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" $inputtemp "-f" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "-tile" ]; then
-		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "$param2" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" "$param1" "$param2" $inputtemp "-f" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "-tile -cut" ]; then	
-		java -cp $PLDT_CLASSPATH Main "-tile" "-cut" "$param1" $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "-tile" "-cut" "$param1" $inputtemp "-f" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	elif [ "$refactoring" == "-introduce-loop -kernels" ]; then	
-		java -cp $PLDT_CLASSPATH Main $refactoring $inputtemp "-ln" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main $refactoring $inputtemp "-f" "$i" > $outputtemp 2>> ./Scripts/errorlog.txt
 	else
-		java -cp $PLDT_CLASSPATH Main "$refactoring" $inputtemp "-ln" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
+		java -cp $PLDT_CLASSPATH Main "$refactoring" $inputtemp "-f" "$i"  > $outputtemp 2>> ./Scripts/errorlog.txt
 	fi
 	if [[ -s $outputtemp ]]; then
 		thing=$(($thing + 1))
