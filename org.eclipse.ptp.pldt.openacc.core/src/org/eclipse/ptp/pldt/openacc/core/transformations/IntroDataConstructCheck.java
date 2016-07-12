@@ -114,43 +114,59 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     }
 
     private void checkConditionalAssignments(IASTStatement... statements) {
-    	Set<IASTName> accesses = new HashSet<IASTName>();
+    	Set<IASTStatement> condStatements = new HashSet<IASTStatement>();
     	for(IASTStatement statement : statements) {
-    		for(IASTIfStatement iff : ASTUtil.find(statement, IASTIfStatement.class)) {
+    		condStatements.addAll(ASTUtil.find(statement, IASTIfStatement.class));
+    		condStatements.addAll(ASTUtil.find(statement, IASTSwitchStatement.class));
+    		condStatements.addAll(ASTUtil.find(statement, IASTWhileStatement.class));
+    		condStatements.addAll(ASTUtil.find(statement, IASTForStatement.class));
+    	}
+    	for(IASTStatement statement : condStatements) {
+    		String stmtType = ""; //$NON-NLS-1$
+    		Set<IASTName> accesses = new HashSet<IASTName>();
+    		if(statement instanceof IASTIfStatement) {
+    			stmtType = "if"; //$NON-NLS-1$
+    			IASTIfStatement iff = (IASTIfStatement) statement;
     			accesses.addAll(ASTUtil.find(iff.getThenClause(), IASTName.class));
     			if(iff.getElseClause() != null) {
     				accesses.addAll(ASTUtil.find(iff.getElseClause(), IASTName.class));
     			}
-    		}
-    		for(IASTSwitchStatement switchh : ASTUtil.find(statement, IASTSwitchStatement.class)) {
+    		} else if(statement instanceof IASTSwitchStatement) {
+    			stmtType = "switch"; //$NON-NLS-1$
+       			IASTSwitchStatement switchh = (IASTSwitchStatement) statement;
     			accesses.addAll(ASTUtil.find(switchh.getBody(), IASTName.class));
-    		}
-    		for(IASTWhileStatement whilee : ASTUtil.find(statement, IASTWhileStatement.class)) {
+    		} else if(statement instanceof IASTWhileStatement) {
+    			stmtType = "while"; //$NON-NLS-1$
+    			IASTWhileStatement whilee = (IASTWhileStatement) statement;
     			accesses.addAll(ASTUtil.find(whilee.getBody(), IASTName.class));
-    		}
-    		for(IASTForStatement forr : ASTUtil.find(statement, IASTForStatement.class)) {
+    		} else if(statement instanceof IASTForStatement) {
+    			stmtType = "for"; //$NON-NLS-1$
+    			IASTForStatement forr = (IASTForStatement) statement;
     			ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(forr);
     			if(!inq.isCountedLoop() || inq.getLowerBound() == null || inq.getInclusiveUpperBound() == null || inq.getLowerBound() >= inq.getInclusiveUpperBound()) {
     				accesses.addAll(ASTUtil.find(forr.getBody(), IASTName.class));
     			}
     		}
+    		for(IASTName access : accesses) {
+        		CopyinInference copyin = new CopyinInference(statements);
+        		CopyoutInference copyout = new CopyoutInference(statements);
+        		IASTStatement nearest = OpenACCUtil.findNearestAccConstructAncestor(access);
+        		if(nearest == null) nearest = copyin.getRoot();
+    			if (ancestorSetContains(copyin, nearest, access.resolveBinding()) && !copyout.contains(nearest, access.resolveBinding())) {
+    				status.addWarning(NLS.bind(Messages.IntroDataConstructCheck_ConditionalDefinitionMayRequireAdditionalDataTransfer,
+    						new Object[] { stmtType, statement.getFileLocation().getStartingLineNumber() }));
+    				break;
+    			} else if (ancestorSetContains(copyout, nearest, access.resolveBinding()) && !copyin.contains(nearest, access.resolveBinding())) {
+    				status.addWarning(NLS.bind(Messages.IntroDataConstructCheck_ConditionalDefinitionMayRequireAdditionalDataTransfer,
+    						new Object[] { stmtType, statement.getFileLocation().getStartingLineNumber() }));
+    				break;
+    			}
+        	}
     	}
-    	for(IASTName access : accesses) {
-    		CopyinInference copyin = new CopyinInference(statements);
-    		CopyoutInference copyout = new CopyoutInference(statements);
-    		IASTStatement nearest = OpenACCUtil.findNearestAccConstructAncestor(access);
-    		if(nearest == null) nearest = copyin.getRoot();
-			if (anAncestorSetContains(copyin, nearest, access.resolveBinding()) && !copyout.contains(nearest, access.resolveBinding())) {
-				status.addWarning(NLS.bind(Messages.IntroDataConstructCheck_ConditionalDefinitionMayRequireAdditionalDataTransfer,
-						new Object[] { access.getRawSignature(), access.getFileLocation().getStartingLineNumber() }));
-			} else if (anAncestorSetContains(copyout, nearest, access.resolveBinding()) && !copyin.contains(nearest, access.resolveBinding())) {
-				status.addWarning(NLS.bind(Messages.IntroDataConstructCheck_ConditionalDefinitionMayRequireAdditionalDataTransfer,
-						new Object[] { access.getRawSignature(), access.getFileLocation().getStartingLineNumber() }));
-			}
-    	}
+    	
 	}
     
-    private boolean anAncestorSetContains(DataTransferInference transfer, IASTStatement nearest, IBinding variable) {
+    private boolean ancestorSetContains(DataTransferInference transfer, IASTStatement nearest, IBinding variable) {
     	if(transfer.contains(transfer.getRoot(), variable)) {
     		return true;
     	}
