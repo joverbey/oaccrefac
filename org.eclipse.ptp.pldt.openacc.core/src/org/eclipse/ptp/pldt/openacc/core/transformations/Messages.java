@@ -43,7 +43,7 @@ public class Messages extends NLS {
 	public static String IntroAtomicCheck_NoStatementsSelected;
 	public static String IntroAtomicCheck_NoSuitableAtomicTypeFound;
 	public static String IntroAtomicCheck_NotInParallelRegion;
-	public static String IntroDataConstructCheck_ConditionalWriteMayCauseIncorrectDataTransfer;
+	public static String IntroDataConstructCheck_ConditionalDefinitionMayRequireAdditionalDataTransfer;
 	public static String IntroDataConstructCheck_MustBeInConditionalOrSurroundIfAndElse;
 	public static String IntroDataConstructCheck_NoDataTransfer;
 	public static String IntroDataConstructCheck_WillContainBadBreak;

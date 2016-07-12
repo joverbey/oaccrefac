@@ -124,6 +124,15 @@ public abstract class DataTransferInference {
 		return transfers;
 	}
 	
+	public boolean contains(IASTStatement construct, IBinding variable) {
+		if(transfers.containsKey(construct)) {
+			return transfers.get(construct).contains(variable);
+		}
+		else {
+			return false;
+		}
+	}
+	
 	/** populates the copies map **/
     protected abstract void infer();
 	

@@ -12,6 +12,7 @@
 
 package org.eclipse.ptp.pldt.openacc.internal.core;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,7 +71,23 @@ public class OpenACCUtil {
     			pragma instanceof ASTAccKernelsLoopNode;
     }
 
-    private OpenACCUtil() {
+    public static IASTStatement findNearestAccConstructAncestor(org.eclipse.cdt.core.dom.ast.IASTNode startingNode) {
+    	for (org.eclipse.cdt.core.dom.ast.IASTNode node = startingNode.getParent(); node != null; node = node.getParent()) {
+			if (node instanceof IASTStatement && isAccConstruct((IASTStatement) node)) {
+				return (IASTStatement) node;
+			}
+		}
+		return null;
+    }
+    
+    public static List<IASTStatement> findAccConstructAncestors(org.eclipse.cdt.core.dom.ast.IASTNode startingNode) {
+    	List<IASTStatement> cons = new ArrayList<IASTStatement>();
+    	for (org.eclipse.cdt.core.dom.ast.IASTNode node = startingNode.getParent(); node != null; node = node.getParent()) {
+			if (node instanceof IASTStatement && isAccConstruct((IASTStatement) node)) {
+				cons.add((IASTStatement) node);
+			}
+		}
+		return cons;
     }
     
     public static <T> List<T> find(IASTNode parent, Class<T> clazz) {
@@ -88,5 +105,8 @@ public class OpenACCUtil {
 			findAndAdd(child, clazz, results);
 		}
 	}
+    
+    private OpenACCUtil() {
+    }
     
 }

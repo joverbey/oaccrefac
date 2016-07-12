@@ -150,7 +150,7 @@ public class ExpandDataConstructCheck extends PragmaDirectiveCheck<RefactoringPa
 		CopyoutInference copyout = new CopyoutInference(new IASTStatement[] { original }, original);
 		List<IBinding> ignores = Arrays.asList(ignore);
 		for(IASTName def : rd.reachingDefinitions(original)) {
-			if(ASTUtil.isAncestor(def, next) && copyin.get().get(copyin.getRoot()).contains(def.resolveBinding())) {
+			if(ASTUtil.isAncestor(def, next) && copyin.contains(copyin.getRoot(), def.resolveBinding())) {
 				if(ignores.contains(def.resolveBinding())) {
 					bad = def;
 				}
