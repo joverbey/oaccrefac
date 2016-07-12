@@ -6,8 +6,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Alexander Calvert - initial API and implementation
- *     Carl Worley - initial API and implementation
+ *     Alexander Calvert (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 
 package org.eclipse.ptp.pldt.openacc.internal.core;

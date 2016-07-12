@@ -25,7 +25,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryState
 
 import junit.framework.TestCase;
 
-public class InferCopyoutTests extends TestCase {
+public class CopyoutInferenceTests extends TestCase {
 	
 	public void testNothing() throws CoreException {
 		IASTTranslationUnit tu = ASTUtil.translationUnitForString(""

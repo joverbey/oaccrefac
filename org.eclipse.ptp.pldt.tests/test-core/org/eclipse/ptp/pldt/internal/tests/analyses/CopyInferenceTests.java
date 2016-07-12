@@ -26,7 +26,7 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 import junit.framework.TestCase;
 
-public class InferCopyTests extends TestCase {
+public class CopyInferenceTests extends TestCase {
 	
 	public void testNothing() throws CoreException {
 		IASTTranslationUnit tu = ASTUtil.translationUnitForString(""

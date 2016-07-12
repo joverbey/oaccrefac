@@ -8,6 +8,7 @@
  * Contributors:
  *     Alena Laskavaia   - initial API and implementation
  *     Tomasz Wesolowski - Bug 348387
+ *     Alexander Calvert (Auburn) - changes for OpenACC refactorings
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.dataflow;
 

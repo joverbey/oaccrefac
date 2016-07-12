@@ -9,6 +9,7 @@
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
  *     Carl Worley (Auburn) - initial API and implementation
+ *     Alexander Calvert (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 

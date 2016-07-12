@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     John William O'Rourke (Auburn) - initial API and implementation
+ *     Jacob Allen Neeley (Auburn) - initial API and implementation
  *******************************************************************************/
 
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
