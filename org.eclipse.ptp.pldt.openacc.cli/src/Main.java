@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Carl Worley (Auburn) - initial API and implementation
+ *     Jacob Allen Neeley (Auburn) - initial API and implementation
  *******************************************************************************/
 
 import static java.lang.Integer.parseInt;

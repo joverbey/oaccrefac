@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Auburn University - initial API and implementation
+ *     Jacob Allen Neeley (Auburn) - initial API and implementation
  *******************************************************************************/
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
