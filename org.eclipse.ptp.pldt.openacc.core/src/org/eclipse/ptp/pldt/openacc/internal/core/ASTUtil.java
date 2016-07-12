@@ -27,23 +27,31 @@ import java.util.TreeMap;
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
+import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTComment;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
+import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTDoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
+import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
+import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IScope;
@@ -529,6 +537,49 @@ public class ASTUtil {
 	    int start = Math.min(start1, start2);
 	    int end = Math.max(end1, end2);
 	    return new FileStatusContext(file, new Region(start, end - start));
+	}
+	
+	public static IASTStatement getUnsupportedOp(IASTNode... nodes) {
+		/*
+		 * if there is a control flow statement, it:
+		 * must not be labeled
+		 * must be within a while/for or must be a break within a switch
+		 */
+		Set<IASTStatement> ctlFlowStmts = new HashSet<IASTStatement>();
+		for (IASTNode node : nodes) {
+			ctlFlowStmts.addAll(ASTUtil.find(node, IASTBreakStatement.class));
+			ctlFlowStmts.addAll(ASTUtil.find(node, IASTContinueStatement.class));
+			ctlFlowStmts.addAll(ASTUtil.find(node, IASTGotoStatement.class));
+			ctlFlowStmts.addAll(ASTUtil.find(node, IASTReturnStatement.class));
+		}
+
+		for (IASTStatement ctlFlow : ctlFlowStmts) {
+			if (ctlFlow instanceof IASTGotoStatement) {
+				return ctlFlow;
+			} else if (ctlFlow instanceof IASTReturnStatement) {
+				return ctlFlow;
+			}
+			IASTForStatement f = ASTUtil.findNearestAncestor(ctlFlow, IASTForStatement.class);
+			IASTWhileStatement w = ASTUtil.findNearestAncestor(ctlFlow, IASTWhileStatement.class);
+			IASTDoStatement d = ASTUtil.findNearestAncestor(ctlFlow, IASTDoStatement.class);
+			if (ctlFlow instanceof IASTContinueStatement) {
+				if ((f == null || !ASTUtil.isAncestor(f, nodes))
+						&& (w == null || !ASTUtil.isAncestor(w, nodes))
+						&& (d == null || !ASTUtil.isAncestor(d, nodes))) {
+					return ctlFlow;
+				}
+			} else if (ctlFlow instanceof IASTBreakStatement) {
+				IASTSwitchStatement s = ASTUtil.findNearestAncestor(ctlFlow, IASTSwitchStatement.class);
+				if ((f == null || !ASTUtil.isAncestor(f, nodes))
+						&& (w == null || !ASTUtil.isAncestor(w, nodes))
+						&& (d == null || !ASTUtil.isAncestor(d, nodes))
+						&& (s == null || !ASTUtil.isAncestor(s, nodes))) {
+					return ctlFlow;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	private ASTUtil() {

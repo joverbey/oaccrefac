@@ -49,6 +49,7 @@ public class Messages extends NLS {
 	public static String IntroDataConstructCheck_WillContainBadBreak;
 	public static String IntroDataConstructCheck_WillContainBadContinue;
 	public static String IntroDataConstructCheck_WillContainGotoStatement;
+	public static String IntroDataConstructCheck_WillContainReturnStatement;
 	public static String IntroDataConstructCheck_WillNotSurroundAnyStatements;
 	public static String IntroDataConstructCheck_WouldSurroundDeclarationScopeErrors;
 	public static String IntroOpenACCLoopCheck_CannotParallelizeCarriesDependence;

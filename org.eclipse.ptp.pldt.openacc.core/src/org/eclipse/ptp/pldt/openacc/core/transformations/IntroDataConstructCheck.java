@@ -13,21 +13,17 @@
 
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
 import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDoStatement;
-import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
-import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -114,48 +110,24 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     }
 
 	private void checkControlFlow(IASTStatement... statements) {
-		/*
-		 * if there is a control flow statement, it:
-		 * must not be labeled
-		 * must be within a while/for or must be a break within a switch
-		 */
-		Set<IASTStatement> ctlFlowStmts = new HashSet<IASTStatement>();
-		for (IASTStatement statement : statements) {
-			ctlFlowStmts.addAll(ASTUtil.find(statement, IASTBreakStatement.class));
-			ctlFlowStmts.addAll(ASTUtil.find(statement, IASTContinueStatement.class));
-			ctlFlowStmts.addAll(ASTUtil.find(statement, IASTGotoStatement.class));
-		}
-
-		for (IASTStatement ctlFlow : ctlFlowStmts) {
-			if (ctlFlow instanceof IASTGotoStatement) {
-				status.addError(String.format(
-						Messages.IntroDataConstructCheck_WillContainGotoStatement,
-						ctlFlow.getFileLocation().getStartingLineNumber()));
-			}
-			IASTForStatement f = ASTUtil.findNearestAncestor(ctlFlow, IASTForStatement.class);
-			IASTWhileStatement w = ASTUtil.findNearestAncestor(ctlFlow, IASTWhileStatement.class);
-			IASTDoStatement d = ASTUtil.findNearestAncestor(ctlFlow, IASTDoStatement.class);
-			if (ctlFlow instanceof IASTContinueStatement) {
-				if ((f == null || !ASTUtil.isAncestor(f, statements))
-						&& (w == null || !ASTUtil.isAncestor(w, statements))
-						&& (d == null || !ASTUtil.isAncestor(d, statements))) {
-					status.addError(String.format(
-							Messages.IntroDataConstructCheck_WillContainBadContinue,
-							ctlFlow.getFileLocation().getStartingLineNumber()));
-				}
-			} else if (ctlFlow instanceof IASTBreakStatement) {
-				IASTSwitchStatement s = ASTUtil.findNearestAncestor(ctlFlow, IASTSwitchStatement.class);
-				if ((f == null || !ASTUtil.isAncestor(f, statements))
-						&& (w == null || !ASTUtil.isAncestor(w, statements))
-						&& (d == null || !ASTUtil.isAncestor(d, statements))
-						&& (s == null || !ASTUtil.isAncestor(s, statements))) {
-					status.addError(String.format(
-							Messages.IntroDataConstructCheck_WillContainBadBreak,
-							ctlFlow.getFileLocation().getStartingLineNumber()));
-				}
-			}
-
-		}
+		IASTStatement ctlFlow = ASTUtil.getUnsupportedOp(statements);
+		if (ctlFlow instanceof IASTGotoStatement) {
+			status.addError(String.format(
+					Messages.IntroDataConstructCheck_WillContainGotoStatement,
+					ctlFlow.getFileLocation().getStartingLineNumber()));
+		} else if (ctlFlow instanceof IASTContinueStatement) {
+			status.addError(String.format(
+					Messages.IntroDataConstructCheck_WillContainBadContinue,
+					ctlFlow.getFileLocation().getStartingLineNumber()));
+		} else if (ctlFlow instanceof IASTBreakStatement) {
+			status.addError(String.format(
+					Messages.IntroDataConstructCheck_WillContainBadBreak,
+					ctlFlow.getFileLocation().getStartingLineNumber()));
+		} else if (ctlFlow instanceof IASTReturnStatement) {
+			status.addError(String.format(
+					Messages.IntroDataConstructCheck_WillContainReturnStatement,
+					ctlFlow.getFileLocation().getStartingLineNumber()));
+	    }
 	}
 
 }

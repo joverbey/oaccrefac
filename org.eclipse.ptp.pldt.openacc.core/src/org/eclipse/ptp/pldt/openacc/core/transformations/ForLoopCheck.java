@@ -8,22 +8,15 @@
  * Contributors:
  *     Jeff Overbey (Auburn) - initial API and implementation
  *     Adam Eichelkraut (Auburn) - initial API and implementation
+ *     Carl Worley (Auburn) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
-import org.eclipse.cdt.core.dom.ast.IASTContinueStatement;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTGotoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,7 +45,7 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
     protected void doDependenceCheck(DependenceAnalysis dep) { }
 
     public RefactoringStatus loopFormCheck(IProgressMonitor pm) {
-    	if (containsUnsupportedOp(loop)) {
+    	if (ASTUtil.getUnsupportedOp(loop.getBody()) != null) {
             status.addError(
                     Messages.ForLoopCheck_CannotRefactor);
         }
@@ -101,44 +94,6 @@ public class ForLoopCheck<T extends RefactoringParams> extends Check<T> {
         return loop.getTranslationUnit();
     }
     
-    protected boolean containsUnsupportedOp(IASTForStatement forStmt) {
-    	if (!ASTUtil.find(forStmt, IASTGotoStatement.class).isEmpty()) {
-    		return true;
-    	}
-    	List<IASTStatement> ctlFlowStmts = new ArrayList<>();
-    	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTBreakStatement.class));
-    	ctlFlowStmts.addAll(ASTUtil.find(forStmt, IASTContinueStatement.class));
-    	for (IASTStatement statement : ctlFlowStmts) {
-    		if (ASTUtil.findNearestAncestor(statement, IASTForStatement.class) == forStmt) {
-    			if (!insideInnerWhile(statement) && !insideInnerSwitch(statement)) {
-    				return true;
-    			}
-    		} 
-    	}
-
-    	return false;
-    }
-    
-    private boolean insideInnerWhile(IASTNode statement) {
-    	IASTWhileStatement whileStmt = ASTUtil.findNearestAncestor(statement, IASTWhileStatement.class);
-    	if (whileStmt == null) {
-    		return false;
-    	}
-    	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
-    	return !(ASTUtil.findNearestAncestor(forStmt, IASTWhileStatement.class) == whileStmt);
-    }
-    
-    private boolean insideInnerSwitch(IASTNode statement) {
-    	IASTSwitchStatement switchStmt = ASTUtil.findNearestAncestor(statement, IASTSwitchStatement.class);
-    	if (switchStmt == null) {
-    		return false;
-    	}
-    	IASTForStatement forStmt = ASTUtil.findNearestAncestor(statement, IASTForStatement.class);
-    	return !(ASTUtil.findNearestAncestor(forStmt, IASTSwitchStatement.class) == switchStmt);
-    }
-    
-
-
     protected RefactoringStatusContext createStatusContextForDependence(DataDependence d) {
         return ASTUtil.getStatusContext(d.getAccess1().getVariableName(), d.getAccess2().getVariableName());
     }
