@@ -143,7 +143,7 @@ public class IntroDataConstructCheck extends SourceStatementsCheck<RefactoringPa
     			stmtType = "for"; //$NON-NLS-1$
     			IASTForStatement forr = (IASTForStatement) statement;
     			ForStatementInquisitor inq = ForStatementInquisitor.getInquisitor(forr);
-    			if(!inq.isCountedLoop() || inq.getLowerBound() == null || inq.getInclusiveUpperBound() == null || inq.getLowerBound() >= inq.getInclusiveUpperBound()) {
+    			if(!inq.isCountedLoop() || inq.getLowerBound() == null || inq.getInclusiveUpperBound() == null || inq.getLowerBound() > inq.getInclusiveUpperBound()) {
     				accesses.addAll(ASTUtil.find(forr.getBody(), IASTName.class));
     			}
     		}
