@@ -18,9 +18,9 @@ import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
 
-public class LoopCuttingCheck extends AbstractTileLoopsCheck {
+public class StridedTileCheck extends AbstractTileLoopsCheck {
 
-    public LoopCuttingCheck(RefactoringStatus status, IASTForStatement loop) {
+    public StridedTileCheck(RefactoringStatus status, IASTForStatement loop) {
         super(status, loop);
     }
     
@@ -37,12 +37,12 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
     
         // Check strip factor validity...
         if (params.getNumFactor() <= 0) {
-        	status.addFatalError(Messages.LoopCuttingCheck_InvalidCutFactor);
+        	status.addFatalError(Messages.StridedTileCheck_InvalidCutFactor);
         	return;
         }
         
         if (ASTUtil.isNameInScope(params.getNewName(), loop.getScope())) {
-        	status.addWarning(Messages.LoopCuttingCheck_NameAlreadyExists);
+        	status.addWarning(Messages.StridedTileCheck_NameAlreadyExists);
         }
     
         //Check that iterator is divisible by cut size(new loop iterations = 4)
@@ -51,8 +51,8 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
         int iterator = inq.getIterationFactor();
         if (params.getNumFactor() % iterator != 0 || params.getNumFactor() <= iterator) {
         	status.addFatalError(
-        		Messages.LoopCuttingCheck_FactorMustBeGreater
-        				+ Messages.LoopCuttingCheck_DivisibleByIterationFactor
+        		Messages.StridedTileCheck_FactorMustBeGreater
+        				+ Messages.StridedTileCheck_DivisibleByIterationFactor
         	);
         	return;
         }
@@ -62,7 +62,7 @@ public class LoopCuttingCheck extends AbstractTileLoopsCheck {
     @Override
 	public void doDependenceCheck(DependenceAnalysis dep) {
 		if (dep != null && dep.hasLevel1CarriedDependence()) {
-			status.addError(Messages.LoopCuttingCheck_CannotCutCarriesDependence);
+			status.addError(Messages.StridedTileCheck_CannotCutCarriesDependence);
 		}
 
 	}

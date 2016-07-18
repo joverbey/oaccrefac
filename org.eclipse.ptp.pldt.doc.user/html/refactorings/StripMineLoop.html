@@ -12,7 +12,8 @@ StripMineLoop
 <h3><b>Strip Mine Loop</b></h3>
 
 <h3>Use:</h3>
-<p>StripMine breaks down a loop for the purpose of being able to parallelize it.</p>
+<p>Strip mining splits a single loop into a double loop nest.  Often, after
+this is performed, one of the results loops will be parallelized.</p>
 
 <h3>Description:</h3>
 <p>Turns a single loop into two loops such that the array is iterated over in the same order, but in multiple small strips.</p>
@@ -20,7 +21,7 @@ StripMineLoop
 <h3>Example:</h3>
 <p>
 <ol>
-<li>Select the desired for loop to be changed and choose StripMining under the Refactoring menu.</li>
+<li>Select the desired for loop to be changed and choose Strip Mine Loop from the Refactoring menu.</li>
 <img src="../images/refactorings/StripMining/StripMining1.png">
 <li>Next you will be prompted for the size of the strip.</li>
 <img src="../images/refactorings/StripMining/StripMining2.png">

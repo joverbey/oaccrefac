@@ -57,11 +57,11 @@ public class Messages extends NLS {
 	public static String IntroOpenACCLoopCheck_ParallelCannotInKernelsRegion;
 	public static String IntroOpenACCLoopCheck_PragmaCannotBeAddedHasPragma;
 	public static String IntroRoutineCheck_CannotFindFunctionDefinition;
-	public static String LoopCuttingCheck_CannotCutCarriesDependence;
-	public static String LoopCuttingCheck_DivisibleByIterationFactor;
-	public static String LoopCuttingCheck_FactorMustBeGreater;
-	public static String LoopCuttingCheck_InvalidCutFactor;
-	public static String LoopCuttingCheck_NameAlreadyExists;
+	public static String StridedTileCheck_CannotCutCarriesDependence;
+	public static String StridedTileCheck_DivisibleByIterationFactor;
+	public static String StridedTileCheck_FactorMustBeGreater;
+	public static String StridedTileCheck_InvalidCutFactor;
+	public static String StridedTileCheck_NameAlreadyExists;
 	public static String MergeDataConstructsCheck_MustBeDataConstruct;
 	public static String MergeDataConstructsCheck_MustBeFollowedByDataConstruct;
 	public static String MergeDataConstructsCheck_ShouldBeCompoundStatements;

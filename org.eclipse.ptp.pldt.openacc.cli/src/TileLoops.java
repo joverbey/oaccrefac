@@ -20,9 +20,9 @@ import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAltera
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
@@ -50,20 +50,20 @@ public class TileLoops extends CLILoopRefactoring<AbstractTileLoopsParams, Abstr
     /**
      * whether to cut instead of tile
      */
-    private final boolean cut;
+    private final boolean strided;
     
-    public TileLoops(int width, int height, String name1, String name2, boolean cut) {
+    public TileLoops(int width, int height, String name1, String name2, boolean strided) {
     	this.width = width;
     	this.height = height;
     	this.name1 = name1;
     	this.name2 = name2;
-    	this.cut = cut;
+    	this.strided = strided;
     }
 
     @Override
     protected AbstractTileLoopsCheck createCheck(IASTStatement loop) {
-    	if (cut) {
-    		return new LoopCuttingCheck(new RefactoringStatus(), (IASTForStatement) loop);
+    	if (strided) {
+    		return new StridedTileCheck(new RefactoringStatus(), (IASTForStatement) loop);
     	} else {
     		return new TileLoopsCheck(new RefactoringStatus(), (IASTForStatement) loop);
     	}
@@ -71,8 +71,8 @@ public class TileLoops extends CLILoopRefactoring<AbstractTileLoopsParams, Abstr
 
     @Override
     protected AbstractTileLoopsParams createParams(IASTStatement forLoop) {
-    	if (cut) {
-    		return new LoopCuttingParams(width, name1);
+    	if (strided) {
+    		return new StridedTileParams(width, name1);
     	} else {
             return new TileLoopsParams(width, height);
     	}
@@ -81,8 +81,8 @@ public class TileLoops extends CLILoopRefactoring<AbstractTileLoopsParams, Abstr
     @Override
     public AbstractTileLoopsAlteration createAlteration(IASTRewrite rewriter, 
     		AbstractTileLoopsCheck check) throws CoreException {
-    	if (cut) {
-    		return new LoopCuttingAlteration(rewriter, width, name1, check);
+    	if (strided) {
+    		return new StridedTileAlteration(rewriter, width, name1, check);
     	} else {
     		return new TileLoopsAlteration(rewriter, width, height, name1, name2, (TileLoopsCheck) check);
     	}

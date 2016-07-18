@@ -49,12 +49,12 @@ import org.eclipse.ptp.pldt.openacc.internal.core.ForStatementInquisitor;
  * @author Jeff Overbey
  * @author Jacob Neeley
  */
-public class LoopCuttingAlteration extends AbstractTileLoopsAlteration {
+public class StridedTileAlteration extends AbstractTileLoopsAlteration {
     
 	private int cutFactor;
 	private String newName;
 	
-    public LoopCuttingAlteration(IASTRewrite rewriter, int cutFactor, 
+    public StridedTileAlteration(IASTRewrite rewriter, int cutFactor, 
     		String newName, AbstractTileLoopsCheck check) {
         super(rewriter, check);
         this.cutFactor = cutFactor;

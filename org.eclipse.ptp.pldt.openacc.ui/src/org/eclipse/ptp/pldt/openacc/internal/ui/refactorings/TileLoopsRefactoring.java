@@ -19,9 +19,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileParams;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
 import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
@@ -79,8 +79,8 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
     	if (cut) {
-    		check = new LoopCuttingCheck(status, getLoop());
-    		check.performChecks(pm, new LoopCuttingParams(cutFactor, newName));
+    		check = new StridedTileCheck(status, getLoop());
+    		check.performChecks(pm, new StridedTileParams(cutFactor, newName));
     	} else {
 	        check = new TileLoopsCheck(status, getLoop());
 	        check.performChecks(pm, new TileLoopsParams(width, height));
@@ -90,7 +90,7 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
     	if (cut) {
-    		new LoopCuttingAlteration(rewriter, cutFactor, newName, check).change();
+    		new StridedTileAlteration(rewriter, cutFactor, newName, check).change();
     	} else {
     		new TileLoopsAlteration(rewriter, width, height, innerNewName,
     				outerNewName, (TileLoopsCheck) check).change();

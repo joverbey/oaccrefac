@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>
-Introduce OpenACC Atomics
+Introduce OpenACC Atomic
 </title>
 <link rel="stylesheet" type="text/css" href="../help.css">
 <link rel="stylesheet" type="text/css" href="../help.css">
@@ -9,12 +9,12 @@ Introduce OpenACC Atomics
 </head>
 
 <body>
-<h3><b>Introduce OpenACC Atomics</b></h3>
+<h3><b>Introduce OpenACC Atomic</b></h3>
 
 <h3>Use:</h3>
 <p>When the same variable will be accessed concurrently by multiple GPU threads, and at least
 one of the threads may change the value of the variable, all accesses to that variable should
-be done atomically.</p>
+be performed atomically.</p>
 
 <h3>Description:</h3>
 <p>Adds an OpenACC <em>atomic</em> directive to a statement in an OpenACC parallel or kernels
@@ -33,7 +33,7 @@ region.  The statement must have one of the following forms:</p>
 <li><tt>x--;</tt></li>
 <li><tt>++x;</tt></li>
 <li><tt>--x;</tt></li>
-<li><tt>x += expr;</tt> (or <tt>- * / % &lt;&lt; &gt;&gt;</tt>)</li>
+<li><tt>x += expr;</tt> (or <tt>-= *= /= %= &lt;&lt;= &gt;&gt;=</tt>)</li>
 <li><tt>x = x + expr;</tt> (or <tt>- * / % &lt;&lt; &gt;&gt;</tt>)</li>
 <li><tt>x = expr + x;</tt> (or <tt>- * / % &lt;&lt; &gt;&gt;</tt>)</li>
 </ul>

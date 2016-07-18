@@ -18,18 +18,18 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.LoopCuttingParams;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileAlteration;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileCheck;
+import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileParams;
 
-public class LoopCuttingRefactoring extends ForLoopRefactoring{
+public class StridedTileRefactoring extends ForLoopRefactoring{
 
     private int cutFactor;
     private String newName = ""; //$NON-NLS-1$
-    private LoopCuttingCheck check;
+    private StridedTileCheck check;
     
     // TODO: put a good comment here
-    public LoopCuttingRefactoring(ICElement element, ISelection selection, ICProject project) {
+    public StridedTileRefactoring(ICElement element, ISelection selection, ICProject project) {
         super(element, selection, project);
     }
 
@@ -43,12 +43,12 @@ public class LoopCuttingRefactoring extends ForLoopRefactoring{
     
     @Override
     protected void doCheckFinalConditions(RefactoringStatus status, IProgressMonitor pm) {
-        check = new LoopCuttingCheck(status, getLoop());
-        check.performChecks(pm, new LoopCuttingParams(cutFactor, newName));
+        check = new StridedTileCheck(status, getLoop());
+        check.performChecks(pm, new StridedTileParams(cutFactor, newName));
     }
     
     @Override
     protected void refactor(IASTRewrite rewriter, IProgressMonitor pm) throws CoreException {
-        new LoopCuttingAlteration(rewriter, cutFactor, newName, check).change();
+        new StridedTileAlteration(rewriter, cutFactor, newName, check).change();
     }
 }

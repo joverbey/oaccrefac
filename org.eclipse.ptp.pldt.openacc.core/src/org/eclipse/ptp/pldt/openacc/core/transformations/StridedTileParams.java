@@ -12,9 +12,9 @@
  *******************************************************************************/
 package org.eclipse.ptp.pldt.openacc.core.transformations;
 
-public class LoopCuttingParams extends AbstractTileLoopsParams {
+public class StridedTileParams extends AbstractTileLoopsParams {
     
-    public LoopCuttingParams(int cutFactor, String newName) {
+    public StridedTileParams(int cutFactor, String newName) {
         super(cutFactor, newName);
     }
 }

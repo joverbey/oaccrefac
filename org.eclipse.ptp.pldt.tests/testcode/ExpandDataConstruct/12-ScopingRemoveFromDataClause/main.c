@@ -22,6 +22,6 @@ int main() {
 	while (0)
 		;
 
-	return a;
+	return a ^ a;
 
 }
