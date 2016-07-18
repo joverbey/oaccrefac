@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>
-IntroduceOpenACCAtomics
+Introduce OpenACC Atomics
 </title>
 <link rel="stylesheet" type="text/css" href="../help.css">
 <link rel="stylesheet" type="text/css" href="../help.css">
@@ -12,15 +12,49 @@ IntroduceOpenACCAtomics
 <h3><b>Introduce OpenACC Atomics</b></h3>
 
 <h3>Use:</h3>
-<p>?</p>
+<p>When the same variable will be accessed concurrently by multiple GPU threads, and at least
+one of the threads may change the value of the variable, all accesses to that variable should
+be done atomically.</p>
 
 <h3>Description:</h3>
-<p>?</p>
+<p>Adds an OpenACC <em>atomic</em> directive to a statement in an OpenACC parallel or kernels
+region.  The statement must have one of the following forms:</p>
+<h4>Read:</h4>
+<ul>
+<li><tt>v = x;</tt></li>
+</ul>
+<h4>Write:</h4>
+<ul>
+<li><tt>x = expr;</tt></li>
+</ul>
+<h4>Update:</h4>
+<ul>
+<li><tt>x++;</tt></li>
+<li><tt>x--;</tt></li>
+<li><tt>++x;</tt></li>
+<li><tt>--x;</tt></li>
+<li><tt>x += expr;</tt> (or <tt>- * / % &lt;&lt; &gt;&gt;</tt>)</li>
+<li><tt>x = x + expr;</tt> (or <tt>- * / % &lt;&lt; &gt;&gt;</tt>)</li>
+<li><tt>x = expr + x;</tt> (or <tt>- * / % &lt;&lt; &gt;&gt;</tt>)</li>
+</ul>
+<!--
+<h4>Capture:</h4>
+<ul>
+<li><tt>{ v = x; x += expr; }</tt></li>
+<li><tt>{ x += expr; v = x; }</tt></li>
+<li><tt>{ v = x; x++; }</tt></li>
+<li><tt>{ x++; v = x; }</tt></li>
+<li><tt>{ v = x; x = x + expr; }</tt></li>
+<li><tt>{ x = x + expr; v = x; }</tt></li>
+<li><tt>{ v = x; x = expr + x; }</tt></li>
+<li><tt>{ x = expr + x; v = x; }</tt></li>
+</ul>
+-->
 
 <h3>Example:</h3>
 <p>
 <ol>
-<li> Select the desired  Refactoring menu.</li>
+<li> Select a read, write, or update expression inside an OpenACC parallel or kernels region, then select Introduce OpenACC Atomic from the Refactoring menu.</li>
 <img src="../images/refactorings/IntroAtomics/IntroAtomics1.png">
 <li> The resulting statement.</li>
 <img src="../images/refactorings/IntroAtomics/IntroAtomics2.png">
@@ -32,7 +66,8 @@ IntroduceOpenACCAtomics
 <h3>Restrictions:</h3>
 <p>
 <ul>
-<li>?</li>
+<li>The statement must be inside an OpenACC kernel or parallel region.</li>
+<li>The statement must have one of the forms listed above.</li>
 </ul>
 </p>
 </body>
