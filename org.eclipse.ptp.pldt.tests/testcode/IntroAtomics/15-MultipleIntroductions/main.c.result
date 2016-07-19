@@ -1,0 +1,16 @@
+int main() {
+    int x = 1;
+#pragma acc parallel loop
+    for (int i = 0; i < 100; i++) {
+        int v = 0;
+#pragma acc atomic read
+		v = x; /*<<<<< 6,0,11,0,pass*/
+#pragma acc atomic write
+		x = v;
+		v++;
+#pragma acc atomic update
+		x++;
+#pragma acc atomic update
+		x = v + x;
+    }
+}
