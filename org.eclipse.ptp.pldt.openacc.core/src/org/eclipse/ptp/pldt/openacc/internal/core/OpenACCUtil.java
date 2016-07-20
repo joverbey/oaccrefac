@@ -18,13 +18,13 @@ import java.util.List;
 
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorPragmaStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsLoopNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccKernelsNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelLoopNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccParallelNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.IASTNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
-import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccKernelsLoopNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccKernelsNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccParallelLoopNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccParallelNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.IASTNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.OpenACCParser;
 
 public class OpenACCUtil {
 

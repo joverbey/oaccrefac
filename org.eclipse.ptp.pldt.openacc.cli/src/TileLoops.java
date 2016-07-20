@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -16,16 +15,16 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.AbstractTileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.AbstractTileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.AbstractTileLoopsParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.TileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.TileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.TileLoopsParams;
 
 /**
  * TileLoops performs the tile loops refactoring.

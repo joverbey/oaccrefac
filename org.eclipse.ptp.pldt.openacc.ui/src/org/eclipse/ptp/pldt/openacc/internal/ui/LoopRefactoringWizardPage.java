@@ -80,6 +80,9 @@ public class LoopRefactoringWizardPage extends UserInputWizardPage {
         if (hasButtons) {
         	radioButtons.setFirst();
         }
+        if (!composites.isEmpty()) {
+        	composites.get(0).setFocus();
+        }
         setControl(master);
         setTitle(getName());
         setPageComplete(true);

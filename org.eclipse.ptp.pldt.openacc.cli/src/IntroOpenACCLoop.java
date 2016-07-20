@@ -14,10 +14,10 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroOpenACCLoopCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroOpenACCLoopAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroOpenACCLoopCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
 
 /**
  * IntroduceParallelLoop performs the introduce parallel loop refactoring.

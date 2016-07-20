@@ -17,14 +17,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.AbstractTileLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.TileLoopsParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.AbstractTileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.TileLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.TileLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.TileLoopsParams;
 
 /**
  * "The basic algorithm for blocking (tiling) is called strip-mine-and-interchange. Basically, it consists of
@@ -68,7 +68,7 @@ public class TileLoopsRefactoring extends ForLoopRefactoring {
     	this.outerNewName = outerNewName;
     }
     
-    public void setCutFactor(int cutFactor) {
+    public void setStride(int cutFactor) {
     	this.cutFactor = cutFactor;
     }
     

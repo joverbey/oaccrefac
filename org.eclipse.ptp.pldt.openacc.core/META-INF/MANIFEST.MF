@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PTP Parallel Language Development Tools OpenACC Support (Core)
 Bundle-SymbolicName: org.eclipse.ptp.pldt.openacc.core;singleton:=true
-Bundle-Version: 7.0.0.qualifier
+Bundle-Version: 9.1.0.qualifier
 Bundle-Activator: org.eclipse.ptp.pldt.openacc.internal.core.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -15,11 +15,9 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Eclipse PTP
-Export-Package: org.eclipse.ptp.pldt.openacc.core.dataflow,
- org.eclipse.ptp.pldt.openacc.core.dependence,
- org.eclipse.ptp.pldt.openacc.core.parser,
- org.eclipse.ptp.pldt.openacc.core.transformations,
- org.eclipse.ptp.pldt.openacc.internal.core,
- org.eclipse.ptp.pldt.openacc.internal.core.constprop,
- org.eclipse.ptp.pldt.openacc.internal.core.dependence,
- org.eclipse.ptp.pldt.openacc.internal.core.patternmatching
+Export-Package: org.eclipse.ptp.pldt.openacc.internal.core;x-friends:="org.eclipse.ptp.pldt.openacc.cli,org.eclipse.ptp.pldt.openacc.ui,org.eclipse.ptp.pldt.tests",
+ org.eclipse.ptp.pldt.openacc.internal.core.dataflow;x-friends:="org.eclipse.ptp.pldt.openacc.cli,org.eclipse.ptp.pldt.openacc.ui,org.eclipse.ptp.pldt.tests",
+ org.eclipse.ptp.pldt.openacc.internal.core.dependence;x-friends:="org.eclipse.ptp.pldt.openacc.cli,org.eclipse.ptp.pldt.openacc.ui,org.eclipse.ptp.pldt.tests",
+ org.eclipse.ptp.pldt.openacc.internal.core.parser;x-friends:="org.eclipse.ptp.pldt.openacc.cli,org.eclipse.ptp.pldt.openacc.ui,org.eclipse.ptp.pldt.tests",
+ org.eclipse.ptp.pldt.openacc.internal.core.patternmatching;x-friends:="org.eclipse.ptp.pldt.openacc.cli,org.eclipse.ptp.pldt.openacc.ui,org.eclipse.ptp.pldt.tests",
+ org.eclipse.ptp.pldt.openacc.internal.core.transformations;x-friends:="org.eclipse.ptp.pldt.openacc.cli,org.eclipse.ptp.pldt.openacc.ui,org.eclipse.ptp.pldt.tests"

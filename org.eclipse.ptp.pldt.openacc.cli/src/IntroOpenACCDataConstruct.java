@@ -12,11 +12,11 @@
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroDataConstructAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroDataConstructCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.SourceAlteration;
 
 public class IntroOpenACCDataConstruct extends CLISourceStatementsRefactoring<RefactoringParams, 
 		IntroDataConstructCheck> {

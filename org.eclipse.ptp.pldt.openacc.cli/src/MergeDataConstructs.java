@@ -11,10 +11,10 @@
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.MergeDataConstructsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.MergeDataConstructsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.MergeDataConstructsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.MergeDataConstructsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class MergeDataConstructs extends CLIRefactoring<RefactoringParams, MergeDataConstructsCheck> {

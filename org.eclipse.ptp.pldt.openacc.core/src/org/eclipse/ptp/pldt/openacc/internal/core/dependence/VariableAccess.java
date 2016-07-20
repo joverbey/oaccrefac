@@ -21,8 +21,6 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IVariable;
-import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceTestFailure;
-import org.eclipse.ptp.pldt.openacc.core.dependence.DependenceType;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 public class VariableAccess implements Comparable<VariableAccess> {

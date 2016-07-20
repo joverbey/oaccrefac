@@ -20,9 +20,9 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.Global;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ReachingDefinitionsAnalysis;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.Global;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.ReachingDefinitionsAnalysis;
 
 import junit.framework.TestCase;
 

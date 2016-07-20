@@ -24,9 +24,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
-import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.DistributeLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.DistributeLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;

@@ -15,10 +15,10 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StripMineParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StripMineAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StripMineCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StripMineParams;
 
 /**
  * StripMine performs the strip mine refactoring.

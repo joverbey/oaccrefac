@@ -33,7 +33,7 @@ import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
 
@@ -205,7 +205,7 @@ public class Main {
         if (endOfSelection != -1) {
         	IASTStatement endStatement = findStatementForPosition(translationUnit, endOfSelection);
 			IASTFileLocation fileLocation = endStatement.getFileLocation();
-			((CLISourceStatementsRefactoring) refactoring).setRegionEnd(fileLocation.getNodeOffset() 
+			((CLISourceStatementsRefactoring<?, ?>) refactoring).setRegionEnd(fileLocation.getNodeOffset() 
 					+ fileLocation.getNodeLength());
         }
 

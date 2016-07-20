@@ -13,8 +13,6 @@ package org.eclipse.ptp.pldt.openacc.internal.core.dependence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
-
 public class FourierMotzkinDependenceTester {
 
     /**

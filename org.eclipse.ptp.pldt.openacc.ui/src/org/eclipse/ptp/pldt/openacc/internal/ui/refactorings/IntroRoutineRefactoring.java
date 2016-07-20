@@ -16,9 +16,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroRoutineAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroRoutineCheck;
 
 /**
  * Refactoring that adds a <code>#pragma acc parallel</code> directive to a for-loop.

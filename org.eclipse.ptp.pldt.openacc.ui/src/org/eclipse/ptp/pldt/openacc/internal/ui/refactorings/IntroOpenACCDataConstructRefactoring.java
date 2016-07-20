@@ -18,9 +18,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroDataConstructCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroDataConstructAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroDataConstructCheck;
 
 @SuppressWarnings("restriction")
 public class IntroOpenACCDataConstructRefactoring extends StatementsRefactoring {

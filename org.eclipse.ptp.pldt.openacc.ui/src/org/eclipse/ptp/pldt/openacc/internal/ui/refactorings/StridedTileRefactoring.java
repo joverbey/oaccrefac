@@ -17,10 +17,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.StridedTileParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.StridedTileParams;
 
 public class StridedTileRefactoring extends ForLoopRefactoring{
 

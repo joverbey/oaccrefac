@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.dependence.AddressTakenAnalysis;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.AddressTakenAnalysis;
 import org.junit.Test;
 
 /**
