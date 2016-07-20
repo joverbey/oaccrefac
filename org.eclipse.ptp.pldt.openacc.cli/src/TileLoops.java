@@ -47,7 +47,7 @@ public class TileLoops extends CLILoopRefactoring<AbstractTileLoopsParams, Abstr
     private final String name1, name2;
     
     /**
-     * whether to cut instead of tile
+     * whether to perform strided tiling
      */
     private final boolean strided;
     
