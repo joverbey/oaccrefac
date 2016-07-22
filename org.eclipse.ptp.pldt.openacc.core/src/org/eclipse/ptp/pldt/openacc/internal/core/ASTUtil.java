@@ -65,6 +65,7 @@ import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -523,7 +524,19 @@ public class ASTUtil {
 	    }
 	    
 	    String filename = node1.getTranslationUnit().getFileLocation().getFileName();
-	    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
+	    
+	    IWorkspace workspace;
+	    try {
+	    	workspace = ResourcesPlugin.getWorkspace();
+	    }
+	    catch(IllegalStateException e) { 
+	    	/* this can only happen if the workspace is not open -
+	    	 * in particular, if we're in the CLI 
+	    	 * */
+	    	return null;
+	    }
+	    
+	    IFile file = workspace.getRoot().getFileForLocation(new Path(filename));
 	    if (file == null) {
 	        return null;
 	    }
