@@ -21,18 +21,27 @@ different threads (for memory coalescing).</p>
 <p>Traditional tiling executes Strip Mining and Interchange on a two-dimensional iteration space to then iterate in blocks.  The strided variant executes a Strip Mine and Interchange on a one-dimensional iteration to then iterate in blocks.</p>
 
 <h3>Example:</h3>
-<p>
+<p> 
+
 <ol>
-<li>Select the desired for loop to be changed and choose Tiling under the Refactoring menu.</li>
-<img src="../images/refactorings/Tiling/Tiling1Final.png">
-<li>Next make sure Tiling is selected and then enter the desired height and width.</li>
-<img src="../images/refactorings/Tiling/Tiling2Final.png">
+<li>Select the desired for loop to be changed and choose Tile Loop under the Refactoring menu.</li>
+<img src="../images/refactorings/Tile1.png">
+</ol>
+
+For Normal tiling:
+<ol start="2">
+<li>Select Normal and then enter the desired height and width.</li>
+<img src="../images/refactorings/Tile2.png">
 <li>The resulting for loop.</li>
-<img src="../images/refactorings/Tiling/Tiling3Final.png">
-<li>If strided tiling is desired please make sure that its selected and enter the stride width.</li>
-<img src="../images/refactorings/StridedTiling/StridedTiling2Final.png">
+<img src="../images/refactorings/Tile3.png">
+</ol>
+
+For Strided tiling:
+<ol start="2">
+<li>Select Strided and enter the stride width.</li>
+<img src="../images/refactorings/StridedTile1.png">
 <li>The resulting for loop.</li>
-<img src="../images/refactorings/StridedTiling/StridedTiling3Final.png">
+<img src="../images/refactorings/StridedTile2.png">
 </ol>
 </p>
 
