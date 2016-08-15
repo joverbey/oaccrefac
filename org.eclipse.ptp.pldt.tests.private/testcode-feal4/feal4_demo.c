@@ -297,13 +297,9 @@ int32_t main() {
         }
       }
       if (guessK4 != 0) {
-        #pragma acc atomic write
         crackedSubkey0 = guessK0;
-        #pragma acc atomic write
         crackedSubkey4 = guessK4;
-        #pragma acc atomic write
         crackedSubkey5 = guessK5;
-        #pragma acc atomic write
         setGuess = true;
       }
     }
