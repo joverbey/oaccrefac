@@ -16,9 +16,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.DistributeLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.DistributeLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
 
 /**
  * This class defines the implementation for re-factoring using loop fusion. For example:

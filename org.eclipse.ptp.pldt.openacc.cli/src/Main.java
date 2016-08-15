@@ -33,7 +33,7 @@ import org.eclipse.cdt.core.parser.ScannerInfo;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
 
 import edu.auburn.oaccrefac.cli.dom.rewrite.ASTRewrite;
 
@@ -56,16 +56,16 @@ public class Main {
 			switch (args[0]) {
 			// 2 args
 			case "-tile": //$NON-NLS-1$
-				boolean cut = false;
+				boolean strided = false;
 				String name1 = "", name2 = ""; //$NON-NLS-1$ //$NON-NLS-2$
 				int width = 0, height = 0;
 				for (int i = argIndex; i < args.length; i++) {
-					if (args[i].equals("-cut") || args[i].equals("-c")) { //$NON-NLS-1$ //$NON-NLS-2$
-						cut = true;
+					if (args[i].equals("-strided") || args[i].equals("-s")) { //$NON-NLS-1$ //$NON-NLS-2$
+						strided = true;
 						argIndex++;
 					}
 				}
-				if (cut) {
+				if (strided) {
 					width = parseInt(args[argIndex++]);
 					for (int i = argIndex; i < args.length; i++) {
 						if (args[i].equals("-name") || args[i].equals("-n")) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -84,7 +84,7 @@ public class Main {
 						}
 					}
 				}
-				refactoring = new TileLoops(width, height, name1, name2, cut);
+				refactoring = new TileLoops(width, height, name1, name2, strided);
 				break;
 			case "-strip-mine": //$NON-NLS-1$
 				String name = ""; //$NON-NLS-1$
@@ -205,7 +205,7 @@ public class Main {
         if (endOfSelection != -1) {
         	IASTStatement endStatement = findStatementForPosition(translationUnit, endOfSelection);
 			IASTFileLocation fileLocation = endStatement.getFileLocation();
-			((CLISourceStatementsRefactoring) refactoring).setRegionEnd(fileLocation.getNodeOffset() 
+			((CLISourceStatementsRefactoring<?, ?>) refactoring).setRegionEnd(fileLocation.getNodeOffset() 
 					+ fileLocation.getNodeLength());
         }
 

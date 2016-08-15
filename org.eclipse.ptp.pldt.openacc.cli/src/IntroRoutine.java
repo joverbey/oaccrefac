@@ -12,11 +12,11 @@
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroRoutineCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroRoutineAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroRoutineCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.SourceAlteration;
 
 public class IntroRoutine extends CLISourceStatementsRefactoring<RefactoringParams, IntroRoutineCheck> {
 

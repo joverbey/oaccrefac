@@ -37,7 +37,7 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.ConstantPropagation;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ASTMatcher;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryIntegerConstant;
 import org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement;

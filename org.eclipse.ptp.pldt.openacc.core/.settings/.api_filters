@@ -1,134 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.ptp.pldt.openacc.core" version="2">
-    <resource path="src/org/eclipse/ptp/pldt/openacc/core/dataflow/ControlFlowGraphBuilder.java" type="org.eclipse.ptp.pldt.openacc.core.dataflow.ControlFlowGraphBuilder">
-        <filter id="643842064">
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/ASTUtil.java" type="org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil">
+        <filter id="640712815">
             <message_arguments>
-                <message_argument value="CxxControlFlowGraph"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="build(IASTFunctionDefinition)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643842064">
-            <message_arguments>
-                <message_argument value="CxxExitNode"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createExitNode(IBasicBlock, IASTNode)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643842064">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createDoWhile(IBasicBlock, IASTDoStatement)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643842064">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createIf(IBasicBlock, IASTIfStatement)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643842064">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createWhile(IBasicBlock, IASTWhileStatement)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643842064">
-            <message_arguments>
-                <message_argument value="IConnectorNode"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createLabelNodes(IBasicBlock, String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643846161">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createDoWhile(IBasicBlock, IASTDoStatement)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643846161">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createExitNode(IBasicBlock, IASTNode)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643846161">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createIf(IBasicBlock, IASTIfStatement)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643846161">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createLabelNodes(IBasicBlock, String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643846161">
-            <message_arguments>
-                <message_argument value="IBasicBlock"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="createWhile(IBasicBlock, IASTWhileStatement)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643846161">
-            <message_arguments>
-                <message_argument value="IConnectorNode"/>
-                <message_argument value="ControlFlowGraphBuilder"/>
-                <message_argument value="fixConnector(IConnectorNode)"/>
+                <message_argument value="IScope"/>
+                <message_argument value="ASTUtil"/>
+                <message_argument value="find(String)"/>
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/org/eclipse/ptp/pldt/openacc/core/parser/OpenACCParser.java" type="org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser">
-        <filter id="627060751">
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/dataflow/ExpressionEvaluator.java" type="org.eclipse.ptp.pldt.openacc.internal.core.dataflow.ExpressionEvaluator">
+        <filter id="640712815">
             <message_arguments>
-                <message_argument value="ParsingTables"/>
-                <message_argument value="OpenACCParser"/>
-                <message_argument value="parsingTables"/>
+                <message_argument value="IASTName"/>
+                <message_argument value="ExpressionEvaluator"/>
+                <message_argument value="resolvePreBinding()"/>
             </message_arguments>
         </filter>
-        <filter id="627060751">
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/dataflow/Global.java" type="org.eclipse.ptp.pldt.openacc.internal.core.dataflow.Global">
+        <filter id="574619656">
             <message_arguments>
-                <message_argument value="SemanticActions"/>
-                <message_argument value="OpenACCParser"/>
-                <message_argument value="semanticActions"/>
+                <message_argument value="IASTName"/>
+                <message_argument value="Global"/>
             </message_arguments>
         </filter>
-        <filter id="643846161">
+        <filter id="574664731">
             <message_arguments>
-                <message_argument value="ParsingTables"/>
-                <message_argument value="OpenACCParser"/>
-                <message_argument value="parse(OpenACCParserILexer, ParsingTables)"/>
+                <message_argument value="org.eclipse.ptp.pldt.openacc.internal.core.dataflow.Global.getFileLocation()"/>
+                <message_argument value="IASTFileLocation"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/patternmatching/ArbitraryBinaryExpression.java" type="org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryBinaryExpression">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="IASTBinaryExpression"/>
+                <message_argument value="ArbitraryBinaryExpression"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/patternmatching/ArbitraryExpression.java" type="org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryExpression">
-        <filter id="576720909">
+        <filter id="574619656">
             <message_arguments>
-                <message_argument value="ASTNode"/>
+                <message_argument value="IASTExpression"/>
                 <message_argument value="ArbitraryExpression"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/patternmatching/ArbitraryIntegerConstant.java" type="org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryIntegerConstant">
-        <filter id="576720909">
+        <filter id="574619656">
             <message_arguments>
-                <message_argument value="ASTNode"/>
+                <message_argument value="IASTExpression"/>
                 <message_argument value="ArbitraryIntegerConstant"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="src/org/eclipse/ptp/pldt/openacc/internal/core/patternmatching/ArbitraryStatement.java" type="org.eclipse.ptp.pldt.openacc.internal.core.patternmatching.ArbitraryStatement">
-        <filter id="576720909">
+        <filter id="574619656">
             <message_arguments>
-                <message_argument value="ASTAttributeOwner"/>
+                <message_argument value="IASTStatement"/>
                 <message_argument value="ArbitraryStatement"/>
             </message_arguments>
         </filter>

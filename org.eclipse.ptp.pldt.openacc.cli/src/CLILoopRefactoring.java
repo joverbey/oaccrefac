@@ -13,8 +13,8 @@
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.Check;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.Check;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
 
 /**
  * LoopMain is a generic base for loop refactorings.

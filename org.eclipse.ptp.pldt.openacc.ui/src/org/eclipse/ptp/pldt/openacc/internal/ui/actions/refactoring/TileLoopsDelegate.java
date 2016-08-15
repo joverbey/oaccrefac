@@ -61,10 +61,10 @@ public class TileLoopsDelegate extends RefactoringActionDelegate {
             }
         });
         
-        page.addRightInputControl(Messages.TileLoopsDelegate_CutFactor, new NumberValueChangedListener() {
+        page.addRightInputControl(Messages.TileLoopsDelegate_Stride, new NumberValueChangedListener() {
             @Override
             public void valueChanged(int value) {
-                refac.setCutFactor(value);
+                refac.setStride(value);
             }
         });
         page.addRightInputControl(Messages.TileLoopsDelegate_IndexVariableName, new StringValueChangedListener() {

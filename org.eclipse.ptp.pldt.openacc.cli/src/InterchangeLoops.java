@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2015, 2016 Auburn University and others.
  * All rights reserved. This program and the accompanying materials
@@ -15,10 +14,10 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.InterchangeLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.InterchangeLoopParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.InterchangeLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.InterchangeLoopsCheck;
 
 /**
  * InterchangeLoops performs the interchange loops alteration.

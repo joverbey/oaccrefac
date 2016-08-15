@@ -53,7 +53,7 @@ if [ "$refactoring" == "TileLoops" ]; then
 	read param2
 fi
 if [ "$refactoring" == "LoopCutting" ]; then
-	refactoring="-tile -cut"
+	refactoring="-tile -strided"
 	echo "Enter number of cuts"
 	read param1
 fi

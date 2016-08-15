@@ -20,9 +20,9 @@ import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.ConstantPropagation;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
-import org.eclipse.ptp.pldt.openacc.internal.core.constprop.ExpressionEvaluator;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.ConstantPropagation;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.ExpressionEvaluator;
 
 import junit.framework.TestCase;
 

@@ -1,12 +1,18 @@
 <html>
+<head>
 <title>
 DistributeLoop
 </title>
+<link rel="stylesheet" type="text/css" href="../help.css">
+<link rel="stylesheet" type="text/css" href="../help.css">
+<script type="text/javascript" src="../thumb.js"> </script>
+</head>
 
+<body>
 <h3><b>Distribute Loops</b></h3>
 
 <h3>Use:</h3>
-<p>Distribution can be used to break down loops to achieve a better utilization of locality reference.</p>
+<p>Distribution breaks a loop into a sequence of smaller loops, which may help achieve better locality of reference.</p>
 
 <h3>Description:</h3>
 <p>Separates a single loop into multiple loops by putting each statement into a new separate loop's body.</p>
@@ -31,5 +37,6 @@ DistributeLoop
 <li>As of now, loop cannot have any pragma statements attached to it.</li>
 </ul>
 </p>
+</body>
 
 </html>

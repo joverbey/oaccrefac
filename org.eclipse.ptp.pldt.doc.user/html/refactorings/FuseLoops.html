@@ -3,11 +3,17 @@
 <title>
 FuseLoops
 </title>
+<link rel="stylesheet" type="text/css" href="../help.css">
+<link rel="stylesheet" type="text/css" href="../help.css">
+<script type="text/javascript" src="../thumb.js"> </script>
+</head>
 
+<body>
 <h3><b>Fuse Loops</b></h3>
 
 <h3>Use:</h3>
-<p>Fusion can be used to combine loops to achieve a better utilization of locality reference.</p>
+<p>Fusion can be used to achieve better locality of reference, or to combine adjacent
+loops for subsequent parallelization.</p>
 
 <h3>Description:</h3>
 <p>Combines two adjacent loops into one.</p>
@@ -27,7 +33,9 @@ FuseLoops
 <ul>
 <li>The selected loop must have a for loop directly following it.</li>
 <li>The loop headers must be identical.</li>
-<li>Loops that have a pragma may not be Fused unless both loops have identical pragmas.</li>
+<li>Loops that have a pragma may not be fused unless both loops have identical pragmas.</li>
 </ul>
 </p>
+</body>
+
 </html>

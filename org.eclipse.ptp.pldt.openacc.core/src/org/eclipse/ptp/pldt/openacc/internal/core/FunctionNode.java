@@ -24,11 +24,11 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccGangClauseNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccVectorClauseNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.ASTAccWorkerClauseNode;
-import org.eclipse.ptp.pldt.openacc.core.parser.IAccConstruct;
-import org.eclipse.ptp.pldt.openacc.core.parser.OpenACCParser;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccGangClauseNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccVectorClauseNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.ASTAccWorkerClauseNode;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.IAccConstruct;
+import org.eclipse.ptp.pldt.openacc.internal.core.parser.OpenACCParser;
 
 /**
  * Used to create and analyze a function call graph.

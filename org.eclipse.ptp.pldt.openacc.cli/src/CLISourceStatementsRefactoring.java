@@ -23,9 +23,9 @@ import org.eclipse.cdt.core.dom.ast.IASTPreprocessorStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.Check;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.Check;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
 
 public abstract class CLISourceStatementsRefactoring<P extends RefactoringParams, C extends Check<P>> 
 		extends CLIRefactoring<P, C> {

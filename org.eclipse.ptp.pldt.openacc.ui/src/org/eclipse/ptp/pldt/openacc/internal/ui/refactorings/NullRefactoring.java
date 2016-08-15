@@ -17,11 +17,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.NullAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.NullCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.NullParams;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.NullAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.NullCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.NullParams;
 
 /**
  * NullRefactoring is performs a dependence analysis but makes no changes to the source code. It is intended for

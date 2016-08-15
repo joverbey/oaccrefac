@@ -18,11 +18,11 @@ import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyInference;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyinInference;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.CopyoutInference;
-import org.eclipse.ptp.pldt.openacc.core.dataflow.DataTransferInference;
 import org.eclipse.ptp.pldt.openacc.internal.core.ASTUtil;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.CopyInference;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.CopyinInference;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.CopyoutInference;
+import org.eclipse.ptp.pldt.openacc.internal.core.dataflow.DataTransferInference;
 
 import junit.framework.TestCase;
 

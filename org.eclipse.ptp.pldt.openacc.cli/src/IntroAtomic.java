@@ -12,11 +12,11 @@
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
-import org.eclipse.ptp.pldt.openacc.core.transformations.SourceAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroAtomicAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroAtomicCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.SourceAlteration;
 
 public class IntroAtomic extends CLISourceStatementsRefactoring<RefactoringParams, IntroAtomicCheck> {
 

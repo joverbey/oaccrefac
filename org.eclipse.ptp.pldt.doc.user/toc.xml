@@ -14,7 +14,23 @@
    <topic label="UPC tools" href="html/upc.html" />
    <topic label="Running PTP OpenACC tools"  href="html/runOpenACC.html"/> 
    <topic label="Running PTP OpenSHMEM tools"  href="html/runOpenSHMEM.html"/> 
-   <topic label="Refactoring OpenACC"  href="html/refactorings/Introduction.html"/> 
+   <topic label="PLDT Refactorings" href="html/refactorings/Introduction.html">
+      <topic label="OpenACC Refactorings">
+         <topic label="Introduce OpenACC Loop"  href="html/refactorings/IntroduceOpenACCLoop.html"/>
+         <topic label="Introduce OpenACC Atomic"  href="html/refactorings/IntroduceOpenACCAtomic.html"/>
+         <topic label="Introduce OpenACC Routine"  href="html/refactorings/IntroduceOpenACCRoutine.html"/>
+         <topic label="Introduce OpenACC Data Construct"  href="html/refactorings/IntroduceDataConstruct.html"/>
+         <topic label="Expand OpenACC Data Construct"  href="html/refactorings/ExpandDataConstruct.html"/>
+         <topic label="Merge OpenACC Data Constructs"  href="html/refactorings/MergeDataConstruct.html"/>
+      </topic>
+      <topic label="Loop Nest Refactorings">
+         <topic label="Distribute Loop"  href="html/refactorings/DistributeLoop.html"/>
+         <topic label="Fuse Loops"  href="html/refactorings/FuseLoops.html"/>
+         <topic label="Interchange Loops"  href="html/refactorings/InterchangeLoops.html"/>
+         <topic label="Strip Mine Loop"  href="html/refactorings/StripMineLoop.html"/>
+         <topic label="Tile Loop"  href="html/refactorings/TileLoop.html"/>
+      </topic>
+   </topic> 
    <!-- insertion point for other docs -->
    <anchor id="ptpPLDTother"/>
    <topic label="New and Noteworthy" href="html/whatsnew.html" />

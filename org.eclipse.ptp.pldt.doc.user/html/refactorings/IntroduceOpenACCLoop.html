@@ -3,22 +3,24 @@
 <title>
 IntroduceOpenACCLoop
 </title>
+<link rel="stylesheet" type="text/css" href="../help.css">
+<link rel="stylesheet" type="text/css" href="../help.css">
+<script type="text/javascript" src="../thumb.js"> </script>
+</head>
 
+<body>
 <h3><b>Introduce OpenACC Loop</b></h3>
 
 <h3>Description:</h3>
-<p>Parallelizes a loop by adding a parallel loop directive to it.</p>
-
-<p><b>Use:</b></p>
+<p>Parallelizes a loop by adding an OpenACC parallel or kernels loop directive to it.</p>
 
 <h3>Example:</h3>
 <p>
 <ol>
 <li> Select the desired for loop to be changed and choose Parallelize (OpenACC) under the Refactoring menu.</li>
 <img src="../images/refactorings/IntroduceParallel/IntroduceParallel1.png">
-<li> The resulting for loop.</li>
+<li> Select either Parallel or Kernels to indicate the type of parallelization desired.</li>
 <img src="../images/refactorings/IntroduceParallel/IntroduceParallel2.png">
-<li> If a kernel is desired please select that in pop up window.  Here is the result for kernels
 <img>
 </ol>
 
@@ -30,5 +32,6 @@ IntroduceOpenACCLoop
 <li>Kernels will throw a warnings instead of error.
 </ul>
 </p>
+</body>
 
 </html>

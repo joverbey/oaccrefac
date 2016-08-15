@@ -13,7 +13,7 @@ package org.eclipse.ptp.pldt.internal.tests.analyses;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.Direction;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.FourierMotzkinDependenceTester;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.Matrix;
 import org.junit.Assert;

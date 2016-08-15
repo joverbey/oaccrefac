@@ -13,7 +13,7 @@ package org.eclipse.ptp.pldt.openacc.internal.ui.refactorings;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
 import org.eclipse.text.edits.TextEditGroup;
 
 public class CDTASTRewriteProxy implements IASTRewrite {

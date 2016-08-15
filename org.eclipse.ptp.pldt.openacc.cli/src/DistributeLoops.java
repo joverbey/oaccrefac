@@ -13,10 +13,10 @@ import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.DistributeLoopsCheck;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.RefactoringParams;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.DistributeLoopsAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.DistributeLoopsCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.RefactoringParams;
 
 /**
  * DistributeLoops performs the distribute loops refactoring.

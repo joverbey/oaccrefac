@@ -3,14 +3,22 @@
 <title>
 TileLoop
 </title>
+<link rel="stylesheet" type="text/css" href="../help.css">
+<link rel="stylesheet" type="text/css" href="../help.css">
+<script type="text/javascript" src="../thumb.js"> </script>
+</head>
 
+<body>
 <h3><b>Tile Loops</b></h3>
 
 <h3>Use:</h3>
-<p>Ensures that data used in a loop is kept in the cache until it needs to be reused and eliminates cache size requirements.</p>
+<p>Traditionally, tiling is used to ensure that data used in a loop is kept in the cache.
+On a GPU, a &quot;strided&quot; variant of tiling can be used to assign multiple loop
+iterations to a single thread while ensuring that adjacent iterations are assigned to
+different threads (for memory coalescing).</p>
 
 <h3>Description:</h3>
-<p>Executes a Strip Mine and Interchange on a two-dimensional iteration to then iterate in blocks.  The cutting variant executes a Strip Mine and Interchange on a one-dimensional iteration to then iterate in blocks.</p>
+<p>Traditional tiling executes Strip Mining and Interchange on a two-dimensional iteration space to then iterate in blocks.  The strided variant executes a Strip Mine and Interchange on a one-dimensional iteration to then iterate in blocks.</p>
 
 <h3>Example:</h3>
 <p>
@@ -21,10 +29,10 @@ TileLoop
 <img src="../images/refactorings/Tiling/Tiling2Final.png">
 <li>The resulting for loop.</li>
 <img src="../images/refactorings/Tiling/Tiling3Final.png">
-<li>If cutting is desired please make sure that its selected and enter the cut factor.</li>
-<img src="../images/refactorings/LoopCutting/LoopCutting2Final.png">
+<li>If strided tiling is desired please make sure that its selected and enter the stride width.</li>
+<img src="../images/refactorings/StridedTiling/StridedTiling2Final.png">
 <li>The resulting for loop.</li>
-<img src="../images/refactorings/LoopCutting/LoopCutting3Final.png">
+<img src="../images/refactorings/StridedTiling/StridedTiling3Final.png">
 </ol>
 </p>
 
@@ -37,5 +45,6 @@ TileLoop
 <li>The selected loop cannot carry dependence in the greater than direction and be in the less than direction after interchange as occurred.</li>
 </ul>
 </p>
+</body>
 
 </html>

@@ -31,7 +31,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
 
 @SuppressWarnings("restriction")
 public abstract class PragmaDirectiveRefactoring extends CRefactoring {

@@ -22,7 +22,7 @@ public class Messages extends NLS {
 	public static String StripMineLoopDelegate_StripMineLoop;
 	public static String StripMineLoopDelegate_StripSize;
 	public static String StripMineLoopDelegate_ZeroBased;
-	public static String TileLoopsDelegate_CutFactor;
+	public static String TileLoopsDelegate_Stride;
 	public static String TileLoopsDelegate_IndexVariableName;
 	public static String TileLoopsDelegate_InnerIndexVariable;
 	public static String TileLoopsDelegate_OuterIndexVariable;

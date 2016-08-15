@@ -13,7 +13,7 @@ package org.eclipse.ptp.pldt.internal.tests.analyses;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.ptp.pldt.openacc.core.dependence.Direction;
+import org.eclipse.ptp.pldt.openacc.internal.core.dependence.Direction;
 import org.eclipse.ptp.pldt.openacc.internal.core.dependence.DirectionHierarchyTester;
 import org.junit.Assert;
 import org.junit.Test;

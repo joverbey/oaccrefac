@@ -17,9 +17,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IASTRewrite;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicAlteration;
-import org.eclipse.ptp.pldt.openacc.core.transformations.IntroAtomicCheck;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IASTRewrite;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroAtomicAlteration;
+import org.eclipse.ptp.pldt.openacc.internal.core.transformations.IntroAtomicCheck;
 
 @SuppressWarnings("restriction")
 public class IntroAtomicRefactoring extends StatementsRefactoring {
